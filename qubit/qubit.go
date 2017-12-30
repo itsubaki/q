@@ -14,10 +14,6 @@ type Qubit struct {
 	v v.Vector
 }
 
-type Probability float64
-
-type Amplitude complex128
-
 func New(z ...complex128) *Qubit {
 	v := v.Vector{}
 	for _, zi := range z {
@@ -225,30 +221,4 @@ func TensorProduct(q ...*Qubit) *Qubit {
 		q1 = q1.TensorProduct(q[i])
 	}
 	return q1
-}
-
-func Max(p []Probability) Probability {
-	max := float64(p[0])
-	for _, pp := range p {
-		max = math.Max(max, float64(pp))
-	}
-
-	return Probability(max)
-}
-
-func Min(p []Probability) Probability {
-	min := float64(p[0])
-	for _, pp := range p {
-		min = math.Max(min, float64(pp))
-	}
-
-	return Probability(min)
-}
-
-func Sum(p []Probability) Probability {
-	var sum Probability
-	for _, pp := range p {
-		sum = sum + pp
-	}
-	return sum
 }

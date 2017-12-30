@@ -7,6 +7,24 @@ import (
 	"github.com/itsubaki/q/matrix"
 )
 
+func TestIs(t *testing.T) {
+	if !Zero().IsZero() {
+		t.Fail()
+	}
+
+	if !One().IsOne() {
+		t.Fail()
+	}
+
+	if Zero().IsOne() {
+		t.Fail()
+	}
+
+	if One().IsZero() {
+		t.Fail()
+	}
+}
+
 func TestFidelity(t *testing.T) {
 	f0 := Zero().Fidelity(Zero())
 	if f0 != 1 {
