@@ -72,8 +72,8 @@ g3 := gate.H().TensorProduct(gate.I(2))
 phi.Apply(g2).Apply(g3)
 
 // Alice measure qubit 0, 1
-mz := phi.MeasureAt(0)
-mx := phi.MeasureAt(1)
+mz := phi.Measure(0)
+mx := phi.Measure(1)
 
 // Alice send mx, mx to Bob
 // Bob Apply Z and X

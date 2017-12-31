@@ -16,7 +16,7 @@ func TestVector(t *testing.T) {
 	}
 
 	if !v0.IsOrthogonal(v1) {
-		t.Error(v0.IsOrthogonal(v1))
+		t.Error(v0.InnerProduct(v1))
 	}
 
 	v3 := New(1, 0)
@@ -25,7 +25,7 @@ func TestVector(t *testing.T) {
 	}
 
 	if v3.IsOrthogonal(v3) {
-		t.Error(v3.IsOrthogonal(v3))
+		t.Error(v3.InnerProduct(v3))
 	}
 
 	if !v3.IsUnit() {
@@ -41,7 +41,7 @@ func TestVector(t *testing.T) {
 		t.Error(v3.InnerProduct(v4))
 	}
 	if !v3.IsOrthogonal(v4) {
-		t.Error(v3.IsOrthogonal(v4))
+		t.Error(v3.InnerProduct(v4))
 	}
 
 }

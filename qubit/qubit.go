@@ -105,7 +105,11 @@ func (q *Qubit) Probability() []Probability {
 	return list
 }
 
-func (q *Qubit) Measure() {
+func (q *Qubit) Measure(bit ...int) *Qubit {
+	if len(bit) > 0 {
+		return q.MeasureAt(bit[0])
+	}
+
 	rand.Seed(time.Now().UnixNano())
 	r := Probability(rand.Float64())
 
@@ -115,10 +119,12 @@ func (q *Qubit) Measure() {
 		if sum <= r && r < sum+p {
 			q.v = v.NewZero(len(q.v))
 			q.v[i] = 1
-			return
+			break
 		}
 		sum = sum + p
 	}
+
+	return q
 }
 
 func (q *Qubit) ProbabilityZeroAt(bit int) ([]int, []Probability) {

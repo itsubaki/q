@@ -106,21 +106,21 @@ func TestNormalize(t *testing.T) {
 func TestMeasureAt(t *testing.T) {
 	q := Zero(3).Apply(gate.H(3))
 
-	q.MeasureAt(0)
+	q.Measure(0)
 	for _, p := range q.Probability() {
 		if p != 0 && p != 0.25 {
 			t.Error(q.Probability())
 		}
 	}
 
-	q.MeasureAt(1)
+	q.Measure(1)
 	for _, p := range q.Probability() {
 		if p != 0 && p != 0.4999999999999999 {
 			t.Error(q.Probability())
 		}
 	}
 
-	q.MeasureAt(2)
+	q.Measure(2)
 	for _, p := range q.Probability() {
 		if p != 0 && p != 1 {
 			t.Error(q.Probability())
