@@ -103,7 +103,7 @@ func TestNormalize(t *testing.T) {
 	}
 }
 
-func TestMeasureAt(t *testing.T) {
+func TestMeasure(t *testing.T) {
 	q := Zero(3).Apply(gate.H(3))
 
 	q.Measure(0)
