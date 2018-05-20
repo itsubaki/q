@@ -135,19 +135,6 @@ func CNOT(bit ...int) matrix.Matrix {
 	return m
 }
 
-func Fredkin() matrix.Matrix {
-	m := make(matrix.Matrix, 8)
-	m[0] = []complex128{1, 0, 0, 0, 0, 0, 0, 0}
-	m[1] = []complex128{0, 1, 0, 0, 0, 0, 0, 0}
-	m[2] = []complex128{0, 0, 1, 0, 0, 0, 0, 0}
-	m[3] = []complex128{0, 0, 0, 1, 0, 0, 0, 0}
-	m[4] = []complex128{0, 0, 0, 0, 1, 0, 0, 0}
-	m[5] = []complex128{0, 0, 0, 0, 0, 0, 1, 0}
-	m[6] = []complex128{0, 0, 0, 0, 0, 1, 0, 0}
-	m[7] = []complex128{0, 0, 0, 0, 0, 0, 0, 1}
-	return m
-}
-
 func ControlledNot(bit, c, t int) matrix.Matrix {
 	m := I([]int{bit}...)
 	dim := len(m)
@@ -208,6 +195,19 @@ func ControlledZ(bit, c, t int) matrix.Matrix {
 		}
 	}
 
+	return m
+}
+
+func Fredkin() matrix.Matrix {
+	m := make(matrix.Matrix, 8)
+	m[0] = []complex128{1, 0, 0, 0, 0, 0, 0, 0}
+	m[1] = []complex128{0, 1, 0, 0, 0, 0, 0, 0}
+	m[2] = []complex128{0, 0, 1, 0, 0, 0, 0, 0}
+	m[3] = []complex128{0, 0, 0, 1, 0, 0, 0, 0}
+	m[4] = []complex128{0, 0, 0, 0, 1, 0, 0, 0}
+	m[5] = []complex128{0, 0, 0, 0, 0, 0, 1, 0}
+	m[6] = []complex128{0, 0, 0, 0, 0, 1, 0, 0}
+	m[7] = []complex128{0, 0, 0, 0, 0, 0, 0, 1}
 	return m
 }
 
