@@ -1,8 +1,11 @@
 package gate
 
 import (
+	"fmt"
 	"math"
 	"math/cmplx"
+	"strconv"
+	"strings"
 
 	"github.com/itsubaki/q/matrix"
 )
@@ -93,6 +96,8 @@ func Swap(bit ...int) matrix.Matrix {
 	return m
 }
 
+// CZ(2) -> Controlled-Z
+// CZ(3) -> Contrlled-Controlled-Z
 func CZ(bit ...int) matrix.Matrix {
 	if len(bit) < 1 {
 		bit = []int{2}
@@ -117,7 +122,7 @@ func CS(bit ...int) matrix.Matrix {
 	return m
 }
 
-//CNOT(3) -> Toffoli
+// CNOT(3) -> Toffoli (Controlled-Controlled-NOT)
 func CNOT(bit ...int) matrix.Matrix {
 	if len(bit) < 1 {
 		bit = []int{2}
@@ -143,34 +148,72 @@ func Fredkin() matrix.Matrix {
 	return m
 }
 
-func CNOTc1t3() matrix.Matrix {
-	m := make(matrix.Matrix, 8)
-	m[0] = []complex128{1, 0, 0, 0, 0, 0, 0, 0}
-	m[1] = []complex128{0, 1, 0, 0, 0, 0, 0, 0}
-	m[2] = []complex128{0, 0, 1, 0, 0, 0, 0, 0}
-	m[3] = []complex128{0, 0, 0, 1, 0, 0, 0, 0}
-	m[4] = []complex128{0, 0, 0, 0, 0, 1, 0, 0}
-	m[5] = []complex128{0, 0, 0, 0, 1, 0, 0, 0}
-	m[6] = []complex128{0, 0, 0, 0, 0, 0, 0, 1}
-	m[7] = []complex128{0, 0, 0, 0, 0, 0, 1, 0}
-	return m
+func ControlledNot(bit, c, t int) matrix.Matrix {
+	m := I([]int{bit}...)
+	dim := len(m)
+
+	index := []int64{}
+	f := "%0" + strconv.Itoa(bit) + "s"
+	for i := 0; i < dim; i++ {
+		s := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
+
+		bits := []string{}
+		for j := 0; j < bit; j++ {
+			bits = append(bits, s[j:j+1])
+		}
+
+		// Apply X
+		if bits[c] == "1" {
+			if bits[t] == "1" {
+				bits[t] = "0"
+			} else if bits[t] == "0" {
+				bits[t] = "1"
+			}
+		}
+
+		v, err := strconv.ParseInt(strings.Join(bits, ""), 2, 0)
+		if err != nil {
+			panic(err)
+		}
+
+		index = append(index, v)
+	}
+
+	cnot := make(matrix.Matrix, dim)
+	for i, ii := range index {
+		cnot[i] = m[ii]
+	}
+
+	return cnot
 }
 
-func CZc1t3() matrix.Matrix {
-	m := make(matrix.Matrix, 8)
-	m[0] = []complex128{1, 0, 0, 0, 0, 0, 0, 0}
-	m[1] = []complex128{0, 1, 0, 0, 0, 0, 0, 0}
-	m[2] = []complex128{0, 0, 1, 0, 0, 0, 0, 0}
-	m[3] = []complex128{0, 0, 0, 1, 0, 0, 0, 0}
-	m[4] = []complex128{0, 0, 0, 0, 1, 0, 0, 0}
-	m[5] = []complex128{0, 0, 0, 0, 0, -1, 0, 0}
-	m[6] = []complex128{0, 0, 0, 0, 0, 0, 1, 0}
-	m[7] = []complex128{0, 0, 0, 0, 0, 0, 0, -1}
+func ControlledZ(bit, c, t int) matrix.Matrix {
+	m := I([]int{bit}...)
+	dim := len(m)
+
+	f := "%0" + strconv.Itoa(bit) + "s"
+	for i := 0; i < dim; i++ {
+		s := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
+
+		bits := []string{}
+		for j := 0; j < bit; j++ {
+			bits = append(bits, s[j:j+1])
+		}
+
+		// Apply Z
+		if bits[c] == "1" && bits[t] == "1" {
+			for j := 0; j < dim; j++ {
+				m[i][j] = complex(-1, 0) * m[i][j]
+			}
+		}
+	}
+
 	return m
 }
 
 func QFT() matrix.Matrix {
 	m := make(matrix.Matrix, 8)
+
 	o0 := complex(1, 0)
 	o1 := cmplx.Sqrt(1i)
 	o2 := cmplx.Pow(o1, 2)
@@ -179,6 +222,7 @@ func QFT() matrix.Matrix {
 	o5 := cmplx.Pow(o1, 5)
 	o6 := cmplx.Pow(o1, 6)
 	o7 := cmplx.Pow(o1, 7)
+
 	m[0] = []complex128{o0, o0, o0, o0, o0, o0, o0, o0}
 	m[1] = []complex128{o0, o1, o2, o3, o4, o5, o6, o7}
 	m[2] = []complex128{o0, o2, o4, o6, o0, o2, o4, o6}

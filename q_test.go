@@ -138,7 +138,7 @@ func TestQuantumTeleportationPattern2(t *testing.T) {
 	g2 := matrix.TensorProduct(gate.CNOT(), gate.I())
 	g3 := matrix.TensorProduct(gate.H(), gate.I(2))
 	g4 := matrix.TensorProduct(gate.I(), gate.CNOT())
-	g5 := gate.CZc1t3()
+	g5 := gate.ControlledZ(3, 0, 2)
 
 	phi.Apply(g2).Apply(g3).Apply(g4).Apply(g5)
 

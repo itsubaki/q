@@ -27,6 +27,42 @@ func TestSwap(t *testing.T) {
 	}
 }
 
+func TestCz(t *testing.T) {
+	expected := make(matrix.Matrix, 8)
+	expected[0] = []complex128{1, 0, 0, 0, 0, 0, 0, 0}
+	expected[1] = []complex128{0, 1, 0, 0, 0, 0, 0, 0}
+	expected[2] = []complex128{0, 0, 1, 0, 0, 0, 0, 0}
+	expected[3] = []complex128{0, 0, 0, 1, 0, 0, 0, 0}
+	expected[4] = []complex128{0, 0, 0, 0, 1, 0, 0, 0}
+	expected[5] = []complex128{0, 0, 0, 0, 0, -1, 0, 0}
+	expected[6] = []complex128{0, 0, 0, 0, 0, 0, 1, 0}
+	expected[7] = []complex128{0, 0, 0, 0, 0, 0, 0, -1}
+
+	actual := ControlledZ(3, 0, 2)
+
+	if !actual.Equals(expected) {
+		t.Error(actual)
+	}
+}
+
+func TestCnot(t *testing.T) {
+	expected := make(matrix.Matrix, 8)
+	expected[0] = []complex128{1, 0, 0, 0, 0, 0, 0, 0}
+	expected[1] = []complex128{0, 1, 0, 0, 0, 0, 0, 0}
+	expected[2] = []complex128{0, 0, 1, 0, 0, 0, 0, 0}
+	expected[3] = []complex128{0, 0, 0, 1, 0, 0, 0, 0}
+	expected[4] = []complex128{0, 0, 0, 0, 0, 1, 0, 0}
+	expected[5] = []complex128{0, 0, 0, 0, 1, 0, 0, 0}
+	expected[6] = []complex128{0, 0, 0, 0, 0, 0, 0, 1}
+	expected[7] = []complex128{0, 0, 0, 0, 0, 0, 1, 0}
+
+	actual := ControlledNot(3, 0, 2)
+
+	if !actual.Equals(expected) {
+		t.Error(actual)
+	}
+}
+
 func TestCNOT(t *testing.T) {
 	g0 := matrix.TensorProduct(I().Add(Z()), I())
 	g1 := matrix.TensorProduct(I().Sub(Z()), X())
@@ -35,7 +71,6 @@ func TestCNOT(t *testing.T) {
 	if !CNOT().Equals(CN) {
 		t.Error(CN)
 	}
-
 }
 
 func TestToffoli(t *testing.T) {
@@ -44,11 +79,11 @@ func TestToffoli(t *testing.T) {
 	g[0] = matrix.TensorProduct(I(2), H())
 	g[1] = matrix.TensorProduct(I(), CNOT())
 	g[2] = matrix.TensorProduct(I(2), T().Dagger())
-	g[3] = CNOTc1t3()
+	g[3] = ControlledNot(3, 0, 2)
 	g[4] = matrix.TensorProduct(I(2), T())
 	g[5] = matrix.TensorProduct(I(), CNOT())
 	g[6] = matrix.TensorProduct(I(2), T().Dagger())
-	g[7] = CNOTc1t3()
+	g[7] = ControlledNot(3, 0, 2)
 	g[8] = matrix.TensorProduct(I(), T().Dagger(), T())
 	g[9] = matrix.TensorProduct(CNOT(), H())
 	g[10] = matrix.TensorProduct(I(), T().Dagger(), I())
