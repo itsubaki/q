@@ -186,3 +186,253 @@ func TestQuantumTeleportationPattern2(t *testing.T) {
 		}
 	}
 }
+
+func TestErrorCorrectionZero(t *testing.T) {
+	phi := qubit.Zero()
+	phi.TensorProduct(qubit.Zero(2))
+
+	// encoding
+	phi.Apply(matrix.TensorProduct(gate.CNOT(), gate.I()))
+	phi.Apply(matrix.TensorProduct(gate.ControlledNot(3, 0, 2)))
+
+	// error: first qubit is flipped
+	phi.Apply(matrix.TensorProduct(gate.X(), gate.I(2)))
+
+	// add ancilla qubit
+	phi.TensorProduct(qubit.Zero(2))
+
+	// z1z2
+	c0t3 := matrix.TensorProduct(gate.ControlledNot(4, 0, 3), gate.I())
+	c1t3 := matrix.TensorProduct(gate.I(), gate.ControlledNot(3, 0, 2), gate.I())
+	phi.Apply(c0t3).Apply(c1t3)
+
+	// z2z3
+	c1t4 := matrix.TensorProduct(gate.I(), gate.ControlledNot(4, 0, 3))
+	c2t4 := matrix.TensorProduct(gate.I(2), gate.ControlledNot(3, 0, 2))
+	phi.Apply(c1t4).Apply(c2t4)
+
+	// measure
+	m3 := phi.Measure(3)
+	m4 := phi.Measure(4)
+
+	// recover
+	if m3.IsOne() && m4.IsZero() {
+		phi.Apply(matrix.TensorProduct(gate.X(), gate.I(4)))
+	}
+
+	if m3.IsOne() && m4.IsOne() {
+		phi.Apply(matrix.TensorProduct(gate.I(), gate.X(), gate.I(3)))
+	}
+
+	if m3.IsZero() && m4.IsOne() {
+		phi.Apply(matrix.TensorProduct(gate.I(2), gate.X(), gate.I(2)))
+	}
+
+	// answer is |000>|10>
+	if phi.Probability()[2] != 1 {
+		t.Error(phi.Probability())
+	}
+}
+
+func TestErrorCorrectionOne(t *testing.T) {
+	phi := qubit.One()
+	phi.TensorProduct(qubit.Zero(2))
+
+	// encoding
+	phi.Apply(matrix.TensorProduct(gate.CNOT(), gate.I()))
+	phi.Apply(matrix.TensorProduct(gate.ControlledNot(3, 0, 2)))
+
+	// error: first qubit is flipped
+	phi.Apply(matrix.TensorProduct(gate.X(), gate.I(2)))
+
+	// add ancilla qubit
+	phi.TensorProduct(qubit.Zero(2))
+
+	// z1z2
+	c0t3 := matrix.TensorProduct(gate.ControlledNot(4, 0, 3), gate.I())
+	c1t3 := matrix.TensorProduct(gate.I(), gate.ControlledNot(3, 0, 2), gate.I())
+	phi.Apply(c0t3).Apply(c1t3)
+
+	// z2z3
+	c1t4 := matrix.TensorProduct(gate.I(), gate.ControlledNot(4, 0, 3))
+	c2t4 := matrix.TensorProduct(gate.I(2), gate.ControlledNot(3, 0, 2))
+	phi.Apply(c1t4).Apply(c2t4)
+
+	// measure
+	m3 := phi.Measure(3)
+	m4 := phi.Measure(4)
+
+	// recover
+	if m3.IsOne() && m4.IsZero() {
+		phi.Apply(matrix.TensorProduct(gate.X(), gate.I(4)))
+	}
+
+	if m3.IsOne() && m4.IsOne() {
+		phi.Apply(matrix.TensorProduct(gate.I(), gate.X(), gate.I(3)))
+	}
+
+	if m3.IsZero() && m4.IsOne() {
+		phi.Apply(matrix.TensorProduct(gate.I(2), gate.X(), gate.I(2)))
+	}
+
+	// answer is |111>|10>
+	if phi.Probability()[30] != 1 {
+		t.Error(phi.Probability())
+	}
+}
+
+func TestErrorCorrectionX1(t *testing.T) {
+	phi := qubit.New(1, 2)
+	phi.TensorProduct(qubit.Zero(2))
+
+	// encoding
+	phi.Apply(matrix.TensorProduct(gate.CNOT(), gate.I()))
+	phi.Apply(matrix.TensorProduct(gate.ControlledNot(3, 0, 2)))
+
+	// error: first qubit is flipped
+	phi.Apply(matrix.TensorProduct(gate.X(), gate.I(2)))
+
+	// add ancilla qubit
+	phi.TensorProduct(qubit.Zero(2))
+
+	// z1z2
+	c0t3 := matrix.TensorProduct(gate.ControlledNot(4, 0, 3), gate.I())
+	c1t3 := matrix.TensorProduct(gate.I(), gate.ControlledNot(3, 0, 2), gate.I())
+	phi.Apply(c0t3).Apply(c1t3)
+
+	// z2z3
+	c1t4 := matrix.TensorProduct(gate.I(), gate.ControlledNot(4, 0, 3))
+	c2t4 := matrix.TensorProduct(gate.I(2), gate.ControlledNot(3, 0, 2))
+	phi.Apply(c1t4).Apply(c2t4)
+
+	// measure
+	m3 := phi.Measure(3)
+	m4 := phi.Measure(4)
+
+	// recover
+	if m3.IsOne() && m4.IsZero() {
+		phi.Apply(matrix.TensorProduct(gate.X(), gate.I(4)))
+	}
+
+	if m3.IsOne() && m4.IsOne() {
+		phi.Apply(matrix.TensorProduct(gate.I(), gate.X(), gate.I(3)))
+	}
+
+	if m3.IsZero() && m4.IsOne() {
+		phi.Apply(matrix.TensorProduct(gate.I(2), gate.X(), gate.I(2)))
+	}
+
+	// answer is 0.2|000>|10> + 0.8|111>|10>
+	p := phi.Probability()
+	if p[2]-0.2 > 1e-13 {
+		t.Error(p)
+	}
+
+	if p[30]-0.8 > 1e-13 {
+		t.Error(p)
+	}
+}
+
+func TestErrorCorrectionX2(t *testing.T) {
+	phi := qubit.New(1, 2)
+	phi.TensorProduct(qubit.Zero(2))
+
+	// encoding
+	phi.Apply(matrix.TensorProduct(gate.CNOT(), gate.I()))
+	phi.Apply(matrix.TensorProduct(gate.ControlledNot(3, 0, 2)))
+
+	// error: second qubit is flipped
+	phi.Apply(matrix.TensorProduct(gate.I(), gate.X(), gate.I()))
+
+	// add ancilla qubit
+	phi.TensorProduct(qubit.Zero(2))
+
+	// z1z2
+	c0t3 := matrix.TensorProduct(gate.ControlledNot(4, 0, 3), gate.I())
+	c1t3 := matrix.TensorProduct(gate.I(), gate.ControlledNot(3, 0, 2), gate.I())
+	phi.Apply(c0t3).Apply(c1t3)
+
+	// z2z3
+	c1t4 := matrix.TensorProduct(gate.I(), gate.ControlledNot(4, 0, 3))
+	c2t4 := matrix.TensorProduct(gate.I(2), gate.ControlledNot(3, 0, 2))
+	phi.Apply(c1t4).Apply(c2t4)
+
+	// measure
+	m3 := phi.Measure(3)
+	m4 := phi.Measure(4)
+
+	// recover
+	if m3.IsOne() && m4.IsZero() {
+		phi.Apply(matrix.TensorProduct(gate.X(), gate.I(4)))
+	}
+
+	if m3.IsOne() && m4.IsOne() {
+		phi.Apply(matrix.TensorProduct(gate.I(), gate.X(), gate.I(3)))
+	}
+
+	if m3.IsZero() && m4.IsOne() {
+		phi.Apply(matrix.TensorProduct(gate.I(2), gate.X(), gate.I(2)))
+	}
+
+	// answer is 0.2|000>|10> + 0.8|111>|10>
+	p := phi.Probability()
+	if p[2]-0.2 > 1e-13 {
+		t.Error(p)
+	}
+
+	if p[30]-0.8 > 1e-13 {
+		t.Error(p)
+	}
+}
+
+func TestErrorCorrectionX3(t *testing.T) {
+	phi := qubit.New(1, 2)
+	phi.TensorProduct(qubit.Zero(2))
+
+	// encoding
+	phi.Apply(matrix.TensorProduct(gate.CNOT(), gate.I()))
+	phi.Apply(matrix.TensorProduct(gate.ControlledNot(3, 0, 2)))
+
+	// error: third qubit is flipped
+	phi.Apply(matrix.TensorProduct(gate.I(), gate.I(), gate.X()))
+
+	// add ancilla qubit
+	phi.TensorProduct(qubit.Zero(2))
+
+	// z1z2
+	c0t3 := matrix.TensorProduct(gate.ControlledNot(4, 0, 3), gate.I())
+	c1t3 := matrix.TensorProduct(gate.I(), gate.ControlledNot(3, 0, 2), gate.I())
+	phi.Apply(c0t3).Apply(c1t3)
+
+	// z2z3
+	c1t4 := matrix.TensorProduct(gate.I(), gate.ControlledNot(4, 0, 3))
+	c2t4 := matrix.TensorProduct(gate.I(2), gate.ControlledNot(3, 0, 2))
+	phi.Apply(c1t4).Apply(c2t4)
+
+	// measure
+	m3 := phi.Measure(3)
+	m4 := phi.Measure(4)
+
+	// recover
+	if m3.IsOne() && m4.IsZero() {
+		phi.Apply(matrix.TensorProduct(gate.X(), gate.I(4)))
+	}
+
+	if m3.IsOne() && m4.IsOne() {
+		phi.Apply(matrix.TensorProduct(gate.I(), gate.X(), gate.I(3)))
+	}
+
+	if m3.IsZero() && m4.IsOne() {
+		phi.Apply(matrix.TensorProduct(gate.I(2), gate.X(), gate.I(2)))
+	}
+
+	// answer is 0.2|000>|10> + 0.8|111>|10>
+	p := phi.Probability()
+	if p[2]-0.2 > 1e-13 {
+		t.Error(p)
+	}
+
+	if p[30]-0.8 > 1e-13 {
+		t.Error(p)
+	}
+}
