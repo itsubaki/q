@@ -40,6 +40,10 @@ func (q *Qubit) IsOne(eps ...float64) bool {
 	return q.Equals(One(), eps...)
 }
 
+func (q *Qubit) Clone() *Qubit {
+	return &Qubit{q.v.Clone()}
+}
+
 func (q *Qubit) Fidelity(q0 *Qubit) float64 {
 	p0 := q0.Probability()
 	p1 := q.Probability()

@@ -24,6 +24,14 @@ func NewZero(n int) Vector {
 	return v
 }
 
+func (v0 Vector) Clone() Vector {
+	clone := Vector{}
+	for i := 0; i < len(v0); i++ {
+		clone = append(clone, v0[i])
+	}
+	return clone
+}
+
 func (v0 Vector) Dual() Vector {
 	dual := Vector{}
 	for i := 0; i < len(v0); i++ {
