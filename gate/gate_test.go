@@ -27,7 +27,7 @@ func TestSwap(t *testing.T) {
 	}
 }
 
-func TestCz(t *testing.T) {
+func TestControlledZ(t *testing.T) {
 	expected := make(matrix.Matrix, 8)
 	expected[0] = []complex128{1, 0, 0, 0, 0, 0, 0, 0}
 	expected[1] = []complex128{0, 1, 0, 0, 0, 0, 0, 0}
@@ -45,7 +45,7 @@ func TestCz(t *testing.T) {
 	}
 }
 
-func TestCnot(t *testing.T) {
+func TestControlledNot(t *testing.T) {
 	expected := make(matrix.Matrix, 8)
 	expected[0] = []complex128{1, 0, 0, 0, 0, 0, 0, 0}
 	expected[1] = []complex128{0, 1, 0, 0, 0, 0, 0, 0}
@@ -90,13 +90,14 @@ func TestToffoli(t *testing.T) {
 	g[11] = matrix.TensorProduct(CNOT(), I())
 	g[12] = matrix.TensorProduct(T(), S(), I())
 
-	toffoli := I(3)
+	expected := I(3)
 	for _, gate := range g {
-		toffoli = toffoli.Apply(gate)
+		expected = expected.Apply(gate)
 	}
 
-	if !CNOT(3).Equals(toffoli, 1e-13) {
-		t.Error(toffoli)
+	actual := Toffoli()
+	if !actual.Equals(expected, 1e-13) {
+		t.Error(actual)
 	}
 }
 
@@ -140,7 +141,6 @@ func TestIsUnitary(t *testing.T) {
 	if !u.IsUnitary(1e-13) {
 		t.Error(u)
 	}
-
 }
 
 func TestTrace(t *testing.T) {
@@ -195,4 +195,7 @@ func TensorProductProductXXY(t *testing.T) {
 	fmt.Printf("%v %v %v %v %v %v %v %v\n", tmp[12][0][0], tmp[12][0][1], tmp[13][0][0], tmp[13][0][1], tmp[14][0][0], tmp[14][0][1], tmp[15][0][0], tmp[15][0][1])
 	fmt.Printf("%v %v %v %v %v %v %v %v\n", tmp[12][1][0], tmp[12][1][1], tmp[13][1][0], tmp[13][1][1], tmp[14][1][0], tmp[14][1][1], tmp[15][1][0], tmp[15][1][1])
 	fmt.Println()
+}
+func TestQFT(t *testing.T) {
+	QFT()
 }

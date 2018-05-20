@@ -135,6 +135,10 @@ func CNOT(bit ...int) matrix.Matrix {
 	return m
 }
 
+func Toffoli() matrix.Matrix {
+	return CNOT(3)
+}
+
 func ControlledNot(bit, c, t int) matrix.Matrix {
 	m := I([]int{bit}...)
 	dim := len(m)
@@ -145,8 +149,8 @@ func ControlledNot(bit, c, t int) matrix.Matrix {
 		s := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
 
 		bits := []string{}
-		for j := 0; j < bit; j++ {
-			bits = append(bits, s[j:j+1])
+		for _, b := range s {
+			bits = append(bits, string(b))
 		}
 
 		// Apply X
@@ -183,8 +187,8 @@ func ControlledZ(bit, c, t int) matrix.Matrix {
 		s := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
 
 		bits := []string{}
-		for j := 0; j < bit; j++ {
-			bits = append(bits, s[j:j+1])
+		for _, b := range s {
+			bits = append(bits, string(b))
 		}
 
 		// Apply Z
@@ -213,23 +217,18 @@ func Fredkin() matrix.Matrix {
 
 func QFT() matrix.Matrix {
 	m := make(matrix.Matrix, 8)
+	o := []complex128{}
+	for i := 0; i < 8; i++ {
+		o = append(o, cmplx.Pow(cmplx.Sqrt(1i), complex(float64(i), 0)))
+	}
 
-	o0 := complex(1, 0)
-	o1 := cmplx.Sqrt(1i)
-	o2 := cmplx.Pow(o1, 2)
-	o3 := cmplx.Pow(o1, 3)
-	o4 := cmplx.Pow(o1, 4)
-	o5 := cmplx.Pow(o1, 5)
-	o6 := cmplx.Pow(o1, 6)
-	o7 := cmplx.Pow(o1, 7)
-
-	m[0] = []complex128{o0, o0, o0, o0, o0, o0, o0, o0}
-	m[1] = []complex128{o0, o1, o2, o3, o4, o5, o6, o7}
-	m[2] = []complex128{o0, o2, o4, o6, o0, o2, o4, o6}
-	m[3] = []complex128{o0, o3, o6, o1, o4, o7, o2, o5}
-	m[4] = []complex128{o0, o4, o0, o4, o0, o4, o0, o4}
-	m[5] = []complex128{o0, o5, o2, o7, o4, o1, o6, o3}
-	m[6] = []complex128{o0, o6, o4, o2, o0, o6, o4, o2}
-	m[7] = []complex128{o0, o7, o6, o5, o4, o3, o2, o1}
+	m[0] = []complex128{o[0], o[0], o[0], o[0], o[0], o[0], o[0], o[0]}
+	m[1] = []complex128{o[0], o[1], o[2], o[3], o[4], o[5], o[6], o[7]}
+	m[2] = []complex128{o[0], o[2], o[4], o[6], o[0], o[2], o[4], o[6]}
+	m[3] = []complex128{o[0], o[3], o[6], o[1], o[4], o[7], o[2], o[5]}
+	m[4] = []complex128{o[0], o[4], o[0], o[4], o[0], o[4], o[0], o[4]}
+	m[5] = []complex128{o[0], o[5], o[2], o[7], o[4], o[1], o[6], o[3]}
+	m[6] = []complex128{o[0], o[6], o[4], o[2], o[0], o[6], o[4], o[2]}
+	m[7] = []complex128{o[0], o[7], o[6], o[5], o[4], o[3], o[2], o[1]}
 	return m.Mul(complex(1/math.Sqrt(8), 0))
 }
