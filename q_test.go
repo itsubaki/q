@@ -189,9 +189,9 @@ func TestQuantumTeleportationPattern2(t *testing.T) {
 
 func TestErrorCorrectionZero(t *testing.T) {
 	phi := qubit.Zero()
-	phi.TensorProduct(qubit.Zero(2))
 
 	// encoding
+	phi.TensorProduct(qubit.Zero(2))
 	phi.Apply(matrix.TensorProduct(gate.CNOT(), gate.I()))
 	phi.Apply(matrix.TensorProduct(gate.ControlledNot(3, 0, 2)))
 
@@ -236,9 +236,9 @@ func TestErrorCorrectionZero(t *testing.T) {
 
 func TestErrorCorrectionOne(t *testing.T) {
 	phi := qubit.One()
-	phi.TensorProduct(qubit.Zero(2))
 
 	// encoding
+	phi.TensorProduct(qubit.Zero(2))
 	phi.Apply(matrix.TensorProduct(gate.CNOT(), gate.I()))
 	phi.Apply(matrix.TensorProduct(gate.ControlledNot(3, 0, 2)))
 
@@ -281,11 +281,11 @@ func TestErrorCorrectionOne(t *testing.T) {
 	}
 }
 
-func TestErrorCorrectionX1(t *testing.T) {
+func TestErrorCorrectionBitFlip1(t *testing.T) {
 	phi := qubit.New(1, 2)
-	phi.TensorProduct(qubit.Zero(2))
 
 	// encoding
+	phi.TensorProduct(qubit.Zero(2))
 	phi.Apply(matrix.TensorProduct(gate.CNOT(), gate.I()))
 	phi.Apply(matrix.TensorProduct(gate.ControlledNot(3, 0, 2)))
 
@@ -333,11 +333,11 @@ func TestErrorCorrectionX1(t *testing.T) {
 	}
 }
 
-func TestErrorCorrectionX2(t *testing.T) {
+func TestErrorCorrectionBitFlip2(t *testing.T) {
 	phi := qubit.New(1, 2)
-	phi.TensorProduct(qubit.Zero(2))
 
 	// encoding
+	phi.TensorProduct(qubit.Zero(2))
 	phi.Apply(matrix.TensorProduct(gate.CNOT(), gate.I()))
 	phi.Apply(matrix.TensorProduct(gate.ControlledNot(3, 0, 2)))
 
@@ -385,11 +385,11 @@ func TestErrorCorrectionX2(t *testing.T) {
 	}
 }
 
-func TestErrorCorrectionX3(t *testing.T) {
+func TestErrorCorrectionBitFlip3(t *testing.T) {
 	phi := qubit.New(1, 2)
-	phi.TensorProduct(qubit.Zero(2))
 
 	// encoding
+	phi.TensorProduct(qubit.Zero(2))
 	phi.Apply(matrix.TensorProduct(gate.CNOT(), gate.I()))
 	phi.Apply(matrix.TensorProduct(gate.ControlledNot(3, 0, 2)))
 
