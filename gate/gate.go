@@ -5,7 +5,6 @@ import (
 	"math"
 	"math/cmplx"
 	"strconv"
-	"strings"
 
 	"github.com/itsubaki/q/matrix"
 )
@@ -147,22 +146,18 @@ func ControlledNot(bit, c, t int) matrix.Matrix {
 	f := "%0" + strconv.Itoa(bit) + "s"
 	for i := 0; i < dim; i++ {
 		s := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
-
-		bits := []string{}
-		for _, b := range s {
-			bits = append(bits, string(b))
-		}
+		bits := []rune(s)
 
 		// Apply X
-		if bits[c] == "1" {
-			if bits[t] == "1" {
-				bits[t] = "0"
-			} else if bits[t] == "0" {
-				bits[t] = "1"
+		if bits[c] == '1' {
+			if bits[t] == '1' {
+				bits[t] = '0'
+			} else if bits[t] == '0' {
+				bits[t] = '1'
 			}
 		}
 
-		v, err := strconv.ParseInt(strings.Join(bits, ""), 2, 0)
+		v, err := strconv.ParseInt(string(bits), 2, 0)
 		if err != nil {
 			panic(err)
 		}
@@ -185,14 +180,9 @@ func ControlledZ(bit, c, t int) matrix.Matrix {
 	f := "%0" + strconv.Itoa(bit) + "s"
 	for i := 0; i < dim; i++ {
 		s := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
-
-		bits := []string{}
-		for _, b := range s {
-			bits = append(bits, string(b))
-		}
-
+		bits := []rune(s)
 		// Apply Z
-		if bits[c] == "1" && bits[t] == "1" {
+		if bits[c] == '1' && bits[t] == '1' {
 			for j := 0; j < dim; j++ {
 				m[i][j] = complex(-1, 0) * m[i][j]
 			}
