@@ -8,19 +8,82 @@ import (
 	"github.com/itsubaki/q/qubit"
 )
 
-func TestQ(t *testing.T) {
-
-	q0 := qubit.Zero()
-	q1 := qubit.Zero()
-
+func TestQBellstate(t *testing.T) {
 	q := New()
-	q.Add(q0, q1)
+
+	q0 := q.Zero()
+	q1 := q.Zero()
 
 	q.H(q0)
 	q.CNOT(q0, q1)
 
-	q.Measure(q0, q1)
 	q.Probability()
+}
+
+func TestQQuantumTeleportation(t *testing.T) {
+	q := New()
+
+	phi := q.New(1, 2)
+	q0 := q.Zero()
+	q1 := q.Zero()
+
+	q.H(q0)
+	q.CNOT(q0, q1)
+
+	q.CNOT(phi, q0)
+	q.H(phi)
+
+	mz := q.Measure(phi)
+	mx := q.Measure(q0)
+
+	if mz.IsOne() {
+		q.Z(q1)
+	}
+
+	if mx.IsOne() {
+		q.X(q1)
+	}
+
+	var test = []struct {
+		zero int
+		one  int
+		zval qubit.Probability
+		oval qubit.Probability
+		eps  qubit.Probability
+		mz   *qubit.Qubit
+		mx   *qubit.Qubit
+	}{
+		{0, 1, 0.2, 0.8, 1e-13, qubit.Zero(), qubit.Zero()},
+		{2, 3, 0.2, 0.8, 1e-13, qubit.Zero(), qubit.One()},
+		{4, 5, 0.2, 0.8, 1e-13, qubit.One(), qubit.Zero()},
+		{6, 7, 0.2, 0.8, 1e-13, qubit.One(), qubit.One()},
+	}
+
+	p := q.Probability()
+	for _, tt := range test {
+		if p[tt.zero] == 0 {
+			continue
+		}
+
+		if p[tt.zero]-tt.zval > tt.eps {
+			t.Error(p)
+		}
+		if p[tt.one]-tt.oval > tt.eps {
+			t.Error(p)
+		}
+
+		if !mz.Equals(tt.mz) {
+			t.Error(p)
+		}
+
+		if !mx.Equals(tt.mx) {
+			t.Error(p)
+		}
+
+		if qubit.Sum(p)-1 > tt.eps {
+			t.Error(p)
+		}
+	}
 }
 
 func TestGrover3qubit(t *testing.T) {
@@ -83,7 +146,7 @@ func TestQuantumTeleportation(t *testing.T) {
 	phi := qubit.New(1, 2)
 	phi.TensorProduct(bell)
 
-	g2 := matrix.TensorProduct(gate.CNOT(3, 0, 1))
+	g2 := gate.CNOT(3, 0, 1)
 	g3 := matrix.TensorProduct(gate.H(), gate.I(2))
 	phi.Apply(g2).Apply(g3)
 
@@ -150,9 +213,9 @@ func TestQuantumTeleportationPattern2(t *testing.T) {
 	phi := qubit.New(1, 2)
 	phi.TensorProduct(bell)
 
-	g2 := matrix.TensorProduct(gate.CNOT(3, 0, 1))
+	g2 := gate.CNOT(3, 0, 1)
 	g3 := matrix.TensorProduct(gate.H(), gate.I(2))
-	g4 := matrix.TensorProduct(gate.CNOT(3, 1, 2))
+	g4 := gate.CNOT(3, 1, 2)
 	g5 := gate.CZ(3, 0, 2)
 
 	phi.Apply(g2).Apply(g3).Apply(g4).Apply(g5)
@@ -207,8 +270,8 @@ func TestErrorCorrectionZero(t *testing.T) {
 
 	// encoding
 	phi.TensorProduct(qubit.Zero(2))
-	phi.Apply(matrix.TensorProduct(gate.CNOT(3, 0, 1)))
-	phi.Apply(matrix.TensorProduct(gate.CNOT(3, 0, 2)))
+	phi.Apply(gate.CNOT(3, 0, 1))
+	phi.Apply(gate.CNOT(3, 0, 2))
 
 	// error: first qubit is flipped
 	phi.Apply(matrix.TensorProduct(gate.X(), gate.I(2)))

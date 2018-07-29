@@ -7,6 +7,14 @@ import (
 	"github.com/itsubaki/q/matrix"
 )
 
+func TestNum(t *testing.T) {
+	for i := 1; i < 10; i++ {
+		if Zero(i).NumberOfBit() != i {
+			t.Fail()
+		}
+	}
+}
+
 func TestIs(t *testing.T) {
 	if !Zero().IsZero() {
 		t.Fail()
@@ -77,7 +85,7 @@ func TestQubit(t *testing.T) {
 
 func TestBellState(t *testing.T) {
 	g0 := matrix.TensorProduct(gate.H(), gate.I())
-	g1 := gate.CNOT()
+	g1 := gate.CNOT(2, 0, 1)
 
 	bell := Zero(2).Apply(g0.Apply(g1))
 
