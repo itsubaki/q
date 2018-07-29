@@ -97,7 +97,7 @@ func Swap(bit ...int) matrix.Matrix {
 
 // CZ(2) -> Controlled-Z
 // CZ(3) -> Contrlled-Controlled-Z
-func CZ(bit ...int) matrix.Matrix {
+func ControlledZ(bit ...int) matrix.Matrix {
 	if len(bit) < 1 {
 		bit = []int{2}
 	}
@@ -109,7 +109,7 @@ func CZ(bit ...int) matrix.Matrix {
 	return m
 }
 
-func CS(bit ...int) matrix.Matrix {
+func ControlledS(bit ...int) matrix.Matrix {
 	if len(bit) < 1 {
 		bit = []int{2}
 	}
@@ -122,7 +122,7 @@ func CS(bit ...int) matrix.Matrix {
 }
 
 // CNOT(3) -> Toffoli (Controlled-Controlled-NOT)
-func CNOT(bit ...int) matrix.Matrix {
+func ControlledNot(bit ...int) matrix.Matrix {
 	if len(bit) < 1 {
 		bit = []int{2}
 	}
@@ -135,10 +135,10 @@ func CNOT(bit ...int) matrix.Matrix {
 }
 
 func Toffoli() matrix.Matrix {
-	return CNOT(3)
+	return ControlledNot(3)
 }
 
-func ControlledNot(bit, c, t int) matrix.Matrix {
+func CNOT(bit, c, t int) matrix.Matrix {
 	m := I([]int{bit}...)
 	dim := len(m)
 
@@ -173,7 +173,7 @@ func ControlledNot(bit, c, t int) matrix.Matrix {
 	return cnot
 }
 
-func ControlledZ(bit, c, t int) matrix.Matrix {
+func CZ(bit, c, t int) matrix.Matrix {
 	m := I([]int{bit}...)
 	dim := len(m)
 
