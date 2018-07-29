@@ -62,13 +62,13 @@ func TestGrover2qubit(t *testing.T) {
 
 func TestQuantumTeleportation(t *testing.T) {
 	g0 := matrix.TensorProduct(gate.H(), gate.I())
-	g1 := gate.ControlledNot()
+	g1 := gate.CNOT(2, 0, 1)
 	bell := qubit.Zero(2).Apply(g0).Apply(g1)
 
 	phi := qubit.New(1, 2)
 	phi.TensorProduct(bell)
 
-	g2 := matrix.TensorProduct(gate.ControlledNot(), gate.I())
+	g2 := matrix.TensorProduct(gate.CNOT(3, 0, 1))
 	g3 := matrix.TensorProduct(gate.H(), gate.I(2))
 	phi.Apply(g2).Apply(g3)
 
@@ -135,10 +135,10 @@ func TestQuantumTeleportationPattern2(t *testing.T) {
 	phi := qubit.New(1, 2)
 	phi.TensorProduct(bell)
 
-	g2 := matrix.TensorProduct(gate.ControlledNot(), gate.I())
+	g2 := matrix.TensorProduct(gate.CNOT(3, 0, 1))
 	g3 := matrix.TensorProduct(gate.H(), gate.I(2))
-	g4 := matrix.TensorProduct(gate.I(), gate.CNOT(2, 0, 1))
-	g5 := gate.ControlledZ(3, 0, 2)
+	g4 := matrix.TensorProduct(gate.CNOT(3, 1, 2))
+	g5 := gate.CZ(3, 0, 2)
 
 	phi.Apply(g2).Apply(g3).Apply(g4).Apply(g5)
 
@@ -192,7 +192,7 @@ func TestErrorCorrectionZero(t *testing.T) {
 
 	// encoding
 	phi.TensorProduct(qubit.Zero(2))
-	phi.Apply(matrix.TensorProduct(gate.CNOT(2, 0, 1), gate.I()))
+	phi.Apply(matrix.TensorProduct(gate.CNOT(3, 0, 1)))
 	phi.Apply(matrix.TensorProduct(gate.CNOT(3, 0, 2)))
 
 	// error: first qubit is flipped
@@ -202,14 +202,10 @@ func TestErrorCorrectionZero(t *testing.T) {
 	phi.TensorProduct(qubit.Zero(2))
 
 	// z1z2
-	c0t3 := matrix.TensorProduct(gate.CNOT(4, 0, 3), gate.I())
-	c1t3 := matrix.TensorProduct(gate.I(), gate.CNOT(3, 0, 2), gate.I())
-	phi.Apply(c0t3).Apply(c1t3)
+	phi.Apply(gate.CNOT(5, 0, 3)).Apply(gate.CNOT(5, 1, 3))
 
 	// z2z3
-	c1t4 := matrix.TensorProduct(gate.I(), gate.CNOT(4, 0, 3))
-	c2t4 := matrix.TensorProduct(gate.I(2), gate.CNOT(3, 0, 2))
-	phi.Apply(c1t4).Apply(c2t4)
+	phi.Apply(gate.CNOT(5, 1, 4)).Apply(gate.CNOT(5, 2, 4))
 
 	// measure
 	m3 := phi.Measure(3)
@@ -239,8 +235,8 @@ func TestErrorCorrectionOne(t *testing.T) {
 
 	// encoding
 	phi.TensorProduct(qubit.Zero(2))
-	phi.Apply(matrix.TensorProduct(gate.CNOT(2, 0, 1), gate.I()))
-	phi.Apply(matrix.TensorProduct(gate.CNOT(3, 0, 2)))
+	phi.Apply(gate.CNOT(3, 0, 1))
+	phi.Apply(gate.CNOT(3, 0, 2))
 
 	// error: first qubit is flipped
 	phi.Apply(matrix.TensorProduct(gate.X(), gate.I(2)))
@@ -249,14 +245,10 @@ func TestErrorCorrectionOne(t *testing.T) {
 	phi.TensorProduct(qubit.Zero(2))
 
 	// z1z2
-	c0t3 := matrix.TensorProduct(gate.CNOT(4, 0, 3), gate.I())
-	c1t3 := matrix.TensorProduct(gate.I(), gate.CNOT(3, 0, 2), gate.I())
-	phi.Apply(c0t3).Apply(c1t3)
+	phi.Apply(gate.CNOT(5, 0, 3)).Apply(gate.CNOT(5, 1, 3))
 
 	// z2z3
-	c1t4 := matrix.TensorProduct(gate.I(), gate.CNOT(4, 0, 3))
-	c2t4 := matrix.TensorProduct(gate.I(2), gate.CNOT(3, 0, 2))
-	phi.Apply(c1t4).Apply(c2t4)
+	phi.Apply(gate.CNOT(5, 1, 4)).Apply(gate.CNOT(5, 2, 4))
 
 	// measure
 	m3 := phi.Measure(3)
@@ -286,8 +278,8 @@ func TestErrorCorrectionBitFlip1(t *testing.T) {
 
 	// encoding
 	phi.TensorProduct(qubit.Zero(2))
-	phi.Apply(matrix.TensorProduct(gate.CNOT(2, 0, 1), gate.I()))
-	phi.Apply(matrix.TensorProduct(gate.CNOT(3, 0, 2)))
+	phi.Apply(gate.CNOT(3, 0, 1))
+	phi.Apply(gate.CNOT(3, 0, 2))
 
 	// error: first qubit is flipped
 	phi.Apply(matrix.TensorProduct(gate.X(), gate.I(2)))
@@ -296,14 +288,10 @@ func TestErrorCorrectionBitFlip1(t *testing.T) {
 	phi.TensorProduct(qubit.Zero(2))
 
 	// z1z2
-	c0t3 := matrix.TensorProduct(gate.CNOT(4, 0, 3), gate.I())
-	c1t3 := matrix.TensorProduct(gate.I(), gate.CNOT(3, 0, 2), gate.I())
-	phi.Apply(c0t3).Apply(c1t3)
+	phi.Apply(gate.CNOT(5, 0, 3)).Apply(gate.CNOT(5, 1, 3))
 
 	// z2z3
-	c1t4 := matrix.TensorProduct(gate.I(), gate.CNOT(4, 0, 3))
-	c2t4 := matrix.TensorProduct(gate.I(2), gate.CNOT(3, 0, 2))
-	phi.Apply(c1t4).Apply(c2t4)
+	phi.Apply(gate.CNOT(5, 1, 4)).Apply(gate.CNOT(5, 2, 4))
 
 	// measure
 	m3 := phi.Measure(3)
@@ -338,8 +326,8 @@ func TestErrorCorrectionBitFlip2(t *testing.T) {
 
 	// encoding
 	phi.TensorProduct(qubit.Zero(2))
-	phi.Apply(matrix.TensorProduct(gate.CNOT(2, 0, 1), gate.I()))
-	phi.Apply(matrix.TensorProduct(gate.CNOT(3, 0, 2)))
+	phi.Apply(gate.CNOT(3, 0, 1))
+	phi.Apply(gate.CNOT(3, 0, 2))
 
 	// error: second qubit is flipped
 	phi.Apply(matrix.TensorProduct(gate.I(), gate.X(), gate.I()))
@@ -348,14 +336,10 @@ func TestErrorCorrectionBitFlip2(t *testing.T) {
 	phi.TensorProduct(qubit.Zero(2))
 
 	// z1z2
-	c0t3 := matrix.TensorProduct(gate.CNOT(4, 0, 3), gate.I())
-	c1t3 := matrix.TensorProduct(gate.I(), gate.CNOT(3, 0, 2), gate.I())
-	phi.Apply(c0t3).Apply(c1t3)
+	phi.Apply(gate.CNOT(5, 0, 3)).Apply(gate.CNOT(5, 1, 3))
 
 	// z2z3
-	c1t4 := matrix.TensorProduct(gate.I(), gate.CNOT(4, 0, 3))
-	c2t4 := matrix.TensorProduct(gate.I(2), gate.CNOT(3, 0, 2))
-	phi.Apply(c1t4).Apply(c2t4)
+	phi.Apply(gate.CNOT(5, 1, 4)).Apply(gate.CNOT(5, 2, 4))
 
 	// measure
 	m3 := phi.Measure(3)
@@ -390,8 +374,8 @@ func TestErrorCorrectionBitFlip3(t *testing.T) {
 
 	// encoding
 	phi.TensorProduct(qubit.Zero(2))
-	phi.Apply(matrix.TensorProduct(gate.CNOT(2, 0, 1), gate.I()))
-	phi.Apply(matrix.TensorProduct(gate.CNOT(3, 0, 2)))
+	phi.Apply(gate.CNOT(3, 0, 1))
+	phi.Apply(gate.CNOT(3, 0, 2))
 
 	// error: third qubit is flipped
 	phi.Apply(matrix.TensorProduct(gate.I(), gate.I(), gate.X()))
@@ -400,14 +384,10 @@ func TestErrorCorrectionBitFlip3(t *testing.T) {
 	phi.TensorProduct(qubit.Zero(2))
 
 	// z1z2
-	c0t3 := matrix.TensorProduct(gate.CNOT(4, 0, 3), gate.I())
-	c1t3 := matrix.TensorProduct(gate.I(), gate.CNOT(3, 0, 2), gate.I())
-	phi.Apply(c0t3).Apply(c1t3)
+	phi.Apply(gate.CNOT(5, 0, 3)).Apply(gate.CNOT(5, 1, 3))
 
 	// z2z3
-	c1t4 := matrix.TensorProduct(gate.I(), gate.CNOT(4, 0, 3))
-	c2t4 := matrix.TensorProduct(gate.I(2), gate.CNOT(3, 0, 2))
-	phi.Apply(c1t4).Apply(c2t4)
+	phi.Apply(gate.CNOT(5, 1, 4)).Apply(gate.CNOT(5, 2, 4))
 
 	// measure
 	m3 := phi.Measure(3)
@@ -442,8 +422,8 @@ func TestErrorCorrectionPhaseFlip1(t *testing.T) {
 
 	// encoding
 	phi.TensorProduct(qubit.Zero(2))
-	phi.Apply(matrix.TensorProduct(gate.CNOT(2, 0, 1), gate.I()))
-	phi.Apply(matrix.TensorProduct(gate.CNOT(3, 0, 2)))
+	phi.Apply(gate.CNOT(3, 0, 1))
+	phi.Apply(gate.CNOT(3, 0, 2))
 	phi.Apply(gate.H(3))
 
 	// error: first qubit is flipped
@@ -456,14 +436,10 @@ func TestErrorCorrectionPhaseFlip1(t *testing.T) {
 	phi.TensorProduct(qubit.Zero(2))
 
 	// x1x2
-	c0t3 := matrix.TensorProduct(gate.CNOT(4, 0, 3), gate.I())
-	c1t3 := matrix.TensorProduct(gate.I(), gate.CNOT(3, 0, 2), gate.I())
-	phi.Apply(c0t3).Apply(c1t3)
+	phi.Apply(gate.CNOT(5, 0, 3)).Apply(gate.CNOT(5, 1, 3))
 
 	// x2x3
-	c1t4 := matrix.TensorProduct(gate.I(), gate.CNOT(4, 0, 3))
-	c2t4 := matrix.TensorProduct(gate.I(2), gate.CNOT(3, 0, 2))
-	phi.Apply(c1t4).Apply(c2t4)
+	phi.Apply(gate.CNOT(5, 1, 4)).Apply(gate.CNOT(5, 2, 4))
 
 	// H
 	phi.Apply(matrix.TensorProduct(gate.H(3), gate.I(2)))
