@@ -17,7 +17,29 @@ func TestQBellstate(t *testing.T) {
 	q.H(q0)
 	q.CNOT(q0, q1)
 
-	q.Probability()
+	p := q.Probability()
+	var test = []struct {
+		zero int
+		one  int
+		val  qubit.Probability
+		eps  qubit.Probability
+	}{
+		{0, 2, 0.5, 1e-13},
+	}
+
+	for _, tt := range test {
+		if p[tt.zero]-tt.val > tt.eps {
+			t.Error(p)
+		}
+
+		if p[tt.one]-tt.val > tt.eps {
+			t.Error(p)
+		}
+
+		if qubit.Sum(p)-1 > tt.eps {
+			t.Error(p)
+		}
+	}
 }
 
 func TestQQuantumTeleportation(t *testing.T) {
