@@ -32,6 +32,12 @@ func One(bit ...int) *Qubit {
 	return &Qubit{v.Tensor(v.Vector{0, 1}, bit...)}
 }
 
+func (q *Qubit) NumberOfBit() int {
+	l := len(q.Probability())
+	log := math.Log2(float64(l))
+	return int(log)
+}
+
 func (q *Qubit) IsZero(eps ...float64) bool {
 	return q.Equals(Zero(), eps...)
 }
