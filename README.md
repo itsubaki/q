@@ -2,8 +2,57 @@
 
  - quantum computation simulator
 
+# example
 
-# linear algebra
+## bell state
+
+```golang
+qsim := q.New()
+
+// generate qubits of |0>|0>
+q0 := qsim.Zero()
+q1 := qsim.Zero()
+
+// apply quantum circuit of bell state
+qsim.H(q0).CNOT(q0, q1)
+
+qsim.Probability()
+// -> (1, 0, 0, 0) or (0, 0, 0, 1)
+```
+
+## quantum teleportation
+
+```golang
+qsim := q.New()
+
+// generate qubits of |phi>|0>|0>
+phi := qsim.New(1, 2) // arbitrary state
+q0 := qsim.Zero()
+q1 := qsim.Zero()
+
+qsim.H(q0).CNOT(q0, q1) // bell state
+qsim.CNOT(phi, q0).H(phi)
+
+// Alice send mz, mx to Bob
+mz := qsim.Measure(phi)
+mx := qsim.Measure(q0)
+
+// Bob Apply Z and X
+qsim.ConditionZ(mz.IsOne(), q1)
+qsim.ConditionX(mx.IsOne(), q1)
+
+// Bob got phi state
+qsim.Probability()
+// One of the following:
+// (0.2, 0.8, 0, 0, 0, 0, 0, 0)
+// (0, 0, 0.2, 0.8, 0, 0, 0, 0)
+// (0, 0, 0, 0, 0.2, 0.8, 0, 0)
+// (0, 0, 0, 0, 0, 0, 0.2, 0.8)
+```
+
+# internal
+
+## linear algebra
 
 ```golang
 v0 := vector.New(1, 1)
@@ -29,19 +78,23 @@ x2 := x.TensorProduct(x)
 v1.Apply(x2) // -> Vector{0, 0, 0, 1}
 ```
 
-# quantum computation
+## quantum computation
 
-## qubit
+### qubit
 
 ```golang
-q := qubit.Zero()  // -> |0>
-q.Apply(gate.H()) // -> 1/Sqrt(2) * (|0> + |1>)
-q.Probability()   // -> (0.5, 0.5)
+q := qubit.Zero() // -> |0>
+q.Apply(gate.H())
+// -> 1/Sqrt(2) * (|0> + |1>)
+q.Probability()
+// -> (0.5, 0.5)
+
 q.Measure()
-q.Probability()   // -> (1, 0) or (0, 1)
+q.Probability()
+// -> (1, 0) or (0, 1)
 ```
 
-## quantum circuit
+### quantum circuit
 
 ```golang
 # bell state
@@ -49,14 +102,15 @@ q := qubit.New(1, 0, 0, 0)
 g0 := gate.H().TensorProduct(gate.I())
 g1 := gate.CNOT()
 
-bell := q.Apply(g0).Apply(g1)// -> 1/Sqrt(2) * (|00> + |11>)
-// bell := q.Apply(g0.Apply(g1))
+bell := q.Apply(g0).Apply(g1)
+// -> 1/Sqrt(2) * (|00> + |11>)
 
 bell.Measure()
-bell.Probability() // -> (1, 0, 0, 0) or (0, 0, 0, 1)
+bell.Probability()
+// -> (1, 0, 0, 0) or (0, 0, 0, 1)
 ```
 
-## quantum teleportation
+### quantum teleportation
 
 ```golang
 g0 := gate.H().TensorProduct(gate.I())
@@ -75,7 +129,7 @@ phi.Apply(g2).Apply(g3)
 mz := phi.Measure(0)
 mx := phi.Measure(1)
 
-// Alice send mx, mx to Bob
+// Alice send mz, mx to Bob
 // Bob Apply Z and X
 if mz.IsOne() {
   z := gate.I(2).TensorProduct(gate.Z())
@@ -96,7 +150,7 @@ phi.Probability()
 // (0, 0, 0, 0, 0, 0, 0.2, 0.8)
 ```
 
-## Grover's search algorithm
+### Grover's search algorithm
 
 ```golang
 x := matrix.TensorProduct(gate.X(), gate.I(3))
