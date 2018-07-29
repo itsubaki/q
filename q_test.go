@@ -8,6 +8,21 @@ import (
 	"github.com/itsubaki/q/qubit"
 )
 
+func TestQ(t *testing.T) {
+
+	q0 := qubit.Zero()
+	q1 := qubit.Zero()
+
+	q := New()
+	q.Add(q0, q1)
+
+	q.H(q0)
+	q.CNOT(q0, q1)
+
+	q.Measure(q0, q1)
+	q.Probability()
+}
+
 func TestGrover3qubit(t *testing.T) {
 	x := matrix.TensorProduct(gate.X(), gate.I(3))
 	oracle := x.Apply(gate.ControlledNot(4)).Apply(x)
