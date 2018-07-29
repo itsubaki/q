@@ -37,28 +37,34 @@ func (q *Q) One() *Qubit {
 	return q.New(0, 1)
 }
 
-func (q *Q) H(input ...*Qubit) {
+func (q *Q) H(input ...*Qubit) *Q {
 	q.Apply(gate.H(), input...)
+	return q
 }
 
-func (q *Q) X(input ...*Qubit) {
+func (q *Q) X(input ...*Qubit) *Q {
 	q.Apply(gate.X(), input...)
+	return q
 }
 
-func (q *Q) Y(input ...*Qubit) {
+func (q *Q) Y(input ...*Qubit) *Q {
 	q.Apply(gate.Y(), input...)
+	return q
 }
 
-func (q *Q) Z(input ...*Qubit) {
+func (q *Q) Z(input ...*Qubit) *Q {
 	q.Apply(gate.Z(), input...)
+	return q
 }
 
-func (q *Q) S(input ...*Qubit) {
+func (q *Q) S(input ...*Qubit) *Q {
 	q.Apply(gate.S(), input...)
+	return q
 }
 
-func (q *Q) T(input ...*Qubit) {
+func (q *Q) T(input ...*Qubit) *Q {
 	q.Apply(gate.T(), input...)
+	return q
 }
 
 func (q *Q) Apply(mat matrix.Matrix, input ...*Qubit) {
@@ -85,10 +91,30 @@ func (q *Q) Apply(mat matrix.Matrix, input ...*Qubit) {
 	q.qubit.Apply(g)
 }
 
-func (q *Q) CNOT(controll *Qubit, target *Qubit) {
+func (q *Q) CNOT(controll *Qubit, target *Qubit) *Q {
 	bit := q.qubit.NumberOfBit()
 	cnot := gate.CNOT(bit, controll.Index, target.Index)
 	q.qubit.Apply(cnot)
+
+	return q
+}
+
+func (q *Q) ConditionX(condition bool, input ...*Qubit) *Q {
+	if condition {
+		q.X(input...)
+		return q
+	}
+
+	return q
+}
+
+func (q *Q) ConditionZ(condition bool, input ...*Qubit) *Q {
+	if condition {
+		q.Z(input...)
+		return q
+	}
+
+	return q
 }
 
 func (q *Q) Measure(input ...*Qubit) *qubit.Qubit {

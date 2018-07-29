@@ -8,16 +8,15 @@ import (
 	"github.com/itsubaki/q/qubit"
 )
 
-func TestQBellstate(t *testing.T) {
-	q := New()
+func TestQSimBellstate(t *testing.T) {
+	qsim := New()
 
-	q0 := q.Zero()
-	q1 := q.Zero()
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
 
-	q.H(q0)
-	q.CNOT(q0, q1)
+	qsim.H(q0).CNOT(q0, q1)
+	p := qsim.Probability()
 
-	p := q.Probability()
 	var test = []struct {
 		zero int
 		one  int
@@ -42,29 +41,23 @@ func TestQBellstate(t *testing.T) {
 	}
 }
 
-func TestQQuantumTeleportation(t *testing.T) {
-	q := New()
+func TestQSimQuantumTeleportation(t *testing.T) {
+	qsim := New()
 
-	phi := q.New(1, 2)
-	q0 := q.Zero()
-	q1 := q.Zero()
+	phi := qsim.New(1, 2)
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
 
-	q.H(q0)
-	q.CNOT(q0, q1)
+	qsim.H(q0).CNOT(q0, q1) // bell state
+	qsim.CNOT(phi, q0).H(phi)
 
-	q.CNOT(phi, q0)
-	q.H(phi)
+	mz := qsim.Measure(phi)
+	mx := qsim.Measure(q0)
 
-	mz := q.Measure(phi)
-	mx := q.Measure(q0)
+	qsim.ConditionZ(mz.IsOne(), q1)
+	qsim.ConditionX(mx.IsOne(), q1)
 
-	if mz.IsOne() {
-		q.Z(q1)
-	}
-
-	if mx.IsOne() {
-		q.X(q1)
-	}
+	p := qsim.Probability()
 
 	var test = []struct {
 		zero int
@@ -81,7 +74,6 @@ func TestQQuantumTeleportation(t *testing.T) {
 		{6, 7, 0.2, 0.8, 1e-13, qubit.One(), qubit.One()},
 	}
 
-	p := q.Probability()
 	for _, tt := range test {
 		if p[tt.zero] == 0 {
 			continue
@@ -105,6 +97,39 @@ func TestQQuantumTeleportation(t *testing.T) {
 		if qubit.Sum(p)-1 > tt.eps {
 			t.Error(p)
 		}
+	}
+}
+
+func TestQsimErorrCollectionZero(t *testing.T) {
+	qsim := New()
+
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
+
+	// encoding
+	qsim.CNOT(q0, q1).CNOT(q0, q2)
+
+	// error: first qubit is flipped
+	qsim.X(q0)
+
+	// add ancilla qubit
+	q3 := qsim.Zero()
+	q4 := qsim.Zero()
+
+	// z1z2, z2z3
+	qsim.CNOT(q0, q3).CNOT(q1, q3)
+	qsim.CNOT(q1, q4).CNOT(q2, q4)
+
+	m3 := qsim.Measure(q3)
+	m4 := qsim.Measure(q4)
+
+	qsim.ConditionX(m3.IsOne() && m4.IsZero(), q0)
+	qsim.ConditionX(m3.IsZero() && m4.IsOne(), q1)
+	qsim.ConditionX(m3.IsZero() && m4.IsOne(), q2)
+
+	if qsim.Probability()[2] != 1 {
+		t.Error(qsim.Probability())
 	}
 }
 
