@@ -42,36 +42,30 @@ func (q *Q) One() *Qubit {
 }
 
 func (q *Q) H(input ...*Qubit) *Q {
-	q.Apply(gate.H(), input...)
-	return q
+	return q.Apply(gate.H(), input...)
 }
 
 func (q *Q) X(input ...*Qubit) *Q {
-	q.Apply(gate.X(), input...)
-	return q
+	return q.Apply(gate.X(), input...)
 }
 
 func (q *Q) Y(input ...*Qubit) *Q {
-	q.Apply(gate.Y(), input...)
-	return q
+	return q.Apply(gate.Y(), input...)
 }
 
 func (q *Q) Z(input ...*Qubit) *Q {
-	q.Apply(gate.Z(), input...)
-	return q
+	return q.Apply(gate.Z(), input...)
 }
 
 func (q *Q) S(input ...*Qubit) *Q {
-	q.Apply(gate.S(), input...)
-	return q
+	return q.Apply(gate.S(), input...)
 }
 
 func (q *Q) T(input ...*Qubit) *Q {
-	q.Apply(gate.T(), input...)
-	return q
+	return q.Apply(gate.T(), input...)
 }
 
-func (q *Q) Apply(mat matrix.Matrix, input ...*Qubit) {
+func (q *Q) Apply(mat matrix.Matrix, input ...*Qubit) *Q {
 	index := []int{}
 	for i := range input {
 		index = append(index, input[i].Index)
@@ -100,9 +94,10 @@ func (q *Q) Apply(mat matrix.Matrix, input ...*Qubit) {
 	}
 
 	q.qubit.Apply(g)
+	return q
 }
 
-func (q *Q) CnNot(controll []*Qubit, target *Qubit) *Q {
+func (q *Q) ControlledNot(controll []*Qubit, target *Qubit) *Q {
 	bit := q.qubit.NumberOfBit()
 	m := gate.I([]int{bit}...)
 	dim := len(m)
@@ -147,11 +142,7 @@ func (q *Q) CnNot(controll []*Qubit, target *Qubit) *Q {
 }
 
 func (q *Q) CNOT(controll *Qubit, target *Qubit) *Q {
-	bit := q.qubit.NumberOfBit()
-	cnot := gate.CNOT(bit, controll.Index, target.Index)
-	q.qubit.Apply(cnot)
-
-	return q
+	return q.ControlledNot([]*Qubit{controll}, target)
 }
 
 func (q *Q) ConditionX(condition bool, input ...*Qubit) *Q {

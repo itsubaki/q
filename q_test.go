@@ -14,7 +14,7 @@ func TestQSimCnNot(t *testing.T) {
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 
-	p := qsim.CnNot([]*Qubit{q0}, q1).Probability()
+	p := qsim.ControlledNot([]*Qubit{q0}, q1).Probability()
 	e := qubit.Zero(2).Apply(gate.CNOT(2, 0, 1)).Probability()
 
 	for i := range p {
