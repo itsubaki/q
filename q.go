@@ -1,7 +1,9 @@
 package q
 
 import (
+	"fmt"
 	"math"
+	"strconv"
 
 	"github.com/itsubaki/q/gate"
 	"github.com/itsubaki/q/matrix"
@@ -98,6 +100,50 @@ func (q *Q) Apply(mat matrix.Matrix, input ...*Qubit) {
 	}
 
 	q.qubit.Apply(g)
+}
+
+func (q *Q) CnNot(controll []*Qubit, target *Qubit) *Q {
+	bit := q.qubit.NumberOfBit()
+	m := gate.I([]int{bit}...)
+	dim := len(m)
+
+	index := []int64{}
+	f := "%0" + strconv.Itoa(bit) + "s"
+	for i := 0; i < dim; i++ {
+		s := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
+		bits := []rune(s)
+
+		// Apply X
+		flip := true
+		for i := range controll {
+			if bits[controll[i].Index] == '0' {
+				flip = false
+			}
+		}
+
+		if flip {
+			if bits[target.Index] == '1' {
+				bits[target.Index] = '0'
+			} else if bits[target.Index] == '0' {
+				bits[target.Index] = '1'
+			}
+		}
+
+		v, err := strconv.ParseInt(string(bits), 2, 0)
+		if err != nil {
+			panic(err)
+		}
+
+		index = append(index, v)
+	}
+
+	cnot := make(matrix.Matrix, dim)
+	for i, ii := range index {
+		cnot[i] = m[ii]
+	}
+
+	q.qubit.Apply(cnot)
+	return q
 }
 
 func (q *Q) CNOT(controll *Qubit, target *Qubit) *Q {

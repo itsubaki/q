@@ -8,6 +8,22 @@ import (
 	"github.com/itsubaki/q/qubit"
 )
 
+func TestQSimCnNot(t *testing.T) {
+	qsim := New()
+
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+
+	p := qsim.CnNot([]*Qubit{q0}, q1).Probability()
+	e := qubit.Zero(2).Apply(gate.CNOT(2, 0, 1)).Probability()
+
+	for i := range p {
+		if p[i] != e[i] {
+			t.Errorf("%v: %v\n", p, e)
+		}
+	}
+}
+
 func TestQSimEstimate(t *testing.T) {
 	qsim := New()
 
