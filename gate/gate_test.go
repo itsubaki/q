@@ -68,7 +68,7 @@ func TestControlledNot(t *testing.T) {
 	g1 := matrix.TensorProduct(I().Sub(Z()), X())
 	CN := g0.Add(g1).Mul(0.5)
 
-	if !ControlledNot().Equals(CN) {
+	if !ControlledNot(2, []int{0}, 1).Equals(CN) {
 		t.Error(CN)
 	}
 }

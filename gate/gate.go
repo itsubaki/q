@@ -122,23 +122,7 @@ func ControlledS(bit ...int) matrix.Matrix {
 }
 
 // CNOT(3) -> Toffoli (Controlled-Controlled-NOT)
-func ControlledNot(bit ...int) matrix.Matrix {
-	if len(bit) < 1 {
-		bit = []int{2}
-	}
-
-	m := I(bit...)
-	dim := len(m)
-
-	m[dim-1], m[dim-2] = m[dim-2], m[dim-1]
-	return m
-}
-
-func Toffoli() matrix.Matrix {
-	return ControlledNot(3)
-}
-
-func CNOT(bit, c, t int) matrix.Matrix {
+func ControlledNot(bit int, c []int, t int) matrix.Matrix {
 	m := I([]int{bit}...)
 	dim := len(m)
 
@@ -149,7 +133,14 @@ func CNOT(bit, c, t int) matrix.Matrix {
 		bits := []rune(s)
 
 		// Apply X
-		if bits[c] == '1' {
+		flip := true
+		for i := range c {
+			if bits[c[i]] == '0' {
+				flip = false
+			}
+		}
+
+		if flip {
 			if bits[t] == '1' {
 				bits[t] = '0'
 			} else if bits[t] == '0' {
@@ -171,6 +162,14 @@ func CNOT(bit, c, t int) matrix.Matrix {
 	}
 
 	return cnot
+}
+
+func Toffoli() matrix.Matrix {
+	return ControlledNot(3, []int{0, 1}, 2)
+}
+
+func CNOT(bit, c, t int) matrix.Matrix {
+	return ControlledNot(bit, []int{c}, t)
 }
 
 func CZ(bit, c, t int) matrix.Matrix {

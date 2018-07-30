@@ -195,7 +195,7 @@ func TestQsimErorrCorrectionZero(t *testing.T) {
 
 func TestGrover3qubit(t *testing.T) {
 	x := matrix.TensorProduct(gate.X(), gate.I(3))
-	oracle := x.Apply(gate.ControlledNot(4)).Apply(x)
+	oracle := x.Apply(gate.ControlledNot(4, []int{0, 1, 2}, 3)).Apply(x)
 
 	h4 := matrix.TensorProduct(gate.H(3), gate.H())
 	x3 := matrix.TensorProduct(gate.X(3), gate.I())
