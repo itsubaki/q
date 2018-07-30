@@ -129,7 +129,7 @@ func TestQSimQuantumTeleportation(t *testing.T) {
 	}
 }
 
-func TestQsimErorrCollectionZero(t *testing.T) {
+func TestQsimErorrCorrectionZero(t *testing.T) {
 	qsim := New()
 
 	q0 := qsim.Zero()
@@ -150,6 +150,7 @@ func TestQsimErorrCollectionZero(t *testing.T) {
 	qsim.CNOT(q0, q3).CNOT(q1, q3)
 	qsim.CNOT(q1, q4).CNOT(q2, q4)
 
+	// error corretion
 	m3 := qsim.Measure(q3)
 	m4 := qsim.Measure(q4)
 
@@ -157,6 +158,20 @@ func TestQsimErorrCollectionZero(t *testing.T) {
 	qsim.ConditionX(m3.IsZero() && m4.IsOne(), q1)
 	qsim.ConditionX(m3.IsZero() && m4.IsOne(), q2)
 
+	// |q0q1q2> = |000>
+	if !qsim.Estimate(q0).IsZero() {
+		t.Error(qsim.Estimate(q0))
+	}
+
+	if !qsim.Estimate(q1).IsZero() {
+		t.Error(qsim.Estimate(q1))
+	}
+
+	if !qsim.Estimate(q2).IsZero() {
+		t.Error(qsim.Estimate(q2))
+	}
+
+	// |000>|10>
 	if qsim.Probability()[2] != 1 {
 		t.Error(qsim.Probability())
 	}
