@@ -16,6 +16,16 @@ q1 := qsim.Zero()
 // apply quantum circuit of bell state
 qsim.H(q0).CNOT(q0, q1)
 
+// estimate
+qsim.Estimate(q0).Probability()
+// -> (0.5, 0.5)
+qsim.Estimate(q1).Probability()
+// -> (0.5, 0.5)
+
+qsim.Probability()
+// -> (0.5, 0, 0, 0.5)
+
+qsim.Measure()
 qsim.Probability()
 // -> (1, 0, 0, 0) or (0, 0, 0, 1)
 ```
@@ -26,7 +36,8 @@ qsim.Probability()
 qsim := q.New()
 
 // generate qubits of |phi>|0>|0>
-phi := qsim.New(1, 2) // arbitrary state
+phi := qsim.New(1, 2)
+// normalize -> a|0> + b|1>, |a|^2 = 0.2, |b|^2 = 0.8
 q0 := qsim.Zero()
 q1 := qsim.Zero()
 
@@ -42,12 +53,8 @@ qsim.ConditionZ(mz.IsOne(), q1)
 qsim.ConditionX(mx.IsOne(), q1)
 
 // Bob got phi state
-qsim.Probability()
-// One of the following:
-// (0.2, 0.8, 0, 0, 0, 0, 0, 0)
-// (0, 0, 0.2, 0.8, 0, 0, 0, 0)
-// (0, 0, 0, 0, 0.2, 0.8, 0, 0)
-// (0, 0, 0, 0, 0, 0, 0.2, 0.8)
+qsim.Estimate(q1).Probability()
+// -> (0.2, 0.8)
 ```
 
 # internal

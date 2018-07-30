@@ -8,6 +8,33 @@ import (
 	"github.com/itsubaki/q/qubit"
 )
 
+func TestQSimEstimate(t *testing.T) {
+	qsim := New()
+
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+
+	qsim.H(q0, q1)
+
+	for _, p := range qsim.Probability() {
+		if p-0.25 > 1e-13 {
+			t.Error(qsim.Probability())
+		}
+	}
+
+	ex := qubit.Zero().Apply(gate.H())
+	e0 := qsim.Estimate(q0)
+	e1 := qsim.Estimate(q1)
+
+	if !e0.Equals(ex, 0.1) {
+		t.Error(e0)
+	}
+
+	if !e1.Equals(ex, 0.1) {
+		t.Error(e1)
+	}
+}
+
 func TestQSimBellstate(t *testing.T) {
 	qsim := New()
 
@@ -15,6 +42,7 @@ func TestQSimBellstate(t *testing.T) {
 	q1 := qsim.Zero()
 
 	qsim.H(q0).CNOT(q0, q1)
+
 	p := qsim.Probability()
 
 	var test = []struct {
@@ -39,6 +67,7 @@ func TestQSimBellstate(t *testing.T) {
 			t.Error(p)
 		}
 	}
+
 }
 
 func TestQSimQuantumTeleportation(t *testing.T) {

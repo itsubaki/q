@@ -1,6 +1,8 @@
 package q
 
 import (
+	"math"
+
 	"github.com/itsubaki/q/gate"
 	"github.com/itsubaki/q/matrix"
 	"github.com/itsubaki/q/qubit"
@@ -68,24 +70,31 @@ func (q *Q) T(input ...*Qubit) *Q {
 }
 
 func (q *Q) Apply(mat matrix.Matrix, input ...*Qubit) {
-	g := gate.I()
-	if input[0].Index == 0 {
-		g = mat
-	}
-
 	index := []int{}
 	for i := range input {
 		index = append(index, input[i].Index)
 	}
 
+	g := gate.I()
+	if index[0] == 0 {
+		g = mat
+	}
+
 	for i := 1; i < q.qubit.NumberOfBit(); i++ {
+		found := false
 		for j := range index {
 			if i == index[j] {
-				g = g.TensorProduct(mat)
-				continue
+				found = true
+				break
 			}
-			g = g.TensorProduct(gate.I())
 		}
+
+		if found {
+			g = g.TensorProduct(mat)
+			continue
+		}
+
+		g = g.TensorProduct(gate.I())
 	}
 
 	q.qubit.Apply(g)
@@ -127,4 +136,28 @@ func (q *Q) Measure(input ...*Qubit) *qubit.Qubit {
 
 func (q *Q) Probability() []qubit.Probability {
 	return q.qubit.Probability()
+}
+
+func (q *Q) Estimate(input *Qubit, repeat ...int) *qubit.Qubit {
+	max := 1000
+	if len(repeat) > 0 {
+		max = repeat[0]
+	}
+
+	var zc, oc int
+	for i := 0; i < max; i++ {
+		clone := q.qubit.Clone()
+		m := clone.Measure(input.Index)
+
+		if m.IsZero() {
+			zc++
+		} else {
+			oc++
+		}
+	}
+
+	cz := complex(math.Sqrt(float64(zc)/float64(max)), 0)
+	co := complex(math.Sqrt(float64(oc)/float64(max)), 0)
+
+	return qubit.New(cz, co)
 }
