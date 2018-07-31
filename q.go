@@ -146,33 +146,36 @@ func (q *Q) Measure(input ...*Qubit) *qubit.Qubit {
 	if len(input) < 1 {
 		return q.qubit.Measure()
 	}
-	return q.qubit.MeasureAt(input[0].Index)
+	return q.qubit.Measure(input[0].Index)
 }
 
 func (q *Q) Probability() []qubit.Probability {
 	return q.qubit.Probability()
 }
 
-func (q *Q) Estimate(input *Qubit, repeat ...int) *qubit.Qubit {
-	max := 1000
-	if len(repeat) > 0 {
-		max = repeat[0]
-	}
+func (q *Q) Estimate(input *Qubit, eps ...float64) *qubit.Qubit {
+	limit := 4000
 
-	var zc, oc int
-	for i := 0; i < max; i++ {
+	count := 0
+	c := []int{0, 0}
+	for {
 		clone := q.qubit.Clone()
 		m := clone.Measure(input.Index)
 
+		count++
 		if m.IsZero() {
-			zc++
+			c[0]++
 		} else {
-			oc++
+			c[1]++
+		}
+
+		if count > limit {
+			break
 		}
 	}
 
-	cz := complex(math.Sqrt(float64(zc)/float64(max)), 0)
-	co := complex(math.Sqrt(float64(oc)/float64(max)), 0)
+	z := complex(math.Sqrt(float64(c[0])/float64(count)), 0)
+	o := complex(math.Sqrt(float64(c[1])/float64(count)), 0)
 
-	return qubit.New(cz, co)
+	return qubit.New(z, o)
 }

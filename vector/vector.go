@@ -117,7 +117,7 @@ func (v0 Vector) Equals(v1 Vector, eps ...float64) bool {
 		return false
 	}
 
-	e := Eps(eps...)
+	e := matrix.Eps(eps...)
 	for i := 0; i < len(v0); i++ {
 		if cmplx.Abs(v0[i]-v1[i]) > e {
 			return false
@@ -149,12 +149,4 @@ func TensorProduct(v0 ...Vector) Vector {
 		v1 = v1.TensorProduct(v0[i])
 	}
 	return v1
-}
-
-func Eps(eps ...float64) float64 {
-	if len(eps) > 0 {
-		return eps[0]
-	}
-
-	return 0.0
 }

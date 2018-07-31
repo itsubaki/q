@@ -84,12 +84,12 @@ func TestQSimEstimate(t *testing.T) {
 	e0 := qsim.Estimate(q0)
 	e1 := qsim.Estimate(q1)
 
-	if !e0.Equals(ex, 0.1) {
-		t.Error(e0)
+	if !e0.Equals(ex, 1e-2) {
+		t.Errorf("%v: %v\n", ex, e0)
 	}
 
-	if !e1.Equals(ex, 0.1) {
-		t.Error(e1)
+	if !e1.Equals(ex, 1e-2) {
+		t.Errorf("%v: %v\n", ex, e1)
 	}
 }
 
