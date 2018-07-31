@@ -57,6 +57,30 @@ qsim.Estimate(q1).Probability()
 // -> (0.2, 0.8)
 ```
 
+### Grover's search algorithm
+
+```golang
+qsim := New()
+
+q0 := qsim.Zero()
+q1 := qsim.Zero()
+q2 := qsim.Zero()
+q3 := qsim.One()
+
+qsim.H(q0, q1, q2, q3)
+// oracle
+qsim.X(q0).ControlledNot([]*Qubit{q0, q1, q2}, q3).X(q0)
+// amp
+qsim.H(q0, q1, q2, q3)
+qsim.X(q0, q1, q2)
+qsim.ControlledZ([]*Qubit{q0, q1}, q2)
+qsim.H(q0, q1, q2)
+
+qsim.Probability()
+// [0 0.03125 0 0.03125 0 0.03125 0 0.78125 0 0.03125 0 0.03125 0 0.03125 0 0.03125]
+```
+
+
 # internal
 
 ## linear algebra

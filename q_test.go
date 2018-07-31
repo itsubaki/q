@@ -8,6 +8,48 @@ import (
 	"github.com/itsubaki/q/qubit"
 )
 
+func TestQSimGrover3qubit(t *testing.T) {
+	qsim := New()
+
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
+	q3 := qsim.One()
+
+	qsim.H(q0, q1, q2, q3)
+
+	// oracle
+	qsim.X(q0).ControlledNot([]*Qubit{q0, q1, q2}, q3).X(q0)
+
+	// amp
+	qsim.H(q0, q1, q2, q3)
+	qsim.X(q0, q1, q2)
+	qsim.ControlledZ([]*Qubit{q0, q1}, q2)
+	qsim.H(q0, q1, q2)
+
+	// q3 is always |1>
+	m3 := qsim.Measure(q3)
+	if !m3.IsOne() {
+		t.Error(m3)
+	}
+
+	p := qsim.Probability()
+	for i, pp := range p {
+		// |011>|1>
+		if i == 7 {
+			if pp-0.78125 > 1e-13 {
+				t.Error(qsim.Probability())
+			}
+			continue
+		}
+
+		if pp-0.03125 > 1e-13 {
+			t.Error(qsim.Probability())
+		}
+	}
+
+}
+
 func TestQSimCnNot(t *testing.T) {
 	qsim := New()
 
