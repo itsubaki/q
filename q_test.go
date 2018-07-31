@@ -199,7 +199,7 @@ func TestGrover3qubit(t *testing.T) {
 
 	h4 := matrix.TensorProduct(gate.H(3), gate.H())
 	x3 := matrix.TensorProduct(gate.X(3), gate.I())
-	cz := matrix.TensorProduct(gate.ControlledZ(3), gate.I())
+	cz := matrix.TensorProduct(gate.ControlledZ(3, []int{0, 1}, 2), gate.I())
 	h3 := matrix.TensorProduct(gate.H(3), gate.I())
 	amp := h4.Apply(x3).Apply(cz).Apply(x3).Apply(h3)
 
@@ -230,11 +230,11 @@ func TestGrover3qubit(t *testing.T) {
 }
 
 func TestGrover2qubit(t *testing.T) {
-	oracle := gate.ControlledZ(2)
+	oracle := gate.CZ(2, 0, 1)
 
 	h2 := gate.H(2)
 	x2 := gate.X(2)
-	amp := h2.Apply(x2).Apply(gate.ControlledZ(2)).Apply(x2).Apply(h2)
+	amp := h2.Apply(x2).Apply(gate.CZ(2, 0, 1)).Apply(x2).Apply(h2)
 
 	qc := h2.Apply(oracle).Apply(amp)
 	q := qubit.Zero(2).Apply(qc)

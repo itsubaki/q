@@ -7,26 +7,6 @@ import (
 	"github.com/itsubaki/q/matrix"
 )
 
-func TestSwap(t *testing.T) {
-	swap := Swap(2)
-
-	if swap[0][0] != 1 {
-		t.Error(swap[0][0])
-	}
-
-	if swap[1][2] != 1 {
-		t.Error(swap[1][2])
-	}
-
-	if swap[2][1] != 1 {
-		t.Error(swap[2][1])
-	}
-
-	if swap[3][3] != 1 {
-		t.Error(swap[3][3])
-	}
-}
-
 func TestCZ(t *testing.T) {
 	expected := make(matrix.Matrix, 8)
 	expected[0] = []complex128{1, 0, 0, 0, 0, 0, 0, 0}

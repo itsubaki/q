@@ -95,33 +95,6 @@ func Swap(bit ...int) matrix.Matrix {
 	return m
 }
 
-// CZ(2) -> Controlled-Z
-// CZ(3) -> Contrlled-Controlled-Z
-func ControlledZ(bit ...int) matrix.Matrix {
-	if len(bit) < 1 {
-		bit = []int{2}
-	}
-
-	m := I(bit...)
-	dim := len(m)
-
-	m[dim-1][dim-1] = -1
-	return m
-}
-
-func ControlledS(bit ...int) matrix.Matrix {
-	if len(bit) < 1 {
-		bit = []int{2}
-	}
-
-	m := I(bit...)
-	dim := len(m)
-
-	m[dim-1][dim-1] = 1i
-	return m
-}
-
-// CNOT(3) -> Toffoli (Controlled-Controlled-NOT)
 func ControlledNot(bit int, c []int, t int) matrix.Matrix {
 	m := I([]int{bit}...)
 	dim := len(m)
@@ -172,7 +145,7 @@ func CNOT(bit, c, t int) matrix.Matrix {
 	return ControlledNot(bit, []int{c}, t)
 }
 
-func CZ(bit, c, t int) matrix.Matrix {
+func ControlledZ(bit int, c []int, t int) matrix.Matrix {
 	m := I([]int{bit}...)
 	dim := len(m)
 
@@ -180,15 +153,54 @@ func CZ(bit, c, t int) matrix.Matrix {
 	for i := 0; i < dim; i++ {
 		s := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
 		bits := []rune(s)
+
 		// Apply Z
-		if bits[c] == '1' && bits[t] == '1' {
-			for j := 0; j < dim; j++ {
-				m[i][j] = complex(-1, 0) * m[i][j]
+		pflip := true
+		for i := range c {
+			if bits[c[i]] == '0' {
+				pflip = false
 			}
+		}
+
+		if pflip && bits[t] == '1' {
+			m[i][i] = complex(-1, 0) * m[i][i]
 		}
 	}
 
 	return m
+}
+
+func CZ(bit, c, t int) matrix.Matrix {
+	return ControlledZ(bit, []int{c}, t)
+}
+
+func ControlledS(bit int, c []int, t int) matrix.Matrix {
+	m := I([]int{bit}...)
+	dim := len(m)
+
+	f := "%0" + strconv.Itoa(bit) + "s"
+	for i := 0; i < dim; i++ {
+		s := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
+		bits := []rune(s)
+
+		// Apply S
+		pflip := true
+		for i := range c {
+			if bits[c[i]] == '0' {
+				pflip = false
+			}
+		}
+
+		if pflip && bits[t] == '1' {
+			m[i][i] = 1i
+		}
+	}
+
+	return m
+}
+
+func CS(bit, c, t int) matrix.Matrix {
+	return ControlledS(bit, []int{c}, t)
 }
 
 func Fredkin() matrix.Matrix {

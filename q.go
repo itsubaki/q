@@ -16,6 +16,15 @@ type Qubit struct {
 	Index int
 }
 
+func index(input []*Qubit) []int {
+	index := []int{}
+	for i := range input {
+		index = append(index, input[i].Index)
+	}
+
+	return index
+}
+
 func New() *Q {
 	return &Q{}
 }
@@ -95,13 +104,21 @@ func (q *Q) Apply(mat matrix.Matrix, input ...*Qubit) *Q {
 	return q
 }
 
+func (q *Q) ControlledZ(controll []*Qubit, target *Qubit) *Q {
+	bit := q.qubit.NumberOfBit()
+	cnot := gate.ControlledZ(bit, index(controll), target.Index)
+
+	q.qubit.Apply(cnot)
+	return q
+}
+
+func (q *Q) CZ(controll *Qubit, target *Qubit) *Q {
+	return q.ControlledZ([]*Qubit{controll}, target)
+}
+
 func (q *Q) ControlledNot(controll []*Qubit, target *Qubit) *Q {
 	bit := q.qubit.NumberOfBit()
-	c := []int{}
-	for i := range controll {
-		c = append(c, controll[i].Index)
-	}
-	cnot := gate.ControlledNot(bit, c, target.Index)
+	cnot := gate.ControlledNot(bit, index(controll), target.Index)
 
 	q.qubit.Apply(cnot)
 	return q
@@ -113,19 +130,15 @@ func (q *Q) CNOT(controll *Qubit, target *Qubit) *Q {
 
 func (q *Q) ConditionX(condition bool, input ...*Qubit) *Q {
 	if condition {
-		q.X(input...)
-		return q
+		return q.X(input...)
 	}
-
 	return q
 }
 
 func (q *Q) ConditionZ(condition bool, input ...*Qubit) *Q {
 	if condition {
-		q.Z(input...)
-		return q
+		return q.Z(input...)
 	}
-
 	return q
 }
 
@@ -133,7 +146,6 @@ func (q *Q) Measure(input ...*Qubit) *qubit.Qubit {
 	if len(input) < 1 {
 		return q.qubit.Measure()
 	}
-
 	return q.qubit.MeasureAt(input[0].Index)
 }
 
