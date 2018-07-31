@@ -156,26 +156,20 @@ func (q *Q) Probability() []qubit.Probability {
 func (q *Q) Estimate(input *Qubit, eps ...float64) *qubit.Qubit {
 	limit := 4000
 
-	count := 0
 	c := []int{0, 0}
-	for {
+	for i := 0; i < limit; i++ {
 		clone := q.qubit.Clone()
 		m := clone.Measure(input.Index)
 
-		count++
 		if m.IsZero() {
 			c[0]++
 		} else {
 			c[1]++
 		}
-
-		if count > limit {
-			break
-		}
 	}
 
-	z := complex(math.Sqrt(float64(c[0])/float64(count)), 0)
-	o := complex(math.Sqrt(float64(c[1])/float64(count)), 0)
+	z := complex(math.Sqrt(float64(c[0])/float64(limit)), 0)
+	o := complex(math.Sqrt(float64(c[1])/float64(limit)), 0)
 
 	return qubit.New(z, o)
 }
