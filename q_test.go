@@ -1,6 +1,7 @@
 package q
 
 import (
+	"math"
 	"testing"
 
 	"github.com/itsubaki/q/gate"
@@ -34,16 +35,27 @@ func TestQSimGrover3qubit(t *testing.T) {
 	}
 
 	p := qsim.Probability()
+	if math.Abs(qubit.Sum(p)-1) > 1e-13 {
+		t.Error(p)
+	}
+
 	for i, pp := range p {
 		// |011>|1>
 		if i == 7 {
-			if pp-0.78125 > 1e-13 {
+			if math.Abs(pp-0.78125) > 1e-13 {
 				t.Error(qsim.Probability())
 			}
 			continue
 		}
 
-		if pp-0.03125 > 1e-13 {
+		if i%2 == 0 {
+			if math.Abs(pp) > 1e-13 {
+				t.Error(qsim.Probability())
+			}
+			continue
+		}
+
+		if math.Abs(pp-0.03125) > 1e-13 {
 			t.Error(qsim.Probability())
 		}
 	}
@@ -75,7 +87,7 @@ func TestQSimEstimate(t *testing.T) {
 	qsim.H(q0, q1)
 
 	for _, p := range qsim.Probability() {
-		if p-0.25 > 1e-13 {
+		if math.Abs(p-0.25) > 1e-13 {
 			t.Error(qsim.Probability())
 		}
 	}
@@ -102,27 +114,29 @@ func TestQSimBellstate(t *testing.T) {
 	qsim.H(q0).CNOT(q0, q1)
 
 	p := qsim.Probability()
-
-	var test = []struct {
-		zero int
-		one  int
-		val  qubit.Probability
-		eps  qubit.Probability
-	}{
-		{0, 2, 0.5, 1e-13},
+	if math.Abs(qubit.Sum(p)-1) > 1e-13 {
+		t.Error(p)
 	}
 
-	for _, tt := range test {
-		if p[tt.zero]-tt.val > tt.eps {
-			t.Error(p)
-		}
+	if math.Abs(p[0]-0.5) > 1e-13 {
+		t.Error(p)
+	}
 
-		if p[tt.one]-tt.val > tt.eps {
-			t.Error(p)
-		}
+	if math.Abs(p[3]-0.5) > 1e-13 {
+		t.Error(p)
+	}
 
-		if qubit.Sum(p)-1 > tt.eps {
-			t.Error(p)
+	if qsim.Measure(q0).IsZero() {
+		if qsim.Measure(q1).IsZero() {
+		} else {
+			t.Error(qsim.Probability())
+		}
+	}
+
+	if qsim.Measure(q0).IsOne() {
+		if qsim.Measure(q1).IsOne() {
+		} else {
+			t.Error(qsim.Probability())
 		}
 	}
 
@@ -145,13 +159,16 @@ func TestQSimQuantumTeleportation(t *testing.T) {
 	qsim.ConditionX(mx.IsOne(), q1)
 
 	p := qsim.Probability()
+	if math.Abs(qubit.Sum(p)-1) > 1e-13 {
+		t.Error(p)
+	}
 
 	var test = []struct {
 		zero int
 		one  int
-		zval qubit.Probability
-		oval qubit.Probability
-		eps  qubit.Probability
+		zval float64
+		oval float64
+		eps  float64
 		mz   *qubit.Qubit
 		mx   *qubit.Qubit
 	}{
@@ -166,10 +183,10 @@ func TestQSimQuantumTeleportation(t *testing.T) {
 			continue
 		}
 
-		if p[tt.zero]-tt.zval > tt.eps {
+		if math.Abs(p[tt.zero]-tt.zval) > tt.eps {
 			t.Error(p)
 		}
-		if p[tt.one]-tt.oval > tt.eps {
+		if math.Abs(p[tt.one]-tt.oval) > tt.eps {
 			t.Error(p)
 		}
 
@@ -181,9 +198,6 @@ func TestQSimQuantumTeleportation(t *testing.T) {
 			t.Error(p)
 		}
 
-		if qubit.Sum(p)-1 > tt.eps {
-			t.Error(p)
-		}
 	}
 }
 
@@ -258,13 +272,20 @@ func TestGrover3qubit(t *testing.T) {
 	for i, pp := range p {
 		// |011>|1>
 		if i == 7 {
-			if pp-0.78125 > 1e-13 {
+			if math.Abs(pp-0.78125) > 1e-13 {
 				t.Error(q.Probability())
 			}
 			continue
 		}
 
-		if pp-0.03125 > 1e-13 {
+		if i%2 == 0 {
+			if math.Abs(pp) > 1e-13 {
+				t.Error(q.Probability())
+			}
+			continue
+		}
+
+		if math.Abs(pp-0.03125) > 1e-13 {
 			t.Error(q.Probability())
 		}
 	}
@@ -282,7 +303,7 @@ func TestGrover2qubit(t *testing.T) {
 	q := qubit.Zero(2).Apply(qc)
 
 	q.Measure()
-	if q.Probability()[3]-1 > 1e-13 {
+	if math.Abs(q.Probability()[3]-1) > 1e-13 {
 		t.Error(q.Probability())
 	}
 }
@@ -315,9 +336,9 @@ func TestQuantumTeleportation(t *testing.T) {
 	var test = []struct {
 		zero int
 		one  int
-		zval qubit.Probability
-		oval qubit.Probability
-		eps  qubit.Probability
+		zval float64
+		oval float64
+		eps  float64
 		mz   *qubit.Qubit
 		mx   *qubit.Qubit
 	}{
@@ -328,15 +349,19 @@ func TestQuantumTeleportation(t *testing.T) {
 	}
 
 	p := phi.Probability()
+	if math.Abs(qubit.Sum(p)-1) > 1e-13 {
+		t.Error(p)
+	}
+
 	for _, tt := range test {
 		if p[tt.zero] == 0 {
 			continue
 		}
 
-		if p[tt.zero]-tt.zval > tt.eps {
+		if math.Abs(p[tt.zero]-tt.zval) > tt.eps {
 			t.Error(p)
 		}
-		if p[tt.one]-tt.oval > tt.eps {
+		if math.Abs(p[tt.one]-tt.oval) > tt.eps {
 			t.Error(p)
 		}
 
@@ -345,10 +370,6 @@ func TestQuantumTeleportation(t *testing.T) {
 		}
 
 		if !mx.Equals(tt.mx) {
-			t.Error(p)
-		}
-
-		if qubit.Sum(p)-1 > tt.eps {
 			t.Error(p)
 		}
 	}
@@ -375,9 +396,9 @@ func TestQuantumTeleportationPattern2(t *testing.T) {
 	var test = []struct {
 		zero int
 		one  int
-		zval qubit.Probability
-		oval qubit.Probability
-		eps  qubit.Probability
+		zval float64
+		oval float64
+		eps  float64
 		mz   *qubit.Qubit
 		mx   *qubit.Qubit
 	}{
@@ -388,15 +409,20 @@ func TestQuantumTeleportationPattern2(t *testing.T) {
 	}
 
 	p := phi.Probability()
+	if math.Abs(qubit.Sum(p)-1) > 1e-13 {
+		t.Error(p)
+	}
+
 	for _, tt := range test {
 		if p[tt.zero] == 0 {
 			continue
 		}
 
-		if p[tt.zero]-tt.zval > tt.eps {
+		if math.Abs(p[tt.zero]-tt.zval) > tt.eps {
 			t.Error(p)
 		}
-		if p[tt.one]-tt.oval > tt.eps {
+
+		if math.Abs(p[tt.one]-tt.oval) > tt.eps {
 			t.Error(p)
 		}
 
@@ -405,10 +431,6 @@ func TestQuantumTeleportationPattern2(t *testing.T) {
 		}
 
 		if !mx.Equals(tt.mx) {
-			t.Error(p)
-		}
-
-		if qubit.Sum(p)-1 > tt.eps {
 			t.Error(p)
 		}
 	}
@@ -539,11 +561,11 @@ func TestErrorCorrectionBitFlip1(t *testing.T) {
 
 	// answer is 0.2|000>|10> + 0.8|111>|10>
 	p := phi.Probability()
-	if p[2]-0.2 > 1e-13 {
+	if math.Abs(p[2]-0.2) > 1e-13 {
 		t.Error(p)
 	}
 
-	if p[30]-0.8 > 1e-13 {
+	if math.Abs(p[30]-0.8) > 1e-13 {
 		t.Error(p)
 	}
 }
@@ -585,13 +607,13 @@ func TestErrorCorrectionBitFlip2(t *testing.T) {
 		phi.Apply(matrix.TensorProduct(gate.I(2), gate.X(), gate.I(2)))
 	}
 
-	// answer is 0.2|000>|10> + 0.8|111>|10>
+	// answer is 0.2|000>|11> + 0.8|111>|11>
 	p := phi.Probability()
-	if p[2]-0.2 > 1e-13 {
+	if math.Abs(p[3]-0.2) > 1e-13 {
 		t.Error(p)
 	}
 
-	if p[30]-0.8 > 1e-13 {
+	if math.Abs(p[31]-0.8) > 1e-13 {
 		t.Error(p)
 	}
 }
@@ -633,13 +655,13 @@ func TestErrorCorrectionBitFlip3(t *testing.T) {
 		phi.Apply(matrix.TensorProduct(gate.I(2), gate.X(), gate.I(2)))
 	}
 
-	// answer is 0.2|000>|10> + 0.8|111>|10>
+	// answer is 0.2|000>|01> + 0.8|111>|01>
 	p := phi.Probability()
-	if p[2]-0.2 > 1e-13 {
+	if math.Abs(p[1]-0.2) > 1e-13 {
 		t.Error(p)
 	}
 
-	if p[30]-0.8 > 1e-13 {
+	if math.Abs(p[29]-0.8) > 1e-13 {
 		t.Error(p)
 	}
 }
@@ -691,11 +713,11 @@ func TestErrorCorrectionPhaseFlip1(t *testing.T) {
 	phi.Apply(matrix.TensorProduct(gate.H(3), gate.I(2)))
 
 	p := phi.Probability()
-	if p[2]-0.2 > 1e-13 {
+	if math.Abs(p[2]-0.2) > 1e-13 {
 		t.Error(p)
 	}
 
-	if p[30]-0.8 > 1e-13 {
+	if math.Abs(p[30]-0.8) > 1e-13 {
 		t.Error(p)
 	}
 }

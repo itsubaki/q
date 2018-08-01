@@ -98,19 +98,19 @@ func (q *Qubit) Normalize() *Qubit {
 	return q
 }
 
-func (q *Qubit) Amplitude() []Amplitude {
-	a := []Amplitude{}
+func (q *Qubit) Amplitude() []complex128 {
+	a := []complex128{}
 	for _, amp := range q.v {
-		a = append(a, Amplitude(amp))
+		a = append(a, amp)
 	}
 	return a
 }
 
-func (q *Qubit) Probability() []Probability {
-	list := []Probability{}
+func (q *Qubit) Probability() []float64 {
+	list := []float64{}
 	for _, amp := range q.v {
 		p := math.Pow(cmplx.Abs(amp), 2)
-		list = append(list, Probability(p))
+		list = append(list, p)
 	}
 	return list
 }
@@ -121,10 +121,10 @@ func (q *Qubit) Measure(bit ...int) *Qubit {
 	}
 
 	rand.Seed(time.Now().UnixNano())
-	r := Probability(rand.Float64())
+	r := rand.Float64()
 
 	plist := q.Probability()
-	var sum Probability
+	var sum float64
 	for i, p := range plist {
 		if sum <= r && r < sum+p {
 			q.v = v.NewZero(len(q.v))
@@ -137,8 +137,8 @@ func (q *Qubit) Measure(bit ...int) *Qubit {
 	return q
 }
 
-func (q *Qubit) ProbabilityZeroAt(bit int) ([]int, []Probability) {
-	p := []Probability{}
+func (q *Qubit) ProbabilityZeroAt(bit int) ([]int, []float64) {
+	p := []float64{}
 	index := []int{}
 
 	dim := q.v.Dimension()
@@ -161,8 +161,8 @@ func (q *Qubit) ProbabilityZeroAt(bit int) ([]int, []Probability) {
 	return index, p
 }
 
-func (q *Qubit) ProbabilityOneAt(bit int) ([]int, []Probability) {
-	p := []Probability{}
+func (q *Qubit) ProbabilityOneAt(bit int) ([]int, []float64) {
+	p := []float64{}
 	index := []int{}
 
 	zi, _ := q.ProbabilityZeroAt(bit)
@@ -192,9 +192,9 @@ func (q *Qubit) MeasureAt(bit int) *Qubit {
 	index, p := q.ProbabilityZeroAt(bit)
 
 	rand.Seed(time.Now().UnixNano())
-	r := Probability(rand.Float64())
+	r := rand.Float64()
 
-	var sum Probability
+	var sum float64
 	for _, pp := range p {
 		sum = sum + pp
 	}

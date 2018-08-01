@@ -149,7 +149,7 @@ func (q *Q) Measure(input ...*Qubit) *qubit.Qubit {
 	return q.qubit.Measure(input[0].Index)
 }
 
-func (q *Q) Probability() []qubit.Probability {
+func (q *Q) Probability() []float64 {
 	return q.qubit.Probability()
 }
 

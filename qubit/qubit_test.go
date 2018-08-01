@@ -102,11 +102,12 @@ func TestBellState(t *testing.T) {
 func TestNormalize(t *testing.T) {
 	q := New(4, 5)
 
-	var sum Probability
+	var sum float64
 	for _, p := range q.Probability() {
 		sum = sum + p
 	}
-	if sum != Probability(1) {
+
+	if sum != 1 {
 		t.Error(sum)
 	}
 }
