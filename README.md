@@ -57,7 +57,7 @@ mx := qsim.Measure(q0)
 qsim.ConditionZ(mz.IsOne(), q1)
 qsim.ConditionX(mx.IsOne(), q1)
 
-// Bob got phi state
+// Bob got |phi> state
 qsim.Estimate(q1).Probability()
 // -> (0.2, 0.8)
 ```
@@ -65,7 +65,7 @@ qsim.Estimate(q1).Probability()
 ### Grover's search algorithm
 
 ```golang
-qsim := New()
+qsim := q.New()
 
 q0 := qsim.Zero()
 q1 := qsim.Zero()
@@ -74,11 +74,11 @@ q3 := qsim.One()
 
 qsim.H(q0, q1, q2, q3)
 // oracle for |011>|1>
-qsim.X(q0).ControlledNot([]*Qubit{q0, q1, q2}, q3).X(q0)
+qsim.X(q0).ControlledNot([]*q.Qubit{q0, q1, q2}, q3).X(q0)
 // amp
 qsim.H(q0, q1, q2, q3)
 qsim.X(q0, q1, q2)
-qsim.ControlledZ([]*Qubit{q0, q1}, q2)
+qsim.ControlledZ([]*q.Qubit{q0, q1}, q2)
 qsim.H(q0, q1, q2)
 
 qsim.Probability()
