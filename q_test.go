@@ -103,6 +103,7 @@ func TestQSimEstimate(t *testing.T) {
 	if !e1.Equals(ex, 1e-2) {
 		t.Errorf("%v: %v\n", ex, e1)
 	}
+
 }
 
 func TestQSimBellstate(t *testing.T) {
@@ -205,10 +206,10 @@ func TestQsimErorrCorrectionZero(t *testing.T) {
 	qsim := New()
 
 	q0 := qsim.Zero()
-	q1 := qsim.Zero()
-	q2 := qsim.Zero()
 
 	// encoding
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
 	qsim.CNOT(q0, q1).CNOT(q0, q2)
 
 	// error: first qubit is flipped
@@ -218,16 +219,15 @@ func TestQsimErorrCorrectionZero(t *testing.T) {
 	q3 := qsim.Zero()
 	q4 := qsim.Zero()
 
-	// z1z2, z2z3
+	// error corretion
 	qsim.CNOT(q0, q3).CNOT(q1, q3)
 	qsim.CNOT(q1, q4).CNOT(q2, q4)
 
-	// error corretion
 	m3 := qsim.Measure(q3)
 	m4 := qsim.Measure(q4)
 
 	qsim.ConditionX(m3.IsOne() && m4.IsZero(), q0)
-	qsim.ConditionX(m3.IsZero() && m4.IsOne(), q1)
+	qsim.ConditionX(m3.IsOne() && m4.IsOne(), q1)
 	qsim.ConditionX(m3.IsZero() && m4.IsOne(), q2)
 
 	// |q0q1q2> = |000>
