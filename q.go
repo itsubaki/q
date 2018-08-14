@@ -153,9 +153,11 @@ func (q *Q) Probability() []float64 {
 	return q.qubit.Probability()
 }
 
-// TODO convergence determination
-func (q *Q) Estimate(input *Qubit, eps ...float64) *qubit.Qubit {
+func (q *Q) Estimate(input *Qubit, loop ...int) *qubit.Qubit {
 	limit := 10000
+	if len(loop) > 0 {
+		limit = loop[0]
+	}
 
 	c := []int{0, 0}
 	for i := 0; i < limit; i++ {
