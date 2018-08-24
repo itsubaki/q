@@ -1,6 +1,7 @@
 package q
 
 import (
+	"fmt"
 	"math"
 	"testing"
 
@@ -8,6 +9,30 @@ import (
 	"github.com/itsubaki/q/matrix"
 	"github.com/itsubaki/q/qubit"
 )
+
+func TestQSimQFT3qubit(t *testing.T) {
+	qsim := New()
+
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
+
+	qsim.H(q0)
+	qsim.CR(q1, q0, 2)
+	qsim.CR(q2, q0, 3)
+
+	qsim.H(q1)
+	qsim.CR(q2, q1, 2)
+
+	qsim.H(q2)
+
+	// swap
+	qsim.CNOT(q0, q2)
+	qsim.CNOT(q2, q0)
+	qsim.CNOT(q0, q2)
+
+	fmt.Println(qsim.Probability())
+}
 
 func TestQSimGrover3qubit(t *testing.T) {
 	qsim := New()
@@ -247,6 +272,35 @@ func TestQsimErorrCorrectionZero(t *testing.T) {
 	if qsim.Probability()[2] != 1 {
 		t.Error(qsim.Probability())
 	}
+}
+
+func TestQsimErorrCorrection(t *testing.T) {
+	qsim := New()
+
+	q0 := qsim.New(1, 9)
+
+	// encoding
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
+	qsim.CNOT(q0, q1).CNOT(q0, q2)
+
+	// error: first qubit is flipped
+	qsim.X(q1)
+
+	// add ancilla qubit
+	q3 := qsim.Zero()
+	q4 := qsim.Zero()
+
+	// error corretion
+	qsim.CNOT(q0, q3).CNOT(q1, q3)
+	qsim.CNOT(q1, q4).CNOT(q2, q4)
+
+	m3 := qsim.Measure(q3)
+	m4 := qsim.Measure(q4)
+
+	qsim.ConditionX(m3.IsOne() && m4.IsZero(), q0)
+	qsim.ConditionX(m3.IsOne() && m4.IsOne(), q1)
+	qsim.ConditionX(m3.IsZero() && m4.IsOne(), q2)
 }
 
 func TestGrover3qubit(t *testing.T) {

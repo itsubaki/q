@@ -33,8 +33,8 @@ func One(bit ...int) *Qubit {
 }
 
 func (q *Qubit) NumberOfBit() int {
-	l := len(q.Probability())
-	log := math.Log2(float64(l))
+	dim := float64(q.v.Dimension())
+	log := math.Log2(dim)
 	return int(log)
 }
 

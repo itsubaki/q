@@ -1,11 +1,17 @@
 package qubit
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/itsubaki/q/gate"
 	"github.com/itsubaki/q/matrix"
 )
+
+func TestQFT(t *testing.T) {
+	q := Zero(3).Apply(gate.QFT())
+	fmt.Println(q.Probability())
+}
 
 func TestNum(t *testing.T) {
 	for i := 1; i < 10; i++ {

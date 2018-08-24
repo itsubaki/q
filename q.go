@@ -104,6 +104,18 @@ func (q *Q) Apply(mat matrix.Matrix, input ...*Qubit) *Q {
 	return q
 }
 
+func (q *Q) ControlledR(controll []*Qubit, target *Qubit, k int) *Q {
+	bit := q.qubit.NumberOfBit()
+	cr := gate.ControlledR(bit, index(controll), target.Index, k)
+
+	q.qubit.Apply(cr)
+	return q
+}
+
+func (q *Q) CR(controll *Qubit, target *Qubit, k int) *Q {
+	return q.ControlledR([]*Qubit{controll}, target, k)
+}
+
 func (q *Q) ControlledZ(controll []*Qubit, target *Qubit) *Q {
 	bit := q.qubit.NumberOfBit()
 	cnot := gate.ControlledZ(bit, index(controll), target.Index)

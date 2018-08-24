@@ -29,6 +29,17 @@ func U(alpha, beta, gamma, delta float64) matrix.Matrix {
 	return u.Mul(cmplx.Exp(complex(0, alpha)))
 }
 
+func R(k int) matrix.Matrix {
+	m := make(matrix.Matrix, 2)
+
+	p := 2 * math.Pi / math.Pow(2, float64(k))
+	e := cmplx.Exp(complex(0, p))
+
+	m[0] = []complex128{1, 0}
+	m[1] = []complex128{0, e}
+	return m
+}
+
 func I(bit ...int) matrix.Matrix {
 	m := make(matrix.Matrix, 2)
 	m[0] = []complex128{1, 0}
@@ -80,19 +91,36 @@ func T(bit ...int) matrix.Matrix {
 	return matrix.Tensor(m, bit...)
 }
 
-func Swap(bit ...int) matrix.Matrix {
-	if len(bit) < 1 {
-		bit = []int{2}
-	}
-
-	m := I(bit...)
+func ControlledR(bit int, c []int, t, k int) matrix.Matrix {
+	m := I([]int{bit}...)
 	dim := len(m)
 
-	for i := 1; i < dim/2; i++ {
-		m[i], m[dim-1-i] = m[dim-1-i], m[i]
+	p := 2 * math.Pi / math.Pow(2, float64(k))
+	e := cmplx.Exp(complex(0, p))
+
+	f := "%0" + strconv.Itoa(bit) + "s"
+	for i := 0; i < dim; i++ {
+		s := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
+		bits := []rune(s)
+
+		// Apply R(k)
+		apply := true
+		for i := range c {
+			if bits[c[i]] == '0' {
+				apply = false
+			}
+		}
+
+		if apply && bits[t] == '1' {
+			m[i][i] = e * m[i][i]
+		}
 	}
 
 	return m
+}
+
+func CR(bit, c, t, k int) matrix.Matrix {
+	return ControlledR(bit, []int{c}, t, k)
 }
 
 func ControlledNot(bit int, c []int, t int) matrix.Matrix {
