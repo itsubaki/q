@@ -189,6 +189,65 @@ func TestQSimBellstate(t *testing.T) {
 
 }
 
+func TestQsimQuantumTeleportation2(t *testing.T) {
+	qsim := New()
+
+	phi := qsim.New(1, 2)
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+
+	qsim.H(q0).CNOT(q0, q1) // bell state
+	qsim.CNOT(phi, q0).H(phi)
+
+	qsim.CNOT(q0, q1)
+	qsim.CZ(phi, q1)
+
+	mz := qsim.Measure(phi)
+	mx := qsim.Measure(q0)
+
+	p := qsim.Probability()
+	if math.Abs(qubit.Sum(p)-1) > 1e-13 {
+		t.Error(p)
+	}
+
+	var test = []struct {
+		zero int
+		one  int
+		zval float64
+		oval float64
+		eps  float64
+		mz   *qubit.Qubit
+		mx   *qubit.Qubit
+	}{
+		{0, 1, 0.2, 0.8, 1e-13, qubit.Zero(), qubit.Zero()},
+		{2, 3, 0.2, 0.8, 1e-13, qubit.Zero(), qubit.One()},
+		{4, 5, 0.2, 0.8, 1e-13, qubit.One(), qubit.Zero()},
+		{6, 7, 0.2, 0.8, 1e-13, qubit.One(), qubit.One()},
+	}
+
+	for _, tt := range test {
+		if p[tt.zero] == 0 {
+			continue
+		}
+
+		if math.Abs(p[tt.zero]-tt.zval) > tt.eps {
+			t.Error(p)
+		}
+		if math.Abs(p[tt.one]-tt.oval) > tt.eps {
+			t.Error(p)
+		}
+
+		if !mz.Equals(tt.mz) {
+			t.Error(p)
+		}
+
+		if !mx.Equals(tt.mx) {
+			t.Error(p)
+		}
+
+	}
+}
+
 func TestQSimQuantumTeleportation(t *testing.T) {
 	qsim := New()
 
