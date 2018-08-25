@@ -1,7 +1,6 @@
 package q
 
 import (
-	"fmt"
 	"math"
 	"testing"
 
@@ -9,6 +8,23 @@ import (
 	"github.com/itsubaki/q/matrix"
 	"github.com/itsubaki/q/qubit"
 )
+
+func TestQSimQFTnqubit(t *testing.T) {
+	qsim := New()
+
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
+
+	qsim.QFT(q0, q1, q2)
+
+	p := qsim.Probability()
+	for _, pp := range p {
+		if math.Abs(pp-0.125) > 1e-13 {
+			t.Error(p)
+		}
+	}
+}
 
 func TestQSimQFT3qubit(t *testing.T) {
 	qsim := New()
@@ -28,7 +44,12 @@ func TestQSimQFT3qubit(t *testing.T) {
 
 	qsim.Swap(q0, q2)
 
-	fmt.Println(qsim.Probability())
+	p := qsim.Probability()
+	for _, pp := range p {
+		if math.Abs(pp-0.125) > 1e-13 {
+			t.Error(p)
+		}
+	}
 }
 
 func TestQSimGrover3qubit(t *testing.T) {
