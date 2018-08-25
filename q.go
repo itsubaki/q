@@ -140,6 +140,10 @@ func (q *Q) CNOT(controll *Qubit, target *Qubit) *Q {
 	return q.ControlledNot([]*Qubit{controll}, target)
 }
 
+func (q *Q) QFT(qb ...*Qubit) *Q {
+	return q
+}
+
 func (q *Q) ConditionX(condition bool, input ...*Qubit) *Q {
 	if condition {
 		return q.X(input...)
@@ -151,6 +155,13 @@ func (q *Q) ConditionZ(condition bool, input ...*Qubit) *Q {
 	if condition {
 		return q.Z(input...)
 	}
+	return q
+}
+
+func (q *Q) Swap(q0, q1 *Qubit) *Q {
+	q.CNOT(q0, q1)
+	q.CNOT(q1, q0)
+	q.CNOT(q0, q1)
 	return q
 }
 

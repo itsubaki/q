@@ -26,10 +26,7 @@ func TestQSimQFT3qubit(t *testing.T) {
 
 	qsim.H(q2)
 
-	// swap
-	qsim.CNOT(q0, q2)
-	qsim.CNOT(q2, q0)
-	qsim.CNOT(q0, q2)
+	qsim.Swap(q0, q2)
 
 	fmt.Println(qsim.Probability())
 }
@@ -121,12 +118,15 @@ func TestQSimEstimate(t *testing.T) {
 	e0 := qsim.Estimate(q0)
 	e1 := qsim.Estimate(q1)
 
-	if !e0.Equals(ex, 1e-2) {
-		t.Errorf("%v: %v\n", ex, e0)
+	f0 := ex.Fidelity(e0)
+	f1 := ex.Fidelity(e1)
+
+	if math.Abs(f0-1) > 1e-3 {
+		t.Errorf("%v: %v\n", f0, e0)
 	}
 
-	if !e1.Equals(ex, 1e-2) {
-		t.Errorf("%v: %v\n", ex, e1)
+	if math.Abs(f1-1) > 1e-3 {
+		t.Errorf("%v: %v\n", f1, e1)
 	}
 
 }
@@ -301,6 +301,23 @@ func TestQsimErorrCorrection(t *testing.T) {
 	qsim.ConditionX(m3.IsOne() && m4.IsZero(), q0)
 	qsim.ConditionX(m3.IsOne() && m4.IsOne(), q1)
 	qsim.ConditionX(m3.IsZero() && m4.IsOne(), q2)
+
+	ex := qubit.New(1, 9)
+	f0 := ex.Fidelity(qsim.Estimate(q0))
+	f1 := ex.Fidelity(qsim.Estimate(q1))
+	f2 := ex.Fidelity(qsim.Estimate(q2))
+
+	if math.Abs(f0-1) > 1e-3 {
+		t.Errorf("%v\n", f0)
+	}
+
+	if math.Abs(f1-1) > 1e-3 {
+		t.Errorf("%v\n", f1)
+	}
+
+	if math.Abs(f2-1) > 1e-3 {
+		t.Errorf("%v\n", f2)
+	}
 }
 
 func TestGrover3qubit(t *testing.T) {
