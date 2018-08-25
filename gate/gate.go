@@ -220,7 +220,7 @@ func ControlledS(bit int, c []int, t int) matrix.Matrix {
 		}
 
 		if pflip && bits[t] == '1' {
-			m[i][i] = 1i
+			m[i][i] = 1i * m[i][i]
 		}
 	}
 
