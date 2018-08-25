@@ -108,6 +108,7 @@ func ControlledR(bit int, c []int, t, k int) matrix.Matrix {
 		for i := range c {
 			if bits[c[i]] == '0' {
 				apply = false
+				break
 			}
 		}
 
@@ -134,14 +135,15 @@ func ControlledNot(bit int, c []int, t int) matrix.Matrix {
 		bits := []rune(s)
 
 		// Apply X
-		flip := true
+		apply := true
 		for i := range c {
 			if bits[c[i]] == '0' {
-				flip = false
+				apply = false
+				break
 			}
 		}
 
-		if flip {
+		if apply {
 			if bits[t] == '1' {
 				bits[t] = '0'
 			} else if bits[t] == '0' {
@@ -183,14 +185,15 @@ func ControlledZ(bit int, c []int, t int) matrix.Matrix {
 		bits := []rune(s)
 
 		// Apply Z
-		pflip := true
+		apply := true
 		for i := range c {
 			if bits[c[i]] == '0' {
-				pflip = false
+				apply = false
+				break
 			}
 		}
 
-		if pflip && bits[t] == '1' {
+		if apply && bits[t] == '1' {
 			m[i][i] = complex(-1, 0) * m[i][i]
 		}
 	}
@@ -212,14 +215,15 @@ func ControlledS(bit int, c []int, t int) matrix.Matrix {
 		bits := []rune(s)
 
 		// Apply S
-		pflip := true
+		apply := true
 		for i := range c {
 			if bits[c[i]] == '0' {
-				pflip = false
+				apply = false
+				break
 			}
 		}
 
-		if pflip && bits[t] == '1' {
+		if apply && bits[t] == '1' {
 			m[i][i] = 1i * m[i][i]
 		}
 	}
