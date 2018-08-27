@@ -208,7 +208,7 @@ func (m0 Matrix) TensorProduct(m1 Matrix) Matrix {
 	return m2
 }
 
-func Tensor(m Matrix, bit ...int) Matrix {
+func TensorProductN(m Matrix, bit ...int) Matrix {
 	if len(bit) < 1 {
 		return m
 	}

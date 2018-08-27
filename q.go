@@ -175,9 +175,9 @@ func (q *Q) ConditionZ(condition bool, input ...*Qubit) *Q {
 }
 
 func (q *Q) Swap(q0, q1 *Qubit) *Q {
-	q.CNOT(q0, q1)
-	q.CNOT(q1, q0)
-	q.CNOT(q0, q1)
+	bit := q.qubit.NumberOfBit()
+	swap := gate.Swap(bit, q0.Index, q1.Index)
+	q.qubit.Apply(swap)
 	return q
 }
 

@@ -44,28 +44,28 @@ func I(bit ...int) matrix.Matrix {
 	m := make(matrix.Matrix, 2)
 	m[0] = []complex128{1, 0}
 	m[1] = []complex128{0, 1}
-	return matrix.Tensor(m, bit...)
+	return matrix.TensorProductN(m, bit...)
 }
 
 func X(bit ...int) matrix.Matrix {
 	m := make(matrix.Matrix, 2)
 	m[0] = []complex128{0, 1}
 	m[1] = []complex128{1, 0}
-	return matrix.Tensor(m, bit...)
+	return matrix.TensorProductN(m, bit...)
 }
 
 func Y(bit ...int) matrix.Matrix {
 	m := make(matrix.Matrix, 2)
 	m[0] = []complex128{0, -1i}
 	m[1] = []complex128{1i, 0}
-	return matrix.Tensor(m, bit...)
+	return matrix.TensorProductN(m, bit...)
 }
 
 func Z(bit ...int) matrix.Matrix {
 	m := make(matrix.Matrix, 2)
 	m[0] = []complex128{1, 0}
 	m[1] = []complex128{0, -1}
-	return matrix.Tensor(m, bit...)
+	return matrix.TensorProductN(m, bit...)
 }
 
 func H(bit ...int) matrix.Matrix {
@@ -73,14 +73,14 @@ func H(bit ...int) matrix.Matrix {
 	v := complex(1/math.Sqrt2, 0)
 	m[0] = []complex128{v, v}
 	m[1] = []complex128{v, -1 * v}
-	return matrix.Tensor(m, bit...)
+	return matrix.TensorProductN(m, bit...)
 }
 
 func S(bit ...int) matrix.Matrix {
 	m := make(matrix.Matrix, 2)
 	m[0] = []complex128{1, 0}
 	m[1] = []complex128{0, 1i}
-	return matrix.Tensor(m, bit...)
+	return matrix.TensorProductN(m, bit...)
 }
 
 func T(bit ...int) matrix.Matrix {
@@ -88,7 +88,7 @@ func T(bit ...int) matrix.Matrix {
 	v := cmplx.Exp(complex(0, 1) * math.Pi / 4)
 	m[0] = []complex128{1, 0}
 	m[1] = []complex128{0, v}
-	return matrix.Tensor(m, bit...)
+	return matrix.TensorProductN(m, bit...)
 }
 
 func ControlledR(bit int, c []int, t, k int) matrix.Matrix {
@@ -144,10 +144,10 @@ func ControlledNot(bit int, c []int, t int) matrix.Matrix {
 		}
 
 		if apply {
-			if bits[t] == '1' {
-				bits[t] = '0'
-			} else if bits[t] == '0' {
+			if bits[t] == '0' {
 				bits[t] = '1'
+			} else {
+				bits[t] = '0'
 			}
 		}
 
@@ -233,6 +233,13 @@ func ControlledS(bit int, c []int, t int) matrix.Matrix {
 
 func CS(bit, c, t int) matrix.Matrix {
 	return ControlledS(bit, []int{c}, t)
+}
+
+func Swap(bit, c, t int) matrix.Matrix {
+	g0 := CNOT(bit, c, t)
+	g1 := CNOT(bit, t, c)
+	g2 := CNOT(bit, c, t)
+	return g0.Apply(g1).Apply(g2)
 }
 
 func Fredkin() matrix.Matrix {
