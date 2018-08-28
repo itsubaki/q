@@ -9,7 +9,7 @@ import (
 )
 
 func TestQFT(t *testing.T) {
-	q := Zero(3).Apply(gate.QFT())
+	q := Zero(3).Apply(gate.QFT(3))
 	fmt.Println(q.Probability())
 }
 

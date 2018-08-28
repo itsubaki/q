@@ -255,20 +255,30 @@ func Fredkin() matrix.Matrix {
 	return m
 }
 
-func QFT() matrix.Matrix {
-	m := make(matrix.Matrix, 8)
-	o := []complex128{}
-	for i := 0; i < 8; i++ {
-		o = append(o, cmplx.Pow(cmplx.Sqrt(1i), complex(float64(i), 0)))
+func QFT(bit int) matrix.Matrix {
+	m := I(bit)
+
+	for i := 0; i < bit; i++ {
+		h := []matrix.Matrix{}
+		for j := 0; j < bit; j++ {
+			if i == j {
+				h = append(h, H())
+			} else {
+				h = append(h, I())
+			}
+		}
+		m = m.Apply(matrix.TensorProduct(h...))
+
+		k := 2
+		for j := i + 1; j < bit; j++ {
+			m = m.Apply(CR(bit, j, i, k))
+			k++
+		}
 	}
 
-	m[0] = []complex128{o[0], o[0], o[0], o[0], o[0], o[0], o[0], o[0]}
-	m[1] = []complex128{o[0], o[1], o[2], o[3], o[4], o[5], o[6], o[7]}
-	m[2] = []complex128{o[0], o[2], o[4], o[6], o[0], o[2], o[4], o[6]}
-	m[3] = []complex128{o[0], o[3], o[6], o[1], o[4], o[7], o[2], o[5]}
-	m[4] = []complex128{o[0], o[4], o[0], o[4], o[0], o[4], o[0], o[4]}
-	m[5] = []complex128{o[0], o[5], o[2], o[7], o[4], o[1], o[6], o[3]}
-	m[6] = []complex128{o[0], o[6], o[4], o[2], o[0], o[6], o[4], o[2]}
-	m[7] = []complex128{o[0], o[7], o[6], o[5], o[4], o[3], o[2], o[1]}
-	return m.Mul(complex(1/math.Sqrt(8), 0))
+	for i := 0; i < bit/2; i++ {
+		m = m.Apply(Swap(bit, i, bit-1-i))
+	}
+
+	return m
 }

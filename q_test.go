@@ -9,14 +9,31 @@ import (
 	"github.com/itsubaki/q/qubit"
 )
 
-func TestQSimQFTnqubit(t *testing.T) {
+func TestQSimQFT(t *testing.T) {
 	qsim := New()
 
-	q0 := qsim.Zero()
-	q1 := qsim.Zero()
-	q2 := qsim.Zero()
+	qsim.Zero()
+	qsim.Zero()
+	qsim.Zero()
 
-	qsim.QFT(q0, q1, q2)
+	qsim.QFT()
+
+	p := qsim.Probability()
+	for _, pp := range p {
+		if math.Abs(pp-0.125) > 1e-13 {
+			t.Error(p)
+		}
+	}
+}
+
+func TestQSimInverseQFT(t *testing.T) {
+	qsim := New()
+
+	qsim.Zero()
+	qsim.Zero()
+	qsim.Zero()
+
+	qsim.InverseQFT()
 
 	p := qsim.Probability()
 	for _, pp := range p {

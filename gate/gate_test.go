@@ -176,6 +176,3 @@ func TensorProductProductXXY(t *testing.T) {
 	fmt.Printf("%v %v %v %v %v %v %v %v\n", tmp[12][1][0], tmp[12][1][1], tmp[13][1][0], tmp[13][1][1], tmp[14][1][0], tmp[14][1][1], tmp[15][1][0], tmp[15][1][1])
 	fmt.Println()
 }
-func TestQFT(t *testing.T) {
-	QFT()
-}
