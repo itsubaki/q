@@ -131,7 +131,7 @@ func (v0 Vector) Dimension() int {
 	return len(v0)
 }
 
-func Tensor(v0 Vector, bit ...int) Vector {
+func TensorProductN(v0 Vector, bit ...int) Vector {
 	if len(bit) < 1 {
 		return v0
 	}

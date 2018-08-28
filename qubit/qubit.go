@@ -25,11 +25,11 @@ func New(z ...complex128) *Qubit {
 }
 
 func Zero(bit ...int) *Qubit {
-	return &Qubit{v.Tensor(v.Vector{1, 0}, bit...)}
+	return &Qubit{v.TensorProductN(v.Vector{1, 0}, bit...)}
 }
 
 func One(bit ...int) *Qubit {
-	return &Qubit{v.Tensor(v.Vector{0, 1}, bit...)}
+	return &Qubit{v.TensorProductN(v.Vector{0, 1}, bit...)}
 }
 
 func (q *Qubit) NumberOfBit() int {
