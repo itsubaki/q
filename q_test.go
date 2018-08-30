@@ -1,6 +1,7 @@
 package q
 
 import (
+	"fmt"
 	"math"
 	"testing"
 
@@ -8,6 +9,67 @@ import (
 	"github.com/itsubaki/q/matrix"
 	"github.com/itsubaki/q/qubit"
 )
+
+func TestQSimFactoring15(t *testing.T) {
+	qsim := New()
+
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
+
+	q3 := qsim.Zero()
+	q4 := qsim.Zero()
+	q5 := qsim.Zero()
+	q6 := qsim.One()
+
+	qsim.H(q0, q1, q2)
+
+	qsim.CNOT(q2, q4)
+	qsim.CNOT(q2, q5)
+
+	// Controlled-Swap
+	qsim.ControlledNot([]*Qubit{q1, q4}, q6)
+	qsim.ControlledNot([]*Qubit{q1, q6}, q4)
+	qsim.ControlledNot([]*Qubit{q1, q4}, q6)
+
+	// Controlled-Swap
+	qsim.ControlledNot([]*Qubit{q1, q3}, q5)
+	qsim.ControlledNot([]*Qubit{q1, q5}, q3)
+	qsim.ControlledNot([]*Qubit{q1, q3}, q5)
+
+	// QFT
+	qsim.H(q0)
+	qsim.CR(q1, q0, 2)
+	qsim.CR(q2, q0, 3)
+
+	qsim.H(q1)
+	qsim.CR(q2, q1, 2)
+
+	qsim.H(q2)
+
+	qsim.Swap(q0, q2)
+
+	// measure q0, q1, q2
+	m0 := qsim.Measure(q0)
+	m1 := qsim.Measure(q1)
+	m2 := qsim.Measure(q2)
+	fmt.Printf("%v %v %v\n", m0, m1, m2)
+	fmt.Println(qsim.Probability())
+
+	e3 := qsim.Estimate(q3)
+	e4 := qsim.Estimate(q4)
+	e5 := qsim.Estimate(q5)
+	e6 := qsim.Estimate(q6)
+	fmt.Printf("%v %v %v %v\n", e3, e4, e5, e6)
+
+	m3 := qsim.Measure(q3)
+	m4 := qsim.Measure(q4)
+	m5 := qsim.Measure(q5)
+	m6 := qsim.Measure(q6)
+	fmt.Printf("%v %v %v %v\n", m3, m4, m5, m6)
+
+	fmt.Println(qsim.Probability())
+}
 
 func TestQSimQFT(t *testing.T) {
 	qsim := New()
