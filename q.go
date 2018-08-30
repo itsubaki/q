@@ -140,15 +140,15 @@ func (q *Q) CNOT(controll *Qubit, target *Qubit) *Q {
 	return q.ControlledNot([]*Qubit{controll}, target)
 }
 
-func (q *Q) QFT(input ...*Qubit) *Q {
+func (q *Q) QFT() *Q {
 	bit := q.qubit.NumberOfBit()
-	q.qubit.Apply(gate.QFT(bit, index(input)))
+	q.qubit.Apply(gate.QFT(bit))
 	return q
 }
 
-func (q *Q) InverseQFT(input ...*Qubit) *Q {
+func (q *Q) InverseQFT() *Q {
 	bit := q.qubit.NumberOfBit()
-	q.qubit.Apply(gate.QFT(bit, index(input)).Dagger())
+	q.qubit.Apply(gate.QFT(bit).Dagger())
 	return q
 }
 
