@@ -255,10 +255,23 @@ func Fredkin() matrix.Matrix {
 	return m
 }
 
-func QFT(bit int) matrix.Matrix {
+func include(i int, t []int) bool {
+	for j := range t {
+		if i == t[j] {
+			return true
+		}
+	}
+	return false
+}
+
+func QFT(bit int, t []int) matrix.Matrix {
 	m := I(bit)
 
 	for i := 0; i < bit; i++ {
+		if !include(i, t) {
+			continue
+		}
+
 		h := []matrix.Matrix{}
 		for j := 0; j < bit; j++ {
 			if i == j {

@@ -140,15 +140,15 @@ func (q *Q) CNOT(controll *Qubit, target *Qubit) *Q {
 	return q.ControlledNot([]*Qubit{controll}, target)
 }
 
-func (q *Q) QFT() *Q {
+func (q *Q) QFT(input ...*Qubit) *Q {
 	bit := q.qubit.NumberOfBit()
-	q.qubit.Apply(gate.QFT(bit))
+	q.qubit.Apply(gate.QFT(bit, index(input)))
 	return q
 }
 
-func (q *Q) InverseQFT() *Q {
+func (q *Q) InverseQFT(input ...*Qubit) *Q {
 	bit := q.qubit.NumberOfBit()
-	q.qubit.Apply(gate.QFT(bit).Dagger())
+	q.qubit.Apply(gate.QFT(bit, index(input)).Dagger())
 	return q
 }
 
@@ -185,7 +185,7 @@ func (q *Q) Probability() []float64 {
 }
 
 func (q *Q) Estimate(input *Qubit, loop ...int) *qubit.Qubit {
-	limit := 10000
+	limit := 1000
 	if len(loop) > 0 {
 		limit = loop[0]
 	}

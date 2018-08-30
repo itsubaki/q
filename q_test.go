@@ -12,11 +12,11 @@ import (
 func TestQSimQFT(t *testing.T) {
 	qsim := New()
 
-	qsim.Zero()
-	qsim.Zero()
-	qsim.Zero()
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
 
-	qsim.QFT()
+	qsim.QFT(q0, q1, q2)
 
 	p := qsim.Probability()
 	for _, pp := range p {
@@ -29,11 +29,11 @@ func TestQSimQFT(t *testing.T) {
 func TestQSimInverseQFT(t *testing.T) {
 	qsim := New()
 
-	qsim.Zero()
-	qsim.Zero()
-	qsim.Zero()
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
 
-	qsim.InverseQFT()
+	qsim.InverseQFT(q0, q1, q2)
 
 	p := qsim.Probability()
 	for _, pp := range p {
