@@ -3,12 +3,21 @@ package q
 import (
 	"fmt"
 	"math"
+	"strconv"
 	"testing"
 
 	"github.com/itsubaki/q/gate"
 	"github.com/itsubaki/q/matrix"
 	"github.com/itsubaki/q/qubit"
 )
+
+func gcd(a, b int) int {
+	if b == 0 {
+		return a
+	}
+
+	return gcd(b, a%b)
+}
 
 func TestQSimFactoring15(t *testing.T) {
 	qsim := New()
@@ -50,25 +59,36 @@ func TestQSimFactoring15(t *testing.T) {
 	qsim.Swap(q0, q2)
 
 	// measure q0, q1, q2
-	m0 := qsim.Measure(q0)
-	m1 := qsim.Measure(q1)
-	m2 := qsim.Measure(q2)
-	fmt.Printf("%v %v %v\n", m0, m1, m2)
-	fmt.Println(qsim.Probability())
+	qsim.Measure(q0)
+	qsim.Measure(q1)
+	qsim.Measure(q2)
 
-	e3 := qsim.Estimate(q3)
-	e4 := qsim.Estimate(q4)
-	e5 := qsim.Estimate(q5)
-	e6 := qsim.Estimate(q6)
-	fmt.Printf("%v %v %v %v\n", e3, e4, e5, e6)
+	p := qsim.Probability()
+	for i := range p {
+		if p[i] == 0 {
+			continue
+		}
 
-	m3 := qsim.Measure(q3)
-	m4 := qsim.Measure(q4)
-	m5 := qsim.Measure(q5)
-	m6 := qsim.Measure(q6)
+		fmt.Printf("%07s %v\n", strconv.FormatInt(int64(i), 2), p[i])
+	}
+	// 010,0001(1)  0.25
+	// 010,0100(4)  0.25
+	// 010,0111(7)  0.25
+	// 010,1101(13) 0.25
+
+	// gcd(a^(r/2)-1, N),  gcd(a^(r/2)+1, N)
+	// gcd(7^(4/2)-1, 15), gcd(7^(4/2)+1, 15)
+	p0 := gcd(7*7-1, 15)
+	p1 := gcd(7*7+1, 15)
+	if p0 != 3 || p1 != 5 {
+		t.Errorf("%v %v\n", p0, p1)
+	}
+
+	m3 := qsim.Estimate(q3).Measure()
+	m4 := qsim.Estimate(q4).Measure()
+	m5 := qsim.Estimate(q5).Measure()
+	m6 := qsim.Estimate(q6).Measure()
 	fmt.Printf("%v %v %v %v\n", m3, m4, m5, m6)
-
-	fmt.Println(qsim.Probability())
 }
 
 func TestQSimQFT(t *testing.T) {
