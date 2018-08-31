@@ -8,18 +8,18 @@ import (
 
 	"github.com/itsubaki/q/gate"
 	"github.com/itsubaki/q/matrix"
+	"github.com/itsubaki/q/number"
 	"github.com/itsubaki/q/qubit"
 )
 
-func gcd(a, b int) int {
-	if b == 0 {
-		return a
+func TestQSimFactoring15(t *testing.T) {
+	N := 15
+	a := 7 // co-prime
+
+	if number.GCD(15, 7) != 1 {
+		t.Errorf("%v %v\n", N, a)
 	}
 
-	return gcd(b, a%b)
-}
-
-func TestQSimFactoring15(t *testing.T) {
 	qsim := New()
 
 	q0 := qsim.Zero()
@@ -68,27 +68,21 @@ func TestQSimFactoring15(t *testing.T) {
 		if p[i] == 0 {
 			continue
 		}
-
 		fmt.Printf("%07s %v\n", strconv.FormatInt(int64(i), 2), p[i])
 	}
 	// 010,0001(1)  0.25
 	// 010,0100(4)  0.25
 	// 010,0111(7)  0.25
 	// 010,1101(13) 0.25
+	// r -> 4
 
-	// gcd(a^(r/2)-1, N),  gcd(a^(r/2)+1, N)
-	// gcd(7^(4/2)-1, 15), gcd(7^(4/2)+1, 15)
-	p0 := gcd(7*7-1, 15)
-	p1 := gcd(7*7+1, 15)
+	// gcd(a^(r/2)-1, N), gcd(7^(4/2)-1, 15)
+	// gcd(a^(r/2)+1, N), gcd(7^(4/2)+1, 15)
+	p0 := number.GCD(a*a-1, N)
+	p1 := number.GCD(a*a+1, N)
 	if p0 != 3 || p1 != 5 {
 		t.Errorf("%v %v\n", p0, p1)
 	}
-
-	m3 := qsim.Estimate(q3).Measure()
-	m4 := qsim.Estimate(q4).Measure()
-	m5 := qsim.Estimate(q5).Measure()
-	m6 := qsim.Estimate(q6).Measure()
-	fmt.Printf("%v %v %v %v\n", m3, m4, m5, m6)
 }
 
 func TestQSimQFT(t *testing.T) {
