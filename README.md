@@ -151,7 +151,7 @@ N := 15
 a := 7
 
 // a is co-prime
-if number.GCD(15, 7) != 1 {
+if number.GCD(N, a) != 1 {
   t.Errorf("%v %v\n", N, a)
 }
 
