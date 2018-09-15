@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/itsubaki/q/matrix"
+	"github.com/itsubaki/q/math/matrix"
 )
 
 func TestCZ(t *testing.T) {

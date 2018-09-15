@@ -3,7 +3,7 @@ package vector
 import (
 	"math/cmplx"
 
-	"github.com/itsubaki/q/matrix"
+	"github.com/itsubaki/q/math/matrix"
 )
 
 type Vector []complex128

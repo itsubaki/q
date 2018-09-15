@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/itsubaki/q/gate"
-	"github.com/itsubaki/q/matrix"
+	"github.com/itsubaki/q/circuit/gate"
+	"github.com/itsubaki/q/math/matrix"
 )
 
 func TestQFT(t *testing.T) {

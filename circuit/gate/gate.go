@@ -6,7 +6,7 @@ import (
 	"math/cmplx"
 	"strconv"
 
-	"github.com/itsubaki/q/matrix"
+	"github.com/itsubaki/q/math/matrix"
 )
 
 func U(alpha, beta, gamma, delta float64) matrix.Matrix {
