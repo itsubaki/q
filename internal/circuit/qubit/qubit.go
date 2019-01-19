@@ -6,8 +6,8 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/itsubaki/q/math/matrix"
-	v "github.com/itsubaki/q/math/vector"
+	"github.com/itsubaki/q/internal/math/matrix"
+	v "github.com/itsubaki/q/internal/math/vector"
 )
 
 type Qubit struct {

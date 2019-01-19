@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/itsubaki/q/circuit/gate"
-	"github.com/itsubaki/q/circuit/qubit"
-	"github.com/itsubaki/q/math/matrix"
-	"github.com/itsubaki/q/math/number"
+	"github.com/itsubaki/q/internal/circuit/gate"
+	"github.com/itsubaki/q/internal/circuit/qubit"
+	"github.com/itsubaki/q/internal/math/matrix"
+	"github.com/itsubaki/q/internal/math/number"
 )
 
 func TestQSimFactoring15(t *testing.T) {

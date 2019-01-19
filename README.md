@@ -155,7 +155,7 @@ if number.GCD(N, a) != 1 {
   t.Errorf("%v %v\n", N, a)
 }
 
-qsim := New()
+qsim := q.New()
 
 q0 := qsim.Zero()
 q1 := qsim.Zero()
@@ -169,15 +169,15 @@ q6 := qsim.One()
 // superposition
 qsim.H(q0, q1, q2)
 
+// Controlled-U
 qsim.CNOT(q2, q4)
 qsim.CNOT(q2, q5)
 
-// Controlled-Swap
+// Controlled-U^2
 qsim.ControlledNot([]*Qubit{q1, q4}, q6)
 qsim.ControlledNot([]*Qubit{q1, q6}, q4)
 qsim.ControlledNot([]*Qubit{q1, q4}, q6)
 
-// Controlled-Swap
 qsim.ControlledNot([]*Qubit{q1, q3}, q5)
 qsim.ControlledNot([]*Qubit{q1, q5}, q3)
 qsim.ControlledNot([]*Qubit{q1, q3}, q5)
