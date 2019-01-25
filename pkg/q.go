@@ -104,40 +104,40 @@ func (q *Q) Apply(mat matrix.Matrix, input ...*Qubit) *Q {
 	return q
 }
 
-func (q *Q) ControlledR(controll []*Qubit, target *Qubit, k int) *Q {
+func (q *Q) ControlledR(control []*Qubit, target *Qubit, k int) *Q {
 	bit := q.qubit.NumberOfBit()
-	cr := gate.ControlledR(bit, index(controll), target.Index, k)
+	cr := gate.ControlledR(bit, index(control), target.Index, k)
 
 	q.qubit.Apply(cr)
 	return q
 }
 
-func (q *Q) CR(controll *Qubit, target *Qubit, k int) *Q {
-	return q.ControlledR([]*Qubit{controll}, target, k)
+func (q *Q) CR(control *Qubit, target *Qubit, k int) *Q {
+	return q.ControlledR([]*Qubit{control}, target, k)
 }
 
-func (q *Q) ControlledZ(controll []*Qubit, target *Qubit) *Q {
+func (q *Q) ControlledZ(control []*Qubit, target *Qubit) *Q {
 	bit := q.qubit.NumberOfBit()
-	cnot := gate.ControlledZ(bit, index(controll), target.Index)
+	cnot := gate.ControlledZ(bit, index(control), target.Index)
 
 	q.qubit.Apply(cnot)
 	return q
 }
 
-func (q *Q) CZ(controll *Qubit, target *Qubit) *Q {
-	return q.ControlledZ([]*Qubit{controll}, target)
+func (q *Q) CZ(control *Qubit, target *Qubit) *Q {
+	return q.ControlledZ([]*Qubit{control}, target)
 }
 
-func (q *Q) ControlledNot(controll []*Qubit, target *Qubit) *Q {
+func (q *Q) ControlledNot(control []*Qubit, target *Qubit) *Q {
 	bit := q.qubit.NumberOfBit()
-	cnot := gate.ControlledNot(bit, index(controll), target.Index)
+	cnot := gate.ControlledNot(bit, index(control), target.Index)
 
 	q.qubit.Apply(cnot)
 	return q
 }
 
-func (q *Q) CNOT(controll *Qubit, target *Qubit) *Q {
-	return q.ControlledNot([]*Qubit{controll}, target)
+func (q *Q) CNOT(control *Qubit, target *Qubit) *Q {
+	return q.ControlledNot([]*Qubit{control}, target)
 }
 
 func (q *Q) QFT() *Q {
