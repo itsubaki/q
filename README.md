@@ -1,5 +1,7 @@
 # q
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/itsubaki/q?style=flat-square)](https://goreportcard.com/report/github.com/itsubaki/q)
+
  - quantum computation simulator
 
 # example
