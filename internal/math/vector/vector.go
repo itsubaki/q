@@ -50,7 +50,7 @@ func (v0 Vector) Add(v1 Vector) Vector {
 
 func (v0 Vector) Mul(z complex128) Vector {
 	v2 := Vector{}
-	for i, _ := range v0 {
+	for i := range v0 {
 		v2 = append(v2, z*v0[i])
 	}
 	return v2

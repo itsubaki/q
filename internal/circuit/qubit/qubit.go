@@ -167,7 +167,7 @@ func (q *Qubit) ProbabilityOneAt(bit int) ([]int, []float64) {
 
 	zi, _ := q.ProbabilityZeroAt(bit)
 	one := []int{}
-	for i, _ := range q.v {
+	for i := range q.v {
 		found := false
 		for _, zii := range zi {
 			if i == zii {
@@ -209,7 +209,7 @@ func (q *Qubit) MeasureAt(bit int) *Qubit {
 	}
 
 	one := []int{}
-	for i, _ := range q.v {
+	for i := range q.v {
 		found := false
 		for _, ix := range index {
 			if i == ix {
