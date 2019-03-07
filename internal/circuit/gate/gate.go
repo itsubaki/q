@@ -9,6 +9,14 @@ import (
 	"github.com/itsubaki/q/internal/math/matrix"
 )
 
+func New(v ...[]complex128) matrix.Matrix {
+	m := make(matrix.Matrix, len(v))
+	for i := 0; i < len(v); i++ {
+		m[i] = v[i]
+	}
+	return m
+}
+
 func U(alpha, beta, gamma, delta float64) matrix.Matrix {
 	m0 := make(matrix.Matrix, 2)
 	v0 := complex(0, 1*beta/2)

@@ -1,10 +1,19 @@
 package matrix
 
 import (
+	"fmt"
 	"math/cmplx"
 )
 
 type Matrix [][]complex128
+
+func New(v ...[]complex128) Matrix {
+	m := make(Matrix, len(v))
+	for i := 0; i < len(v); i++ {
+		m[i] = v[i]
+	}
+	return m
+}
 
 func (m0 Matrix) Equals(m1 Matrix, eps ...float64) bool {
 	m, n := m0.Dimension()
@@ -179,6 +188,61 @@ func (m0 Matrix) Trace() complex128 {
 		sum = sum + m0[i][i]
 	}
 	return sum
+}
+
+func (m0 Matrix) Clone() Matrix {
+	m, n := m0.Dimension()
+	ret := Matrix{}
+	for i := 0; i < m; i++ {
+		v := []complex128{}
+		for j := 0; j < n; j++ {
+			v = append(v, m0[i][j])
+		}
+		ret = append(ret, v)
+	}
+
+	return ret
+}
+
+func (m0 Matrix) Inverse() Matrix {
+	mat := m0.Clone()
+	m, n := mat.Dimension()
+	if m != n {
+		panic(fmt.Sprintf("m=%d n=%d", m, n))
+	}
+
+	inv := Matrix{}
+	for i := 0; i < m; i++ {
+		v := []complex128{}
+		for j := 0; j < n; j++ {
+			if i == j {
+				v = append(v, complex(1, 0))
+				continue
+			}
+			v = append(v, complex(0, 0))
+		}
+		inv = append(inv, v)
+	}
+
+	for i := 0; i < m; i++ {
+		c := 1 / mat[i][i]
+		for j := 0; j < n; j++ {
+			mat[i][j] = c * mat[i][j]
+			inv[i][j] = c * inv[i][j]
+		}
+		for j := 0; j < n; j++ {
+			if i == j {
+				continue
+			}
+			c := mat[j][i]
+			for k := 0; k < n; k++ {
+				mat[j][k] = mat[j][k] - c*mat[i][k]
+				inv[j][k] = inv[j][k] - c*inv[i][k]
+			}
+		}
+	}
+
+	return inv
 }
 
 func (m0 Matrix) TensorProduct(m1 Matrix) Matrix {

@@ -2,10 +2,33 @@ package gate
 
 import (
 	"fmt"
+	"math/cmplx"
 	"testing"
 
 	"github.com/itsubaki/q/internal/math/matrix"
 )
+
+func TestInverseU(t *testing.T) {
+	m := U(1.0, 1.1, 1.2, 1.3)
+
+	inv := m.Inverse()
+	im := m.Apply(inv)
+
+	mm, nn := im.Dimension()
+	for i := 0; i < mm; i++ {
+		for j := 0; j < nn; j++ {
+			if i == j {
+				if cmplx.Abs(im[i][j]-complex(1, 0)) > 1e-13 {
+					t.Errorf("[%v][%v] %v\n", i, j, im[i][j])
+				}
+				continue
+			}
+			if cmplx.Abs(im[i][j]-complex(0, 0)) > 1e-13 {
+				t.Errorf("[%v][%v] %v\n", i, j, im[i][j])
+			}
+		}
+	}
+}
 
 func TestCZ(t *testing.T) {
 	expected := make(matrix.Matrix, 8)
