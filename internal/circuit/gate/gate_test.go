@@ -31,15 +31,16 @@ func TestInverseU(t *testing.T) {
 }
 
 func TestCZ(t *testing.T) {
-	expected := make(matrix.Matrix, 8)
-	expected[0] = []complex128{1, 0, 0, 0, 0, 0, 0, 0}
-	expected[1] = []complex128{0, 1, 0, 0, 0, 0, 0, 0}
-	expected[2] = []complex128{0, 0, 1, 0, 0, 0, 0, 0}
-	expected[3] = []complex128{0, 0, 0, 1, 0, 0, 0, 0}
-	expected[4] = []complex128{0, 0, 0, 0, 1, 0, 0, 0}
-	expected[5] = []complex128{0, 0, 0, 0, 0, -1, 0, 0}
-	expected[6] = []complex128{0, 0, 0, 0, 0, 0, 1, 0}
-	expected[7] = []complex128{0, 0, 0, 0, 0, 0, 0, -1}
+	expected := New(
+		[]complex128{1, 0, 0, 0, 0, 0, 0, 0},
+		[]complex128{0, 1, 0, 0, 0, 0, 0, 0},
+		[]complex128{0, 0, 1, 0, 0, 0, 0, 0},
+		[]complex128{0, 0, 0, 1, 0, 0, 0, 0},
+		[]complex128{0, 0, 0, 0, 1, 0, 0, 0},
+		[]complex128{0, 0, 0, 0, 0, -1, 0, 0},
+		[]complex128{0, 0, 0, 0, 0, 0, 1, 0},
+		[]complex128{0, 0, 0, 0, 0, 0, 0, -1},
+	)
 
 	actual := CZ(3, 0, 2)
 
@@ -49,15 +50,16 @@ func TestCZ(t *testing.T) {
 }
 
 func TestCNOT(t *testing.T) {
-	expected := make(matrix.Matrix, 8)
-	expected[0] = []complex128{1, 0, 0, 0, 0, 0, 0, 0}
-	expected[1] = []complex128{0, 1, 0, 0, 0, 0, 0, 0}
-	expected[2] = []complex128{0, 0, 1, 0, 0, 0, 0, 0}
-	expected[3] = []complex128{0, 0, 0, 1, 0, 0, 0, 0}
-	expected[4] = []complex128{0, 0, 0, 0, 0, 1, 0, 0}
-	expected[5] = []complex128{0, 0, 0, 0, 1, 0, 0, 0}
-	expected[6] = []complex128{0, 0, 0, 0, 0, 0, 0, 1}
-	expected[7] = []complex128{0, 0, 0, 0, 0, 0, 1, 0}
+	expected := New(
+		[]complex128{1, 0, 0, 0, 0, 0, 0, 0},
+		[]complex128{0, 1, 0, 0, 0, 0, 0, 0},
+		[]complex128{0, 0, 1, 0, 0, 0, 0, 0},
+		[]complex128{0, 0, 0, 1, 0, 0, 0, 0},
+		[]complex128{0, 0, 0, 0, 0, 1, 0, 0},
+		[]complex128{0, 0, 0, 0, 1, 0, 0, 0},
+		[]complex128{0, 0, 0, 0, 0, 0, 0, 1},
+		[]complex128{0, 0, 0, 0, 0, 0, 1, 0},
+	)
 
 	actual := CNOT(3, 0, 2)
 
@@ -158,7 +160,7 @@ func TestTrace(t *testing.T) {
 	}
 }
 
-func TensorProductProductXY(t *testing.T) {
+func TestTensorProductProductXY(t *testing.T) {
 	x := X()
 	y := Y()
 
@@ -177,7 +179,7 @@ func TensorProductProductXY(t *testing.T) {
 	fmt.Println()
 }
 
-func TensorProductProductXXY(t *testing.T) {
+func TestTensorProductProductXXY(t *testing.T) {
 	xx := X().TensorProduct(X())
 	y := Y()
 
