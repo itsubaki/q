@@ -294,6 +294,20 @@ func TensorProduct(m ...Matrix) Matrix {
 	return m0
 }
 
+func Commutator(m0, m1 Matrix) Matrix {
+	m10 := m1.Apply(m0)
+	m01 := m0.Apply(m1)
+
+	return m10.Sub(m01)
+}
+
+func AntiCommutator(m0, m1 Matrix) Matrix {
+	m10 := m1.Apply(m0)
+	m01 := m0.Apply(m1)
+
+	return m10.Add(m01)
+}
+
 func Eps(eps ...float64) float64 {
 	if len(eps) > 0 {
 		return eps[0]
