@@ -7,6 +7,27 @@ import (
 	"github.com/itsubaki/q/internal/math/matrix"
 )
 
+func TestOuterProduct(t *testing.T) {
+	v0 := New(1, 0)
+	out := v0.OuterProduct(v0)
+
+	if out[0][0] != complex(1, 0) {
+		t.Fail()
+	}
+
+	if out[1][0] != complex(0, 0) {
+		t.Fail()
+	}
+
+	if out[0][1] != complex(0, 0) {
+		t.Fail()
+	}
+
+	if out[1][1] != complex(0, 0) {
+		t.Fail()
+	}
+}
+
 func TestVector(t *testing.T) {
 	v0 := New(1, 1)
 	v1 := New(1, -1)

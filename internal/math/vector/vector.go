@@ -77,12 +77,21 @@ func (v0 Vector) InnerProduct(v1 Vector) complex128 {
 	return p
 }
 
-func (v0 Vector) IsOrthogonal(v1 Vector) bool {
-	p := v0.InnerProduct(v1)
-	if p == complex(0, 0) {
-		return true
+func (v0 Vector) OuterProduct(v1 Vector) matrix.Matrix {
+	m := matrix.Matrix{}
+	for i := 0; i < len(v0); i++ {
+		v := []complex128{}
+		for j := 0; j < len(v1); j++ {
+			v = append(v, v0[i]*v1[j])
+		}
+		m = append(m, v)
 	}
-	return false
+
+	return m
+}
+
+func (v0 Vector) IsOrthogonal(v1 Vector) bool {
+	return v0.InnerProduct(v1) == complex(0, 0)
 }
 
 func (v0 Vector) Norm() complex128 {
@@ -90,11 +99,7 @@ func (v0 Vector) Norm() complex128 {
 }
 
 func (v0 Vector) IsUnit() bool {
-	n := v0.Norm()
-	if n == complex(1, 0) {
-		return true
-	}
-	return false
+	return v0.Norm() == complex(1, 0)
 }
 
 func (v0 Vector) Apply(mat matrix.Matrix) Vector {

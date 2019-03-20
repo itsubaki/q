@@ -50,6 +50,10 @@ func (q *Qubit) InnerProduct(q0 *Qubit) complex128 {
 	return q.v.InnerProduct(q0.v)
 }
 
+func (q *Qubit) OuterProduct(q0 *Qubit) matrix.Matrix {
+	return q.v.OuterProduct(q0.v)
+}
+
 func (q *Qubit) Clone() *Qubit {
 	return &Qubit{q.v.Clone()}
 }
@@ -60,7 +64,7 @@ func (q *Qubit) Fidelity(q0 *Qubit) float64 {
 
 	var sum float64
 	for i := 0; i < len(p0); i++ {
-		sum = sum + math.Sqrt(float64(p0[i])*float64(p1[i]))
+		sum = sum + math.Sqrt(p0[i]*p1[i])
 	}
 
 	return sum
@@ -72,7 +76,7 @@ func (q *Qubit) TraceDistance(q0 *Qubit) float64 {
 
 	var sum float64
 	for i := 0; i < len(p0); i++ {
-		sum = sum + math.Abs(float64(p0[i]-p1[i]))
+		sum = sum + math.Abs(p0[i]-p1[i])
 	}
 
 	return sum / 2
