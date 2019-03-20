@@ -125,29 +125,6 @@ qsim.Estimate(q1).Probability() // (0.2, 0.8)
 qsim.Estimate(q2).Probability() // (0.2, 0.8)
 ```
 
-## quantum fourier transform
-
-```golang
-qsim := q.New()
-
-q0 := qsim.Zero()
-q1 := qsim.Zero()
-q2 := qsim.Zero()
-
-qsim.H(q0)
-qsim.CR(q1, q0, 2)
-qsim.CR(q2, q0, 3)
-
-qsim.H(q1)
-qsim.CR(q2, q1, 2)
-
-qsim.H(q2)
-
-qsim.Swap(q0, q2)
-
-qsim.Probability()
-```
-
 ## Factoring 15
 
 ```golang

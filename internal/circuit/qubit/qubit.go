@@ -46,6 +46,10 @@ func (q *Qubit) IsOne(eps ...float64) bool {
 	return q.Equals(One(), eps...)
 }
 
+func (q *Qubit) InnerProduct(q0 *Qubit) complex128 {
+	return q.v.InnerProduct(q0.v)
+}
+
 func (q *Qubit) Clone() *Qubit {
 	return &Qubit{q.v.Clone()}
 }

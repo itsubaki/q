@@ -12,6 +12,35 @@ import (
 	"github.com/itsubaki/q/internal/math/number"
 )
 
+func TestPOVM(t *testing.T) {
+	E1 := gate.New(
+		[]complex128{0, 0},
+		[]complex128{0, 1},
+	).Mul(complex(math.Sqrt(2)/(1.0+math.Sqrt(2)), 0))
+
+	E2 := gate.New(
+		[]complex128{1, -1},
+		[]complex128{-1, 1},
+	).Mul(complex(0.5, 0)).
+		Mul(complex(math.Sqrt(2)/(1.0+math.Sqrt(2)), 0))
+
+	E3 := gate.I().Sub(E1).Sub(E2)
+
+	if !E1.Add(E2).Add(E3).Equals(gate.I()) {
+		t.Fail()
+	}
+
+	q0 := qubit.Zero()
+	if q0.Apply(E1).InnerProduct(q0) != complex(0, 0) {
+		t.Fail()
+	}
+
+	q1 := qubit.Zero().Apply(gate.H())
+	if q1.Apply(E2).InnerProduct(q1) != complex(0, 0) {
+		t.Fail()
+	}
+}
+
 func TestQSimFactoring15(t *testing.T) {
 	N := 15
 	a := 7 // co-prime
