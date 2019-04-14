@@ -1,15 +1,37 @@
-package gate
+package gate_test
 
 import (
 	"fmt"
 	"math/cmplx"
 	"testing"
 
+	"github.com/axamon/q/gate"
 	"github.com/axamon/q/matrix"
+	"github.com/axamon/q/q"
 )
 
+func ExampleH() {
+	qsim := q.New()
+
+	// generate qubits of |0>|1>
+	q0 := qsim.Zero()
+	q1 := qsim.One()
+
+	// apply quantum circuit
+	qsim.H(q0)
+	qsim.H(q1)
+	// estimate
+	result0 := qsim.Estimate(q0).Probability()
+	fmt.Printf("%.1f\n", result0)
+	result1 := qsim.Estimate(q1).Probability()
+	fmt.Printf("%.1f\n", result1)
+	// Output:
+	// [0.5 0.5]
+	// [0.5 0.5]
+}
+
 func TestInverseU(t *testing.T) {
-	m := U(1.0, 1.1, 1.2, 1.3)
+	m := gate.U(1.0, 1.1, 1.2, 1.3)
 
 	inv := m.Inverse()
 	im := m.Apply(inv)
@@ -31,7 +53,7 @@ func TestInverseU(t *testing.T) {
 }
 
 func TestCZ(t *testing.T) {
-	expected := New(
+	expected := gate.New(
 		[]complex128{1, 0, 0, 0, 0, 0, 0, 0},
 		[]complex128{0, 1, 0, 0, 0, 0, 0, 0},
 		[]complex128{0, 0, 1, 0, 0, 0, 0, 0},
@@ -42,7 +64,7 @@ func TestCZ(t *testing.T) {
 		[]complex128{0, 0, 0, 0, 0, 0, 0, -1},
 	)
 
-	actual := CZ(3, 0, 2)
+	actual := gate.CZ(3, 0, 2)
 
 	if !actual.Equals(expected) {
 		t.Error(actual)
@@ -50,7 +72,7 @@ func TestCZ(t *testing.T) {
 }
 
 func TestCNOT(t *testing.T) {
-	expected := New(
+	expected := gate.New(
 		[]complex128{1, 0, 0, 0, 0, 0, 0, 0},
 		[]complex128{0, 1, 0, 0, 0, 0, 0, 0},
 		[]complex128{0, 0, 1, 0, 0, 0, 0, 0},
@@ -61,7 +83,7 @@ func TestCNOT(t *testing.T) {
 		[]complex128{0, 0, 0, 0, 0, 0, 1, 0},
 	)
 
-	actual := CNOT(3, 0, 2)
+	actual := gate.CNOT(3, 0, 2)
 
 	if !actual.Equals(expected) {
 		t.Error(actual)
@@ -69,11 +91,11 @@ func TestCNOT(t *testing.T) {
 }
 
 func TestControlledNot(t *testing.T) {
-	g0 := matrix.TensorProduct(I().Add(Z()), I())
-	g1 := matrix.TensorProduct(I().Sub(Z()), X())
+	g0 := matrix.TensorProduct(gate.I().Add(gate.Z()), gate.I())
+	g1 := matrix.TensorProduct(gate.I().Sub(gate.Z()), gate.X())
 	CN := g0.Add(g1).Mul(0.5)
 
-	if !ControlledNot(2, []int{0}, 1).Equals(CN) {
+	if !gate.ControlledNot(2, []int{0}, 1).Equals(CN) {
 		t.Error(CN)
 	}
 }
@@ -81,88 +103,88 @@ func TestControlledNot(t *testing.T) {
 func TestToffoli(t *testing.T) {
 	g := make([]matrix.Matrix, 13)
 
-	g[0] = matrix.TensorProduct(I(2), H())
-	g[1] = matrix.TensorProduct(I(), CNOT(2, 0, 1))
-	g[2] = matrix.TensorProduct(I(2), T().Dagger())
-	g[3] = CNOT(3, 0, 2)
-	g[4] = matrix.TensorProduct(I(2), T())
-	g[5] = matrix.TensorProduct(I(), CNOT(2, 0, 1))
-	g[6] = matrix.TensorProduct(I(2), T().Dagger())
-	g[7] = CNOT(3, 0, 2)
-	g[8] = matrix.TensorProduct(I(), T().Dagger(), T())
-	g[9] = matrix.TensorProduct(CNOT(2, 0, 1), H())
-	g[10] = matrix.TensorProduct(I(), T().Dagger(), I())
-	g[11] = matrix.TensorProduct(CNOT(2, 0, 1), I())
-	g[12] = matrix.TensorProduct(T(), S(), I())
+	g[0] = matrix.TensorProduct(gate.I(2), gate.H())
+	g[1] = matrix.TensorProduct(gate.I(), gate.CNOT(2, 0, 1))
+	g[2] = matrix.TensorProduct(gate.I(2), gate.T().Dagger())
+	g[3] = gate.CNOT(3, 0, 2)
+	g[4] = matrix.TensorProduct(gate.I(2), gate.T())
+	g[5] = matrix.TensorProduct(gate.I(), gate.CNOT(2, 0, 1))
+	g[6] = matrix.TensorProduct(gate.I(2), gate.T().Dagger())
+	g[7] = gate.CNOT(3, 0, 2)
+	g[8] = matrix.TensorProduct(gate.I(), gate.T().Dagger(), gate.T())
+	g[9] = matrix.TensorProduct(gate.CNOT(2, 0, 1), gate.H())
+	g[10] = matrix.TensorProduct(gate.I(), gate.T().Dagger(), gate.I())
+	g[11] = matrix.TensorProduct(gate.CNOT(2, 0, 1), gate.I())
+	g[12] = matrix.TensorProduct(gate.T(), gate.S(), gate.I())
 
-	expected := I(3)
+	expected := gate.I(3)
 	for _, gate := range g {
 		expected = expected.Apply(gate)
 	}
 
-	actual := Toffoli()
+	actual := gate.Toffoli()
 	if !actual.Equals(expected, 1e-13) {
 		t.Error(actual)
 	}
 }
 
 func TestIsHermite(t *testing.T) {
-	if !H().IsHermite() {
-		t.Error(H())
+	if !gate.H().IsHermite() {
+		t.Error(gate.H())
 	}
 
-	if !X().IsHermite() {
-		t.Error(X())
+	if !gate.X().IsHermite() {
+		t.Error(gate.X())
 	}
 
-	if !Y().IsHermite() {
-		t.Error(Y())
+	if !gate.Y().IsHermite() {
+		t.Error(gate.Y())
 	}
 
-	if !Z().IsHermite() {
-		t.Error(Z())
+	if !gate.Z().IsHermite() {
+		t.Error(gate.Z())
 	}
 
 }
 
 func TestIsUnitary(t *testing.T) {
-	if !H().IsUnitary(1e-13) {
-		t.Error(H())
+	if !gate.H().IsUnitary(1e-13) {
+		t.Error(gate.H())
 	}
 
-	if !X().IsUnitary() {
-		t.Error(X())
+	if !gate.X().IsUnitary() {
+		t.Error(gate.X())
 	}
 
-	if !Y().IsUnitary() {
-		t.Error(Y())
+	if !gate.Y().IsUnitary() {
+		t.Error(gate.Y())
 	}
 
-	if !Z().IsUnitary() {
-		t.Error(Z())
+	if !gate.Z().IsUnitary() {
+		t.Error(gate.Z())
 	}
 
-	u := U(1, 2, 3, 4)
+	u := gate.U(1, 2, 3, 4)
 	if !u.IsUnitary(1e-13) {
 		t.Error(u)
 	}
 }
 
 func TestTrace(t *testing.T) {
-	trA := I().Trace()
+	trA := gate.I().Trace()
 	if trA != complex(2, 0) {
 		t.Error(trA)
 	}
 
-	trH := H().Trace()
+	trH := gate.H().Trace()
 	if trH != complex(0, 0) {
 		t.Error(trH)
 	}
 }
 
 func TestTensorProductProductXY(t *testing.T) {
-	x := X()
-	y := Y()
+	x := gate.X()
+	y := gate.Y()
 
 	m, n := x.Dimension()
 	tmp := []matrix.Matrix{}
@@ -180,8 +202,8 @@ func TestTensorProductProductXY(t *testing.T) {
 }
 
 func TestTensorProductProductXXY(t *testing.T) {
-	xx := X().TensorProduct(X())
-	y := Y()
+	xx := gate.X().TensorProduct(gate.X())
+	y := gate.Y()
 
 	m, n := xx.Dimension()
 	tmp := []matrix.Matrix{}

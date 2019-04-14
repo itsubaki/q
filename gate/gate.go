@@ -9,6 +9,7 @@ import (
 	"github.com/axamon/q/matrix"
 )
 
+// New creates a gate matrix made of complex inputs.
 func New(v ...[]complex128) matrix.Matrix {
 	m := make(matrix.Matrix, len(v))
 	for i := 0; i < len(v); i++ {
@@ -55,6 +56,7 @@ func I(bit ...int) matrix.Matrix {
 	return matrix.TensorProductN(m, bit...)
 }
 
+// X is the Pauli-X gate equivalent to the NOT gate of classical computers.
 func X(bit ...int) matrix.Matrix {
 	m := make(matrix.Matrix, 2)
 	m[0] = []complex128{0, 1}
@@ -62,6 +64,8 @@ func X(bit ...int) matrix.Matrix {
 	return matrix.TensorProductN(m, bit...)
 }
 
+// Y is the Pauli-Y gate
+// it rotates pi radiants the blotch sphere around the y axis.
 func Y(bit ...int) matrix.Matrix {
 	m := make(matrix.Matrix, 2)
 	m[0] = []complex128{0, -1i}
@@ -69,6 +73,8 @@ func Y(bit ...int) matrix.Matrix {
 	return matrix.TensorProductN(m, bit...)
 }
 
+// Z is the Pauli-Z gate
+// it rotates pi radiants the blotch sphere around the z axis.
 func Z(bit ...int) matrix.Matrix {
 	m := make(matrix.Matrix, 2)
 	m[0] = []complex128{1, 0}
@@ -76,6 +82,9 @@ func Z(bit ...int) matrix.Matrix {
 	return matrix.TensorProductN(m, bit...)
 }
 
+// H is the Hadamard gate
+// it gives measurements equal possibilities to become 1 or 0
+// creating therefore superposition.
 func H(bit ...int) matrix.Matrix {
 	m := make(matrix.Matrix, 2)
 	v := complex(1/math.Sqrt2, 0)
