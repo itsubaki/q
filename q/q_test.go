@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/itsubaki/q/internal/circuit/gate"
-	"github.com/itsubaki/q/internal/circuit/qubit"
-	"github.com/itsubaki/q/internal/math/matrix"
-	"github.com/itsubaki/q/internal/math/number"
+	"github.com/axamon/q/gate"
+	"github.com/axamon/q/matrix"
+	"github.com/axamon/q/number"
+	"github.com/axamon/q/qubit"
 )
 
 func TestPOVM(t *testing.T) {

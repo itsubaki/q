@@ -3,8 +3,8 @@ package vector
 import (
 	"testing"
 
-	"github.com/itsubaki/q/internal/circuit/gate"
-	"github.com/itsubaki/q/internal/math/matrix"
+	"github.com/axamon/q/gate"
+	"github.com/axamon/q/matrix"
 )
 
 func TestOuterProduct(t *testing.T) {
