@@ -6,8 +6,10 @@ import (
 	"github.com/axamon/q/matrix"
 )
 
+// Vector type manages complex number slice in vector
 type Vector []complex128
 
+// New creates a new vector
 func New(z ...complex128) Vector {
 	v := Vector{}
 	for _, zi := range z {
@@ -16,6 +18,7 @@ func New(z ...complex128) Vector {
 	return v
 }
 
+// NewZero creates a new vector with all components set to zero
 func NewZero(n int) Vector {
 	v := Vector{}
 	for i := 0; i < n; i++ {
@@ -24,6 +27,7 @@ func NewZero(n int) Vector {
 	return v
 }
 
+// Clone clones the vector
 func (v0 Vector) Clone() Vector {
 	clone := Vector{}
 	for i := 0; i < len(v0); i++ {

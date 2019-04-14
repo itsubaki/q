@@ -5,8 +5,10 @@ import (
 	"math/cmplx"
 )
 
+// Matrix type manages complex numbers in matrices.
 type Matrix [][]complex128
 
+// New creates a new matrix
 func New(v ...[]complex128) Matrix {
 	m := make(Matrix, len(v))
 	for i := 0; i < len(v); i++ {
@@ -285,6 +287,7 @@ func TensorProductN(m Matrix, bit ...int) Matrix {
 	return m0
 }
 
+// TensorProduct implements the product for any number of matrices.
 func TensorProduct(m ...Matrix) Matrix {
 	m0 := m[0]
 	for i := 1; i < len(m); i++ {

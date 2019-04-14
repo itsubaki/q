@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/axamon/q/q"
+	"github.com/axamon/q"
 )
 
 func main() {
@@ -13,7 +13,6 @@ func main() {
 	// generate qubits of |0>|0>
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
-	q2 := qsim.One()
 
 	// apply quantum circuit
 	qsim.H(q0).CNOT(q0, q1)
