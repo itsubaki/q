@@ -18,7 +18,7 @@ func New(z ...complex128) Vector {
 	return v
 }
 
-// NewZero creates a new vector with all components set to zero
+// NewZero creates a new vector with all components set to zero.
 func NewZero(n int) Vector {
 	v := Vector{}
 	for i := 0; i < n; i++ {
@@ -27,7 +27,7 @@ func NewZero(n int) Vector {
 	return v
 }
 
-// Clone clones the vector
+// Clone clones the vector.
 func (v0 Vector) Clone() Vector {
 	clone := Vector{}
 	for i := 0; i < len(v0); i++ {
@@ -36,6 +36,7 @@ func (v0 Vector) Clone() Vector {
 	return clone
 }
 
+// Dual returns the complex conjugate of the vector.
 func (v0 Vector) Dual() Vector {
 	dual := Vector{}
 	for i := 0; i < len(v0); i++ {
@@ -44,6 +45,7 @@ func (v0 Vector) Dual() Vector {
 	return dual
 }
 
+// Add adds the vector to the first one.
 func (v0 Vector) Add(v1 Vector) Vector {
 	v2 := Vector{}
 	for i := 0; i < len(v0); i++ {
@@ -52,6 +54,7 @@ func (v0 Vector) Add(v1 Vector) Vector {
 	return v2
 }
 
+// Mul multiplies the vector by the complex number.
 func (v0 Vector) Mul(z complex128) Vector {
 	v2 := Vector{}
 	for i := range v0 {

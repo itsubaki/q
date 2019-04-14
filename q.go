@@ -27,11 +27,12 @@ func index(input []*Qubit) []int {
 	return index
 }
 
-// New creates a new qbit
+// New creates a new qbit.
 func New() *Q {
 	return &Q{}
 }
 
+// New returns the pointer to the qbit.
 func (q *Q) New(z ...complex128) *Qubit {
 	if q.qubit == nil {
 		q.qubit = qubit.New(z...)
@@ -43,14 +44,17 @@ func (q *Q) New(z ...complex128) *Qubit {
 	return &Qubit{Index: index}
 }
 
+// Zero assigns 0 to the qbit.
 func (q *Q) Zero() *Qubit {
 	return q.New(1, 0)
 }
 
+// One assigns 1 to the qbit.
 func (q *Q) One() *Qubit {
 	return q.New(0, 1)
 }
 
+// H applies the Hadamard gate to the qbit.
 func (q *Q) H(input ...*Qubit) *Q {
 	return q.Apply(gate.H(), input...)
 }
@@ -176,6 +180,7 @@ func (q *Q) Swap(q0, q1 *Qubit) *Q {
 	return q
 }
 
+// Measure measures the qbit level.
 func (q *Q) Measure(input ...*Qubit) *qubit.Qubit {
 	if len(input) < 1 {
 		return q.qubit.Measure()

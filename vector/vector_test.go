@@ -1,12 +1,59 @@
 package vector_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/axamon/q/gate"
 	"github.com/axamon/q/matrix"
 	"github.com/axamon/q/vector"
 )
+
+func ExampleNewZero() {
+	v0 := vector.NewZero(4)
+	fmt.Printf("%v\n", v0)
+	// Output:
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+}
+
+var v = vector.New(
+	complex128(1+2i),
+	complex128(3+4i),
+)
+
+func ExampleVector_Clone() {
+	vCloned := v.Clone()
+	fmt.Printf("%v\n", vCloned)
+	// Output:
+	// [(1+2i) (3+4i)]
+}
+
+func ExampleVector_Dual() {
+	vDual := v.Dual()
+	fmt.Printf("%v\n", vDual)
+	// Output:
+	// [(1-2i) (3-4i)]
+}
+
+func ExampleVector_Add() {
+	result := v.Add(v)
+	fmt.Printf("%v\n", result)
+	// Output:
+	// [(2+4i) (6+8i)]
+}
+
+func ExampleVector_Mul() {
+	result := v.Mul(complex128(1 - 1i))
+	fmt.Printf("%v\n", result)
+	result = v.Mul(complex128(5 + 2i))
+	fmt.Printf("%v\n", result)
+	result = result.Mul(complex128(0 + 0i))
+	fmt.Printf("%v\n", result)
+	// Output:
+	// [(3+1i) (7+1i)]
+	// [(1+12i) (7+26i)]
+	// [(0+0i) (0+0i)]
+}
 
 func TestOuterProduct(t *testing.T) {
 	v0 := vector.New(1, 0)
