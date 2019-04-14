@@ -8,10 +8,12 @@ import (
 	"github.com/axamon/q/qubit"
 )
 
+// Q type implements qubit pointer.
 type Q struct {
 	qubit *qubit.Qubit
 }
 
+// Qubit implements qubit reppresentation.
 type Qubit struct {
 	Index int
 }
@@ -25,6 +27,7 @@ func index(input []*Qubit) []int {
 	return index
 }
 
+// New creates a new qbit
 func New() *Q {
 	return &Q{}
 }

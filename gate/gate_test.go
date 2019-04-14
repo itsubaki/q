@@ -5,9 +5,9 @@ import (
 	"math/cmplx"
 	"testing"
 
+	"github.com/axamon/q"
 	"github.com/axamon/q/gate"
 	"github.com/axamon/q/matrix"
-	"github.com/axamon/q/q"
 )
 
 func ExampleH() {
