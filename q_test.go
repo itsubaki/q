@@ -1,4 +1,4 @@
-package q
+package q_test
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/axamon/q"
 	"github.com/axamon/q/gate"
 	"github.com/axamon/q/matrix"
 	"github.com/axamon/q/number"
@@ -49,7 +50,7 @@ func TestQSimFactoring15(t *testing.T) {
 		t.Errorf("%v %v\n", N, a)
 	}
 
-	qsim := New()
+	qsim := q.New()
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
@@ -66,14 +67,14 @@ func TestQSimFactoring15(t *testing.T) {
 	qsim.CNOT(q2, q5)
 
 	// Controlled-Swap
-	qsim.ControlledNot([]*Qubit{q1, q4}, q6)
-	qsim.ControlledNot([]*Qubit{q1, q6}, q4)
-	qsim.ControlledNot([]*Qubit{q1, q4}, q6)
+	qsim.ControlledNot([]*q.Qubit{q1, q4}, q6)
+	qsim.ControlledNot([]*q.Qubit{q1, q6}, q4)
+	qsim.ControlledNot([]*q.Qubit{q1, q4}, q6)
 
 	// Controlled-Swap
-	qsim.ControlledNot([]*Qubit{q1, q3}, q5)
-	qsim.ControlledNot([]*Qubit{q1, q5}, q3)
-	qsim.ControlledNot([]*Qubit{q1, q3}, q5)
+	qsim.ControlledNot([]*q.Qubit{q1, q3}, q5)
+	qsim.ControlledNot([]*q.Qubit{q1, q5}, q3)
+	qsim.ControlledNot([]*q.Qubit{q1, q3}, q5)
 
 	// QFT
 	qsim.H(q0)
@@ -116,7 +117,7 @@ func TestQSimFactoring15(t *testing.T) {
 }
 
 func TestQSimQFT(t *testing.T) {
-	qsim := New()
+	qsim := q.New()
 
 	qsim.Zero()
 	qsim.Zero()
@@ -133,7 +134,7 @@ func TestQSimQFT(t *testing.T) {
 }
 
 func TestQSimInverseQFT(t *testing.T) {
-	qsim := New()
+	qsim := q.New()
 
 	qsim.Zero()
 	qsim.Zero()
@@ -150,7 +151,7 @@ func TestQSimInverseQFT(t *testing.T) {
 }
 
 func TestQSimQFT3qubit(t *testing.T) {
-	qsim := New()
+	qsim := q.New()
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
@@ -176,7 +177,7 @@ func TestQSimQFT3qubit(t *testing.T) {
 }
 
 func TestQSimGrover3qubit(t *testing.T) {
-	qsim := New()
+	qsim := q.New()
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
@@ -186,12 +187,12 @@ func TestQSimGrover3qubit(t *testing.T) {
 	qsim.H(q0, q1, q2, q3)
 
 	// oracle
-	qsim.X(q0).ControlledNot([]*Qubit{q0, q1, q2}, q3).X(q0)
+	qsim.X(q0).ControlledNot([]*q.Qubit{q0, q1, q2}, q3).X(q0)
 
 	// amp
 	qsim.H(q0, q1, q2, q3)
 	qsim.X(q0, q1, q2)
-	qsim.ControlledZ([]*Qubit{q0, q1}, q2)
+	qsim.ControlledZ([]*q.Qubit{q0, q1}, q2)
 	qsim.H(q0, q1, q2)
 
 	// q3 is always |1>
@@ -229,12 +230,12 @@ func TestQSimGrover3qubit(t *testing.T) {
 }
 
 func TestQSimCnNot(t *testing.T) {
-	qsim := New()
+	qsim := q.New()
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 
-	p := qsim.ControlledNot([]*Qubit{q0}, q1).Probability()
+	p := qsim.ControlledNot([]*q.Qubit{q0}, q1).Probability()
 	e := qubit.Zero(2).Apply(gate.CNOT(2, 0, 1)).Probability()
 
 	for i := range p {
@@ -245,7 +246,7 @@ func TestQSimCnNot(t *testing.T) {
 }
 
 func TestQSimEstimate(t *testing.T) {
-	qsim := New()
+	qsim := q.New()
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
@@ -276,7 +277,7 @@ func TestQSimEstimate(t *testing.T) {
 }
 
 func TestQSimBellstate(t *testing.T) {
-	qsim := New()
+	qsim := q.New()
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
@@ -313,7 +314,7 @@ func TestQSimBellstate(t *testing.T) {
 }
 
 func TestQsimQuantumTeleportation2(t *testing.T) {
-	qsim := New()
+	qsim := q.New()
 
 	phi := qsim.New(1, 2)
 	q0 := qsim.Zero()
@@ -372,7 +373,7 @@ func TestQsimQuantumTeleportation2(t *testing.T) {
 }
 
 func TestQSimQuantumTeleportation(t *testing.T) {
-	qsim := New()
+	qsim := q.New()
 
 	phi := qsim.New(1, 2)
 	q0 := qsim.Zero()
@@ -431,7 +432,7 @@ func TestQSimQuantumTeleportation(t *testing.T) {
 }
 
 func TestQsimErorrCorrectionZero(t *testing.T) {
-	qsim := New()
+	qsim := q.New()
 
 	q0 := qsim.Zero()
 
@@ -478,7 +479,7 @@ func TestQsimErorrCorrectionZero(t *testing.T) {
 }
 
 func TestQsimErorrCorrection(t *testing.T) {
-	qsim := New()
+	qsim := q.New()
 
 	q0 := qsim.New(1, 9)
 
