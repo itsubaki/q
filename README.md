@@ -1,6 +1,6 @@
 # q
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/itsubaki/q?style=flat-square)](https://goreportcard.com/report/github.com/itsubaki/q)
+[![Build Status](https://travis-ci.org/axamon/q.svg?branch=master)](https://travis-ci.org/axamon/q)
 
  - quantum computation simulator
  - pure golang implementation
@@ -8,63 +8,11 @@
 
 # example
 
-## bell state
+in the example folder
 
-```golang
-qsim := q.New()
+ - bell state
+ - quantum teleportation
 
-// generate qubits of |0>|0>
-q0 := qsim.Zero()
-q1 := qsim.Zero()
-
-// apply quantum circuit
-qsim.H(q0).CNOT(q0, q1)
-
-// estimate
-qsim.Estimate(q0).Probability()
-// -> (0.5, 0.5)
-qsim.Estimate(q1).Probability()
-// -> (0.5, 0.5)
-
-qsim.Probability()
-// -> (0.5, 0, 0, 0.5)
-
-qsim.Measure()
-qsim.Probability()
-// -> (1, 0, 0, 0) or (0, 0, 0, 1)
-
-m0 := qsim.Measure(q0)
-m1 := qsim.Measure(q1)
-// -> m0 = |0> then m1 = |0>
-// -> m0 = |1> then m1 = |1>
-```
-
-## quantum teleportation
-
-```golang
-qsim := q.New()
-
-// generate qubits of |phi>|0>|0>
-// |phi> is normalized. |phi> = a|0> + b|1>, |a|^2 = 0.2, |b|^2 = 0.8
-phi := qsim.New(1, 2)
-q0 := qsim.Zero()
-q1 := qsim.Zero()
-
-qsim.H(q0).CNOT(q0, q1)
-qsim.CNOT(phi, q0).H(phi)
-
-// Alice send mz, mx to Bob
-mz := qsim.Measure(phi)
-mx := qsim.Measure(q0)
-
-// Bob Apply Z and X
-qsim.ConditionZ(mz.IsOne(), q1)
-qsim.ConditionX(mx.IsOne(), q1)
-
-// Bob got |phi> state
-qsim.Estimate(q1).Probability()
-// -> (0.2, 0.8)
-```
 
 ### Grover's search algorithm
 
