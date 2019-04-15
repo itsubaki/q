@@ -17,6 +17,7 @@ func New(v ...[]complex128) Matrix {
 	return m
 }
 
+// Equals returns true if the matrices are equals.
 func (m0 Matrix) Equals(m1 Matrix, eps ...float64) bool {
 	m, n := m0.Dimension()
 	p, q := m1.Dimension()
@@ -41,10 +42,12 @@ func (m0 Matrix) Equals(m1 Matrix, eps ...float64) bool {
 	return true
 }
 
+// Dimension returns the dimensions of the matrix.
 func (m0 Matrix) Dimension() (int, int) {
 	return len(m0), len(m0[0])
 }
 
+// Transpose returns the matrix transposed.
 func (m0 Matrix) Transpose() Matrix {
 	p, q := m0.Dimension()
 
@@ -60,6 +63,7 @@ func (m0 Matrix) Transpose() Matrix {
 	return m2
 }
 
+// Conjugate returns the matrix conjugated.
 func (m0 Matrix) Conjugate() Matrix {
 	p, q := m0.Dimension()
 
@@ -75,10 +79,12 @@ func (m0 Matrix) Conjugate() Matrix {
 	return m2
 }
 
+// Dagger returns the matrix transposed and conjugated.
 func (m0 Matrix) Dagger() Matrix {
 	return m0.Transpose().Conjugate()
 }
 
+// IsHermite returns true if the matrix is equal to its conjugated transposed.
 func (m0 Matrix) IsHermite(eps ...float64) bool {
 	p, q := m0.Dimension()
 	m := m0.Dagger()
@@ -95,6 +101,7 @@ func (m0 Matrix) IsHermite(eps ...float64) bool {
 	return true
 }
 
+// IsUnitary returns true if the conjugate transpose of the matrix is equal to its inverse.
 func (m0 Matrix) IsUnitary(eps ...float64) bool {
 	p, q := m0.Dimension()
 	m := m0.Apply(m0.Dagger())
@@ -183,6 +190,7 @@ func (m0 Matrix) Sub(m1 Matrix) Matrix {
 	return m
 }
 
+// Trace returns the sum of matrix diagonal components.
 func (m0 Matrix) Trace() complex128 {
 	p, _ := m0.Dimension()
 	var sum complex128

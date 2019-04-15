@@ -1,11 +1,120 @@
 package matrix_test
 
 import (
+	"fmt"
 	"math/cmplx"
 	"testing"
 
 	"github.com/axamon/q/matrix"
 )
+
+var m = matrix.New(
+	[]complex128{1, 2, 3, 4},
+	[]complex128{0, 1, 1 + 1i, 2 + 2i},
+	[]complex128{0, 0, 1, 1},
+	[]complex128{0, 0, 0, 1},
+)
+
+func ExampleMatrix_Transpose() {
+	for _, r := range m {
+		fmt.Println(r)
+	}
+	fmt.Println()
+	mt := m.Transpose()
+	for _, r := range mt {
+		fmt.Println(r)
+	}
+	// Output:
+	// [(1+0i) (2+0i) (3+0i) (4+0i)]
+	// [(0+0i) (1+0i) (1+1i) (2+2i)]
+	// [(0+0i) (0+0i) (1+0i) (1+0i)]
+	// [(0+0i) (0+0i) (0+0i) (1+0i)]
+	//
+	// [(1+0i) (0+0i) (0+0i) (0+0i)]
+	// [(2+0i) (1+0i) (0+0i) (0+0i)]
+	// [(3+0i) (1+1i) (1+0i) (0+0i)]
+	// [(4+0i) (2+2i) (1+0i) (1+0i)]
+}
+
+func ExampleMatrix_Conjugate() {
+	for _, r := range m {
+		fmt.Println(r)
+	}
+	fmt.Println()
+	mC := m.Conjugate()
+	for _, r := range mC {
+		fmt.Println(r)
+	}
+	// Output:
+	// [(1+0i) (2+0i) (3+0i) (4+0i)]
+	// [(0+0i) (1+0i) (1+1i) (2+2i)]
+	// [(0+0i) (0+0i) (1+0i) (1+0i)]
+	// [(0+0i) (0+0i) (0+0i) (1+0i)]
+	//
+	// [(1-0i) (2-0i) (3-0i) (4-0i)]
+	// [(0-0i) (1-0i) (1-1i) (2-2i)]
+	// [(0-0i) (0-0i) (1-0i) (1-0i)]
+	// [(0-0i) (0-0i) (0-0i) (1-0i)]
+}
+
+func ExampleMatrix_Dagger() {
+	for _, r := range m {
+		fmt.Println(r)
+	}
+	fmt.Println()
+	mD := m.Dagger()
+	for _, r := range mD {
+		fmt.Println(r)
+	}
+	// Output:
+	// [(1+0i) (2+0i) (3+0i) (4+0i)]
+	// [(0+0i) (1+0i) (1+1i) (2+2i)]
+	// [(0+0i) (0+0i) (1+0i) (1+0i)]
+	// [(0+0i) (0+0i) (0+0i) (1+0i)]
+	//
+	// [(1-0i) (0-0i) (0-0i) (0-0i)]
+	// [(2-0i) (1-0i) (0-0i) (0-0i)]
+	// [(3-0i) (1-1i) (1-0i) (0-0i)]
+	// [(4-0i) (2-2i) (1-0i) (1-0i)]
+}
+
+func ExampleMatrix_IsHermite() {
+	mH := matrix.New(
+		[]complex128{2 + 0i, 2 + 1i, 4 + 2i},
+		[]complex128{2 - 1i, 3 + 0i, 3 + 3i},
+		[]complex128{4 - 2i, 3 - 3i, 3 + 0i},
+	)
+	fmt.Println(m.IsHermite())
+	fmt.Println(mH.IsHermite())
+	// Output:
+	// false
+	// true
+}
+
+func ExampleMatrix_IsUnitary() {
+	fmt.Println(m.IsUnitary())
+	mU := matrix.New(
+		[]complex128{1, 0, 0},
+		[]complex128{0, 1, 0},
+		[]complex128{0, 0, 1},
+	)
+	mU1 := matrix.New(
+		[]complex128{0.5 + 0.5i, 0.5 - 0.5i},
+		[]complex128{0.4 - 0.5i, 0.5 + 0.5i},
+	)
+	fmt.Println(mU.IsUnitary())
+	fmt.Println(mU1.IsUnitary(0.1))
+	// Output:
+	// false
+	// true
+	// true
+}
+
+func ExampleMatrix_Trace() {
+	fmt.Println(m.Trace())
+	// Output:
+	// (4+0i)
+}
 
 func TestInverse(t *testing.T) {
 	m := matrix.New(
