@@ -6,6 +6,7 @@ import (
 
 func main() {
 
+	// Creates a new simulation.
 	qsim := q.New()
 
 	// generate qubits of |phi>|0>|0>

@@ -9,7 +9,8 @@ import (
 // Vector type manages complex number slice in vector
 type Vector []complex128
 
-// New creates a new vector
+// New creates a new vector with dimensions equal to the length of complex
+// numbers passed as arguments.
 func New(z ...complex128) Vector {
 	v := Vector{}
 	for _, zi := range z {
@@ -170,6 +171,8 @@ func TensorProductN(v0 Vector, bit ...int) Vector {
 	return v1
 }
 
+// TensorProduct returns the vector resulting from multipling the
+// all vectors passed as arguments together.
 func TensorProduct(v0 ...Vector) Vector {
 	v1 := v0[0]
 	for i := 1; i < len(v0); i++ {
