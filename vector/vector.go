@@ -139,6 +139,7 @@ func (v0 Vector) Equals(v1 Vector, eps ...float64) bool {
 	return true
 }
 
+// Dimension returns the dimension of the vector
 func (v0 Vector) Dimension() int {
 	return len(v0)
 }
