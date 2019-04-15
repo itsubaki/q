@@ -55,6 +55,41 @@ func ExampleVector_Mul() {
 	// [(0+0i) (0+0i)]
 }
 
+func ExampleVector_Dimension() {
+	numOdDimensions := v.Dimension()
+	fmt.Println(numOdDimensions)
+	// Output:
+	// 2
+}
+
+func ExampleVector_Equals() {
+	v3 := vector.NewZero(3)
+	v2 := vector.NewZero(2)
+	vCloned := v.Clone()
+	fmt.Println(v.Equals(v3))
+	fmt.Println(v.Equals(v2))
+	fmt.Println(v.Equals(vCloned))
+	// Output:
+	// false
+	// false
+	// true
+
+}
+
+func ExampleTensorProductN() {
+	fmt.Println(vector.TensorProductN(v))
+	fmt.Println(vector.TensorProductN(v, 0))
+	fmt.Println(vector.TensorProductN(v, 1))
+	fmt.Println(vector.TensorProductN(v, 2))
+	fmt.Println(vector.TensorProductN(v, 3))
+	// Output:
+	// [(1+2i) (3+4i)]
+	// [(1+2i) (3+4i)]
+	// [(1+2i) (3+4i)]
+	// [(-3+4i) (-5+10i) (-5+10i) (-7+24i)]
+	// [(-11-2i) (-25+0i) (-25+0i) (-55+10i) (-25+0i) (-55+10i) (-55+10i) (-117+44i)]
+}
+
 func TestOuterProduct(t *testing.T) {
 	v0 := vector.New(1, 0)
 	out := v0.OuterProduct(v0)
