@@ -190,6 +190,8 @@ func Toffoli() matrix.Matrix {
 	return ControlledNot(3, []int{0, 1}, 2)
 }
 
+// CNOT gate flips the second qubit (t the target qubit) if and only if
+// the first qubit (c the control qubit) is |1>
 func CNOT(bit, c, t int) matrix.Matrix {
 	return ControlledNot(bit, []int{c}, t)
 }

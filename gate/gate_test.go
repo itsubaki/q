@@ -68,6 +68,18 @@ func ExampleT() {
 	// [0.0 1.0]
 }
 
+func ExampleI() {
+	m := gate.I(2)
+	for _, r := range m {
+		fmt.Println(r)
+	}
+	// Output:
+	// [(1+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (1+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (1+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (1+0i)]
+}
+
 func TestInverseU(t *testing.T) {
 	m := gate.U(1.0, 1.1, 1.2, 1.3)
 

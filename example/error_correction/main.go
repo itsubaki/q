@@ -4,6 +4,7 @@ import "github.com/axamon/q"
 
 func main() {
 
+	// Creates new simulation.
 	qsim := q.New()
 
 	q0 := qsim.New(1, 2) // (0.2, 0.8)
