@@ -143,6 +143,9 @@ func CR(bit, c, t, k int) matrix.Matrix {
 	return ControlledR(bit, []int{c}, t, k)
 }
 
+// ControlledNot returns the matrix resulting from a CNOT gate
+// which flips the second qubit (t the target qubit) if and only if
+// the first qubit (c the control qubit) is |1>
 func ControlledNot(bit int, c []int, t int) matrix.Matrix {
 	m := I([]int{bit}...)
 	dim := len(m)
@@ -190,8 +193,6 @@ func Toffoli() matrix.Matrix {
 	return ControlledNot(3, []int{0, 1}, 2)
 }
 
-// CNOT gate flips the second qubit (t the target qubit) if and only if
-// the first qubit (c the control qubit) is |1>
 func CNOT(bit, c, t int) matrix.Matrix {
 	return ControlledNot(bit, []int{c}, t)
 }
@@ -277,6 +278,7 @@ func Fredkin() matrix.Matrix {
 	return m
 }
 
+// QFT creates a Quantum Fourier Transformation matrix.
 func QFT(bit int) matrix.Matrix {
 	m := I(bit)
 

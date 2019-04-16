@@ -68,6 +68,18 @@ func ExampleT() {
 	// [0.0 1.0]
 }
 
+func ExampleControlledNot() {
+	mCN := gate.ControlledNot(2, []int{1}, 1)
+	for _, r := range mCN {
+		fmt.Println(r)
+	}
+	// Output:
+	// [(1+0i) (0+0i) (0+0i) (0+0i)]
+	// [(1+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (1+0i) (0+0i)]
+	//[(0+0i) (0+0i) (1+0i) (0+0i)]
+}
+
 func ExampleI() {
 	m := gate.I(2)
 	for _, r := range m {
@@ -106,6 +118,16 @@ func ExampleFredkin() {
 	// [(0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (1+0i) (0+0i)]
 	// [(0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (1+0i) (0+0i) (0+0i)]
 	// [(0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (1+0i)]
+}
+
+func ExampleQFT() {
+	mQFT := gate.QFT(1)
+	for _, r := range mQFT {
+		fmt.Println(r)
+	}
+	// Output:
+	// [(0.7071067811865476+0i) (0.7071067811865476+0i)]
+	// [(0.7071067811865476+0i) (-0.7071067811865476+0i)]
 }
 
 func TestInverseU(t *testing.T) {
