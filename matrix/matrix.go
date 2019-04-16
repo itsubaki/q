@@ -125,6 +125,7 @@ func (m0 Matrix) IsUnitary(eps ...float64) bool {
 	return true
 }
 
+// Apply returns a matrix that is the result of aplying the two matrices together.
 func (m0 Matrix) Apply(m1 Matrix) Matrix {
 	m, n := m1.Dimension()
 	p, _ := m0.Dimension()
@@ -145,6 +146,8 @@ func (m0 Matrix) Apply(m1 Matrix) Matrix {
 	return m2
 }
 
+// Mul returns a matrix whose elements are the product
+// of the argument by the original elements.
 func (m0 Matrix) Mul(z complex128) Matrix {
 	p, q := m0.Dimension()
 
@@ -160,6 +163,8 @@ func (m0 Matrix) Mul(z complex128) Matrix {
 	return m
 }
 
+// Add returns a matrix whose elements are the sum of
+// the two matrices' elements.
 func (m0 Matrix) Add(m1 Matrix) Matrix {
 	p, q := m0.Dimension()
 
@@ -175,6 +180,8 @@ func (m0 Matrix) Add(m1 Matrix) Matrix {
 	return m
 }
 
+// Sub returns a matrix whose elements are the difference
+// between the first matrix elements and the second matrix elements.
 func (m0 Matrix) Sub(m1 Matrix) Matrix {
 	p, q := m0.Dimension()
 
@@ -257,6 +264,8 @@ func (m0 Matrix) Inverse() Matrix {
 	return inv
 }
 
+// TensorProduct returns a matrix whose elements are the tensor product
+// of the two matrices.
 func (m0 Matrix) TensorProduct(m1 Matrix) Matrix {
 	m, n := m0.Dimension()
 	p, q := m1.Dimension()
@@ -284,6 +293,8 @@ func (m0 Matrix) TensorProduct(m1 Matrix) Matrix {
 	return m2
 }
 
+// TensorProductN returns a matrix whose elements are the product
+// of the elements by themselves N times.
 func TensorProductN(m Matrix, bit ...int) Matrix {
 	if len(bit) < 1 {
 		return m

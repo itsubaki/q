@@ -143,6 +143,50 @@ func TestInverse(t *testing.T) {
 	}
 }
 
+func ExampleMatrix_Mul() {
+	mMul := m.Mul(2 + 1i)
+	for _, r := range mMul {
+		fmt.Println(r)
+	}
+	// Output:
+	// [(2+1i) (4+2i) (6+3i) (8+4i)]
+	// [(0+0i) (2+1i) (1+3i) (2+6i)]
+	// [(0+0i) (0+0i) (2+1i) (2+1i)]
+	// [(0+0i) (0+0i) (0+0i) (2+1i)]
+}
+
+func ExampleMatrix_TensorProduct() {
+	m := matrix.New(
+		[]complex128{1 + 1i, 2 + 2i},
+		[]complex128{3 + 3i, 0 + 0i},
+	)
+	mTP := m.TensorProduct(m)
+	for _, r := range mTP {
+		fmt.Println(r)
+	}
+	// Output:
+	// [(0+2i) (0+4i) (0+4i) (0+8i)]
+	// [(0+6i) (0+0i) (0+12i) (0+0i)]
+	// [(0+6i) (0+12i) (0+0i) (0+0i)]
+	// [(0+18i) (0+0i) (0+0i) (0+0i)]
+}
+
+func ExampleTensorProduct() {
+	m := matrix.New(
+		[]complex128{1 + 1i, 2 + 2i},
+		[]complex128{3 + 3i, 0 + 0i},
+	)
+	mM := matrix.TensorProduct(m, m)
+	for _, r := range mM {
+		fmt.Println(r)
+	}
+	// Output:
+	// [(0+2i) (0+4i) (0+4i) (0+8i)]
+	// [(0+6i) (0+0i) (0+12i) (0+0i)]
+	// [(0+6i) (0+12i) (0+0i) (0+0i)]
+	// [(0+18i) (0+0i) (0+0i) (0+0i)]
+}
+
 func TestCommutator(t *testing.T) {
 	x := matrix.New(
 		[]complex128{0, 1},
