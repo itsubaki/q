@@ -4,7 +4,7 @@ install:
   - go get github.com/axamon/q
 
 script:
-  - go test -cover $(go list ./... | grep -v /vendor/ | grep -v /build/) -v
+ # - go test -cover $(go list ./... | grep -v /vendor/ | grep -v /build/) -v
   - ./test.sh
 after_success:
   - bash <(curl -s https://codecov.io/bash)
