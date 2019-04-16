@@ -93,6 +93,7 @@ func H(bit ...int) matrix.Matrix {
 	return matrix.TensorProductN(m, bit...)
 }
 
+// S is the phase gate.
 func S(bit ...int) matrix.Matrix {
 	m := make(matrix.Matrix, 2)
 	m[0] = []complex128{1, 0}
@@ -100,6 +101,7 @@ func S(bit ...int) matrix.Matrix {
 	return matrix.TensorProductN(m, bit...)
 }
 
+// T is the Pi/8 gate.
 func T(bit ...int) matrix.Matrix {
 	m := make(matrix.Matrix, 2)
 	v := cmplx.Exp(complex(0, 1) * math.Pi / 4)

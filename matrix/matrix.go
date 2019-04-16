@@ -200,6 +200,7 @@ func (m0 Matrix) Trace() complex128 {
 	return sum
 }
 
+// Clone returns a clone of the matrix.
 func (m0 Matrix) Clone() Matrix {
 	m, n := m0.Dimension()
 	ret := Matrix{}
@@ -214,6 +215,7 @@ func (m0 Matrix) Clone() Matrix {
 	return ret
 }
 
+// Inverse returns the inverse of the matrix.
 func (m0 Matrix) Inverse() Matrix {
 	mat := m0.Clone()
 	m, n := mat.Dimension()

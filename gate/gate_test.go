@@ -30,6 +30,44 @@ func ExampleH() {
 	// [0.5 0.5]
 }
 
+func ExampleS() {
+	qsim := q.New()
+
+	// generate qubits of |0>|1>
+	q0 := qsim.Zero()
+	q1 := qsim.One()
+
+	qsim.S(q0)
+	qsim.S(q1)
+
+	result0 := qsim.Estimate(q0).Probability()
+	fmt.Printf("%.1f\n", result0)
+	result1 := qsim.Estimate(q1).Probability()
+	fmt.Printf("%.1f\n", result1)
+	// Output:
+	// [1.0 0.0]
+	// [0.0 1.0]
+}
+
+func ExampleT() {
+	qsim := q.New()
+
+	// generate qubits of |0>|1>
+	q0 := qsim.Zero()
+	q1 := qsim.One()
+
+	qsim.T(q0)
+	qsim.T(q1)
+
+	result0 := qsim.Estimate(q0).Probability()
+	fmt.Printf("%.1f\n", result0)
+	result1 := qsim.Estimate(q1).Probability()
+	fmt.Printf("%.1f\n", result1)
+	// Output:
+	// [1.0 0.0]
+	// [0.0 1.0]
+}
+
 func TestInverseU(t *testing.T) {
 	m := gate.U(1.0, 1.1, 1.2, 1.3)
 
