@@ -263,6 +263,7 @@ func Swap(bit, c, t int) matrix.Matrix {
 	return g0.Apply(g1).Apply(g2)
 }
 
+// Fredkin returns the 8x8 Fredkin matrix.
 func Fredkin() matrix.Matrix {
 	m := make(matrix.Matrix, 8)
 	m[0] = []complex128{1, 0, 0, 0, 0, 0, 0, 0}
