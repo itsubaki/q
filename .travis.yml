@@ -4,4 +4,4 @@ install:
   - go get github.com/itsubaki/q
 
 script:
-  -	go test -cover $(go list ./... | grep -v /vendor/ | grep -v /build/) -v
+  - go test -cover $(go list ./... | grep -v /vendor/ | grep -v /build/) -v
