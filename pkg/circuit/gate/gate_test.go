@@ -5,7 +5,7 @@ import (
 	"math/cmplx"
 	"testing"
 
-	"github.com/itsubaki/q/internal/math/matrix"
+	"github.com/itsubaki/q/pkg/math/matrix"
 )
 
 func TestInverseU(t *testing.T) {

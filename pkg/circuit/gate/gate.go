@@ -6,7 +6,7 @@ import (
 	"math/cmplx"
 	"strconv"
 
-	"github.com/itsubaki/q/internal/math/matrix"
+	"github.com/itsubaki/q/pkg/math/matrix"
 )
 
 func New(v ...[]complex128) matrix.Matrix {
