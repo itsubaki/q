@@ -13,6 +13,7 @@ func New(z ...complex128) Vector {
 	for _, zi := range z {
 		v = append(v, zi)
 	}
+
 	return v
 }
 
@@ -21,6 +22,7 @@ func NewZero(n int) Vector {
 	for i := 0; i < n; i++ {
 		v = append(v, 0)
 	}
+
 	return v
 }
 
@@ -29,6 +31,7 @@ func (v0 Vector) Clone() Vector {
 	for i := 0; i < len(v0); i++ {
 		clone = append(clone, v0[i])
 	}
+
 	return clone
 }
 
@@ -37,6 +40,7 @@ func (v0 Vector) Dual() Vector {
 	for i := 0; i < len(v0); i++ {
 		dual = append(dual, cmplx.Conj(v0[i]))
 	}
+
 	return dual
 }
 
@@ -45,6 +49,7 @@ func (v0 Vector) Add(v1 Vector) Vector {
 	for i := 0; i < len(v0); i++ {
 		v2 = append(v2, v0[i]+v1[i])
 	}
+
 	return v2
 }
 
@@ -53,6 +58,7 @@ func (v0 Vector) Mul(z complex128) Vector {
 	for i := range v0 {
 		v2 = append(v2, z*v0[i])
 	}
+
 	return v2
 }
 
@@ -63,6 +69,7 @@ func (v0 Vector) TensorProduct(v1 Vector) Vector {
 			v2 = append(v2, v0[i]*v1[j])
 		}
 	}
+
 	return v2
 }
 
@@ -127,8 +134,8 @@ func (v0 Vector) Equals(v1 Vector, eps ...float64) bool {
 		if cmplx.Abs(v0[i]-v1[i]) > e {
 			return false
 		}
-
 	}
+
 	return true
 }
 
@@ -145,6 +152,7 @@ func TensorProductN(v0 Vector, bit ...int) Vector {
 	for i := 1; i < bit[0]; i++ {
 		v1 = v1.TensorProduct(v0)
 	}
+
 	return v1
 }
 
@@ -153,5 +161,6 @@ func TensorProduct(v0 ...Vector) Vector {
 	for i := 1; i < len(v0); i++ {
 		v1 = v1.TensorProduct(v0[i])
 	}
+
 	return v1
 }

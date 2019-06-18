@@ -16,7 +16,7 @@ type Qubit struct {
 	Index int
 }
 
-func index(input []*Qubit) []int {
+func Index(input []*Qubit) []int {
 	index := []int{}
 	for i := range input {
 		index = append(index, input[i].Index)
@@ -36,7 +36,7 @@ func (q *Q) New(z ...complex128) *Qubit {
 	}
 
 	q.qubit.TensorProduct(qubit.New(z...))
-	index := q.qubit.NumberOfBit() - 1
+	index := q.NumberOfBit() - 1
 	return &Qubit{Index: index}
 }
 
@@ -46,6 +46,26 @@ func (q *Q) Zero() *Qubit {
 
 func (q *Q) One() *Qubit {
 	return q.New(0, 1)
+}
+
+func (q *Q) Probability() []float64 {
+	return q.qubit.Probability()
+}
+
+func (q *Q) Measure(input ...*Qubit) *qubit.Qubit {
+	if len(input) < 1 {
+		return q.qubit.Measure()
+	}
+
+	return q.qubit.Measure(input[0].Index)
+}
+
+func (q *Q) NumberOfBit() int {
+	return q.qubit.NumberOfBit()
+}
+
+func (q *Q) Clone() *Q {
+	return &Q{qubit: q.qubit.Clone()}
 }
 
 func (q *Q) H(input ...*Qubit) *Q {
@@ -83,7 +103,7 @@ func (q *Q) Apply(mat matrix.Matrix, input ...*Qubit) *Q {
 		g = mat
 	}
 
-	for i := 1; i < q.qubit.NumberOfBit(); i++ {
+	for i := 1; i < q.NumberOfBit(); i++ {
 		found := false
 		for j := range index {
 			if i == index[j] {
@@ -105,9 +125,7 @@ func (q *Q) Apply(mat matrix.Matrix, input ...*Qubit) *Q {
 }
 
 func (q *Q) ControlledR(control []*Qubit, target *Qubit, k int) *Q {
-	bit := q.qubit.NumberOfBit()
-	cr := gate.ControlledR(bit, index(control), target.Index, k)
-
+	cr := gate.ControlledR(q.NumberOfBit(), Index(control), target.Index, k)
 	q.qubit.Apply(cr)
 	return q
 }
@@ -117,9 +135,7 @@ func (q *Q) CR(control *Qubit, target *Qubit, k int) *Q {
 }
 
 func (q *Q) ControlledZ(control []*Qubit, target *Qubit) *Q {
-	bit := q.qubit.NumberOfBit()
-	cnot := gate.ControlledZ(bit, index(control), target.Index)
-
+	cnot := gate.ControlledZ(q.NumberOfBit(), Index(control), target.Index)
 	q.qubit.Apply(cnot)
 	return q
 }
@@ -129,9 +145,7 @@ func (q *Q) CZ(control *Qubit, target *Qubit) *Q {
 }
 
 func (q *Q) ControlledNot(control []*Qubit, target *Qubit) *Q {
-	bit := q.qubit.NumberOfBit()
-	cnot := gate.ControlledNot(bit, index(control), target.Index)
-
+	cnot := gate.ControlledNot(q.NumberOfBit(), Index(control), target.Index)
 	q.qubit.Apply(cnot)
 	return q
 }
@@ -141,14 +155,12 @@ func (q *Q) CNOT(control *Qubit, target *Qubit) *Q {
 }
 
 func (q *Q) QFT() *Q {
-	bit := q.qubit.NumberOfBit()
-	q.qubit.Apply(gate.QFT(bit))
+	q.qubit.Apply(gate.QFT(q.NumberOfBit()))
 	return q
 }
 
 func (q *Q) InverseQFT() *Q {
-	bit := q.qubit.NumberOfBit()
-	q.qubit.Apply(gate.QFT(bit).Dagger())
+	q.qubit.Apply(gate.QFT(q.NumberOfBit()).Dagger())
 	return q
 }
 
@@ -156,6 +168,7 @@ func (q *Q) ConditionX(condition bool, input ...*Qubit) *Q {
 	if condition {
 		return q.X(input...)
 	}
+
 	return q
 }
 
@@ -163,25 +176,14 @@ func (q *Q) ConditionZ(condition bool, input ...*Qubit) *Q {
 	if condition {
 		return q.Z(input...)
 	}
+
 	return q
 }
 
 func (q *Q) Swap(q0, q1 *Qubit) *Q {
-	bit := q.qubit.NumberOfBit()
-	swap := gate.Swap(bit, q0.Index, q1.Index)
+	swap := gate.Swap(q.NumberOfBit(), q0.Index, q1.Index)
 	q.qubit.Apply(swap)
 	return q
-}
-
-func (q *Q) Measure(input ...*Qubit) *qubit.Qubit {
-	if len(input) < 1 {
-		return q.qubit.Measure()
-	}
-	return q.qubit.Measure(input[0].Index)
-}
-
-func (q *Q) Probability() []float64 {
-	return q.qubit.Probability()
 }
 
 func (q *Q) Estimate(input *Qubit, loop ...int) *qubit.Qubit {
@@ -192,8 +194,7 @@ func (q *Q) Estimate(input *Qubit, loop ...int) *qubit.Qubit {
 
 	c := []int{0, 0}
 	for i := 0; i < limit; i++ {
-		clone := q.qubit.Clone()
-		m := clone.Measure(input.Index)
+		m := q.Clone().Measure(input)
 
 		if m.IsZero() {
 			c[0]++

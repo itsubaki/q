@@ -14,6 +14,7 @@ func New(v ...[]complex128) matrix.Matrix {
 	for i := 0; i < len(v); i++ {
 		m[i] = v[i]
 	}
+
 	return m
 }
 

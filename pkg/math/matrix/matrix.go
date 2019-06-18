@@ -12,6 +12,7 @@ func New(v ...[]complex128) Matrix {
 	for i := 0; i < len(v); i++ {
 		m[i] = v[i]
 	}
+
 	return m
 }
 
@@ -187,6 +188,7 @@ func (m0 Matrix) Trace() complex128 {
 	for i := 0; i < p; i++ {
 		sum = sum + m0[i][i]
 	}
+
 	return sum
 }
 

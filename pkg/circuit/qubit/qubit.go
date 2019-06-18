@@ -101,8 +101,10 @@ func (q *Qubit) Normalize() *Qubit {
 	for _, amp := range q.v {
 		sum = sum + math.Pow(cmplx.Abs(amp), 2)
 	}
+
 	z := 1 / math.Sqrt(sum)
 	q.v = q.v.Mul(complex(z, 0))
+
 	return q
 }
 
@@ -111,6 +113,7 @@ func (q *Qubit) Amplitude() []complex128 {
 	for _, amp := range q.v {
 		a = append(a, amp)
 	}
+
 	return a
 }
 
@@ -120,6 +123,7 @@ func (q *Qubit) Probability() []float64 {
 		p := math.Pow(cmplx.Abs(amp), 2)
 		list = append(list, p)
 	}
+
 	return list
 }
 
@@ -244,5 +248,6 @@ func TensorProduct(q ...*Qubit) *Qubit {
 	for i := 1; i < len(q); i++ {
 		q1 = q1.TensorProduct(q[i])
 	}
+
 	return q1
 }
