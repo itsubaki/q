@@ -17,7 +17,7 @@ type Qubit struct {
 }
 
 func Index(input []*Qubit) []int {
-	index := []int{}
+	index := make([]int, 0)
 	for i := range input {
 		index = append(index, input[i].Index)
 	}
@@ -93,7 +93,7 @@ func (q *Q) T(input ...*Qubit) *Q {
 }
 
 func (q *Q) Apply(mat matrix.Matrix, input ...*Qubit) *Q {
-	index := []int{}
+	index := make([]int, 0)
 	for i := range input {
 		index = append(index, input[i].Index)
 	}

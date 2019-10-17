@@ -165,7 +165,7 @@ func TestTensorProductProductXY(t *testing.T) {
 	y := Y()
 
 	m, n := x.Dimension()
-	tmp := []matrix.Matrix{}
+	tmp := make([]matrix.Matrix, 0)
 	for i := 0; i < m; i++ {
 		for j := 0; j < n; j++ {
 			tmp = append(tmp, y.Mul(x[i][j]))
@@ -184,7 +184,7 @@ func TestTensorProductProductXXY(t *testing.T) {
 	y := Y()
 
 	m, n := xx.Dimension()
-	tmp := []matrix.Matrix{}
+	tmp := make([]matrix.Matrix, 0)
 	for i := 0; i < m; i++ {
 		for j := 0; j < n; j++ {
 			tmp = append(tmp, y.Mul(xx[i][j]))

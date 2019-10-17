@@ -137,7 +137,7 @@ func ControlledNot(bit int, c []int, t int) matrix.Matrix {
 	m := I([]int{bit}...)
 	dim := len(m)
 
-	index := []int64{}
+	index := make([]int64, 0)
 	f := "%0" + strconv.Itoa(bit) + "s"
 	for i := 0; i < dim; i++ {
 		s := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
@@ -268,7 +268,7 @@ func QFT(bit int) matrix.Matrix {
 	m := I(bit)
 
 	for i := 0; i < bit; i++ {
-		h := []matrix.Matrix{}
+		h := make([]matrix.Matrix, 0)
 		for j := 0; j < bit; j++ {
 			if i == j {
 				h = append(h, H())

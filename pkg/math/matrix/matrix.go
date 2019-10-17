@@ -49,7 +49,7 @@ func (m0 Matrix) Transpose() Matrix {
 
 	m2 := Matrix{}
 	for i := 0; i < p; i++ {
-		v := []complex128{}
+		v := make([]complex128, 0)
 		for j := 0; j < q; j++ {
 			v = append(v, m0[j][i])
 		}
@@ -64,7 +64,7 @@ func (m0 Matrix) Conjugate() Matrix {
 
 	m2 := Matrix{}
 	for i := 0; i < p; i++ {
-		v := []complex128{}
+		v := make([]complex128, 0)
 		for j := 0; j < q; j++ {
 			v = append(v, cmplx.Conj(m0[i][j]))
 		}
@@ -123,7 +123,7 @@ func (m0 Matrix) Apply(m1 Matrix) Matrix {
 
 	m2 := Matrix{}
 	for i := 0; i < m; i++ {
-		v := []complex128{}
+		v := make([]complex128, 0)
 		for j := 0; j < n; j++ {
 			c := complex(0, 0)
 			for k := 0; k < p; k++ {
@@ -142,7 +142,7 @@ func (m0 Matrix) Mul(z complex128) Matrix {
 
 	m := Matrix{}
 	for i := 0; i < p; i++ {
-		v := []complex128{}
+		v := make([]complex128, 0)
 		for j := 0; j < q; j++ {
 			v = append(v, z*m0[i][j])
 		}
@@ -157,7 +157,7 @@ func (m0 Matrix) Add(m1 Matrix) Matrix {
 
 	m := Matrix{}
 	for i := 0; i < p; i++ {
-		v := []complex128{}
+		v := make([]complex128, 0)
 		for j := 0; j < q; j++ {
 			v = append(v, m0[i][j]+m1[i][j])
 		}
@@ -172,7 +172,7 @@ func (m0 Matrix) Sub(m1 Matrix) Matrix {
 
 	m := Matrix{}
 	for i := 0; i < p; i++ {
-		v := []complex128{}
+		v := make([]complex128, 0)
 		for j := 0; j < q; j++ {
 			v = append(v, m0[i][j]-m1[i][j])
 		}
@@ -196,7 +196,7 @@ func (m0 Matrix) Clone() Matrix {
 	m, n := m0.Dimension()
 	ret := Matrix{}
 	for i := 0; i < m; i++ {
-		v := []complex128{}
+		v := make([]complex128, 0)
 		for j := 0; j < n; j++ {
 			v = append(v, m0[i][j])
 		}
@@ -215,7 +215,7 @@ func (m0 Matrix) Inverse() Matrix {
 
 	inv := Matrix{}
 	for i := 0; i < m; i++ {
-		v := []complex128{}
+		v := make([]complex128, 0)
 		for j := 0; j < n; j++ {
 			if i == j {
 				v = append(v, complex(1, 0))
@@ -251,7 +251,7 @@ func (m0 Matrix) TensorProduct(m1 Matrix) Matrix {
 	m, n := m0.Dimension()
 	p, q := m1.Dimension()
 
-	tmp := []Matrix{}
+	tmp := make([]Matrix, 0)
 	for i := 0; i < m; i++ {
 		for j := 0; j < n; j++ {
 			tmp = append(tmp, m1.Mul(m0[i][j]))
@@ -261,7 +261,7 @@ func (m0 Matrix) TensorProduct(m1 Matrix) Matrix {
 	m2 := Matrix{}
 	for l := 0; l < len(tmp); l = l + m {
 		for j := 0; j < p; j++ {
-			v := []complex128{}
+			v := make([]complex128, 0)
 			for i := l; i < l+m; i++ {
 				for k := 0; k < q; k++ {
 					v = append(v, tmp[i][j][k])

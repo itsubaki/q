@@ -87,7 +87,7 @@ func (v0 Vector) InnerProduct(v1 Vector) complex128 {
 func (v0 Vector) OuterProduct(v1 Vector) matrix.Matrix {
 	m := matrix.Matrix{}
 	for i := 0; i < len(v0); i++ {
-		v := []complex128{}
+		v := make([]complex128, 0)
 		for j := 0; j < len(v1); j++ {
 			v = append(v, v0[i]*v1[j])
 		}

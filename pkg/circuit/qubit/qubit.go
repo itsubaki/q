@@ -150,8 +150,8 @@ func (q *Qubit) Measure(bit ...int) *Qubit {
 }
 
 func (q *Qubit) ProbabilityZeroAt(bit int) ([]int, []float64) {
-	p := []float64{}
-	index := []int{}
+	p := make([]float64, 0)
+	index := make([]int, 0)
 
 	dim := q.v.Dimension()
 	den := int(math.Pow(2, float64(bit+1)))
@@ -174,11 +174,11 @@ func (q *Qubit) ProbabilityZeroAt(bit int) ([]int, []float64) {
 }
 
 func (q *Qubit) ProbabilityOneAt(bit int) ([]int, []float64) {
-	p := []float64{}
-	index := []int{}
+	p := make([]float64, 0)
+	index := make([]int, 0)
 
 	zi, _ := q.ProbabilityZeroAt(bit)
-	one := []int{}
+	one := make([]int, 0)
 	for i := range q.v {
 		found := false
 		for _, zii := range zi {
@@ -220,7 +220,7 @@ func (q *Qubit) MeasureAt(bit int) *Qubit {
 		return One()
 	}
 
-	one := []int{}
+	one := make([]int, 0)
 	for i := range q.v {
 		found := false
 		for _, ix := range index {
