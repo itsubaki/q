@@ -11,7 +11,7 @@ import (
 )
 
 type Qubit struct {
-	v v.Vector
+	vector v.Vector
 }
 
 func New(z ...complex128) *Qubit {
@@ -19,6 +19,7 @@ func New(z ...complex128) *Qubit {
 	for _, zi := range z {
 		v = append(v, zi)
 	}
+
 	q := &Qubit{v}
 	q.Normalize()
 	return q
@@ -33,7 +34,7 @@ func One(bit ...int) *Qubit {
 }
 
 func (q *Qubit) NumberOfBit() int {
-	dim := float64(q.v.Dimension())
+	dim := float64(q.Dimension())
 	log := math.Log2(dim)
 	return int(log)
 }
@@ -47,15 +48,19 @@ func (q *Qubit) IsOne(eps ...float64) bool {
 }
 
 func (q *Qubit) InnerProduct(q0 *Qubit) complex128 {
-	return q.v.InnerProduct(q0.v)
+	return q.vector.InnerProduct(q0.vector)
 }
 
 func (q *Qubit) OuterProduct(q0 *Qubit) matrix.Matrix {
-	return q.v.OuterProduct(q0.v)
+	return q.vector.OuterProduct(q0.vector)
+}
+
+func (q *Qubit) Dimension() int {
+	return q.vector.Dimension()
 }
 
 func (q *Qubit) Clone() *Qubit {
-	return &Qubit{q.v.Clone()}
+	return &Qubit{q.vector.Clone()}
 }
 
 func (q *Qubit) Fidelity(q0 *Qubit) float64 {
@@ -83,34 +88,34 @@ func (q *Qubit) TraceDistance(q0 *Qubit) float64 {
 }
 
 func (q *Qubit) Equals(q0 *Qubit, eps ...float64) bool {
-	return q.v.Equals(q0.v, eps...)
+	return q.vector.Equals(q0.vector, eps...)
 }
 
 func (q *Qubit) TensorProduct(q0 *Qubit) *Qubit {
-	q.v = q.v.TensorProduct(q0.v)
+	q.vector = q.vector.TensorProduct(q0.vector)
 	return q
 }
 
 func (q *Qubit) Apply(m matrix.Matrix) *Qubit {
-	q.v = q.v.Apply(m)
+	q.vector = q.vector.Apply(m)
 	return q
 }
 
 func (q *Qubit) Normalize() *Qubit {
 	var sum float64
-	for _, amp := range q.v {
+	for _, amp := range q.vector {
 		sum = sum + math.Pow(cmplx.Abs(amp), 2)
 	}
 
 	z := 1 / math.Sqrt(sum)
-	q.v = q.v.Mul(complex(z, 0))
+	q.vector = q.vector.Mul(complex(z, 0))
 
 	return q
 }
 
 func (q *Qubit) Amplitude() []complex128 {
 	a := []complex128{}
-	for _, amp := range q.v {
+	for _, amp := range q.vector {
 		a = append(a, amp)
 	}
 
@@ -119,7 +124,7 @@ func (q *Qubit) Amplitude() []complex128 {
 
 func (q *Qubit) Probability() []float64 {
 	list := []float64{}
-	for _, amp := range q.v {
+	for _, amp := range q.vector {
 		p := math.Pow(cmplx.Abs(amp), 2)
 		list = append(list, p)
 	}
@@ -139,8 +144,8 @@ func (q *Qubit) Measure(bit ...int) *Qubit {
 	var sum float64
 	for i, p := range plist {
 		if sum <= r && r < sum+p {
-			q.v = v.NewZero(len(q.v))
-			q.v[i] = 1
+			q.vector = v.NewZero(len(q.vector))
+			q.vector[i] = 1
 			break
 		}
 		sum = sum + p
@@ -153,7 +158,7 @@ func (q *Qubit) ProbabilityZeroAt(bit int) ([]int, []float64) {
 	p := make([]float64, 0)
 	index := make([]int, 0)
 
-	dim := q.v.Dimension()
+	dim := q.Dimension()
 	den := int(math.Pow(2, float64(bit+1)))
 	div := dim / den
 
@@ -179,7 +184,7 @@ func (q *Qubit) ProbabilityOneAt(bit int) ([]int, []float64) {
 
 	zi, _ := q.ProbabilityZeroAt(bit)
 	one := make([]int, 0)
-	for i := range q.v {
+	for i := range q.vector {
 		found := false
 		for _, zii := range zi {
 			if i == zii {
@@ -213,7 +218,7 @@ func (q *Qubit) MeasureAt(bit int) *Qubit {
 
 	if r > sum {
 		for _, i := range index {
-			q.v[i] = complex(0, 0)
+			q.vector[i] = complex(0, 0)
 		}
 
 		q.Normalize()
@@ -221,7 +226,7 @@ func (q *Qubit) MeasureAt(bit int) *Qubit {
 	}
 
 	one := make([]int, 0)
-	for i := range q.v {
+	for i := range q.vector {
 		found := false
 		for _, ix := range index {
 			if i == ix {
@@ -236,7 +241,7 @@ func (q *Qubit) MeasureAt(bit int) *Qubit {
 	}
 
 	for _, i := range one {
-		q.v[i] = complex(0, 0)
+		q.vector[i] = complex(0, 0)
 	}
 
 	q.Normalize()

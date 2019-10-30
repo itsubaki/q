@@ -78,11 +78,11 @@ q3 := qsim.One()
 
 qsim.H(q0, q1, q2, q3)
 // oracle for |011>|1>
-qsim.X(q0).ControlledNot([]*q.Qubit{q0, q1, q2}, q3).X(q0)
+qsim.X(q0).ControlledNot([]Qubit{q0, q1, q2}, q3).X(q0)
 // amp
 qsim.H(q0, q1, q2, q3)
 qsim.X(q0, q1, q2)
-qsim.ControlledZ([]*q.Qubit{q0, q1}, q2)
+qsim.ControlledZ([]Qubit{q0, q1}, q2)
 qsim.H(q0, q1, q2)
 
 qsim.Probability()
@@ -155,13 +155,13 @@ qsim.CNOT(q2, q4)
 qsim.CNOT(q2, q5)
 
 // Controlled-U^2
-qsim.ControlledNot([]*Qubit{q1, q4}, q6)
-qsim.ControlledNot([]*Qubit{q1, q6}, q4)
-qsim.ControlledNot([]*Qubit{q1, q4}, q6)
+qsim.ControlledNot([]Qubit{q1, q4}, q6)
+qsim.ControlledNot([]Qubit{q1, q6}, q4)
+qsim.ControlledNot([]Qubit{q1, q4}, q6)
 
-qsim.ControlledNot([]*Qubit{q1, q3}, q5)
-qsim.ControlledNot([]*Qubit{q1, q5}, q3)
-qsim.ControlledNot([]*Qubit{q1, q3}, q5)
+qsim.ControlledNot([]Qubit{q1, q3}, q5)
+qsim.ControlledNot([]Qubit{q1, q5}, q3)
+qsim.ControlledNot([]Qubit{q1, q3}, q5)
 
 // QFT
 qsim.H(q0)
@@ -198,7 +198,11 @@ for i := range p {
 // gcd(a^(r/2)+1, N) -> gcd(7^(4/2)+1, 15)
 p0 := number.GCD(a*a-1, N)
 p1 := number.GCD(a*a+1, N)
-if p0 != 3 || p1 != 5 {
+
+if p0 != 3 {
+  t.Errorf("%v %v\n", p0, p1)
+}
+if p1 != 5 {
   t.Errorf("%v %v\n", p0, p1)
 }
 ```

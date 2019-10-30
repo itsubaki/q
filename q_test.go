@@ -66,25 +66,22 @@ func TestQSimFactoring15(t *testing.T) {
 	qsim.CNOT(q2, q5)
 
 	// Controlled-Swap
-	qsim.ControlledNot([]*Qubit{q1, q4}, q6)
-	qsim.ControlledNot([]*Qubit{q1, q6}, q4)
-	qsim.ControlledNot([]*Qubit{q1, q4}, q6)
+	qsim.ControlledNot([]Qubit{q1, q4}, q6)
+	qsim.ControlledNot([]Qubit{q1, q6}, q4)
+	qsim.ControlledNot([]Qubit{q1, q4}, q6)
 
 	// Controlled-Swap
-	qsim.ControlledNot([]*Qubit{q1, q3}, q5)
-	qsim.ControlledNot([]*Qubit{q1, q5}, q3)
-	qsim.ControlledNot([]*Qubit{q1, q3}, q5)
+	qsim.ControlledNot([]Qubit{q1, q3}, q5)
+	qsim.ControlledNot([]Qubit{q1, q5}, q3)
+	qsim.ControlledNot([]Qubit{q1, q3}, q5)
 
 	// QFT
 	qsim.H(q0)
 	qsim.CR(q1, q0, 2)
 	qsim.CR(q2, q0, 3)
-
 	qsim.H(q1)
 	qsim.CR(q2, q1, 2)
-
 	qsim.H(q2)
-
 	qsim.Swap(q0, q2)
 
 	// measure q0, q1, q2
@@ -97,6 +94,7 @@ func TestQSimFactoring15(t *testing.T) {
 		if p[i] == 0 {
 			continue
 		}
+
 		fmt.Printf("%07s %v\n", strconv.FormatInt(int64(i), 2), p[i])
 	}
 	// 010,0001(1)  0.25 -> 1/16
@@ -110,7 +108,11 @@ func TestQSimFactoring15(t *testing.T) {
 	// gcd(a^(r/2)+1, N), gcd(7^(4/2)+1, 15)
 	p0 := number.GCD(a*a-1, N)
 	p1 := number.GCD(a*a+1, N)
-	if p0 != 3 || p1 != 5 {
+
+	if p0 != 3 {
+		t.Errorf("%v %v\n", p0, p1)
+	}
+	if p1 != 5 {
 		t.Errorf("%v %v\n", p0, p1)
 	}
 }
@@ -186,12 +188,12 @@ func TestQSimGrover3qubit(t *testing.T) {
 	qsim.H(q0, q1, q2, q3)
 
 	// oracle
-	qsim.X(q0).ControlledNot([]*Qubit{q0, q1, q2}, q3).X(q0)
+	qsim.X(q0).ControlledNot([]Qubit{q0, q1, q2}, q3).X(q0)
 
 	// amp
 	qsim.H(q0, q1, q2, q3)
 	qsim.X(q0, q1, q2)
-	qsim.ControlledZ([]*Qubit{q0, q1}, q2)
+	qsim.ControlledZ([]Qubit{q0, q1}, q2)
 	qsim.H(q0, q1, q2)
 
 	// q3 is always |1>
@@ -228,13 +230,13 @@ func TestQSimGrover3qubit(t *testing.T) {
 
 }
 
-func TestQSimCnNot(t *testing.T) {
+func TestQSimCNOT(t *testing.T) {
 	qsim := New()
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 
-	p := qsim.ControlledNot([]*Qubit{q0}, q1).Probability()
+	p := qsim.ControlledNot([]Qubit{q0}, q1).Probability()
 	e := qubit.Zero(2).Apply(gate.CNOT(2, 0, 1)).Probability()
 
 	for i := range p {
