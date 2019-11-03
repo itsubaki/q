@@ -4,30 +4,33 @@ import (
 	"math/cmplx"
 	"testing"
 
+	"github.com/itsubaki/q/pkg/quantum/gate"
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
 
 func TestDensityMatrix(t *testing.T) {
-	m := New().Add(0.5, qubit.Zero()).Add(0.5, qubit.One())
-
-	if m.At(0, 0) != complex(0.5, 0) {
-		t.Error(m)
-	}
-	if m.At(1, 1) != complex(0.5, 0) {
-		t.Error(m)
-	}
+	p0, p1 := 0.1, 0.9
+	q0, q1 := qubit.Zero(), qubit.One()
+	m := New().Add(p0, q0).Add(p1, q1)
 
 	if cmplx.Abs(m.Trace()-complex(1, 0)) > 1e-13 {
 		t.Error(m)
 	}
 
-	e0 := qubit.Zero().OuterProduct(qubit.Zero())
-	if m.Apply(e0).At(0, 0) != complex(0.5, 0) {
+	if m.Measure(q0) != complex(p0, 0) {
 		t.Error(m)
 	}
 
-	e1 := qubit.One().OuterProduct(qubit.One())
-	if m.Apply(e1).At(1, 1) != complex(0.5, 0) {
+	if m.Measure(q1) != complex(p1, 0) {
+		t.Error(m)
+	}
+
+	xm := m.Apply(gate.X())
+	if xm.Measure(q0) != complex(p1, 0) {
+		t.Error(m)
+	}
+
+	if xm.Measure(q1) != complex(p0, 0) {
 		t.Error(m)
 	}
 }
