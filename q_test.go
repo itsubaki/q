@@ -298,20 +298,13 @@ func TestQSimBellstate(t *testing.T) {
 		t.Error(p)
 	}
 
-	if qsim.Measure(q0).IsZero() {
-		if qsim.Measure(q1).IsZero() {
-		} else {
-			t.Error(qsim.Probability())
-		}
+	if qsim.Measure(q0).IsZero() && qsim.Measure(q1).IsOne() {
+		t.Error(qsim.Probability())
 	}
 
-	if qsim.Measure(q0).IsOne() {
-		if qsim.Measure(q1).IsOne() {
-		} else {
-			t.Error(qsim.Probability())
-		}
+	if qsim.Measure(q0).IsOne() && qsim.Measure(q1).IsZero() {
+		t.Error(qsim.Probability())
 	}
-
 }
 
 func TestQsimQuantumTeleportation2(t *testing.T) {
@@ -565,7 +558,6 @@ func TestGrover3qubit(t *testing.T) {
 			t.Error(q.Probability())
 		}
 	}
-
 }
 
 func TestGrover2qubit(t *testing.T) {

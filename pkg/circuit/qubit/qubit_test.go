@@ -1,12 +1,27 @@
 package qubit
 
 import (
-	"fmt"
+	"math"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/circuit/gate"
 	"github.com/itsubaki/q/pkg/math/matrix"
 )
+
+func TestOperatorSum(t *testing.T) {
+	q0 := Zero()
+	q1 := Zero()
+
+	q := q0.OuterProduct(q1)
+	e := gate.X().Dagger().Apply(q.Apply(gate.X()))
+
+	if q[0][0] != complex(1, 0) {
+		t.Errorf("%v", q)
+	}
+	if e[1][1] != complex(1, 0) {
+		t.Errorf("%v", e)
+	}
+}
 
 func TestOuterProduct(t *testing.T) {
 	v0 := New(1, 0)
@@ -31,7 +46,12 @@ func TestOuterProduct(t *testing.T) {
 
 func TestQFT(t *testing.T) {
 	q := Zero(3).Apply(gate.QFT(3))
-	fmt.Println(q.Probability())
+
+	for _, p := range q.Probability() {
+		if math.Abs(p-0.125) > 1e-13 {
+			t.Errorf("%v", q.Probability())
+		}
+	}
 }
 
 func TestNum(t *testing.T) {
@@ -97,16 +117,12 @@ func TestQubit(t *testing.T) {
 	q.Measure()
 
 	p2 := q.Probability()
-	if p2[0] == 0 {
-		if p2[1] != 1 {
-			t.Error(p2)
-		}
+	if p2[0] == 0 && p2[1] != 1 {
+		t.Error(p2)
 	}
 
-	if p2[0] == 1 {
-		if p2[1] != 0 {
-			t.Error(p2)
-		}
+	if p2[0] == 1 && p2[1] != 0 {
+		t.Error(p2)
 	}
 }
 
@@ -162,5 +178,4 @@ func TestMeasure(t *testing.T) {
 			t.Error(q.Probability())
 		}
 	}
-
 }
