@@ -4,8 +4,8 @@ import (
 	"math"
 	"testing"
 
-	"github.com/itsubaki/q/pkg/circuit/gate"
 	"github.com/itsubaki/q/pkg/math/matrix"
+	"github.com/itsubaki/q/pkg/quantum/gate"
 )
 
 func TestOperatorSum(t *testing.T) {

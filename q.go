@@ -3,9 +3,9 @@ package q
 import (
 	"math"
 
-	"github.com/itsubaki/q/pkg/circuit/gate"
-	"github.com/itsubaki/q/pkg/circuit/qubit"
 	"github.com/itsubaki/q/pkg/math/matrix"
+	"github.com/itsubaki/q/pkg/quantum/gate"
+	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
 
 type Q struct {
