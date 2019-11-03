@@ -6,9 +6,9 @@
  - pure golang implementation
  - no external library used
 
-# example
+# Example
 
-## bell state
+## Bell state
 
 ```golang
 qsim := q.New()
@@ -39,7 +39,7 @@ m1 := qsim.Measure(q1)
 // -> m0 = |1> then m1 = |1>
 ```
 
-## quantum teleportation
+## Quantum teleportation
 
 ```golang
 qsim := q.New()
@@ -89,7 +89,7 @@ qsim.Probability()
 // [0 0.03125 0 0.03125 0 0.03125 0 0.78125 0 0.03125 0 0.03125 0 0.03125 0 0.03125]
 ```
 
-## error correction
+## Error correction
 
 ```golang
 qsim := q.New()
