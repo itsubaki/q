@@ -1,6 +1,8 @@
 package density
 
 import (
+	"fmt"
+
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
@@ -15,7 +17,7 @@ func New() *Matrix {
 
 func (m *Matrix) Add(p float64, q *qubit.Qubit) *Matrix {
 	dim := q.Dimension()
-	if len(m.internal) != dim {
+	if len(m.internal) < 1 {
 		m.internal = make(matrix.Matrix, dim)
 		for i := 0; i < dim; i++ {
 			m.internal[i] = []complex128{}
@@ -23,6 +25,10 @@ func (m *Matrix) Add(p float64, q *qubit.Qubit) *Matrix {
 				m.internal[i] = append(m.internal[i], complex(0, 0))
 			}
 		}
+	}
+
+	if len(m.internal) != dim {
+		panic(fmt.Sprintf("invalid dimension=%d", dim))
 	}
 
 	tmp := q.OuterProduct(q).Mul(complex(p, 0))
