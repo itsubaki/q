@@ -29,7 +29,7 @@ func TestDensityMatrix(t *testing.T) {
 		t.Error(rho)
 	}
 
-	xrho := rho.Evlove(gate.X())
+	xrho := rho.Evolve(gate.X())
 	if xrho.Measure(q0) != complex(p1, 0) {
 		t.Error(rho)
 	}

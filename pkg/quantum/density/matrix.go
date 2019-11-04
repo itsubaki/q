@@ -42,7 +42,7 @@ func (m *Matrix) Add(p float64, q *qubit.Qubit) *Matrix {
 	return m
 }
 
-func (m *Matrix) Evlove(u matrix.Matrix) *Matrix {
+func (m *Matrix) Evolve(u matrix.Matrix) *Matrix {
 	return &Matrix{u.Dagger().Apply(m.internal).Apply(u)}
 }
 

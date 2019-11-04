@@ -108,7 +108,7 @@ qsim.X(q0)
 q3 := qsim.Zero()
 q4 := qsim.Zero()
 
-// error corretion
+// error correction
 qsim.CNOT(q0, q3).CNOT(q1, q3)
 qsim.CNOT(q1, q4).CNOT(q2, q4)
 
