@@ -1,7 +1,10 @@
 package density
 
 import (
+	"math"
+
 	"github.com/itsubaki/q/pkg/math/matrix"
+	"github.com/itsubaki/q/pkg/quantum/gate"
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
 
@@ -54,4 +57,41 @@ func (m *Matrix) ExpectedValue(u matrix.Matrix) complex128 {
 
 func (m *Matrix) Trace() complex128 {
 	return m.internal.Trace()
+}
+
+func (m *Matrix) PartialTrace() complex128 {
+	// TODO
+	return complex(0, 0)
+}
+
+func (m *Matrix) NumberOfBit() int {
+	mm, _ := m.internal.Dimension()
+	log := math.Log2(float64(mm))
+	return int(log)
+}
+
+func (m *Matrix) Depolarizing(p float64) {
+	n := m.NumberOfBit()
+	i := gate.I(n).Mul(complex(p/2, 0))
+	r := m.internal.Mul(complex(1-p, 0))
+
+	m.internal = i.Add(r)
+}
+
+func Flip(p float64, m matrix.Matrix) (matrix.Matrix, matrix.Matrix) {
+	e0 := gate.I().Mul(complex(math.Sqrt(p), 0))
+	e1 := m.Mul(complex(math.Sqrt(1-p), 0))
+	return e0, e1
+}
+
+func BitFlip(p float64) (matrix.Matrix, matrix.Matrix) {
+	return Flip(p, gate.X())
+}
+
+func PhaseFlip(p float64) (matrix.Matrix, matrix.Matrix) {
+	return Flip(p, gate.Z())
+}
+
+func BitPhaseFlip(p float64) (matrix.Matrix, matrix.Matrix) {
+	return Flip(p, gate.Y())
 }

@@ -7,15 +7,15 @@ import (
 	"time"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
-	v "github.com/itsubaki/q/pkg/math/vector"
+	"github.com/itsubaki/q/pkg/math/vector"
 )
 
 type Qubit struct {
-	vector v.Vector
+	vector vector.Vector
 }
 
 func New(z ...complex128) *Qubit {
-	v := v.Vector{}
+	v := vector.New()
 	for _, zi := range z {
 		v = append(v, zi)
 	}
@@ -26,11 +26,11 @@ func New(z ...complex128) *Qubit {
 }
 
 func Zero(bit ...int) *Qubit {
-	return &Qubit{v.TensorProductN(v.Vector{1, 0}, bit...)}
+	return &Qubit{vector.TensorProductN(vector.Vector{1, 0}, bit...)}
 }
 
 func One(bit ...int) *Qubit {
-	return &Qubit{v.TensorProductN(v.Vector{0, 1}, bit...)}
+	return &Qubit{vector.TensorProductN(vector.Vector{0, 1}, bit...)}
 }
 
 func (q *Qubit) NumberOfBit() int {
@@ -144,7 +144,7 @@ func (q *Qubit) Measure(bit ...int) *Qubit {
 	var sum float64
 	for i, p := range plist {
 		if sum <= r && r < sum+p {
-			q.vector = v.NewZero(len(q.vector))
+			q.vector = vector.NewZero(len(q.vector))
 			q.vector[i] = 1
 			break
 		}

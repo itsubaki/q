@@ -4,7 +4,6 @@ import (
 	"math"
 	"testing"
 
-	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/quantum/gate"
 )
 
@@ -16,10 +15,10 @@ func TestOperatorSum(t *testing.T) {
 	e := gate.X().Dagger().Apply(q.Apply(gate.X()))
 
 	if q[0][0] != complex(1, 0) {
-		t.Errorf("%v", q)
+		t.Error(q)
 	}
 	if e[1][1] != complex(1, 0) {
-		t.Errorf("%v", e)
+		t.Error(e)
 	}
 }
 
@@ -49,7 +48,7 @@ func TestQFT(t *testing.T) {
 
 	for _, p := range q.Probability() {
 		if math.Abs(p-0.125) > 1e-13 {
-			t.Errorf("%v", q.Probability())
+			t.Error(q.Probability())
 		}
 	}
 }
@@ -127,7 +126,7 @@ func TestQubit(t *testing.T) {
 }
 
 func TestBellState(t *testing.T) {
-	g0 := matrix.TensorProduct(gate.H(), gate.I())
+	g0 := gate.H().TensorProduct(gate.I())
 	g1 := gate.CNOT(2, 0, 1)
 
 	bell := Zero(2).Apply(g0.Apply(g1))

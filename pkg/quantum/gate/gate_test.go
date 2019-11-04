@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"math/cmplx"
 	"testing"
-
-	"github.com/itsubaki/q/pkg/math/matrix"
 )
 
 func TestInverseU(t *testing.T) {
@@ -69,8 +67,8 @@ func TestCNOT(t *testing.T) {
 }
 
 func TestControlledNot(t *testing.T) {
-	g0 := matrix.TensorProduct(I().Add(Z()), I())
-	g1 := matrix.TensorProduct(I().Sub(Z()), X())
+	g0 := I().Add(Z()).TensorProduct(I())
+	g1 := I().Sub(Z()).TensorProduct(X())
 	CN := g0.Add(g1).Mul(0.5)
 
 	if !ControlledNot(2, []int{0}, 1).Equals(CN) {
@@ -79,21 +77,20 @@ func TestControlledNot(t *testing.T) {
 }
 
 func TestToffoli(t *testing.T) {
-	g := make([]matrix.Matrix, 13)
-
-	g[0] = matrix.TensorProduct(I(2), H())
-	g[1] = matrix.TensorProduct(I(), CNOT(2, 0, 1))
-	g[2] = matrix.TensorProduct(I(2), T().Dagger())
+	g := NewSlice(13)
+	g[0] = I(2).TensorProduct(H())
+	g[1] = I(1).TensorProduct(CNOT(2, 0, 1))
+	g[2] = I(2).TensorProduct(T().Dagger())
 	g[3] = CNOT(3, 0, 2)
-	g[4] = matrix.TensorProduct(I(2), T())
-	g[5] = matrix.TensorProduct(I(), CNOT(2, 0, 1))
-	g[6] = matrix.TensorProduct(I(2), T().Dagger())
+	g[4] = I(2).TensorProduct(T())
+	g[5] = I(1).TensorProduct(CNOT(2, 0, 1))
+	g[6] = I(2).TensorProduct(T().Dagger())
 	g[7] = CNOT(3, 0, 2)
-	g[8] = matrix.TensorProduct(I(), T().Dagger(), T())
-	g[9] = matrix.TensorProduct(CNOT(2, 0, 1), H())
-	g[10] = matrix.TensorProduct(I(), T().Dagger(), I())
-	g[11] = matrix.TensorProduct(CNOT(2, 0, 1), I())
-	g[12] = matrix.TensorProduct(T(), S(), I())
+	g[8] = I(1).TensorProduct(T().Dagger()).TensorProduct(T())
+	g[9] = CNOT(2, 0, 1).TensorProduct(H())
+	g[10] = I(1).TensorProduct(T().Dagger()).TensorProduct(I())
+	g[11] = CNOT(2, 0, 1).TensorProduct(I())
+	g[12] = T().TensorProduct(S()).TensorProduct(I())
 
 	expected := I(3)
 	for _, gate := range g {
@@ -122,7 +119,6 @@ func TestIsHermite(t *testing.T) {
 	if !Z().IsHermite() {
 		t.Error(Z())
 	}
-
 }
 
 func TestIsUnitary(t *testing.T) {
@@ -165,7 +161,7 @@ func TestTensorProductProductXY(t *testing.T) {
 	y := Y()
 
 	m, n := x.Dimension()
-	tmp := make([]matrix.Matrix, 0)
+	tmp := NewSlice()
 	for i := 0; i < m; i++ {
 		for j := 0; j < n; j++ {
 			tmp = append(tmp, y.Mul(x[i][j]))
@@ -184,7 +180,7 @@ func TestTensorProductProductXXY(t *testing.T) {
 	y := Y()
 
 	m, n := xx.Dimension()
-	tmp := make([]matrix.Matrix, 0)
+	tmp := NewSlice()
 	for i := 0; i < m; i++ {
 		for j := 0; j < n; j++ {
 			tmp = append(tmp, y.Mul(xx[i][j]))

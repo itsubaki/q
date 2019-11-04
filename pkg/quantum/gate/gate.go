@@ -18,6 +18,14 @@ func New(v ...[]complex128) matrix.Matrix {
 	return m
 }
 
+func NewSlice(l ...int) []matrix.Matrix {
+	if len(l) < 1 {
+		return make([]matrix.Matrix, 0)
+	}
+
+	return make([]matrix.Matrix, l[0])
+}
+
 func U(alpha, beta, gamma, delta float64) matrix.Matrix {
 	m0 := make(matrix.Matrix, 2)
 	v0 := complex(0, 1*beta/2)
