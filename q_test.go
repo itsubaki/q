@@ -643,7 +643,7 @@ func TestQuantumTeleportation(t *testing.T) {
 	}
 }
 
-func TestQuantumTeleportationPattern2(t *testing.T) {
+func TestQuantumTeleportation2(t *testing.T) {
 	g0 := matrix.TensorProduct(gate.H(), gate.I())
 	g1 := gate.CNOT(2, 0, 1)
 	bell := qubit.Zero(2).Apply(g0).Apply(g1)
