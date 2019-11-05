@@ -43,12 +43,12 @@ func (m *Matrix) Add(p float64, q *qubit.Qubit) *Matrix {
 }
 
 func (m *Matrix) Evolve(u matrix.Matrix) *Matrix {
-	return &Matrix{u.Dagger().Apply(m.internal).Apply(u)}
+	m.internal = u.Dagger().Apply(m.internal).Apply(u)
+	return m
 }
 
 func (m *Matrix) Measure(q *qubit.Qubit) complex128 {
-	op := q.OuterProduct(q)
-	return m.internal.Apply(op).Trace()
+	return m.internal.Apply(q.OuterProduct(q)).Trace()
 }
 
 func (m *Matrix) ExpectedValue(u matrix.Matrix) complex128 {

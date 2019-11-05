@@ -49,7 +49,7 @@ func TestDensityMatrix2(t *testing.T) {
 	}
 
 	e0 := rho.ExpectedValue(gate.X())
-	if cmplx.Abs(e0-complex(0.9, 0)) > 1e-13 {
+	if cmplx.Abs(e0-complex(p1, 0)) > 1e-13 {
 		t.Error(e0)
 	}
 }

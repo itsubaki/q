@@ -204,6 +204,17 @@ if p1 != 5 {
 }
 ```
 
+## Density Matrix
+
+```golang
+p0, p1 := 0.1, 0.9
+q0, q1 := qubit.Zero(), qubit.Zero().Apply(gate.H())
+rho := density.New().Add(p0, q0).Add(p1, q1)
+
+rho.Trace() // -> 1
+rho.ExpectedValue(gate.X()) // -> 0.9
+```
+
 # Reference
 
  1. Michael A. Nielsen, Issac L. Chuang, Quantum Computation and Quantum Information
