@@ -12,6 +12,36 @@ import (
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
 
+func TestApply(t *testing.T) {
+	qsim := New()
+
+	i0 := qsim.Zero().Index()
+	i1 := qsim.Zero().Index()
+	n := qsim.NumberOfBit()
+
+	g0 := gate.H().TensorProduct(gate.I())
+	g1 := gate.CNOT(n, i0, i1)
+	qc := g0.Apply(g1)
+
+	qsim.Apply(qc)
+
+	if math.Abs(qsim.Probability()[0]-0.5) > 1e13 {
+		t.Error(qsim.Probability())
+	}
+
+	if math.Abs(qsim.Probability()[1]) > 1e13 {
+		t.Error(qsim.Probability())
+	}
+
+	if math.Abs(qsim.Probability()[2]) > 1e13 {
+		t.Error(qsim.Probability())
+	}
+
+	if math.Abs(qsim.Probability()[3]-0.5) > 1e13 {
+		t.Error(qsim.Probability())
+	}
+}
+
 func TestPOVM(t *testing.T) {
 	E1 := gate.New(
 		[]complex128{0, 0},
@@ -277,7 +307,7 @@ func TestQSimEstimate(t *testing.T) {
 
 }
 
-func TestQSimBellstate(t *testing.T) {
+func TestQSimBellState(t *testing.T) {
 	qsim := New()
 
 	q0 := qsim.Zero()
@@ -442,7 +472,7 @@ func TestQsimErrorCorrectionZero(t *testing.T) {
 	q3 := qsim.Zero()
 	q4 := qsim.Zero()
 
-	// error corretion
+	// error correction
 	qsim.CNOT(q0, q3).CNOT(q1, q3)
 	qsim.CNOT(q1, q4).CNOT(q2, q4)
 
@@ -489,7 +519,7 @@ func TestQsimErrorCorrection(t *testing.T) {
 	q3 := qsim.Zero()
 	q4 := qsim.Zero()
 
-	// error corretion
+	// error correction
 	qsim.CNOT(q0, q3).CNOT(q1, q3)
 	qsim.CNOT(q1, q4).CNOT(q2, q4)
 

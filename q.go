@@ -95,6 +95,11 @@ func (q *Q) T(input ...Qubit) *Q {
 }
 
 func (q *Q) Apply(mat matrix.Matrix, input ...Qubit) *Q {
+	if len(input) < 1 {
+		q.internal.Apply(mat)
+		return q
+	}
+
 	index := Index(input...)
 
 	g := gate.I()
