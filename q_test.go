@@ -425,7 +425,7 @@ func TestQSimQuantumTeleportation(t *testing.T) {
 	}
 }
 
-func TestQsimErorrCorrectionZero(t *testing.T) {
+func TestQsimErrorCorrectionZero(t *testing.T) {
 	qsim := New()
 
 	q0 := qsim.Zero()
@@ -472,7 +472,7 @@ func TestQsimErorrCorrectionZero(t *testing.T) {
 	}
 }
 
-func TestQsimErorrCorrection(t *testing.T) {
+func TestQsimErrorCorrection(t *testing.T) {
 	qsim := New()
 
 	q0 := qsim.New(1, 9)
