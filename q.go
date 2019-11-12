@@ -203,8 +203,8 @@ func (q *Q) Estimate(input Qubit, loop ...int) *qubit.Qubit {
 		c1++
 	}
 
-	z := complex(math.Sqrt(float64(c0)/float64(limit)), 0)
-	o := complex(math.Sqrt(float64(c1)/float64(limit)), 0)
+	z := math.Sqrt(float64(c0) / float64(limit))
+	o := math.Sqrt(float64(c1) / float64(limit))
 
-	return qubit.New(z, o)
+	return qubit.New(complex(z, 0), complex(o, 0))
 }
