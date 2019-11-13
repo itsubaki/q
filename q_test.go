@@ -12,20 +12,6 @@ import (
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
 
-func TestDump(t *testing.T) {
-	qsim := New()
-
-	q0 := qsim.Zero()
-	q1 := qsim.Zero()
-	fmt.Println(qsim.Dump())
-
-	qsim.H(q0)
-	fmt.Println(qsim.Dump())
-
-	qsim.CNOT(q0, q1)
-	fmt.Println(qsim.Dump())
-}
-
 func TestApply(t *testing.T) {
 	qsim := New()
 
@@ -279,6 +265,74 @@ func TestQSimGrover3qubit(t *testing.T) {
 		}
 
 		fmt.Printf("%04s %v\n", strconv.FormatInt(int64(i), 2), p[i])
+	}
+}
+
+func TestQSimGrover3qubitDump(t *testing.T) {
+	qsim := New()
+
+	f := func(in ...interface{}) {
+		p := qsim.Probability()
+		n := qsim.NumberOfBit()
+		f := "%0" + strconv.Itoa(n) + "s %1.3f, "
+
+		var out string
+		for i := range p {
+			bit := strconv.FormatInt(int64(i), 2)
+			out = out + fmt.Sprintf(f, bit, p[i])
+		}
+		out = out[:len(out)-2] // remove last ,
+		fmt.Println(out)
+	}
+
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
+	q3 := qsim.One()
+	f()
+
+	f(qsim.H(q0, q1, q2, q3))
+
+	// oracle
+	f(qsim.X(q0).ControlledNot([]Qubit{q0, q1, q2}, q3).X(q0))
+
+	// amp
+	f(qsim.H(q0, q1, q2, q3))
+	f(qsim.X(q0, q1, q2))
+	f(qsim.ControlledZ([]Qubit{q0, q1}, q2))
+	f(qsim.H(q0, q1, q2))
+
+	// q3 is always |1>
+	m3 := qsim.Measure(q3)
+	if !m3.IsOne() {
+		t.Error(m3)
+	}
+	f()
+
+	p := qsim.Probability()
+	if math.Abs(qubit.Sum(p)-1) > 1e-13 {
+		t.Error(p)
+	}
+
+	for i, pp := range p {
+		// |011>|1>
+		if i == 7 {
+			if math.Abs(pp-0.78125) > 1e-13 {
+				t.Error(qsim.Probability())
+			}
+			continue
+		}
+
+		if i%2 == 0 {
+			if math.Abs(pp) > 1e-13 {
+				t.Error(qsim.Probability())
+			}
+			continue
+		}
+
+		if math.Abs(pp-0.03125) > 1e-13 {
+			t.Error(qsim.Probability())
+		}
 	}
 }
 

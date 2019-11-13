@@ -1,9 +1,7 @@
 package q
 
 import (
-	"fmt"
 	"math"
-	"strconv"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/quantum/gate"
@@ -31,21 +29,6 @@ func Index(input ...Qubit) []int {
 
 func New() *Q {
 	return &Q{}
-}
-
-func (q *Q) Dump() string {
-	p := q.Amplitude()
-	n := q.NumberOfBit()
-	f := "%0" + strconv.Itoa(n) + "s%1.3f, "
-
-	var out string
-	for i := range p {
-		bit := strconv.FormatInt(int64(i), 2)
-		out = out + fmt.Sprintf(f, bit, p[i])
-	}
-	out = out[:len(out)-2] // remove last ,
-
-	return out
 }
 
 func (q *Q) New(z ...complex128) Qubit {
