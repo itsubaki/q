@@ -307,7 +307,6 @@ func TestQSimGrover3qubitDump(t *testing.T) {
 	if !m3.IsOne() {
 		t.Error(m3)
 	}
-	f()
 
 	p := qsim.Probability()
 	if math.Abs(qubit.Sum(p)-1) > 1e-13 {
