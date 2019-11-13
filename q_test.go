@@ -272,7 +272,7 @@ func TestQSimGrover3qubitDump(t *testing.T) {
 	qsim := New()
 
 	f := func(in ...interface{}) {
-		p := qsim.Probability()
+		p := qsim.Amplitude()
 		n := qsim.NumberOfBit()
 		f := "%0" + strconv.Itoa(n) + "s %1.3f, "
 
