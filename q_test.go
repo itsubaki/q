@@ -12,6 +12,112 @@ import (
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
 
+func TestQSimFactoring15Print(t *testing.T) {
+	p := func(q *Q) {
+		p := q.Amplitude()
+		n := q.NumberOfBit()
+		f := "%0" + strconv.Itoa(n) + "s %1.3f, "
+
+		var out string
+		for i := range p {
+			if p[i] == 0 {
+				continue
+			}
+
+			bit := strconv.FormatInt(int64(i), 2)
+			out = out + fmt.Sprintf(f, bit, p[i])
+		}
+		out = out[:len(out)-2] // remove last ,
+		fmt.Println(out)
+	}
+
+	qsim := New()
+
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
+
+	q3 := qsim.Zero()
+	q4 := qsim.Zero()
+	q5 := qsim.Zero()
+	q6 := qsim.One()
+	p(qsim)
+
+	// superposition
+	qsim.H(q0, q1, q2)
+	p(qsim)
+
+	// Controlled-U
+	qsim.CNOT(q2, q4)
+	qsim.CNOT(q2, q5)
+	p(qsim)
+
+	// Controlled-U^2
+	qsim.ControlledNot([]Qubit{q1, q4}, q6)
+	qsim.ControlledNot([]Qubit{q1, q6}, q4)
+	qsim.ControlledNot([]Qubit{q1, q4}, q6)
+
+	qsim.ControlledNot([]Qubit{q1, q3}, q5)
+	qsim.ControlledNot([]Qubit{q1, q5}, q3)
+	qsim.ControlledNot([]Qubit{q1, q3}, q5)
+	p(qsim)
+
+	// QFT
+	qsim.H(q0)
+	qsim.CR(q1, q0, 2)
+	qsim.CR(q2, q0, 3)
+	qsim.H(q1)
+	qsim.CR(q2, q1, 2)
+	qsim.H(q2)
+	qsim.Swap(q0, q2)
+	p(qsim)
+
+	// measure q0, q1, q2
+	qsim.Measure(q0)
+	qsim.Measure(q1)
+	qsim.Measure(q2)
+	p(qsim)
+}
+
+func TestQSimGrover3qubitPrint(t *testing.T) {
+	p := func(q *Q) {
+		p := q.Amplitude()
+		n := q.NumberOfBit()
+		f := "%0" + strconv.Itoa(n) + "s %1.3f, "
+
+		var out string
+		for i := range p {
+			bit := strconv.FormatInt(int64(i), 2)
+			out = out + fmt.Sprintf(f, bit, p[i])
+		}
+		out = out[:len(out)-2] // remove last ,
+		fmt.Println(out)
+	}
+
+	qsim := New()
+
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
+	q3 := qsim.One()
+	p(qsim)
+
+	// superposition
+	qsim.H(q0, q1, q2, q3)
+	p(qsim)
+
+	// oracle
+	qsim.X(q0).ControlledNot([]Qubit{q0, q1, q2}, q3).X(q0)
+	p(qsim)
+
+	// amp
+	qsim.H(q0, q1, q2, q3)
+	qsim.X(q0, q1, q2)
+	qsim.ControlledZ([]Qubit{q0, q1}, q2)
+	qsim.H(q0, q1, q2)
+	p(qsim)
+}
+
 func TestApply(t *testing.T) {
 	qsim := New()
 
@@ -90,17 +196,18 @@ func TestQSimFactoring15(t *testing.T) {
 	q5 := qsim.Zero()
 	q6 := qsim.One()
 
+	// superposition
 	qsim.H(q0, q1, q2)
 
+	// Controlled-U
 	qsim.CNOT(q2, q4)
 	qsim.CNOT(q2, q5)
 
-	// Controlled-Swap
+	// Controlled-U^2
 	qsim.ControlledNot([]Qubit{q1, q4}, q6)
 	qsim.ControlledNot([]Qubit{q1, q6}, q4)
 	qsim.ControlledNot([]Qubit{q1, q4}, q6)
 
-	// Controlled-Swap
 	qsim.ControlledNot([]Qubit{q1, q3}, q5)
 	qsim.ControlledNot([]Qubit{q1, q5}, q3)
 	qsim.ControlledNot([]Qubit{q1, q3}, q5)
@@ -265,73 +372,6 @@ func TestQSimGrover3qubit(t *testing.T) {
 		}
 
 		fmt.Printf("%04s %v\n", strconv.FormatInt(int64(i), 2), p[i])
-	}
-}
-
-func TestQSimGrover3qubitDump(t *testing.T) {
-	qsim := New()
-
-	f := func(in ...interface{}) {
-		p := qsim.Amplitude()
-		n := qsim.NumberOfBit()
-		f := "%0" + strconv.Itoa(n) + "s %1.3f, "
-
-		var out string
-		for i := range p {
-			bit := strconv.FormatInt(int64(i), 2)
-			out = out + fmt.Sprintf(f, bit, p[i])
-		}
-		out = out[:len(out)-2] // remove last ,
-		fmt.Println(out)
-	}
-
-	q0 := qsim.Zero()
-	q1 := qsim.Zero()
-	q2 := qsim.Zero()
-	q3 := qsim.One()
-	f()
-
-	f(qsim.H(q0, q1, q2, q3))
-
-	// oracle
-	f(qsim.X(q0).ControlledNot([]Qubit{q0, q1, q2}, q3).X(q0))
-
-	// amp
-	f(qsim.H(q0, q1, q2, q3))
-	f(qsim.X(q0, q1, q2))
-	f(qsim.ControlledZ([]Qubit{q0, q1}, q2))
-	f(qsim.H(q0, q1, q2))
-
-	// q3 is always |1>
-	m3 := qsim.Measure(q3)
-	if !m3.IsOne() {
-		t.Error(m3)
-	}
-
-	p := qsim.Probability()
-	if math.Abs(qubit.Sum(p)-1) > 1e-13 {
-		t.Error(p)
-	}
-
-	for i, pp := range p {
-		// |011>|1>
-		if i == 7 {
-			if math.Abs(pp-0.78125) > 1e-13 {
-				t.Error(qsim.Probability())
-			}
-			continue
-		}
-
-		if i%2 == 0 {
-			if math.Abs(pp) > 1e-13 {
-				t.Error(qsim.Probability())
-			}
-			continue
-		}
-
-		if math.Abs(pp-0.03125) > 1e-13 {
-			t.Error(qsim.Probability())
-		}
 	}
 }
 

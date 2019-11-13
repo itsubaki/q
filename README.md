@@ -76,9 +76,12 @@ q1 := qsim.Zero()
 q2 := qsim.Zero()
 q3 := qsim.One()
 
+// superposition
 qsim.H(q0, q1, q2, q3)
+
 // oracle for |011>|1>
 qsim.X(q0).ControlledNot([]Qubit{q0, q1, q2}, q3).X(q0)
+
 // amp
 qsim.H(q0, q1, q2, q3)
 qsim.X(q0, q1, q2)

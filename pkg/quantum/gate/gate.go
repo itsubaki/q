@@ -280,9 +280,9 @@ func QFT(bit int) matrix.Matrix {
 		for j := 0; j < bit; j++ {
 			if i == j {
 				h = append(h, H())
-			} else {
-				h = append(h, I())
+				continue
 			}
+			h = append(h, I())
 		}
 		m = m.Apply(matrix.TensorProduct(h...))
 
