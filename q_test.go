@@ -125,19 +125,20 @@ func TestQSimFactoring15(t *testing.T) {
 			continue
 		}
 
-		fmt.Printf("%07s %v\n", strconv.FormatInt(int64(i), 2), p[i])
+		fmt.Printf("%04s %v\n", strconv.FormatInt(int64(i), 2), p[i])
 	}
-	// 010,0001(1)  0.25 -> 1/16
-	// 010,0100(4)  0.25 -> 4/16 -> 1/4
-	// 010,0111(7)  0.25 -> 7/16
-	// 010,1101(13) 0.25 -> 13/16
+	// 0001(1)  0.25 -> 1/16
+	// 0100(4)  0.25 -> 4/16 -> 1/4
+	// 0111(7)  0.25 -> 7/16
+	// 1101(13) 0.25 -> 13/16
 	// r = 16 is trivial. r < N.
 	// r -> 4
+	r := 4
 
 	// gcd(a^(r/2)-1, N), gcd(7^(4/2)-1, 15)
 	// gcd(a^(r/2)+1, N), gcd(7^(4/2)+1, 15)
-	p0 := number.GCD(a*a-1, N)
-	p1 := number.GCD(a*a+1, N)
+	p0 := number.GCD(number.Pow(a, r/2)-1, N)
+	p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
 	if p0 != 3 {
 		t.Errorf("%v %v\n", p0, p1)
@@ -258,6 +259,13 @@ func TestQSimGrover3qubit(t *testing.T) {
 		}
 	}
 
+	for i := range p {
+		if p[i] == 0 {
+			continue
+		}
+
+		fmt.Printf("%04s %v\n", strconv.FormatInt(int64(i), 2), p[i])
+	}
 }
 
 func TestQSimCNOT(t *testing.T) {
