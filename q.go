@@ -33,7 +33,7 @@ func New() *Q {
 	return &Q{}
 }
 
-func (q *Q) String() string {
+func (q *Q) Dump() string {
 	p := q.Amplitude()
 	n := q.NumberOfBit()
 	f := "%0" + strconv.Itoa(n) + "s%1.3f, "

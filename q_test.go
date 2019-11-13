@@ -12,18 +12,18 @@ import (
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
 
-func TestString(t *testing.T) {
+func TestDump(t *testing.T) {
 	qsim := New()
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
-	fmt.Println(qsim)
+	fmt.Println(qsim.Dump())
 
 	qsim.H(q0)
-	fmt.Println(qsim)
+	fmt.Println(qsim.Dump())
 
 	qsim.CNOT(q0, q1)
-	fmt.Println(qsim)
+	fmt.Println(qsim.Dump())
 }
 
 func TestApply(t *testing.T) {
