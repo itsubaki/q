@@ -212,11 +212,10 @@ for i := range p {
 // r -> 4
 r := 4
 
-// gcd(a^(r/2)-1, N), gcd(7^(4/2)-1, 15)
-// gcd(a^(r/2)+1, N), gcd(7^(4/2)+1, 15)
+// gcd(a^(r/2)-1, N)
+// gcd(a^(r/2)+1, N)
 p0 := number.GCD(number.Pow(a, r/2)-1, N)
 p1 := number.GCD(number.Pow(a, r/2)+1, N)
-
 
 if p0 != 3 {
   t.Errorf("%v %v\n", p0, p1)
