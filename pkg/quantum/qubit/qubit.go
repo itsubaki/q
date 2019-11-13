@@ -114,7 +114,7 @@ func (q *Qubit) Normalize() *Qubit {
 }
 
 func (q *Qubit) Amplitude() []complex128 {
-	a := []complex128{}
+	a := make([]complex128, 0)
 	for _, amp := range q.vector {
 		a = append(a, amp)
 	}
@@ -123,7 +123,7 @@ func (q *Qubit) Amplitude() []complex128 {
 }
 
 func (q *Qubit) Probability() []float64 {
-	list := []float64{}
+	list := make([]float64, 0)
 	for _, amp := range q.vector {
 		p := math.Pow(cmplx.Abs(amp), 2)
 		list = append(list, p)

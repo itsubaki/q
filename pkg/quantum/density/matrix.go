@@ -19,7 +19,7 @@ func New(v ...[]complex128) *Matrix {
 func (m *Matrix) Zero(dim int) {
 	m.internal = make(matrix.Matrix, dim)
 	for i := 0; i < dim; i++ {
-		m.internal[i] = []complex128{}
+		m.internal[i] = make([]complex128, 0)
 		for j := 0; j < dim; j++ {
 			m.internal[i] = append(m.internal[i], complex(0, 0))
 		}

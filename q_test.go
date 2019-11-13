@@ -305,14 +305,13 @@ func TestQSimEstimate(t *testing.T) {
 	f0 := ex.Fidelity(e0)
 	f1 := ex.Fidelity(e1)
 
-	if math.Abs(f0-1) > 1e-3 {
+	if math.Abs(f0-1) > 1e-2 {
 		t.Errorf("%v: %v\n", f0, e0)
 	}
 
-	if math.Abs(f1-1) > 1e-3 {
+	if math.Abs(f1-1) > 1e-2 {
 		t.Errorf("%v: %v\n", f1, e1)
 	}
-
 }
 
 func TestQSimBellState(t *testing.T) {
