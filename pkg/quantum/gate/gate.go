@@ -170,7 +170,7 @@ func ControlledNot(bit int, c []int, t int) matrix.Matrix {
 
 		v, err := strconv.ParseInt(string(bits), 2, 0)
 		if err != nil {
-			panic(err)
+			panic(fmt.Sprintf("parse int: %v", err))
 		}
 
 		index = append(index, v)

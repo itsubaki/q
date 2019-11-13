@@ -210,7 +210,7 @@ func (m0 Matrix) Inverse() Matrix {
 	mat := m0.Clone()
 	m, n := mat.Dimension()
 	if m != n {
-		panic(fmt.Sprintf("m=%d n=%d", m, n))
+		panic(fmt.Sprintf("dimension invalid. m=%d n=%d", m, n))
 	}
 
 	inv := Matrix{}

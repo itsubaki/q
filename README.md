@@ -90,6 +90,7 @@ for i := range p {
   if p[i] == 0 {
     continue
   }
+
   fmt.Printf("%04s %v\n", strconv.FormatInt(int64(i), 2), p[i])
 }
 
@@ -196,13 +197,14 @@ for i := range p {
   if p[i] == 0 {
     continue
   }
-  fmt.Printf("%04s %v\n", strconv.FormatInt(int64(i), 2), p[i])
+
+  fmt.Printf("%07s %v\n", strconv.FormatInt(int64(i), 2), p[i])
 }
 
-// 0001(1)  0.25 -> 1/16
-// 0100(4)  0.25 -> 4/16 -> 1/4
-// 0111(7)  0.25 -> 7/16
-// 1101(13) 0.25 -> 13/16
+// 010,0001(1)  0.25 -> 1/16
+// 010,0100(4)  0.25 -> 4/16 -> 1/4
+// 010,0111(7)  0.25 -> 7/16
+// 010,1101(13) 0.25 -> 13/16
 // r = 16 is trivial. r < N.
 // r -> 4
 r := 4

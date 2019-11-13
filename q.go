@@ -1,7 +1,9 @@
 package q
 
 import (
+	"fmt"
 	"math"
+	"strconv"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/quantum/gate"
@@ -31,6 +33,21 @@ func New() *Q {
 	return &Q{}
 }
 
+func (q *Q) String() string {
+	p := q.Amplitude()
+	n := q.NumberOfBit()
+	f := "%0" + strconv.Itoa(n) + "s%1.3f, "
+
+	var out string
+	for i := range p {
+		bit := strconv.FormatInt(int64(i), 2)
+		out = out + fmt.Sprintf(f, bit, p[i])
+	}
+	out = out[:len(out)-2] // remove last ,
+
+	return out
+}
+
 func (q *Q) New(z ...complex128) Qubit {
 	if q.internal == nil {
 		q.internal = qubit.New(z...)
@@ -48,6 +65,10 @@ func (q *Q) Zero() Qubit {
 
 func (q *Q) One() Qubit {
 	return q.New(0, 1)
+}
+
+func (q *Q) Amplitude() []complex128 {
+	return q.internal.Amplitude()
 }
 
 func (q *Q) Probability() []float64 {
