@@ -77,6 +77,26 @@ func TestQSimFactoring15Print(t *testing.T) {
 	qsim.Measure(q1)
 	qsim.Measure(q2)
 	p(qsim)
+
+	// sampling
+	sample := 100
+	result := make(map[string]int)
+	for i := 0; i < sample; i++ {
+		p := qsim.Clone().Measure().Probability()
+		for i := range p {
+			if p[i] == 0 {
+				continue
+			}
+
+			bit := strconv.FormatInt(int64(i), 2)
+			str := fmt.Sprintf("%07s", bit)
+			result[str[4:]]++
+		}
+	}
+
+	if len(result) != 4 {
+		t.Error(result)
+	}
 }
 
 func TestQSimGrover3qubitPrint(t *testing.T) {
