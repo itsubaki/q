@@ -1,13 +1,15 @@
 package number
 
-import "math"
+import (
+	"math"
+)
 
 func Fraction(f float64, eps float64) ([]int, int, int) {
-	continued := make([]int, 0)
+	list := make([]int, 0)
 
 	reciprocal := f
 	for {
-		continued = append(continued, int(reciprocal))
+		list = append(list, int(reciprocal))
 		diff := reciprocal - math.Trunc(reciprocal)
 		if diff < eps {
 			break
@@ -16,7 +18,14 @@ func Fraction(f float64, eps float64) ([]int, int, int) {
 		reciprocal = 1.0 / diff
 	}
 
-	// TODO return numerator denominator
+	if len(list) == 1 {
+		return list, 1, list[0]
+	}
 
-	return continued, 3, 7
+	n, d := 1, list[len(list)-1]
+	for i := 2; i < len(list); i++ {
+		n, d = d, list[len(list)-i]*d+n
+	}
+
+	return list, n, d
 }
