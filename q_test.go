@@ -6,29 +6,19 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/math/number"
+
+	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/quantum/gate"
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
 
-func TestQSimFactoring15Print(t *testing.T) {
-	p := func(q *Q) {
-		p := q.Amplitude()
-		n := q.NumberOfBit()
-		f := "%0" + strconv.Itoa(n) + "s %1.3f, "
+func TestQSimFactoring15(t *testing.T) {
+	N := 15
+	a := 7 // co-prime
 
-		var out string
-		for i := range p {
-			if p[i] == 0 {
-				continue
-			}
-
-			bit := strconv.FormatInt(int64(i), 2)
-			out = out + fmt.Sprintf(f, bit, p[i])
-		}
-		out = out[:len(out)-2] // remove last ,
-		fmt.Println(out)
+	if number.GCD(N, a) != 1 {
+		t.Errorf("%v %v\n", N, a)
 	}
 
 	qsim := New()
@@ -41,16 +31,13 @@ func TestQSimFactoring15Print(t *testing.T) {
 	q4 := qsim.Zero()
 	q5 := qsim.Zero()
 	q6 := qsim.One()
-	p(qsim)
 
 	// superposition
 	qsim.H(q0, q1, q2)
-	p(qsim)
 
 	// Controlled-U
 	qsim.CNOT(q2, q4)
 	qsim.CNOT(q2, q5)
-	p(qsim)
 
 	// Controlled-U^2
 	qsim.ControlledNot([]Qubit{q1, q4}, q6)
@@ -60,7 +47,6 @@ func TestQSimFactoring15Print(t *testing.T) {
 	qsim.ControlledNot([]Qubit{q1, q3}, q5)
 	qsim.ControlledNot([]Qubit{q1, q5}, q3)
 	qsim.ControlledNot([]Qubit{q1, q3}, q5)
-	p(qsim)
 
 	// QFT
 	qsim.H(q0)
@@ -70,32 +56,39 @@ func TestQSimFactoring15Print(t *testing.T) {
 	qsim.CR(q2, q1, 2)
 	qsim.H(q2)
 	qsim.Swap(q0, q2)
-	p(qsim)
 
 	// measure q0, q1, q2
 	qsim.Measure(q0)
 	qsim.Measure(q1)
 	qsim.Measure(q2)
-	p(qsim)
 
-	// sampling
-	sample := 100
-	result := make(map[string]int)
-	for i := 0; i < sample; i++ {
-		p := qsim.Clone().Measure().Probability()
-		for i := range p {
-			if p[i] == 0 {
-				continue
-			}
-
-			bit := strconv.FormatInt(int64(i), 2)
-			str := fmt.Sprintf("%07s", bit)
-			result[str[4:]]++
+	p := qsim.Probability()
+	for i := range p {
+		if p[i] == 0 {
+			continue
 		}
-	}
 
-	if len(result) != 4 {
-		t.Error(result)
+		dd := strconv.FormatInt(int64(i), 2)
+		ii, _ := strconv.ParseInt(fmt.Sprintf("%07s", dd)[3:], 2, 64)
+
+		fmt.Printf("%07s(%v) %v\n", dd, ii, p[i])
+	}
+	// 010,0001(1)  0.25
+	// 010,0100(4)  0.25
+	// 010,0111(7)  0.25
+	// 010,1101(13) 0.25
+	r := 4
+
+	// gcd(a^(r/2)-1, N), gcd(7^(4/2)-1, 15)
+	// gcd(a^(r/2)+1, N), gcd(7^(4/2)+1, 15)
+	p0 := number.GCD(number.Pow(a, r/2)-1, N)
+	p1 := number.GCD(number.Pow(a, r/2)+1, N)
+
+	if p0 != 3 {
+		t.Errorf("%v %v\n", p0, p1)
+	}
+	if p1 != 5 {
+		t.Errorf("%v %v\n", p0, p1)
 	}
 }
 
@@ -194,82 +187,6 @@ func TestPOVM(t *testing.T) {
 	q1 := qubit.Zero().Apply(gate.H())
 	if q1.Apply(E2).InnerProduct(q1) != complex(0, 0) {
 		t.Fail()
-	}
-}
-
-func TestQSimFactoring15(t *testing.T) {
-	N := 15
-	a := 7 // co-prime
-
-	if number.GCD(N, a) != 1 {
-		t.Errorf("%v %v\n", N, a)
-	}
-
-	qsim := New()
-
-	q0 := qsim.Zero()
-	q1 := qsim.Zero()
-	q2 := qsim.Zero()
-
-	q3 := qsim.Zero()
-	q4 := qsim.Zero()
-	q5 := qsim.Zero()
-	q6 := qsim.One()
-
-	// superposition
-	qsim.H(q0, q1, q2)
-
-	// Controlled-U
-	qsim.CNOT(q2, q4)
-	qsim.CNOT(q2, q5)
-
-	// Controlled-U^2
-	qsim.ControlledNot([]Qubit{q1, q4}, q6)
-	qsim.ControlledNot([]Qubit{q1, q6}, q4)
-	qsim.ControlledNot([]Qubit{q1, q4}, q6)
-
-	qsim.ControlledNot([]Qubit{q1, q3}, q5)
-	qsim.ControlledNot([]Qubit{q1, q5}, q3)
-	qsim.ControlledNot([]Qubit{q1, q3}, q5)
-
-	// QFT
-	qsim.H(q0)
-	qsim.CR(q1, q0, 2)
-	qsim.CR(q2, q0, 3)
-	qsim.H(q1)
-	qsim.CR(q2, q1, 2)
-	qsim.H(q2)
-	qsim.Swap(q0, q2)
-
-	// measure q0, q1, q2
-	qsim.Measure(q0)
-	qsim.Measure(q1)
-	qsim.Measure(q2)
-
-	p := qsim.Probability()
-	for i := range p {
-		if p[i] == 0 {
-			continue
-		}
-
-		fmt.Printf("%07s %v\n", strconv.FormatInt(int64(i), 2), p[i])
-	}
-	// 010,0001(1)  0.25
-	// 010,0100(4)  0.25
-	// 010,0111(7)  0.25
-	// 010,1101(13) 0.25
-	r := 4
-
-	// gcd(a^(r/2)-1, N), gcd(7^(4/2)-1, 15)
-	// gcd(a^(r/2)+1, N), gcd(7^(4/2)+1, 15)
-	p0 := number.GCD(number.Pow(a, r/2)-1, N)
-	p1 := number.GCD(number.Pow(a, r/2)+1, N)
-
-	if p0 != 3 {
-		t.Errorf("%v %v\n", p0, p1)
-	}
-	if p1 != 5 {
-		t.Errorf("%v %v\n", p0, p1)
 	}
 }
 
