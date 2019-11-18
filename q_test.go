@@ -21,8 +21,10 @@ func TestQSimFactoring15(t *testing.T) {
 		t.Errorf("%v %v\n", N, a)
 	}
 
-	var r int
+	var r, count int
 	for {
+		count++
+
 		qsim := New()
 
 		q0 := qsim.Zero()
@@ -90,14 +92,14 @@ func TestQSimFactoring15(t *testing.T) {
 
 	// gcd(a^(r/2)-1, N), gcd(7^(4/2)-1, 15)
 	// gcd(a^(r/2)+1, N), gcd(7^(4/2)+1, 15)
-	p0 := number.GCD(number.Pow(a, r/2)-1, N)
-	p1 := number.GCD(number.Pow(a, r/2)+1, N)
+	p := number.GCD(number.Pow(a, r/2)-1, N)
+	q := number.GCD(number.Pow(a, r/2)+1, N)
 
-	if p0 != 3 || p1 != 5 {
-		t.Errorf("%v %v\n", p0, p1)
+	if p != 3 || q != 5 {
+		t.Errorf("%v %v\n", p, q)
 	}
 
-	fmt.Printf("%v %v\n", p0, p1)
+	fmt.Printf("N=%d, p=%v, q=%v. count=%d\n", N, p, q, count)
 }
 
 func TestQSimGrover3qubit(t *testing.T) {

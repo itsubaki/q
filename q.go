@@ -228,7 +228,7 @@ func (q *Q) Binary() string {
 }
 
 func (q *Q) Int() int {
-	p := q.Probability()
+	p := q.Clone().Measure().Probability()
 	for i := range p {
 		if p[i] == 0 {
 			continue
@@ -237,5 +237,5 @@ func (q *Q) Int() int {
 		return i
 	}
 
-	panic(fmt.Sprintf("not measued: %v", p))
+	panic(fmt.Sprintf("invalid probability: %v", p))
 }
