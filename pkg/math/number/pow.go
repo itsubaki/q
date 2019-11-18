@@ -1,7 +1,10 @@
 package number
 
-import "math"
-
 func Pow(a, r int) int {
-	return int(math.Pow(float64(a), float64(r)))
+	p := a
+	for i := 1; i < r; i++ {
+		p = p * a
+	}
+
+	return p
 }
