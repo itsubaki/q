@@ -79,7 +79,7 @@ func TestQSimFactoring15(t *testing.T) {
 
 		// continued fraction
 		_, _, d := number.Fraction(float64(dec)/16.0, 1e-3)
-		if d > N || d%2 != 0 {
+		if d > N || number.IsOdd(d) {
 			continue
 		}
 
