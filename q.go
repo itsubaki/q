@@ -230,12 +230,12 @@ func (q *Q) Binary() string {
 func (q *Q) Int() int {
 	p := q.Probability()
 	for i := range p {
-		if p[i] != 1 {
+		if p[i] == 0 {
 			continue
 		}
 
 		return i
 	}
 
-	panic("not measured")
+	panic(fmt.Sprintf("not measued: %v", p))
 }

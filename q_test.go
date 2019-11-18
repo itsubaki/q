@@ -100,8 +100,8 @@ func TestQSimFactoring15(t *testing.T) {
 	fmt.Printf("%v %v\n", p0, p1)
 }
 
-func TestQSimGrover3qubitPrint(t *testing.T) {
-	p := func(q *Q) {
+func TestQSimGrover3qubit(t *testing.T) {
+	print := func(q *Q) {
 		p := q.Amplitude()
 		n := q.NumberOfBit()
 		f := "%0" + strconv.Itoa(n) + "s %1.3f, "
@@ -121,22 +121,51 @@ func TestQSimGrover3qubitPrint(t *testing.T) {
 	q1 := qsim.Zero()
 	q2 := qsim.Zero()
 	q3 := qsim.One()
-	p(qsim)
 
-	// superposition
 	qsim.H(q0, q1, q2, q3)
-	p(qsim)
+	print(qsim)
 
 	// oracle
 	qsim.X(q0).ControlledNot([]Qubit{q0, q1, q2}, q3).X(q0)
-	p(qsim)
+	print(qsim)
 
 	// amp
 	qsim.H(q0, q1, q2, q3)
 	qsim.X(q0, q1, q2)
 	qsim.ControlledZ([]Qubit{q0, q1}, q2)
 	qsim.H(q0, q1, q2)
-	p(qsim)
+	print(qsim)
+
+	// q3 is always |1>
+	m3 := qsim.Measure(q3)
+	if !m3.IsOne() {
+		t.Error(m3)
+	}
+
+	p := qsim.Probability()
+	for i, pp := range p {
+		// |011>|1>
+		if i == 7 && math.Abs(pp-0.78125) > 1e-13 {
+			t.Error(qsim.Probability())
+		}
+
+		if i%2 == 0 && math.Abs(pp) > 1e-13 {
+			t.Error(qsim.Probability())
+		}
+
+		if i%2 == 1 && i != 7 && math.Abs(pp-0.03125) > 1e-13 {
+			t.Error(qsim.Probability())
+		}
+
+	}
+
+	for i, pp := range p {
+		if pp == 0 {
+			continue
+		}
+
+		fmt.Printf("%04s %v\n", strconv.FormatInt(int64(i), 2), pp)
+	}
 }
 
 func TestApply(t *testing.T) {
@@ -255,66 +284,6 @@ func TestQSimQFT3qubit(t *testing.T) {
 		if math.Abs(pp-0.125) > 1e-13 {
 			t.Error(p)
 		}
-	}
-}
-
-func TestQSimGrover3qubit(t *testing.T) {
-	qsim := New()
-
-	q0 := qsim.Zero()
-	q1 := qsim.Zero()
-	q2 := qsim.Zero()
-	q3 := qsim.One()
-
-	qsim.H(q0, q1, q2, q3)
-
-	// oracle
-	qsim.X(q0).ControlledNot([]Qubit{q0, q1, q2}, q3).X(q0)
-
-	// amp
-	qsim.H(q0, q1, q2, q3)
-	qsim.X(q0, q1, q2)
-	qsim.ControlledZ([]Qubit{q0, q1}, q2)
-	qsim.H(q0, q1, q2)
-
-	// q3 is always |1>
-	m3 := qsim.Measure(q3)
-	if !m3.IsOne() {
-		t.Error(m3)
-	}
-
-	p := qsim.Probability()
-	if math.Abs(qubit.Sum(p)-1) > 1e-13 {
-		t.Error(p)
-	}
-
-	for i, pp := range p {
-		// |011>|1>
-		if i == 7 {
-			if math.Abs(pp-0.78125) > 1e-13 {
-				t.Error(qsim.Probability())
-			}
-			continue
-		}
-
-		if i%2 == 0 {
-			if math.Abs(pp) > 1e-13 {
-				t.Error(qsim.Probability())
-			}
-			continue
-		}
-
-		if math.Abs(pp-0.03125) > 1e-13 {
-			t.Error(qsim.Probability())
-		}
-	}
-
-	for i := range p {
-		if p[i] == 0 {
-			continue
-		}
-
-		fmt.Printf("%04s %v\n", strconv.FormatInt(int64(i), 2), p[i])
 	}
 }
 
