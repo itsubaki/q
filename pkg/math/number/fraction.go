@@ -9,8 +9,10 @@ func Fraction(f float64, eps float64) ([]int, int, int) {
 
 	reciprocal := f
 	for {
-		list = append(list, int(reciprocal))
-		diff := reciprocal - math.Trunc(reciprocal)
+		trunc := math.Trunc(reciprocal)
+		list = append(list, int(trunc))
+
+		diff := reciprocal - trunc
 		if diff < eps {
 			break
 		}
