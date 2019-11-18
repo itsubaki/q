@@ -1,7 +1,9 @@
 package q
 
 import (
+	"fmt"
 	"math"
+	"strconv"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/quantum/gate"
@@ -216,4 +218,24 @@ func (q *Q) Estimate(input Qubit, loop ...int) *qubit.Qubit {
 	o := math.Sqrt(float64(c1) / float64(limit))
 
 	return qubit.New(complex(z, 0), complex(o, 0))
+}
+
+func (q *Q) Binary() string {
+	n := q.NumberOfBit()
+	f := "%0" + fmt.Sprintf("%d", n) + "s"
+
+	return fmt.Sprintf(f, strconv.FormatInt(int64(q.Int()), 2))
+}
+
+func (q *Q) Int() int {
+	p := q.Probability()
+	for i := range p {
+		if p[i] != 1 {
+			continue
+		}
+
+		return i
+	}
+
+	panic("not measured")
 }
