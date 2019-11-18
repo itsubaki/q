@@ -5,43 +5,34 @@ import (
 )
 
 func TestFraction(t *testing.T) {
-	list, n, d := Fraction(0.42857, 1e-3)
-
-	if n != 3 || d != 7 {
-		t.Errorf("%v/%v", n, d)
+	cases := []struct {
+		float       float64
+		fraction    []int
+		numerator   int
+		denominator int
+	}{
+		{0.42857, []int{0, 2, 2, 1}, 3, 7},
+		{1.0 / 16.0, []int{0, 16}, 1, 16},
+		{4.0 / 16.0, []int{0, 4}, 1, 4},
+		{7.0 / 16.0, []int{0, 2, 3, 1, 1}, 7, 16},
+		{13.0 / 16.0, []int{0, 1, 4, 3}, 13, 16},
 	}
 
-	e := []int{0, 2, 2, 1}
-	for i := range e {
-		if list[i] == e[i] {
-			continue
+	for _, c := range cases {
+		f, n, d := Fraction(c.float, 1e-3)
+
+		if n != c.numerator {
+			t.Errorf("%v/%v", n, d)
+		}
+		if d != c.denominator {
+			t.Errorf("%v/%v", n, d)
 		}
 
-		t.Error(list)
-	}
-
-	{
-		list, n, d := Fraction(1.0/16.0, 1e-3)
-		if n != 1 || d != 16 {
-			t.Errorf("%v %v/%v", list, n, d)
-		}
-	}
-	{
-		list, n, d := Fraction(4.0/16.0, 1e-3)
-		if n != 1 || d != 4 {
-			t.Errorf("%v %v/%v", list, n, d)
-		}
-	}
-	{
-		list, n, d := Fraction(7.0/16.0, 1e-3)
-		if n != 7 || d != 16 {
-			t.Errorf("%v %v/%v", list, n, d)
-		}
-	}
-	{
-		list, n, d := Fraction(13.0/16.0, 1e-3)
-		if n != 13 || d != 16 {
-			t.Errorf("%v %v/%v", list, n, d)
+		for i := range c.fraction {
+			if f[i] == c.fraction[i] {
+				continue
+			}
+			t.Error(f)
 		}
 	}
 }
