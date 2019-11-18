@@ -15,8 +15,9 @@ import (
 
 func TestQSimFactoring15(t *testing.T) {
 	N := 15
-	a := 7 // co-prime
+	a := 7
 
+	// co-prime
 	if number.GCD(N, a) != 1 {
 		t.Errorf("%v %v\n", N, a)
 	}
@@ -85,7 +86,7 @@ func TestQSimFactoring15(t *testing.T) {
 			continue
 		}
 
-		// get r
+		// get order
 		r = d
 		break
 	}
