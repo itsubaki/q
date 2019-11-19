@@ -262,7 +262,7 @@ func (m0 Matrix) TensorProduct(m1 Matrix) Matrix {
 			r := make([]complex128, 0)
 			for j := 0; j < m; j++ {
 				for l := 0; l < q; l++ {
-					r = append(r, m0[i][j]*m1[l][k])
+					r = append(r, m0[i][j]*m1[k][l])
 				}
 			}
 			mat = append(mat, r)
