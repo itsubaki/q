@@ -253,30 +253,23 @@ func (m0 Matrix) PartialTrace() complex128 {
 }
 
 func (m0 Matrix) TensorProduct(m1 Matrix) Matrix {
-	m, n := m0.Dimension()
+	n, m := m0.Dimension()
 	p, q := m1.Dimension()
 
-	tmp := make([]Matrix, 0)
-	for i := 0; i < m; i++ {
-		for j := 0; j < n; j++ {
-			tmp = append(tmp, m1.Mul(m0[i][j]))
-		}
-	}
-
-	m2 := Matrix{}
-	for l := 0; l < len(tmp); l = l + m {
-		for j := 0; j < p; j++ {
-			v := make([]complex128, 0)
-			for i := l; i < l+m; i++ {
-				for k := 0; k < q; k++ {
-					v = append(v, tmp[i][j][k])
+	mat := make([][]complex128, 0)
+	for i := 0; i < n; i++ {
+		for k := 0; k < p; k++ {
+			r := make([]complex128, 0)
+			for j := 0; j < m; j++ {
+				for l := 0; l < q; l++ {
+					r = append(r, m0[i][j]*m1[l][k])
 				}
 			}
-			m2 = append(m2, v)
+			mat = append(mat, r)
 		}
 	}
 
-	return m2
+	return mat
 }
 
 func TensorProductN(m Matrix, bit ...int) Matrix {

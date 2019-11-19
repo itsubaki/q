@@ -1,7 +1,6 @@
 package gate
 
 import (
-	"fmt"
 	"math/cmplx"
 	"testing"
 )
@@ -154,46 +153,4 @@ func TestTrace(t *testing.T) {
 	if trH != complex(0, 0) {
 		t.Error(trH)
 	}
-}
-
-func TestTensorProductProductXY(t *testing.T) {
-	x := X()
-	y := Y()
-
-	m, n := x.Dimension()
-	tmp := NewSlice()
-	for i := 0; i < m; i++ {
-		for j := 0; j < n; j++ {
-			tmp = append(tmp, y.Mul(x[i][j]))
-		}
-	}
-
-	fmt.Printf("%v %v %v %v\n", tmp[0][0][0], tmp[0][0][1], tmp[1][0][0], tmp[1][0][1])
-	fmt.Printf("%v %v %v %v\n", tmp[0][1][0], tmp[0][1][1], tmp[1][1][0], tmp[1][1][1])
-	fmt.Printf("%v %v %v %v\n", tmp[2][0][0], tmp[2][0][1], tmp[3][0][0], tmp[3][0][1])
-	fmt.Printf("%v %v %v %v\n", tmp[2][1][0], tmp[2][1][1], tmp[3][1][0], tmp[3][1][1])
-	fmt.Println()
-}
-
-func TestTensorProductProductXXY(t *testing.T) {
-	xx := X().TensorProduct(X())
-	y := Y()
-
-	m, n := xx.Dimension()
-	tmp := NewSlice()
-	for i := 0; i < m; i++ {
-		for j := 0; j < n; j++ {
-			tmp = append(tmp, y.Mul(xx[i][j]))
-		}
-	}
-
-	fmt.Printf("%v %v %v %v %v %v %v %v\n", tmp[0][0][0], tmp[0][0][1], tmp[1][0][0], tmp[1][0][1], tmp[2][0][0], tmp[2][0][1], tmp[3][0][0], tmp[3][0][1])
-	fmt.Printf("%v %v %v %v %v %v %v %v\n", tmp[0][1][0], tmp[0][1][1], tmp[1][1][0], tmp[1][1][1], tmp[2][1][0], tmp[2][1][1], tmp[3][1][0], tmp[3][1][1])
-	fmt.Printf("%v %v %v %v %v %v %v %v\n", tmp[4][0][0], tmp[4][0][1], tmp[5][0][0], tmp[5][0][1], tmp[6][0][0], tmp[6][0][1], tmp[7][0][0], tmp[7][0][1])
-	fmt.Printf("%v %v %v %v %v %v %v %v\n", tmp[4][1][0], tmp[4][1][1], tmp[5][1][0], tmp[5][1][1], tmp[6][1][0], tmp[6][1][1], tmp[7][1][0], tmp[7][1][1])
-	fmt.Printf("%v %v %v %v %v %v %v %v\n", tmp[8][0][0], tmp[8][0][1], tmp[9][0][0], tmp[9][0][1], tmp[10][0][0], tmp[10][0][1], tmp[11][0][0], tmp[11][0][1])
-	fmt.Printf("%v %v %v %v %v %v %v %v\n", tmp[8][1][0], tmp[8][1][1], tmp[9][1][0], tmp[9][1][1], tmp[10][1][0], tmp[10][1][1], tmp[11][1][0], tmp[11][1][1])
-	fmt.Printf("%v %v %v %v %v %v %v %v\n", tmp[12][0][0], tmp[12][0][1], tmp[13][0][0], tmp[13][0][1], tmp[14][0][0], tmp[14][0][1], tmp[15][0][0], tmp[15][0][1])
-	fmt.Printf("%v %v %v %v %v %v %v %v\n", tmp[12][1][0], tmp[12][1][1], tmp[13][1][0], tmp[13][1][1], tmp[14][1][0], tmp[14][1][1], tmp[15][1][0], tmp[15][1][1])
-	fmt.Println()
 }
