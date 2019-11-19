@@ -65,7 +65,8 @@ func (m *Matrix) Trace() complex128 {
 }
 
 func (m *Matrix) PartialTrace() complex128 {
-	return m.internal.PartialTrace()
+	// TODO
+	return complex(0, 0)
 }
 
 func (m *Matrix) NumberOfBit() int {
