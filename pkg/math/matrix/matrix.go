@@ -247,6 +247,11 @@ func (m0 Matrix) Inverse() Matrix {
 	return inv
 }
 
+func (m0 Matrix) PartialTrace() complex128 {
+	// TODO
+	return complex(0, 0)
+}
+
 func (m0 Matrix) TensorProduct(m1 Matrix) Matrix {
 	m, n := m0.Dimension()
 	p, q := m1.Dimension()

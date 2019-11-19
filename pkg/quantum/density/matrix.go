@@ -65,8 +65,7 @@ func (m *Matrix) Trace() complex128 {
 }
 
 func (m *Matrix) PartialTrace() complex128 {
-	// TODO
-	return complex(0, 0)
+	return m.internal.PartialTrace()
 }
 
 func (m *Matrix) NumberOfBit() int {
@@ -84,7 +83,8 @@ func (m *Matrix) Depolarizing(p float64) {
 }
 
 func Flip(p float64, m matrix.Matrix) (matrix.Matrix, matrix.Matrix) {
-	e0 := gate.I().Mul(complex(math.Sqrt(p), 0))
+	n, _ := m.Dimension()
+	e0 := gate.I(n).Mul(complex(math.Sqrt(p), 0))
 	e1 := m.Mul(complex(math.Sqrt(1-p), 0))
 	return e0, e1
 }
