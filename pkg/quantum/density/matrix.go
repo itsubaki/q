@@ -17,29 +17,19 @@ func New(v ...[]complex128) *Matrix {
 	return &Matrix{matrix.New(v...)}
 }
 
-func (m *Matrix) Zero(dim int) {
-	m.internal = make(matrix.Matrix, dim)
-	for i := 0; i < dim; i++ {
-		m.internal[i] = make([]complex128, 0)
-		for j := 0; j < dim; j++ {
-			m.internal[i] = append(m.internal[i], complex(0, 0))
-		}
-	}
-}
-
 func (m *Matrix) Add(p float64, q *qubit.Qubit) *Matrix {
-	dim := q.Dimension()
+	n := q.Dimension()
 	if len(m.internal) < 1 {
-		m.Zero(dim)
+		m.internal = matrix.Zero(n)
 	}
 
-	if len(m.internal) != dim {
-		panic(fmt.Sprintf("dimension invalid. m=%d n=%d", len(m.internal), dim))
+	if len(m.internal) != n {
+		panic(fmt.Sprintf("dimension invalid. m=%d n=%d", len(m.internal), n))
 	}
 
 	op := q.OuterProduct(q).Mul(complex(p, 0))
-	for i := 0; i < dim; i++ {
-		for j := 0; j < dim; j++ {
+	for i := 0; i < n; i++ {
+		for j := 0; j < n; j++ {
 			m.internal[i][j] = m.internal[i][j] + op[i][j]
 		}
 	}
@@ -64,9 +54,9 @@ func (m *Matrix) Trace() complex128 {
 	return m.internal.Trace()
 }
 
-func (m *Matrix) PartialTrace() complex128 {
+func (m *Matrix) PartialTrace(q ...*qubit.Qubit) *Matrix {
 	// TODO
-	return complex(0, 0)
+	return m
 }
 
 func (m *Matrix) NumberOfBit() int {

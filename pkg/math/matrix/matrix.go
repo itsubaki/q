@@ -16,6 +16,18 @@ func New(v ...[]complex128) Matrix {
 	return m
 }
 
+func Zero(n int) Matrix {
+	m := make(Matrix, n)
+	for i := 0; i < n; i++ {
+		m[i] = make([]complex128, 0)
+		for j := 0; j < n; j++ {
+			m[i] = append(m[i], complex(0, 0))
+		}
+	}
+
+	return m
+}
+
 func (m0 Matrix) Equals(m1 Matrix, eps ...float64) bool {
 	m, n := m0.Dimension()
 	p, q := m1.Dimension()

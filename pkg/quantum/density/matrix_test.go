@@ -1,12 +1,24 @@
 package density
 
 import (
+	"fmt"
 	"math/cmplx"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/quantum/gate"
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
+
+func TestPartialTrace(t *testing.T) {
+	bell := qubit.Zero(2).Apply(gate.H().TensorProduct(gate.I())).Apply(gate.CNOT(2, 0, 1))
+	fmt.Println(bell)
+
+	rho := New().Add(1, bell)
+	fmt.Println(rho)
+
+	pt := rho.PartialTrace(qubit.Zero(), qubit.One())
+	fmt.Println(pt)
+}
 
 func TestDensityMatrix(t *testing.T) {
 	p0, p1 := 0.1, 0.9
@@ -31,11 +43,11 @@ func TestDensityMatrix(t *testing.T) {
 
 	xrho := rho.Apply(gate.X())
 	if xrho.Measure(q0) != complex(p1, 0) {
-		t.Error(rho)
+		t.Error(xrho)
 	}
 
 	if xrho.Measure(q1) != complex(p0, 0) {
-		t.Error(rho)
+		t.Error(xrho)
 	}
 }
 
