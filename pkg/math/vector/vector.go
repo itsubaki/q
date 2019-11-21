@@ -73,10 +73,11 @@ func (v0 Vector) TensorProduct(v1 Vector) Vector {
 	return v2
 }
 
+// <v1|v0>
 func (v0 Vector) InnerProduct(v1 Vector) complex128 {
-	p := complex(0, 0)
-
 	dual := v1.Dual()
+
+	p := complex(0, 0)
 	for i := 0; i < len(v0); i++ {
 		p = p + v0[i]*dual[i]
 	}
@@ -84,12 +85,15 @@ func (v0 Vector) InnerProduct(v1 Vector) complex128 {
 	return p
 }
 
+// |v0><v1|
 func (v0 Vector) OuterProduct(v1 Vector) matrix.Matrix {
+	dual := v1.Dual()
+
 	m := matrix.Matrix{}
 	for i := 0; i < len(v0); i++ {
 		v := make([]complex128, 0)
-		for j := 0; j < len(v1); j++ {
-			v = append(v, v0[i]*v1[j])
+		for j := 0; j < len(dual); j++ {
+			v = append(v, v0[i]*dual[j])
 		}
 		m = append(m, v)
 	}
