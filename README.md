@@ -155,7 +155,7 @@ if number.GCD(N, a) != 1 {
 }
 
 for {
-  qsim := New()
+  qsim := q.New()
 
   q0 := qsim.Zero()
   q1 := qsim.Zero()
