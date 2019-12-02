@@ -154,7 +154,6 @@ if number.GCD(N, a) != 1 {
   t.Errorf("%v %v\n", N, a)
 }
 
-var r int
 for {
   qsim := New()
 
@@ -209,7 +208,7 @@ for {
   // 010,0111(7)  0.25
   // 010,1101(13) 0.25
 
-  // get value
+  // get integer
   bin := qsim.Binary()
   dec, err := strconv.ParseInt(bin[3:], 2, 64)
   if err != nil {
@@ -217,26 +216,23 @@ for {
   }
 
   // continued fraction
-  _, _, d := number.Fraction(float64(dec)/16.0, 1e-3)
-  if d > N || number.IsOdd(d) {
+  _, _, r := number.Fraction(float64(dec)/16.0, 1e-3)
+  if r > N || number.IsOdd(r) {
     continue
   }
 
- // get order
-  r = d
+  // gcd(a^(r/2)-1, N)
+  // gcd(a^(r/2)+1, N)
+  p0 := number.GCD(number.Pow(a, r/2)-1, N)
+  p1 := number.GCD(number.Pow(a, r/2)+1, N)
+
+  if p0*p1 != N {
+    continue
+  }
+
+  fmt.Printf("%v %v\n", p0, p1) // 3, 5
   break
 }
-
-// gcd(a^(r/2)-1, N), gcd(7^(4/2)-1, 15)
-// gcd(a^(r/2)+1, N), gcd(7^(4/2)+1, 15)
-p0 := number.GCD(number.Pow(a, r/2)-1, N)
-p1 := number.GCD(number.Pow(a, r/2)+1, N)
-
-if p0 != 3 || p1 != 5 {
-  t.Errorf("%v %v\n", p0, p1)
-}
-
-fmt.Printf("%v %v\n", p0, p1) // 3, 5
 ```
 
 ## Density Matrix

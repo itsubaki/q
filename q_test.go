@@ -22,7 +22,7 @@ func TestQSimFactoring15(t *testing.T) {
 		t.Errorf("%v %v\n", N, a)
 	}
 
-	var r, count int
+	var count int
 	for {
 		count++
 
@@ -73,34 +73,37 @@ func TestQSimFactoring15(t *testing.T) {
 		qsim.Measure(q5)
 		qsim.Measure(q6)
 
-		// get value
+		// get integer
 		bin := qsim.Binary()
 		dec, err := strconv.ParseInt(bin[3:], 2, 64)
 		if err != nil {
 			t.Errorf("parse int: %v", err)
 		}
 
+		// probability is
+		// 010,0001(1)  0.25
+		// 010,0100(4)  0.25
+		// 010,0111(7)  0.25
+		// 010,1101(13) 0.25
+
 		// continued fraction
-		_, _, d := number.Fraction(float64(dec)/16.0, 1e-3)
-		if d > N || number.IsOdd(d) {
+		_, _, r := number.Fraction(float64(dec)/16.0, 1e-3)
+		if r > N || number.IsOdd(r) {
 			continue
 		}
 
-		// get order
-		r = d
+		// gcd(a^(r/2)-1, N)
+		// gcd(a^(r/2)+1, N)
+		p0 := number.GCD(number.Pow(a, r/2)-1, N)
+		p1 := number.GCD(number.Pow(a, r/2)+1, N)
+
+		if p0*p1 != N {
+			continue
+		}
+
+		fmt.Printf("N=%d, p=%v, q=%v. count=%d\n", N, p0, p1, count)
 		break
 	}
-
-	// gcd(a^(r/2)-1, N), gcd(7^(4/2)-1, 15)
-	// gcd(a^(r/2)+1, N), gcd(7^(4/2)+1, 15)
-	p := number.GCD(number.Pow(a, r/2)-1, N)
-	q := number.GCD(number.Pow(a, r/2)+1, N)
-
-	if p != 3 || q != 5 {
-		t.Errorf("%v %v\n", p, q)
-	}
-
-	fmt.Printf("N=%d, p=%v, q=%v. count=%d\n", N, p, q, count)
 }
 
 func TestQSimGrover3qubit(t *testing.T) {
