@@ -28,22 +28,22 @@ func Zero(n int) Matrix {
 	return m
 }
 
-func (m0 Matrix) Equals(m1 Matrix, eps ...float64) bool {
-	m, n := m0.Dimension()
-	p, q := m1.Dimension()
+func (m Matrix) Equals(n Matrix, eps ...float64) bool {
+	p, q := m.Dimension()
+	a, b := n.Dimension()
 
-	if m != p {
+	if a != p {
 		return false
 	}
 
-	if n != q {
+	if b != q {
 		return false
 	}
 
 	e := Eps(eps...)
-	for i := 0; i < m; i++ {
-		for j := 0; j < n; j++ {
-			if cmplx.Abs(m0[i][j]-m1[i][j]) > e {
+	for i := 0; i < p; i++ {
+		for j := 0; j < q; j++ {
+			if cmplx.Abs(m[i][j]-n[i][j]) > e {
 				return false
 			}
 		}
@@ -52,52 +52,54 @@ func (m0 Matrix) Equals(m1 Matrix, eps ...float64) bool {
 	return true
 }
 
-func (m0 Matrix) Dimension() (int, int) {
-	return len(m0), len(m0[0])
+func (m Matrix) Dimension() (int, int) {
+	return len(m), len(m[0])
 }
 
-func (m0 Matrix) Transpose() Matrix {
-	p, q := m0.Dimension()
+func (m Matrix) Transpose() Matrix {
+	p, q := m.Dimension()
 
-	m2 := Matrix{}
+	t := Matrix{}
 	for i := 0; i < p; i++ {
 		v := make([]complex128, 0)
 		for j := 0; j < q; j++ {
-			v = append(v, m0[j][i])
+			v = append(v, m[j][i])
 		}
-		m2 = append(m2, v)
+
+		t = append(t, v)
 	}
 
-	return m2
+	return t
 }
 
-func (m0 Matrix) Conjugate() Matrix {
-	p, q := m0.Dimension()
+func (m Matrix) Conjugate() Matrix {
+	p, q := m.Dimension()
 
-	m2 := Matrix{}
+	c := Matrix{}
 	for i := 0; i < p; i++ {
 		v := make([]complex128, 0)
 		for j := 0; j < q; j++ {
-			v = append(v, cmplx.Conj(m0[i][j]))
+			v = append(v, cmplx.Conj(m[i][j]))
 		}
-		m2 = append(m2, v)
+
+		c = append(c, v)
 	}
 
-	return m2
+	return c
 }
 
-func (m0 Matrix) Dagger() Matrix {
-	return m0.Transpose().Conjugate()
+func (m Matrix) Dagger() Matrix {
+	return m.Transpose().Conjugate()
 }
 
-func (m0 Matrix) IsHermite(eps ...float64) bool {
-	p, q := m0.Dimension()
-	m := m0.Dagger()
+func (m Matrix) IsHermite(eps ...float64) bool {
+	p, q := m.Dimension()
+	d := m.Dagger()
 	e := Eps(eps...)
 
 	for i := 0; i < p; i++ {
 		for j := 0; j < q; j++ {
-			if cmplx.Abs(m0[i][j]-m[i][j]) > e {
+			if cmplx.Abs(m[i][j]-d[i][j]) > e {
 				return false
 			}
 		}
@@ -106,21 +108,21 @@ func (m0 Matrix) IsHermite(eps ...float64) bool {
 	return true
 }
 
-func (m0 Matrix) IsUnitary(eps ...float64) bool {
-	p, q := m0.Dimension()
-	m := m0.Apply(m0.Dagger())
+func (m Matrix) IsUnitary(eps ...float64) bool {
+	p, q := m.Dimension()
+	d := m.Apply(m.Dagger())
 	e := Eps(eps...)
 
 	for i := 0; i < p; i++ {
 		for j := 0; j < q; j++ {
 			if i == j {
-				if cmplx.Abs(m[i][j]-complex(1, 0)) > e {
+				if cmplx.Abs(d[i][j]-complex(1, 0)) > e {
 					return false
 				}
 				continue
 			}
 
-			if cmplx.Abs(m[i][j]-complex(0, 0)) > e {
+			if cmplx.Abs(d[i][j]-complex(0, 0)) > e {
 				return false
 			}
 		}
@@ -129,106 +131,113 @@ func (m0 Matrix) IsUnitary(eps ...float64) bool {
 	return true
 }
 
-func (m0 Matrix) Apply(m1 Matrix) Matrix {
-	m, n := m1.Dimension()
-	p, _ := m0.Dimension()
+func (m Matrix) Apply(n Matrix) Matrix {
+	p, _ := m.Dimension()
+	a, b := n.Dimension()
 
-	m2 := Matrix{}
-	for i := 0; i < m; i++ {
+	apply := Matrix{}
+	for i := 0; i < a; i++ {
 		v := make([]complex128, 0)
-		for j := 0; j < n; j++ {
+		for j := 0; j < b; j++ {
 			c := complex(0, 0)
 			for k := 0; k < p; k++ {
-				c = c + m1[i][k]*m0[k][j]
+				c = c + n[i][k]*m[k][j]
 			}
 			v = append(v, c)
 		}
-		m2 = append(m2, v)
+
+		apply = append(apply, v)
 	}
 
-	return m2
+	return apply
 }
 
-func (m0 Matrix) Mul(z complex128) Matrix {
-	p, q := m0.Dimension()
+func (m Matrix) Mul(z complex128) Matrix {
+	p, q := m.Dimension()
 
-	m := Matrix{}
+	mul := Matrix{}
 	for i := 0; i < p; i++ {
 		v := make([]complex128, 0)
 		for j := 0; j < q; j++ {
-			v = append(v, z*m0[i][j])
+			v = append(v, z*m[i][j])
 		}
-		m = append(m, v)
+
+		mul = append(mul, v)
 	}
 
-	return m
+	return mul
 }
 
-func (m0 Matrix) Add(m1 Matrix) Matrix {
-	p, q := m0.Dimension()
+func (m Matrix) Add(n Matrix) Matrix {
+	p, q := m.Dimension()
 
-	m := Matrix{}
+	add := Matrix{}
 	for i := 0; i < p; i++ {
 		v := make([]complex128, 0)
 		for j := 0; j < q; j++ {
-			v = append(v, m0[i][j]+m1[i][j])
+			v = append(v, m[i][j]+n[i][j])
 		}
-		m = append(m, v)
+
+		add = append(add, v)
 	}
 
-	return m
+	return add
 }
 
-func (m0 Matrix) Sub(m1 Matrix) Matrix {
-	p, q := m0.Dimension()
+func (m Matrix) Sub(n Matrix) Matrix {
+	p, q := m.Dimension()
 
-	m := Matrix{}
+	sub := Matrix{}
 	for i := 0; i < p; i++ {
 		v := make([]complex128, 0)
 		for j := 0; j < q; j++ {
-			v = append(v, m0[i][j]-m1[i][j])
+			v = append(v, m[i][j]-n[i][j])
 		}
-		m = append(m, v)
+
+		sub = append(sub, v)
 	}
 
-	return m
+	return sub
 }
 
-func (m0 Matrix) Trace() complex128 {
-	p, _ := m0.Dimension()
+func (m Matrix) Trace() complex128 {
+	p, _ := m.Dimension()
+
 	var sum complex128
 	for i := 0; i < p; i++ {
-		sum = sum + m0[i][i]
+		sum = sum + m[i][i]
 	}
 
 	return sum
 }
 
-func (m0 Matrix) Clone() Matrix {
-	m, n := m0.Dimension()
-	ret := Matrix{}
-	for i := 0; i < m; i++ {
+func (m Matrix) Clone() Matrix {
+	p, q := m.Dimension()
+
+	c := Matrix{}
+	for i := 0; i < p; i++ {
 		v := make([]complex128, 0)
-		for j := 0; j < n; j++ {
-			v = append(v, m0[i][j])
+		for j := 0; j < q; j++ {
+			v = append(v, m[i][j])
 		}
-		ret = append(ret, v)
+
+		c = append(c, v)
 	}
 
-	return ret
+	return c
 }
 
-func (m0 Matrix) Inverse() Matrix {
-	mat := m0.Clone()
-	m, n := mat.Dimension()
-	if m != n {
-		panic(fmt.Sprintf("dimension invalid. m=%d n=%d", m, n))
+func (m Matrix) Inverse() Matrix {
+	clone := m.Clone()
+	p, q := clone.Dimension()
+	if p != q {
+		panic(fmt.Sprintf("dimension invalid. p=%d q=%d", p, q))
 	}
 
 	inv := Matrix{}
-	for i := 0; i < m; i++ {
+	for i := 0; i < p; i++ {
 		v := make([]complex128, 0)
-		for j := 0; j < n; j++ {
+		for j := 0; j < q; j++ {
 			if i == j {
 				v = append(v, complex(1, 0))
 				continue
@@ -238,19 +247,20 @@ func (m0 Matrix) Inverse() Matrix {
 		inv = append(inv, v)
 	}
 
-	for i := 0; i < m; i++ {
-		c := 1 / mat[i][i]
-		for j := 0; j < n; j++ {
-			mat[i][j] = c * mat[i][j]
+	for i := 0; i < p; i++ {
+		c := 1 / clone[i][i]
+		for j := 0; j < q; j++ {
+			clone[i][j] = c * clone[i][j]
 			inv[i][j] = c * inv[i][j]
 		}
-		for j := 0; j < n; j++ {
+		for j := 0; j < q; j++ {
 			if i == j {
 				continue
 			}
-			c := mat[j][i]
-			for k := 0; k < n; k++ {
-				mat[j][k] = mat[j][k] - c*mat[i][k]
+
+			c := clone[j][i]
+			for k := 0; k < q; k++ {
+				clone[j][k] = clone[j][k] - c*clone[i][k]
 				inv[j][k] = inv[j][k] - c*inv[i][k]
 			}
 		}
@@ -259,24 +269,25 @@ func (m0 Matrix) Inverse() Matrix {
 	return inv
 }
 
-func (m0 Matrix) TensorProduct(m1 Matrix) Matrix {
-	n, m := m0.Dimension()
-	p, q := m1.Dimension()
+func (m Matrix) TensorProduct(n Matrix) Matrix {
+	p, q := m.Dimension()
+	a, b := n.Dimension()
 
-	mat := make([][]complex128, 0)
-	for i := 0; i < n; i++ {
-		for k := 0; k < p; k++ {
+	t := Matrix{}
+	for i := 0; i < p; i++ {
+		for k := 0; k < a; k++ {
 			r := make([]complex128, 0)
-			for j := 0; j < m; j++ {
-				for l := 0; l < q; l++ {
-					r = append(r, m0[i][j]*m1[k][l])
+			for j := 0; j < q; j++ {
+				for l := 0; l < b; l++ {
+					r = append(r, m[i][j]*n[k][l])
 				}
 			}
-			mat = append(mat, r)
+
+			t = append(t, r)
 		}
 	}
 
-	return mat
+	return t
 }
 
 func TensorProductN(m Matrix, bit ...int) Matrix {
@@ -284,35 +295,33 @@ func TensorProductN(m Matrix, bit ...int) Matrix {
 		return m
 	}
 
-	m0 := m
+	p := m
 	for i := 1; i < bit[0]; i++ {
-		m0 = m0.TensorProduct(m)
+		p = p.TensorProduct(m)
 	}
 
-	return m0
+	return p
 }
 
 func TensorProduct(m ...Matrix) Matrix {
-	m0 := m[0]
+	p := m[0]
 	for i := 1; i < len(m); i++ {
-		m0 = m0.TensorProduct(m[i])
+		p = p.TensorProduct(m[i])
 	}
 
-	return m0
+	return p
 }
 
-func Commutator(m0, m1 Matrix) Matrix {
-	m10 := m1.Apply(m0)
-	m01 := m0.Apply(m1)
-
-	return m10.Sub(m01)
+func Commutator(m, n Matrix) Matrix {
+	mn := n.Apply(m)
+	nm := m.Apply(n)
+	return mn.Sub(nm)
 }
 
-func AntiCommutator(m0, m1 Matrix) Matrix {
-	m10 := m1.Apply(m0)
-	m01 := m0.Apply(m1)
-
-	return m10.Add(m01)
+func AntiCommutator(m, n Matrix) Matrix {
+	mn := n.Apply(m)
+	nm := m.Apply(n)
+	return mn.Add(nm)
 }
 
 func Eps(eps ...float64) float64 {

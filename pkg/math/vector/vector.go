@@ -114,14 +114,14 @@ func (v Vector) IsUnit() bool {
 	return v.Norm() == complex(1, 0)
 }
 
-func (v Vector) Apply(mat matrix.Matrix) Vector {
+func (v Vector) Apply(m matrix.Matrix) Vector {
 	apply := Vector{}
 
-	m, _ := mat.Dimension()
-	for i := 0; i < m; i++ {
+	p, _ := m.Dimension()
+	for i := 0; i < p; i++ {
 		tmp := complex(0, 0)
 		for j := 0; j < len(v); j++ {
-			tmp = tmp + mat[i][j]*v[j]
+			tmp = tmp + m[i][j]*v[j]
 		}
 
 		apply = append(apply, tmp)

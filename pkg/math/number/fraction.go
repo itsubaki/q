@@ -7,17 +7,17 @@ import (
 func Fraction(f float64, eps float64) ([]int, int, int) {
 	list := make([]int, 0)
 
-	reciprocal := f
+	r := f
 	for {
-		trunc := math.Trunc(reciprocal)
-		list = append(list, int(trunc))
+		t := math.Trunc(r)
+		list = append(list, int(t))
 
-		diff := reciprocal - trunc
+		diff := r - t
 		if diff < eps {
 			break
 		}
 
-		reciprocal = 1.0 / diff
+		r = 1.0 / diff
 	}
 
 	if len(list) == 1 {
