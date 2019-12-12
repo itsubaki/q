@@ -9,21 +9,21 @@ import (
 type Vector []complex128
 
 func New(z ...complex128) Vector {
-	v := Vector{}
+	out := Vector{}
 	for _, zi := range z {
-		v = append(v, zi)
+		out = append(out, zi)
 	}
 
-	return v
+	return out
 }
 
 func NewZero(n int) Vector {
-	v := Vector{}
+	out := Vector{}
 	for i := 0; i < n; i++ {
-		v = append(v, 0)
+		out = append(out, 0)
 	}
 
-	return v
+	return out
 }
 
 func (v Vector) Clone() Vector {
@@ -36,70 +36,70 @@ func (v Vector) Clone() Vector {
 }
 
 func (v Vector) Dual() Vector {
-	dual := Vector{}
+	out := Vector{}
 	for i := 0; i < len(v); i++ {
-		dual = append(dual, cmplx.Conj(v[i]))
+		out = append(out, cmplx.Conj(v[i]))
 	}
 
-	return dual
+	return out
 }
 
 func (v Vector) Add(v1 Vector) Vector {
-	add := Vector{}
+	out := Vector{}
 	for i := 0; i < len(v); i++ {
-		add = append(add, v[i]+v1[i])
+		out = append(out, v[i]+v1[i])
 	}
 
-	return add
+	return out
 }
 
 func (v Vector) Mul(z complex128) Vector {
-	mul := Vector{}
+	out := Vector{}
 	for i := range v {
-		mul = append(mul, z*v[i])
+		out = append(out, z*v[i])
 	}
 
-	return mul
+	return out
 }
 
 func (v Vector) TensorProduct(v1 Vector) Vector {
-	p := Vector{}
+	out := Vector{}
 	for i := 0; i < len(v); i++ {
 		for j := 0; j < len(v1); j++ {
-			p = append(p, v[i]*v1[j])
+			out = append(out, v[i]*v1[j])
 		}
 	}
 
-	return p
+	return out
 }
 
 // <v1|v0>
 func (v Vector) InnerProduct(v1 Vector) complex128 {
 	dual := v1.Dual()
 
-	p := complex(0, 0)
+	out := complex(0, 0)
 	for i := 0; i < len(v); i++ {
-		p = p + v[i]*dual[i]
+		out = out + v[i]*dual[i]
 	}
 
-	return p
+	return out
 }
 
 // |v0><v1|
 func (v Vector) OuterProduct(v1 Vector) matrix.Matrix {
 	dual := v1.Dual()
 
-	p := matrix.Matrix{}
+	out := matrix.Matrix{}
 	for i := 0; i < len(v); i++ {
 		vv := make([]complex128, 0)
 		for j := 0; j < len(dual); j++ {
 			vv = append(vv, v[i]*dual[j])
 		}
 
-		p = append(p, vv)
+		out = append(out, vv)
 	}
 
-	return p
+	return out
 }
 
 func (v Vector) IsOrthogonal(v1 Vector) bool {
@@ -115,19 +115,19 @@ func (v Vector) IsUnit() bool {
 }
 
 func (v Vector) Apply(m matrix.Matrix) Vector {
-	apply := Vector{}
-
 	p, _ := m.Dimension()
+
+	out := Vector{}
 	for i := 0; i < p; i++ {
 		tmp := complex(0, 0)
 		for j := 0; j < len(v); j++ {
 			tmp = tmp + m[i][j]*v[j]
 		}
 
-		apply = append(apply, tmp)
+		out = append(out, tmp)
 	}
 
-	return apply
+	return out
 }
 
 func (v Vector) Equals(v1 Vector, eps ...float64) bool {
@@ -154,19 +154,20 @@ func TensorProductN(v Vector, bit ...int) Vector {
 		return v
 	}
 
-	p := v
-	for i := 1; i < bit[0]; i++ {
-		p = p.TensorProduct(v)
+	// use a lot of memory
+	list := make([]Vector, 0)
+	for i := 0; i < bit[0]; i++ {
+		list = append(list, v)
 	}
 
-	return p
+	return TensorProduct(list...)
 }
 
 func TensorProduct(v ...Vector) Vector {
-	p := v[0]
+	out := v[0]
 	for i := 1; i < len(v); i++ {
-		p = p.TensorProduct(v[i])
+		out = out.TensorProduct(v[i])
 	}
 
-	return p
+	return out
 }

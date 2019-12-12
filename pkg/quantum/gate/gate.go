@@ -10,12 +10,12 @@ import (
 )
 
 func New(v ...[]complex128) matrix.Matrix {
-	m := make(matrix.Matrix, len(v))
+	out := make(matrix.Matrix, len(v))
 	for i := 0; i < len(v); i++ {
-		m[i] = v[i]
+		out[i] = v[i]
 	}
 
-	return m
+	return out
 }
 
 func NewSlice(l ...int) []matrix.Matrix {
@@ -47,14 +47,13 @@ func U(alpha, beta, gamma, delta float64) matrix.Matrix {
 }
 
 func R(k int) matrix.Matrix {
-	m := make(matrix.Matrix, 2)
-
 	p := 2 * math.Pi / math.Pow(2, float64(k))
 	e := cmplx.Exp(complex(0, p))
 
-	m[0] = []complex128{1, 0}
-	m[1] = []complex128{0, e}
-	return m
+	out := make(matrix.Matrix, 2)
+	out[0] = []complex128{1, 0}
+	out[1] = []complex128{0, e}
+	return out
 }
 
 func I(bit ...int) matrix.Matrix {
@@ -86,8 +85,9 @@ func Z(bit ...int) matrix.Matrix {
 }
 
 func H(bit ...int) matrix.Matrix {
-	m := make(matrix.Matrix, 2)
 	v := complex(1/math.Sqrt2, 0)
+
+	m := make(matrix.Matrix, 2)
 	m[0] = []complex128{v, v}
 	m[1] = []complex128{v, -1 * v}
 	return matrix.TensorProductN(m, bit...)
@@ -101,16 +101,17 @@ func S(bit ...int) matrix.Matrix {
 }
 
 func T(bit ...int) matrix.Matrix {
-	m := make(matrix.Matrix, 2)
 	v := cmplx.Exp(complex(0, 1) * math.Pi / 4)
+
+	m := make(matrix.Matrix, 2)
 	m[0] = []complex128{1, 0}
 	m[1] = []complex128{0, v}
 	return matrix.TensorProductN(m, bit...)
 }
 
 func ControlledR(bit int, c []int, t, k int) matrix.Matrix {
-	m := I([]int{bit}...)
-	dim := len(m)
+	out := I([]int{bit}...)
+	dim, _ := out.Dimension()
 
 	p := 2 * math.Pi / math.Pow(2, float64(k))
 	e := cmplx.Exp(complex(0, p))
@@ -130,11 +131,11 @@ func ControlledR(bit int, c []int, t, k int) matrix.Matrix {
 		}
 
 		if apply && bits[t] == '1' {
-			m[i][i] = e * m[i][i]
+			out[i][i] = e * out[i][i]
 		}
 	}
 
-	return m
+	return out
 }
 
 func CR(bit, c, t, k int) matrix.Matrix {
@@ -142,8 +143,8 @@ func CR(bit, c, t, k int) matrix.Matrix {
 }
 
 func ControlledNot(bit int, c []int, t int) matrix.Matrix {
-	m := I([]int{bit}...)
-	dim := len(m)
+	out := I([]int{bit}...)
+	dim, _ := out.Dimension()
 
 	index := make([]int64, 0)
 	f := "%0" + strconv.Itoa(bit) + "s"
@@ -178,7 +179,7 @@ func ControlledNot(bit int, c []int, t int) matrix.Matrix {
 
 	cnot := make(matrix.Matrix, dim)
 	for i, ii := range index {
-		cnot[i] = m[ii]
+		cnot[i] = out[ii]
 	}
 
 	return cnot
@@ -193,8 +194,8 @@ func CNOT(bit, c, t int) matrix.Matrix {
 }
 
 func ControlledZ(bit int, c []int, t int) matrix.Matrix {
-	m := I([]int{bit}...)
-	dim := len(m)
+	out := I([]int{bit}...)
+	dim, _ := out.Dimension()
 
 	f := "%0" + strconv.Itoa(bit) + "s"
 	for i := 0; i < dim; i++ {
@@ -211,11 +212,11 @@ func ControlledZ(bit int, c []int, t int) matrix.Matrix {
 		}
 
 		if apply && bits[t] == '1' {
-			m[i][i] = complex(-1, 0) * m[i][i]
+			out[i][i] = complex(-1, 0) * out[i][i]
 		}
 	}
 
-	return m
+	return out
 }
 
 func CZ(bit, c, t int) matrix.Matrix {
@@ -223,8 +224,8 @@ func CZ(bit, c, t int) matrix.Matrix {
 }
 
 func ControlledS(bit int, c []int, t int) matrix.Matrix {
-	m := I([]int{bit}...)
-	dim := len(m)
+	out := I([]int{bit}...)
+	dim, _ := out.Dimension()
 
 	f := "%0" + strconv.Itoa(bit) + "s"
 	for i := 0; i < dim; i++ {
@@ -241,11 +242,11 @@ func ControlledS(bit int, c []int, t int) matrix.Matrix {
 		}
 
 		if apply && bits[t] == '1' {
-			m[i][i] = 1i * m[i][i]
+			out[i][i] = 1i * out[i][i]
 		}
 	}
 
-	return m
+	return out
 }
 
 func CS(bit, c, t int) matrix.Matrix {
@@ -273,7 +274,7 @@ func Fredkin() matrix.Matrix {
 }
 
 func QFT(bit int) matrix.Matrix {
-	m := I(bit)
+	out := I(bit)
 
 	for i := 0; i < bit; i++ {
 		h := make([]matrix.Matrix, 0)
@@ -284,18 +285,18 @@ func QFT(bit int) matrix.Matrix {
 			}
 			h = append(h, I())
 		}
-		m = m.Apply(matrix.TensorProduct(h...))
+		out = out.Apply(matrix.TensorProduct(h...))
 
 		k := 2
 		for j := i + 1; j < bit; j++ {
-			m = m.Apply(CR(bit, j, i, k))
+			out = out.Apply(CR(bit, j, i, k))
 			k++
 		}
 	}
 
 	for i := 0; i < bit/2; i++ {
-		m = m.Apply(Swap(bit, i, bit-1-i))
+		out = out.Apply(Swap(bit, i, bit-1-i))
 	}
 
-	return m
+	return out
 }
