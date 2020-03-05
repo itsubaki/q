@@ -96,10 +96,11 @@ qsim.ConditionX(m3.IsOne() && m4.IsZero(), q0)
 qsim.ConditionX(m3.IsOne() && m4.IsOne(), q1)
 qsim.ConditionX(m3.IsZero() && m4.IsOne(), q2)
 
+// decoding
+qsim.CNOT(q0, q2).CNOT(q0, q1)
+
 // estimate
 qsim.Estimate(q0).Probability() // (0.2, 0.8)
-qsim.Estimate(q1).Probability() // (0.2, 0.8)
-qsim.Estimate(q2).Probability() // (0.2, 0.8)
 ```
 
 ### Grover's search algorithm
