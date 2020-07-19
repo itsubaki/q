@@ -1,8 +1,6 @@
 package number
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestFraction(t *testing.T) {
 	cases := []struct {
