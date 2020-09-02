@@ -62,31 +62,15 @@ func TestQSimFactoring15(t *testing.T) {
 		qsim.Swap(q0, q2)
 
 		// measure q0, q1, q2
-		qsim.Measure(q0)
-		qsim.Measure(q1)
-		qsim.Measure(q2)
+		m0 := qsim.Measure(q0)
+		m1 := qsim.Measure(q1)
+		m2 := qsim.Measure(q2)
 
-		// measure q3, q4, q5, q6
-		qsim.Measure(q3)
-		qsim.Measure(q4)
-		qsim.Measure(q5)
-		qsim.Measure(q6)
-
-		// get integer
-		bin := qsim.Binary()
-		dec, err := strconv.ParseInt(bin[3:], 2, 64)
-		if err != nil {
-			t.Errorf("parse int: %v", err)
-		}
-
-		// probability is
-		// 010,0001(1)  0.25
-		// 010,0100(4)  0.25
-		// 010,0111(7)  0.25
-		// 010,1101(13) 0.25
+		// |1>|0>|0> -> 4
+		i := qsim.Integer(m0, m1, m2)
 
 		// continued fraction
-		_, _, r := number.Fraction(float64(dec)/16.0, 1e-3)
+		_, _, r := number.Fraction(float64(i)/16.0, 1e-3)
 		if r > N || number.IsOdd(r) {
 			continue
 		}
@@ -96,11 +80,11 @@ func TestQSimFactoring15(t *testing.T) {
 		p0 := number.GCD(number.Pow(a, r/2)-1, N)
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
-		if p0*p1 != N {
+		if p0*p1 != N || p0 == N || p1 == N {
 			continue
 		}
 
-		fmt.Printf("N=%d, p=%v, q=%v. count=%d\n", N, p0, p1, count)
+		fmt.Printf("N=%d, p=%v, q=%v. count=%d, i=%d, r=%d\n", N, p0, p1, count, i, r)
 		break
 	}
 }
