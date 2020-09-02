@@ -196,7 +196,7 @@ for {
   m1 := qsim.Measure(q1)
   m2 := qsim.Measure(q2)
 
-  // |0>|1>|0> -> 1/4
+  // |0>|1>|0> -> 0.25, |1>|1>|0> -> 0.75
   var d float64
   for i, m := range []*qubit.Qubit{m0, m1, m2} {
     if m.IsZero() {
@@ -207,6 +207,7 @@ for {
   }
 
   // continued fraction
+  // 0.25 -> 1/4, 0.75 -> 3/4, ...
   _, _, r := number.Fraction(d, 1e-3)
   if r > N || number.IsOdd(r) {
     continue
