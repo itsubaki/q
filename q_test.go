@@ -66,11 +66,18 @@ func TestQSimFactoring15(t *testing.T) {
 		m1 := qsim.Measure(q1)
 		m2 := qsim.Measure(q2)
 
-		// |1>|0>|0> -> 4
-		i := qsim.Integer(m0, m1, m2)
+		// |0>|1>|0> -> 1/4
+		var d float64
+		for i, m := range []*qubit.Qubit{m0, m1, m2} {
+			if m.IsZero() {
+				continue
+			}
+
+			d = d + math.Pow(0.5, float64(i+1))
+		}
 
 		// continued fraction
-		_, _, r := number.Fraction(float64(i)/16.0, 1e-3)
+		_, _, r := number.Fraction(d, 1e-3)
 		if r > N || number.IsOdd(r) {
 			continue
 		}
@@ -80,11 +87,11 @@ func TestQSimFactoring15(t *testing.T) {
 		p0 := number.GCD(number.Pow(a, r/2)-1, N)
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
-		if p0*p1 != N || p0 == N || p1 == N {
+		if p0*p1 != N {
 			continue
 		}
 
-		fmt.Printf("N=%d, p=%v, q=%v. count=%d, i=%d, r=%d\n", N, p0, p1, count, i, r)
+		fmt.Printf("N=%d, p=%v, q=%v. count=%d, d=%f, r=%d\n", N, p0, p1, count, d, r)
 		break
 	}
 }

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"strconv"
-	"strings"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/quantum/gate"
@@ -229,35 +228,15 @@ func (q *Q) Binary() string {
 	return fmt.Sprintf(f, b)
 }
 
-func (q *Q) Integer(qubit ...*qubit.Qubit) int64 {
-	if len(qubit) < 1 {
-		p := q.Clone().Measure().Probability()
-		for i := range p {
-			if p[i] == 0 {
-				continue
-			}
-
-			return int64(i)
-		}
-
-		panic(fmt.Sprintf("invalid probability: %v", p))
-	}
-
-	var sb strings.Builder
-	for _, q := range qubit {
-		if q.IsZero() {
-			sb.WriteString("0")
+func (q *Q) Integer() int64 {
+	p := q.Clone().Measure().Probability()
+	for i := range p {
+		if p[i] == 0 {
 			continue
 		}
 
-		sb.WriteString("1")
+		return int64(i)
 	}
 
-	b := sb.String()
-	i, err := strconv.ParseInt(b, 2, 64)
-	if err != nil {
-		panic(fmt.Sprintf("parse int=%s: %v", b, err))
-	}
-
-	return i
+	panic(fmt.Sprintf("invalid probability: %v", p))
 }
