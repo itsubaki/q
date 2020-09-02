@@ -192,19 +192,19 @@ for {
   qsim.Swap(q0, q2)
 
   // measure q0, q1, q2
-	m0 := qsim.Measure(q0)
-	m1 := qsim.Measure(q1)
-	m2 := qsim.Measure(q2)
+  m0 := qsim.Measure(q0)
+  m1 := qsim.Measure(q1)
+  m2 := qsim.Measure(q2)
 
-	// |0>|1>|0> -> 1/4
-	var d float64
-	for i, m := range []*qubit.Qubit{m0, m1, m2} {
-		if m.IsZero() {
-			continue
-		}
+  // |0>|1>|0> -> 1/4
+  var d float64
+  for i, m := range []*qubit.Qubit{m0, m1, m2} {
+    if m.IsZero() {
+      continue
+    }
 
-		d = d + math.Pow(0.5, float64(i+1))
-	}
+    d = d + math.Pow(0.5, float64(i+1))
+  }
 
   // continued fraction
   _, _, r := number.Fraction(d, 1e-3)
