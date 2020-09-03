@@ -64,6 +64,20 @@ func TestDensityMatrix2(t *testing.T) {
 	if cmplx.Abs(e0-complex(p1, 0)) > 1e-13 {
 		t.Error(e0)
 	}
+
+	trrho2 := rho.Squared().Trace() // < 1
+	if cmplx.Abs(trrho2-complex(1, 0)) < 1e-13 {
+		t.Error(trrho2)
+	}
+}
+
+func TestDensityMatrixPureState(t *testing.T) {
+	rho := New().Add(1.0, qubit.Zero())
+
+	trrho2 := rho.Squared().Trace() // -> 1
+	if cmplx.Abs(trrho2-complex(1, 0)) > 1e-13 {
+		t.Error(trrho2)
+	}
 }
 
 func TestDepolarizing(t *testing.T) {

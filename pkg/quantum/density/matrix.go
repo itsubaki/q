@@ -59,6 +59,11 @@ func (m *Matrix) PartialTrace(i int, q ...*qubit.Qubit) *Matrix {
 	return m
 }
 
+func (m *Matrix) Squared() *Matrix {
+	c := m.internal.Clone()
+	return &Matrix{c.Apply(c)}
+}
+
 func (m *Matrix) NumberOfBit() int {
 	mm, _ := m.internal.Dimension()
 	log := math.Log2(float64(mm))
