@@ -53,7 +53,6 @@ func TestQSimFactoring15(t *testing.T) {
 		qsim.ControlledNot([]Qubit{q1, q3}, q5)
 
 		// inverse QFT
-		qsim.Swap(q0, q2)
 		qsim.H(q2)
 		qsim.CR(q2, q1, 2)
 		qsim.H(q1)
@@ -67,8 +66,8 @@ func TestQSimFactoring15(t *testing.T) {
 		m2 := qsim.Measure(q2)
 
 		// |0>|1>|0> -> 0.25, |1>|1>|0> -> 0.75
-		i := []int{m0.Int(), m1.Int(), m2.Int()}
-		d := number.BinaryFraction(i...)
+		b := []int{m0.Int(), m1.Int(), m2.Int()}
+		d := number.BinaryFraction(b...)
 
 		// 0.25 -> 1/4, 0.75 -> 3/4, ...
 		_, _, r := number.ContinuedFraction(d)
@@ -81,7 +80,7 @@ func TestQSimFactoring15(t *testing.T) {
 		p0 := number.GCD(number.Pow(a, r/2)-1, N)
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
-		if p0*p1 != N {
+		if p0*p1 != N || p0 == N || p1 == N {
 			continue
 		}
 
