@@ -182,14 +182,14 @@ for {
   qsim.ControlledNot([]Qubit{q1, q5}, q3)
   qsim.ControlledNot([]Qubit{q1, q3}, q5)
 
-  // QFT
-  qsim.H(q0)
-  qsim.CR(q1, q0, 2)
-  qsim.CR(q2, q0, 3)
-  qsim.H(q1)
-  qsim.CR(q2, q1, 2)
-  qsim.H(q2)
+  // inverse QFT
   qsim.Swap(q0, q2)
+  qsim.H(q2)
+  qsim.CR(q2, q1, 2)
+  qsim.H(q1)
+  qsim.CR(q2, q0, 3)
+  qsim.CR(q1, q0, 2)
+  qsim.H(q0)
 
   // measure q0, q1, q2
   m0 := qsim.Measure(q0)
