@@ -2,7 +2,7 @@ package number
 
 import "testing"
 
-func TestFraction(t *testing.T) {
+func TestContinuedFraction(t *testing.T) {
 	cases := []struct {
 		float       float64
 		fraction    []int
@@ -17,7 +17,7 @@ func TestFraction(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		f, n, d := Fraction(c.float, 1e-3)
+		f, n, d := ContinuedFraction(c.float, 1e-3)
 
 		if n != c.numerator {
 			t.Errorf("%v/%v", n, d)

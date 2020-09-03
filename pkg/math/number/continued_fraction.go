@@ -2,7 +2,7 @@ package number
 
 import "math"
 
-func Fraction(f float64, eps float64) ([]int, int, int) {
+func ContinuedFraction(f float64, eps float64) ([]int, int, int) {
 	list := make([]int, 0)
 
 	r := f

@@ -197,18 +197,10 @@ for {
   m2 := qsim.Measure(q2)
 
   // |0>|1>|0> -> 0.25, |1>|1>|0> -> 0.75
-  var d float64
-  for i, m := range []*qubit.Qubit{m0, m1, m2} {
-    if m.IsZero() {
-      continue
-    }
+  d := qubit.BinaryFraction(m0, m1, m2)
 
-    d = d + math.Pow(0.5, float64(i+1))
-  }
-
-  // continued fraction
   // 0.25 -> 1/4, 0.75 -> 3/4, ...
-  _, _, r := number.Fraction(d, 1e-3)
+  _, _, r := number.ContinuedFraction(d, 1e-3)
   if r > N || number.IsOdd(r) {
     continue
   }

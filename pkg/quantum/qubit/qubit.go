@@ -256,3 +256,16 @@ func TensorProduct(q ...*Qubit) *Qubit {
 
 	return q1
 }
+
+func BinaryFraction(q ...*Qubit) float64 {
+	var d float64
+	for i, m := range q {
+		if m.IsZero() {
+			continue
+		}
+
+		d = d + math.Pow(0.5, float64(i+1))
+	}
+
+	return d
+}
