@@ -197,7 +197,8 @@ for {
   m2 := qsim.Measure(q2)
 
   // |0>|1>|0> -> 0.25, |1>|1>|0> -> 0.75
-  d := qubit.BinaryFraction(m0, m1, m2)
+  i := []int64{m0.Int(), m1.Int(), m2.Int()}
+  d := number.BinaryFraction(i...)
 
   // 0.25 -> 1/4, 0.75 -> 3/4, ...
   _, _, r := number.ContinuedFraction(d, 1e-3)

@@ -224,18 +224,18 @@ func (q *Q) Binary() string {
 	n := q.NumberOfBit()
 	f := "%0" + fmt.Sprintf("%d", n) + "s"
 
-	b := strconv.FormatInt(q.Integer(), 2)
+	b := strconv.FormatInt(int64(q.Int()), 2)
 	return fmt.Sprintf(f, b)
 }
 
-func (q *Q) Integer() int64 {
+func (q *Q) Int() int {
 	p := q.Clone().Measure().Probability()
 	for i := range p {
 		if p[i] == 0 {
 			continue
 		}
 
-		return int64(i)
+		return i
 	}
 
 	panic(fmt.Sprintf("invalid probability: %v", p))
