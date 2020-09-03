@@ -2,7 +2,12 @@ package number
 
 import "math"
 
-func ContinuedFraction(f float64, eps float64) ([]int, int, int) {
+func ContinuedFraction(f float64, eps ...float64) ([]int, int, int) {
+	e := 1e-3
+	if len(eps) > 0 {
+		e = eps[0]
+	}
+
 	list := make([]int, 0)
 
 	r := f
@@ -11,7 +16,7 @@ func ContinuedFraction(f float64, eps float64) ([]int, int, int) {
 		list = append(list, int(t))
 
 		diff := r - t
-		if diff < eps {
+		if diff < e {
 			break
 		}
 

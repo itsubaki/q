@@ -59,4 +59,12 @@ func TestVector(t *testing.T) {
 	if !v3.IsOrthogonal(v4) {
 		t.Error(v3.InnerProduct(v4))
 	}
+
+	if !v0.Equals(v0) {
+		t.Error(v0.Equals(v0))
+	}
+
+	if v0.Equals(v1) {
+		t.Error(v0.Equals(v1))
+	}
 }

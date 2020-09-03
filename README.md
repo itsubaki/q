@@ -201,7 +201,7 @@ for {
   d := number.BinaryFraction(i...)
 
   // 0.25 -> 1/4, 0.75 -> 3/4, ...
-  _, _, r := number.ContinuedFraction(d, 1e-3)
+  _, _, r := number.ContinuedFraction(d)
   if r > N || number.IsOdd(r) {
     continue
   }

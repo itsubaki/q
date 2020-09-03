@@ -73,7 +73,6 @@ func (v Vector) TensorProduct(v1 Vector) Vector {
 	return out
 }
 
-// <v1|v0>
 func (v Vector) InnerProduct(v1 Vector) complex128 {
 	dual := v1.Dual()
 
@@ -85,7 +84,6 @@ func (v Vector) InnerProduct(v1 Vector) complex128 {
 	return out
 }
 
-// |v0><v1|
 func (v Vector) OuterProduct(v1 Vector) matrix.Matrix {
 	dual := v1.Dual()
 
@@ -135,7 +133,11 @@ func (v Vector) Equals(v1 Vector, eps ...float64) bool {
 		return false
 	}
 
-	e := matrix.Eps(eps...)
+	e := 1e-13
+	if len(eps) > 0 {
+		e = eps[0]
+	}
+
 	for i := 0; i < len(v); i++ {
 		if cmplx.Abs(v[i]-v1[i]) > e {
 			return false

@@ -121,7 +121,7 @@ func TestIsHermite(t *testing.T) {
 }
 
 func TestIsUnitary(t *testing.T) {
-	if !H().IsUnitary(1e-13) {
+	if !H().IsUnitary() {
 		t.Error(H())
 	}
 
@@ -138,7 +138,7 @@ func TestIsUnitary(t *testing.T) {
 	}
 
 	u := U(1, 2, 3, 4)
-	if !u.IsUnitary(1e-13) {
+	if !u.IsUnitary() {
 		t.Error(u)
 	}
 }

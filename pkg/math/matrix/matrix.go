@@ -330,5 +330,5 @@ func Eps(eps ...float64) float64 {
 		return eps[0]
 	}
 
-	return 0.0
+	return 1e-13
 }
