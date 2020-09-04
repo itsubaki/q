@@ -12,9 +12,80 @@ import (
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
 
-func TestQsimFactoring51and85(t *testing.T) {
+func TestQsimFactoring85(t *testing.T) {
+	N, a := 85, 3 // 3, 6, 7, 11, 12, 14, 22, 23, 24, 27, 28, 29, 31, 37, 39, 41, 44, 46, 48, 54, 56, 57, 58, 61, 62, 63, 71, 73, 74, 78, 79, 82
+
+	// co-prime
+	if number.GCD(N, a) != 1 {
+		t.Errorf("%v %v\n", N, a)
+	}
+
+	var i int
+	for {
+		i++
+
+		// initial state
+		qsim := New()
+
+		q0 := qsim.Zero()
+		q1 := qsim.Zero()
+		q2 := qsim.Zero()
+		q3 := qsim.Zero()
+
+		q4 := qsim.Zero()
+		q5 := qsim.Zero()
+		q6 := qsim.Zero()
+		q7 := qsim.Zero()
+
+		// superposition
+		qsim.H(q0, q1, q2, q3)
+
+		// Controlled-U
+		qsim.CNOT(q0, q4)
+		qsim.CNOT(q1, q5)
+		qsim.CNOT(q2, q6)
+		qsim.CNOT(q3, q7)
+
+		// inverse QFT
+		qsim.H(q3)
+		qsim.CR(q3, q2, 2)
+		qsim.H(q2)
+		qsim.CR(q3, q1, 3)
+		qsim.CR(q2, q1, 2)
+		qsim.H(q1)
+		qsim.CR(q3, q0, 4)
+		qsim.CR(q2, q0, 3)
+		qsim.CR(q1, q0, 2)
+		qsim.H(q0)
+
+		// measure
+		m0 := qsim.Measure(q0)
+		m1 := qsim.Measure(q1)
+		m2 := qsim.Measure(q2)
+		m3 := qsim.Measure(q3)
+
+		b := []int{m0.Int(), m1.Int(), m2.Int(), m3.Int()}
+		d := number.BinaryFraction(b...)
+
+		_, s, r := number.ContinuedFraction(d)
+		if r < 1 || r > N || number.IsOdd(r) {
+			continue
+		}
+
+		p0 := number.GCD(number.Pow(a, r/2)-1, N)
+		p1 := number.GCD(number.Pow(a, r/2)+1, N)
+		fmt.Printf("i=%d: N=%d, p=%v, q=%v. s/r=%d/%d (%.3f)\n", i, N, p0, p1, s, r, d)
+
+		if p0*p1 != N || p0 == N || p1 == N {
+			continue
+		}
+
+		break
+	}
+}
+
+func TestQsimFactoring51(t *testing.T) {
 	N, a := 51, 5 // 5, 7, 10, 11, 14, 20, 22, 23, 28, 29, 31, 37, 40, 41, 44, 46
-	// N, a := 85, 3 // 3, 6, 7, 11, 12, 14, 22, 23, 24, 27, 28, 29, 31, 37, 39, 41, 44, 46, 48, 54, 56, 57, 58, 61, 62, 63, 71, 73, 74, 78, 79, 82
 
 	// co-prime
 	if number.GCD(N, a) != 1 {
