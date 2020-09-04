@@ -147,8 +147,7 @@ for i := range p {
 ## Factoring 15
 
 ```golang
-N := 15
-a := 7 // co-prime
+N, a := 15, 7 // co-prime
 
 if number.GCD(N, a) != 1 {
   t.Errorf("%v %v\n", N, a)
@@ -157,6 +156,7 @@ if number.GCD(N, a) != 1 {
 for {
   qsim := q.New()
 
+  // initial state
   q0 := qsim.Zero()
   q1 := qsim.Zero()
   q2 := qsim.Zero()
@@ -237,3 +237,4 @@ rho.ExpectedValue(gate.X()) // -> 0.9
 1. Michael A. Nielsen, Issac L. Chuang, Quantum Computation and Quantum Information
 2. C. Figgatt, D. Maslov, K. A. Landsman, N. M. Linke, S. Debnath, and C. Monroe, Complete 3-Qubit Grover Search on a Programmable Quantum Computer
 3. Zhengjun Cao, Zhenfu Cao, Lihua Liu, Remarks on Quantum Modular Exponentiation and Some Experimental Demonstrations of Shor’s Algorithm
+4. Michael R. Geller, Zhongyuan Zhou, Factoring 51 and 85 with 8 qubits
