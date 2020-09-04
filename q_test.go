@@ -74,7 +74,7 @@ func TestQsimFactoring85(t *testing.T) {
 
 		p0 := number.GCD(number.Pow(a, r/2)-1, N)
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
-		fmt.Printf("i=%d: N=%d, p=%v, q=%v. s/r=%d/%d (%.3f)\n", i, N, p0, p1, s, r, d)
+		fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%.3f)\n", i, N, a, p0, p1, s, r, d)
 
 		if p0*p1 != N || p0 == N || p1 == N {
 			continue
@@ -146,7 +146,7 @@ func TestQsimFactoring51(t *testing.T) {
 
 		p0 := number.GCD(number.Pow(a, r/2)-1, N)
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
-		fmt.Printf("i=%d: N=%d, p=%v, q=%v. s/r=%d/%d (%.3f)\n", i, N, p0, p1, s, r, d)
+		fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%.3f)\n", i, N, a, p0, p1, s, r, d)
 
 		if p0*p1 != N || p0 == N || p1 == N {
 			continue
@@ -226,7 +226,7 @@ func TestQSimFactoring15(t *testing.T) {
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
 		// result
-		fmt.Printf("i=%d: N=%d, p=%v, q=%v. s/r=%d/%d (%.3f)\n", i, N, p0, p1, s, r, d)
+		fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%.3f)\n", i, N, a, p0, p1, s, r, d)
 
 		// check
 		if p0*p1 != N || p0 == N || p1 == N {
