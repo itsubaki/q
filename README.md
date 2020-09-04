@@ -232,5 +232,6 @@ rho.ExpectedValue(gate.X()) // -> 0.9
 
 # Reference
 
-1.  Michael A. Nielsen, Issac L. Chuang, Quantum Computation and Quantum Information
-2.  C. Figgatt, D. Maslov, K. A. Landsman, N. M. Linke, S. Debnath, and C. Monroe, Complete 3-Qubit Grover Search on a Programmable Quantum Computer
+1. Michael A. Nielsen, Issac L. Chuang, Quantum Computation and Quantum Information
+2. C. Figgatt, D. Maslov, K. A. Landsman, N. M. Linke, S. Debnath, and C. Monroe, Complete 3-Qubit Grover Search on a Programmable Quantum Computer
+3. Zhengjun Cao, Zhenfu Cao, Lihua Liu, Remarks on Quantum Modular Exponentiation and Some Experimental Demonstrations of Shor’s Algorithm
