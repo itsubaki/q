@@ -174,13 +174,13 @@ for {
   qsim.CNOT(q2, q5)
 
   // Controlled-U^2
-  qsim.ControlledNot([]Qubit{q1, q4}, q6)
-  qsim.ControlledNot([]Qubit{q1, q6}, q4)
-  qsim.ControlledNot([]Qubit{q1, q4}, q6)
-
   qsim.ControlledNot([]Qubit{q1, q3}, q5)
   qsim.ControlledNot([]Qubit{q1, q5}, q3)
   qsim.ControlledNot([]Qubit{q1, q3}, q5)
+
+  qsim.ControlledNot([]Qubit{q1, q4}, q6)
+  qsim.ControlledNot([]Qubit{q1, q6}, q4)
+  qsim.ControlledNot([]Qubit{q1, q4}, q6)
 
   // inverse QFT
   qsim.H(q2)
@@ -195,21 +195,23 @@ for {
   m1 := qsim.Measure(q1)
   m2 := qsim.Measure(q2)
 
-  // |0>|1>|0> -> 0.25, |1>|1>|0> -> 0.75
+  // |0>|1>|0> -> 0.25, |1>|1>|0> -> 0.75, ...
   b := []int{m0.Int(), m1.Int(), m2.Int()}
   d := number.BinaryFraction(b...)
 
   // 0.25 -> 1/4, 0.75 -> 3/4, ...
   _, _, r := number.ContinuedFraction(d)
-  if r > N || number.IsOdd(r) {
+
+  // 1 < r < N, and r is even.
+  if r < 1 || r > N || number.IsOdd(r) {
     continue
   }
 
-  // gcd(a^(r/2)-1, N)
-  // gcd(a^(r/2)+1, N)
+  // gcd(a^(r/2)-1, N), gcd(a^(r/2)+1, N)
   p0 := number.GCD(number.Pow(a, r/2)-1, N)
   p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
+  // check
   if p0*p1 != N || p0 == N || p1 == N {
     continue
   }

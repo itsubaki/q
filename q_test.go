@@ -21,9 +21,9 @@ func TestQSimFactoring15(t *testing.T) {
 		t.Errorf("%v %v\n", N, a)
 	}
 
-	var count int
+	var i int
 	for {
-		count++
+		i++
 
 		qsim := New()
 
@@ -44,13 +44,13 @@ func TestQSimFactoring15(t *testing.T) {
 		qsim.CNOT(q2, q5)
 
 		// Controlled-U^2
-		qsim.ControlledNot([]Qubit{q1, q4}, q6)
-		qsim.ControlledNot([]Qubit{q1, q6}, q4)
-		qsim.ControlledNot([]Qubit{q1, q4}, q6)
-
 		qsim.ControlledNot([]Qubit{q1, q3}, q5)
 		qsim.ControlledNot([]Qubit{q1, q5}, q3)
 		qsim.ControlledNot([]Qubit{q1, q3}, q5)
+
+		qsim.ControlledNot([]Qubit{q1, q4}, q6)
+		qsim.ControlledNot([]Qubit{q1, q6}, q4)
+		qsim.ControlledNot([]Qubit{q1, q4}, q6)
 
 		// inverse QFT
 		qsim.H(q2)
@@ -65,26 +65,30 @@ func TestQSimFactoring15(t *testing.T) {
 		m1 := qsim.Measure(q1)
 		m2 := qsim.Measure(q2)
 
-		// |0>|1>|0> -> 0.25, |1>|1>|0> -> 0.75
+		// |0>|1>|0> -> 0.25, |1>|1>|0> -> 0.75, ...
 		b := []int{m0.Int(), m1.Int(), m2.Int()}
 		d := number.BinaryFraction(b...)
 
 		// 0.25 -> 1/4, 0.75 -> 3/4, ...
-		_, _, r := number.ContinuedFraction(d)
-		if r > N || number.IsOdd(r) {
+		_, s, r := number.ContinuedFraction(d)
+
+		// 1 < r < N, and r is even.
+		if r < 1 || r > N || number.IsOdd(r) {
 			continue
 		}
 
-		// gcd(a^(r/2)-1, N)
-		// gcd(a^(r/2)+1, N)
+		// gcd(a^(r/2)-1, N), gcd(a^(r/2)+1, N)
 		p0 := number.GCD(number.Pow(a, r/2)-1, N)
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
+		// result
+		fmt.Printf("i=%d: N=%d, p=%v, q=%v. s/r=%d/%d (%.3f)\n", i, N, p0, p1, s, r, d)
+
+		// check
 		if p0*p1 != N || p0 == N || p1 == N {
 			continue
 		}
 
-		fmt.Printf("N=%d, p=%v, q=%v. count=%d, d=%f, r=%d\n", N, p0, p1, count, d, r)
 		break
 	}
 }
