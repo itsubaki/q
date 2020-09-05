@@ -153,7 +153,10 @@ if number.GCD(N, a) != 1 {
   t.Errorf("%v %v\n", N, a)
 }
 
+var i int
 for {
+  i++
+
   qsim := q.New()
 
   // initial state
@@ -211,13 +214,13 @@ for {
   p0 := number.GCD(number.Pow(a, r/2)-1, N)
   p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
-  // check
-  if p0*p1 != N || p0 == N || p1 == N {
-    continue
-  }
+  // result
+  fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%.3f)\n", i, N, a, p0, p1, s, r, d)
 
-  fmt.Printf("%v %v\n", p0, p1) // 3, 5
-  break
+  // check p0 * p1 = N, 1 < p0 < N, 1 < p1 < N
+  if p0*p1 == N && 1 < p0 && p0 < N && 1 < p1 && p1 < N {
+    break
+  }
 }
 ```
 

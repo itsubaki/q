@@ -13,7 +13,8 @@ import (
 )
 
 func TestQsimFactoring85(t *testing.T) {
-	N, a := 85, 3 // 3, 6, 7, 11, 12, 14, 22, 23, 24, 27, 28, 29, 31, 37, 39, 41, 44, 46, 48, 54, 56, 57, 58, 61, 62, 63, 71, 73, 74, 78, 79, 82
+	N := 85
+	a := 3 // 3, 6, 7, 11, 12, 14, 22, 23, 24, 27, 28, 29, 31, 37, 39, 41, 44, 46, 48, 54, 56, 57, 58, 61, 62, 63, 71, 73, 74, 78, 79, 82
 
 	// co-prime
 	if number.GCD(N, a) != 1 {
@@ -74,18 +75,20 @@ func TestQsimFactoring85(t *testing.T) {
 
 		p0 := number.GCD(number.Pow(a, r/2)-1, N)
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
+
+		// result
 		fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%.3f)\n", i, N, a, p0, p1, s, r, d)
 
-		if p0*p1 != N || p0 == N || p1 == N {
-			continue
+		// check p0 * p1 = N, 1 < p0 < N, 1 < p1 < N
+		if p0*p1 == N && 1 < p0 && p0 < N && 1 < p1 && p1 < N {
+			break
 		}
-
-		break
 	}
 }
 
 func TestQsimFactoring51(t *testing.T) {
-	N, a := 51, 5 // 5, 7, 10, 11, 14, 20, 22, 23, 28, 29, 31, 37, 40, 41, 44, 46
+	N := 51
+	a := 5 // 5, 7, 10, 11, 14, 20, 22, 23, 28, 29, 31, 37, 40, 41, 44, 46
 
 	// co-prime
 	if number.GCD(N, a) != 1 {
@@ -146,18 +149,20 @@ func TestQsimFactoring51(t *testing.T) {
 
 		p0 := number.GCD(number.Pow(a, r/2)-1, N)
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
+
+		// result
 		fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%.3f)\n", i, N, a, p0, p1, s, r, d)
 
-		if p0*p1 != N || p0 == N || p1 == N {
-			continue
+		// check p0 * p1 = N, 1 < p0 < N, 1 < p1 < N
+		if p0*p1 == N && 1 < p0 && p0 < N && 1 < p1 && p1 < N {
+			break
 		}
-
-		break
 	}
 }
 
 func TestQSimFactoring15(t *testing.T) {
-	N, a := 15, 7
+	N := 15
+	a := 7
 
 	// co-prime
 	if number.GCD(N, a) != 1 {
@@ -228,12 +233,10 @@ func TestQSimFactoring15(t *testing.T) {
 		// result
 		fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%.3f)\n", i, N, a, p0, p1, s, r, d)
 
-		// check
-		if p0*p1 != N || p0 == N || p1 == N {
-			continue
+		// check p0 * p1 = N, 1 < p0 < N, 1 < p1 < N
+		if p0*p1 == N && 1 < p0 && p0 < N && 1 < p1 && p1 < N {
+			break
 		}
-
-		break
 	}
 }
 
