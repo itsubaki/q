@@ -55,8 +55,13 @@ func (m *Matrix) Trace() complex128 {
 }
 
 func (m *Matrix) PartialTrace(i int, q ...*qubit.Qubit) *Matrix {
+	n := m.NumberOfBit()
+	s := math.Pow(2, float64(n-1))
+	t := matrix.Zero(int(s))
+
 	// TODO
-	return m
+
+	return &Matrix{t}
 }
 
 func (m *Matrix) Squared() *Matrix {

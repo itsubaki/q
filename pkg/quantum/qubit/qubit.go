@@ -140,9 +140,9 @@ func (q *Qubit) Measure(bit ...int) *Qubit {
 	rand.Seed(time.Now().UnixNano())
 	r := rand.Float64()
 
-	plist := q.Probability()
+	prob := q.Probability()
 	var sum float64
-	for i, p := range plist {
+	for i, p := range prob {
 		if sum <= r && r < sum+p {
 			q.vector = vector.NewZero(len(q.vector))
 			q.vector[i] = 1
@@ -162,8 +162,9 @@ func (q *Qubit) ProbabilityZeroAt(bit int) ([]int, []float64) {
 	den := int(math.Pow(2, float64(bit+1)))
 	div := dim / den
 
+	prob := q.Probability()
 	for i := 0; i < dim; i++ {
-		p = append(p, q.Probability()[i])
+		p = append(p, prob[i])
 		index = append(index, i)
 
 		if len(p) == dim/2 {
