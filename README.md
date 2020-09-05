@@ -147,7 +147,8 @@ for i := range p {
 ## Factoring 15
 
 ```golang
-N, a := 15, 7 // co-prime
+N := 15
+a := 7 // co-prime
 
 if number.GCD(N, a) != 1 {
   t.Errorf("%v %v\n", N, a)
@@ -217,9 +218,12 @@ for {
   // result
   fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%.3f)\n", i, N, a, p0, p1, s, r, d)
 
-  // check p0 * p1 = N, 1 < p0 < N, 1 < p1 < N
-  if p0*p1 == N && 1 < p0 && p0 < N && 1 < p1 && p1 < N {
-    break
+  // check
+  for _, p := range []int{p0, p1} {
+    if 1 < p && p < N && N%p == 0 {
+      fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
+      return
+    }
   }
 }
 ```

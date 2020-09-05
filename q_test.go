@@ -79,9 +79,12 @@ func TestQsimFactoring85(t *testing.T) {
 		// result
 		fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%.3f)\n", i, N, a, p0, p1, s, r, d)
 
-		// check p0 * p1 = N, 1 < p0 < N, 1 < p1 < N
-		if p0*p1 == N && 1 < p0 && p0 < N && 1 < p1 && p1 < N {
-			break
+		// check
+		for _, p := range []int{p0, p1} {
+			if 1 < p && p < N && N%p == 0 {
+				fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
+				return
+			}
 		}
 	}
 }
@@ -153,9 +156,12 @@ func TestQsimFactoring51(t *testing.T) {
 		// result
 		fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%.3f)\n", i, N, a, p0, p1, s, r, d)
 
-		// check p0 * p1 = N, 1 < p0 < N, 1 < p1 < N
-		if p0*p1 == N && 1 < p0 && p0 < N && 1 < p1 && p1 < N {
-			break
+		// check
+		for _, p := range []int{p0, p1} {
+			if 1 < p && p < N && N%p == 0 {
+				fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
+				return
+			}
 		}
 	}
 }
@@ -233,9 +239,12 @@ func TestQSimFactoring15(t *testing.T) {
 		// result
 		fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%.3f)\n", i, N, a, p0, p1, s, r, d)
 
-		// check p0 * p1 = N, 1 < p0 < N, 1 < p1 < N
-		if p0*p1 == N && 1 < p0 && p0 < N && 1 < p1 && p1 < N {
-			break
+		// check
+		for _, p := range []int{p0, p1} {
+			if 1 < p && p < N && N%p == 0 {
+				fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
+				return
+			}
 		}
 	}
 }
