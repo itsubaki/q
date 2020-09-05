@@ -203,10 +203,10 @@ for {
   d := number.BinaryFraction(b...)
 
   // 0.25 -> 1/4, 0.75 -> 3/4, ...
-  _, _, r := number.ContinuedFraction(d)
+  _, s, r := number.ContinuedFraction(d)
 
-  // 1 < r < N, and r is even.
-  if r < 1 || r > N || number.IsOdd(r) {
+  // r is even
+  if number.IsOdd(r) {
     continue
   }
 
