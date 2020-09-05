@@ -231,7 +231,7 @@ func (m Matrix) Inverse() Matrix {
 	clone := m.Clone()
 	p, q := clone.Dimension()
 	if p != q {
-		panic(fmt.Sprintf("dimension invalid. p=%d q=%d", p, q))
+		panic(fmt.Sprintf("invalid dimension. p=%d q=%d", p, q))
 	}
 
 	out := Matrix{}

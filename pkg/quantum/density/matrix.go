@@ -24,7 +24,7 @@ func (m *Matrix) Add(p float64, q *qubit.Qubit) *Matrix {
 	}
 
 	if len(m.internal) != n {
-		panic(fmt.Sprintf("dimension invalid. m=%d n=%d", len(m.internal), n))
+		panic(fmt.Sprintf("invalid dimension. m=%d n=%d", len(m.internal), n))
 	}
 
 	op := q.OuterProduct(q).Mul(complex(p, 0))
