@@ -220,16 +220,18 @@ func (q *Q) Estimate(input Qubit, loop ...int) *qubit.Qubit {
 	return qubit.New(complex(z, 0), complex(o, 0))
 }
 
-func (q *Q) Binary() string {
+func (q *Q) Binary(seed ...int64) string {
 	n := q.NumberOfBit()
 	f := "%0" + fmt.Sprintf("%d", n) + "s"
 
-	b := strconv.FormatInt(int64(q.Int()), 2)
+	i := int64(q.Int(seed...))
+	b := strconv.FormatInt(i, 2)
+
 	return fmt.Sprintf(f, b)
 }
 
-func (q *Q) Int() int {
-	p := q.Clone().MeasureAll().Probability()
+func (q *Q) Int(seed ...int64) int {
+	p := q.Clone().MeasureAll(seed...).Probability()
 	for i := range p {
 		if p[i] == 0 {
 			continue
