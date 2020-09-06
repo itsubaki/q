@@ -216,7 +216,7 @@ for {
   p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
   // result
-  fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%.3f)\n", i, N, a, p0, p1, s, r, d)
+  fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", i, N, a, p0, p1, s, r, b, d)
 
   // check
   for _, p := range []int{p0, p1} {

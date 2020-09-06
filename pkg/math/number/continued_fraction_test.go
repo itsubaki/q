@@ -14,6 +14,7 @@ func TestContinuedFraction(t *testing.T) {
 		{4.0 / 16.0, []int{0, 4}, 1, 4},
 		{7.0 / 16.0, []int{0, 2, 3, 1, 1}, 7, 16},
 		{13.0 / 16.0, []int{0, 1, 4, 3}, 13, 16},
+		{0.0, []int{0}, 0, 1},
 	}
 
 	for _, c := range cases {

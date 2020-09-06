@@ -8,8 +8,11 @@ func ContinuedFraction(f float64, eps ...float64) ([]int, int, int) {
 		e = eps[0]
 	}
 
-	list := make([]int, 0)
+	if f < e {
+		return []int{0}, 0, 1
+	}
 
+	list := make([]int, 0)
 	r := f
 	for {
 		t := math.Trunc(r)
