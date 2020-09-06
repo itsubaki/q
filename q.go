@@ -65,7 +65,7 @@ func (q *Q) Measure(input ...Qubit) *qubit.Qubit {
 		return q.internal.Measure()
 	}
 
-	return q.internal.Measure(input[0].Index())
+	return q.internal.MeasureAt(input[0].Index())
 }
 
 func (q *Q) NumberOfBit() int {

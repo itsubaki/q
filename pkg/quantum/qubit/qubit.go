@@ -4,7 +4,6 @@ import (
 	"math"
 	"math/cmplx"
 	"math/rand"
-	"time"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/math/vector"
@@ -132,14 +131,8 @@ func (q *Qubit) Probability() []float64 {
 	return list
 }
 
-func (q *Qubit) Measure(bit ...int) *Qubit {
-	if len(bit) > 0 {
-		return q.MeasureAt(bit[0])
-	}
-
-	rand.Seed(time.Now().UnixNano())
+func (q *Qubit) Measure() *Qubit {
 	r := rand.Float64()
-
 	prob := q.Probability()
 	var sum float64
 	for i, p := range prob {
@@ -152,6 +145,47 @@ func (q *Qubit) Measure(bit ...int) *Qubit {
 	}
 
 	return q
+}
+
+func (q *Qubit) MeasureAt(bit int) *Qubit {
+	index, p := q.ProbabilityZeroAt(bit)
+
+	r := rand.Float64()
+	var sum float64
+	for _, pp := range p {
+		sum = sum + pp
+	}
+
+	if r > sum {
+		for _, i := range index {
+			q.vector[i] = complex(0, 0)
+		}
+
+		q.Normalize()
+		return One()
+	}
+
+	one := make([]int, 0)
+	for i := range q.vector {
+		found := false
+		for _, ix := range index {
+			if i == ix {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			one = append(one, i)
+		}
+	}
+
+	for _, i := range one {
+		q.vector[i] = complex(0, 0)
+	}
+
+	q.Normalize()
+	return Zero()
 }
 
 func (q *Qubit) ProbabilityZeroAt(bit int) ([]int, []float64) {
@@ -204,49 +238,6 @@ func (q *Qubit) ProbabilityOneAt(bit int) ([]int, []float64) {
 	}
 
 	return index, p
-}
-
-func (q *Qubit) MeasureAt(bit int) *Qubit {
-	index, p := q.ProbabilityZeroAt(bit)
-
-	rand.Seed(time.Now().UnixNano())
-	r := rand.Float64()
-
-	var sum float64
-	for _, pp := range p {
-		sum = sum + pp
-	}
-
-	if r > sum {
-		for _, i := range index {
-			q.vector[i] = complex(0, 0)
-		}
-
-		q.Normalize()
-		return One()
-	}
-
-	one := make([]int, 0)
-	for i := range q.vector {
-		found := false
-		for _, ix := range index {
-			if i == ix {
-				found = true
-				break
-			}
-		}
-
-		if !found {
-			one = append(one, i)
-		}
-	}
-
-	for _, i := range one {
-		q.vector[i] = complex(0, 0)
-	}
-
-	q.Normalize()
-	return Zero()
 }
 
 func (q *Qubit) Int() int {

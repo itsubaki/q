@@ -737,7 +737,7 @@ func TestGrover3qubit(t *testing.T) {
 	q.Apply(gate.H(4)).Apply(oracle).Apply(amp)
 
 	// q3 is always |1>
-	q3 := q.Measure(3)
+	q3 := q.MeasureAt(3)
 	if !q3.IsOne() {
 		t.Error(q3)
 	}
@@ -793,8 +793,8 @@ func TestQuantumTeleportation(t *testing.T) {
 	g3 := matrix.TensorProduct(gate.H(), gate.I(2))
 	phi.Apply(g2).Apply(g3)
 
-	mz := phi.Measure(0)
-	mx := phi.Measure(1)
+	mz := phi.MeasureAt(0)
+	mx := phi.MeasureAt(1)
 
 	if mz.IsOne() {
 		z := matrix.TensorProduct(gate.I(2), gate.Z())
@@ -863,8 +863,8 @@ func TestQuantumTeleportation2(t *testing.T) {
 
 	phi.Apply(g2).Apply(g3).Apply(g4).Apply(g5)
 
-	mz := phi.Measure(0)
-	mx := phi.Measure(1)
+	mz := phi.MeasureAt(0)
+	mx := phi.MeasureAt(1)
 
 	var test = []struct {
 		zero int
@@ -930,8 +930,8 @@ func TestErrorCorrectionZero(t *testing.T) {
 	phi.Apply(gate.CNOT(5, 1, 4)).Apply(gate.CNOT(5, 2, 4))
 
 	// measure
-	m3 := phi.Measure(3)
-	m4 := phi.Measure(4)
+	m3 := phi.MeasureAt(3)
+	m4 := phi.MeasureAt(4)
 
 	// recover
 	if m3.IsOne() && m4.IsZero() {
@@ -973,8 +973,8 @@ func TestErrorCorrectionOne(t *testing.T) {
 	phi.Apply(gate.CNOT(5, 1, 4)).Apply(gate.CNOT(5, 2, 4))
 
 	// measure
-	m3 := phi.Measure(3)
-	m4 := phi.Measure(4)
+	m3 := phi.MeasureAt(3)
+	m4 := phi.MeasureAt(4)
 
 	// recover
 	if m3.IsOne() && m4.IsZero() {
@@ -1016,8 +1016,8 @@ func TestErrorCorrectionBitFlip1(t *testing.T) {
 	phi.Apply(gate.CNOT(5, 1, 4)).Apply(gate.CNOT(5, 2, 4))
 
 	// measure
-	m3 := phi.Measure(3)
-	m4 := phi.Measure(4)
+	m3 := phi.MeasureAt(3)
+	m4 := phi.MeasureAt(4)
 
 	// recover
 	if m3.IsOne() && m4.IsZero() {
@@ -1064,8 +1064,8 @@ func TestErrorCorrectionBitFlip2(t *testing.T) {
 	phi.Apply(gate.CNOT(5, 1, 4)).Apply(gate.CNOT(5, 2, 4))
 
 	// measure
-	m3 := phi.Measure(3)
-	m4 := phi.Measure(4)
+	m3 := phi.MeasureAt(3)
+	m4 := phi.MeasureAt(4)
 
 	// recover
 	if m3.IsOne() && m4.IsZero() {
@@ -1112,8 +1112,8 @@ func TestErrorCorrectionBitFlip3(t *testing.T) {
 	phi.Apply(gate.CNOT(5, 1, 4)).Apply(gate.CNOT(5, 2, 4))
 
 	// measure
-	m3 := phi.Measure(3)
-	m4 := phi.Measure(4)
+	m3 := phi.MeasureAt(3)
+	m4 := phi.MeasureAt(4)
 
 	// recover
 	if m3.IsOne() && m4.IsZero() {
@@ -1167,8 +1167,8 @@ func TestErrorCorrectionPhaseFlip1(t *testing.T) {
 	phi.Apply(matrix.TensorProduct(gate.H(3), gate.I(2)))
 
 	// measure
-	m3 := phi.Measure(3)
-	m4 := phi.Measure(4)
+	m3 := phi.MeasureAt(3)
+	m4 := phi.MeasureAt(4)
 
 	// recover
 	if m3.IsOne() && m4.IsZero() {
