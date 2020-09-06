@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"math"
 	"math/cmplx"
-	"math/rand"
-	"time"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/math/vector"
@@ -134,13 +132,9 @@ func (q *Qubit) Probability() []float64 {
 }
 
 func (q *Qubit) MeasureAll(seed ...int64) *Qubit {
-	rand.Seed(time.Now().UnixNano())
-	if len(seed) > 0 {
-		rand.Seed(seed[0])
-	}
-
-	r := rand.Float64()
+	r := Random(seed...)
 	prob := q.Probability()
+
 	var sum float64
 	for i, p := range prob {
 		if sum <= r && r < sum+p {
@@ -156,13 +150,8 @@ func (q *Qubit) MeasureAll(seed ...int64) *Qubit {
 
 func (q *Qubit) Measure(bit int, seed ...int64) *Qubit {
 	index, p := q.ProbabilityZeroAt(bit)
+	r := Random(seed...)
 
-	rand.Seed(time.Now().UnixNano())
-	if len(seed) > 0 {
-		rand.Seed(seed[0])
-	}
-
-	r := rand.Float64()
 	var sum float64
 	for _, pp := range p {
 		sum = sum + pp
