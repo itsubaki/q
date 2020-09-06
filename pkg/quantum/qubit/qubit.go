@@ -1,9 +1,11 @@
 package qubit
 
 import (
+	"fmt"
 	"math"
 	"math/cmplx"
 	"math/rand"
+	"time"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/math/vector"
@@ -131,7 +133,12 @@ func (q *Qubit) Probability() []float64 {
 	return list
 }
 
-func (q *Qubit) Measure() *Qubit {
+func (q *Qubit) MeasureAll(seed ...int64) *Qubit {
+	rand.Seed(time.Now().UnixNano())
+	if len(seed) > 0 {
+		rand.Seed(seed[0])
+	}
+
 	r := rand.Float64()
 	prob := q.Probability()
 	var sum float64
@@ -147,8 +154,13 @@ func (q *Qubit) Measure() *Qubit {
 	return q
 }
 
-func (q *Qubit) MeasureAt(bit int) *Qubit {
+func (q *Qubit) Measure(bit int, seed ...int64) *Qubit {
 	index, p := q.ProbabilityZeroAt(bit)
+
+	rand.Seed(time.Now().UnixNano())
+	if len(seed) > 0 {
+		rand.Seed(seed[0])
+	}
 
 	r := rand.Float64()
 	var sum float64
@@ -240,8 +252,13 @@ func (q *Qubit) ProbabilityOneAt(bit int) ([]int, []float64) {
 	return index, p
 }
 
-func (q *Qubit) Int() int {
-	if q.Clone().Measure().IsZero() {
+func (q *Qubit) Int(seed ...int64) int {
+	n := q.NumberOfBit()
+	if n != 1 {
+		panic(fmt.Sprintf("invalid number of bit=%d", n))
+	}
+
+	if q.Clone().MeasureAll(seed...).IsZero() {
 		return 0
 	}
 

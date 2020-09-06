@@ -60,12 +60,12 @@ func (q *Q) Probability() []float64 {
 	return q.internal.Probability()
 }
 
-func (q *Q) Measure(input ...Qubit) *qubit.Qubit {
-	if len(input) < 1 {
-		return q.internal.Measure()
-	}
+func (q *Q) MeasureAll(seed ...int64) *qubit.Qubit {
+	return q.internal.MeasureAll(seed...)
+}
 
-	return q.internal.MeasureAt(input[0].Index())
+func (q *Q) Measure(input Qubit, seed ...int64) *qubit.Qubit {
+	return q.internal.Measure(input.Index(), seed...)
 }
 
 func (q *Q) NumberOfBit() int {
@@ -229,7 +229,7 @@ func (q *Q) Binary() string {
 }
 
 func (q *Q) Int() int {
-	p := q.Clone().Measure().Probability()
+	p := q.Clone().MeasureAll().Probability()
 	for i := range p {
 		if p[i] == 0 {
 			continue

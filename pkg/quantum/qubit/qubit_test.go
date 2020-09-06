@@ -113,7 +113,8 @@ func TestQubit(t *testing.T) {
 	if p[1]-0.5 > 1e-13 {
 		t.Error(p)
 	}
-	q.Measure()
+
+	q.MeasureAll()
 
 	p2 := q.Probability()
 	if p2[0] == 0 && p2[1] != 1 {
@@ -130,8 +131,8 @@ func TestBellState(t *testing.T) {
 	g1 := gate.CNOT(2, 0, 1)
 
 	bell := Zero(2).Apply(g0.Apply(g1))
+	bell.MeasureAll()
 
-	bell.Measure()
 	if bell.Probability()[1] != 0 {
 		t.Error(bell)
 	}
@@ -154,24 +155,24 @@ func TestNormalize(t *testing.T) {
 	}
 }
 
-func TestMeasureAt(t *testing.T) {
+func TestMeasure(t *testing.T) {
 	q := Zero(3).Apply(gate.H(3))
 
-	q.MeasureAt(0)
+	q.Measure(0)
 	for _, p := range q.Probability() {
 		if p != 0 && p != 0.25 {
 			t.Error(q.Probability())
 		}
 	}
 
-	q.MeasureAt(1)
+	q.Measure(1)
 	for _, p := range q.Probability() {
 		if p != 0 && p != 0.4999999999999999 {
 			t.Error(q.Probability())
 		}
 	}
 
-	q.MeasureAt(2)
+	q.Measure(2)
 	for _, p := range q.Probability() {
 		if p != 0 && p != 1 {
 			t.Error(q.Probability())
