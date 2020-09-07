@@ -114,7 +114,7 @@ func TestQubit(t *testing.T) {
 		t.Error(p)
 	}
 
-	q.MeasureAll()
+	q.Measure(0)
 
 	p2 := q.Probability()
 	if p2[0] == 0 && p2[1] != 1 {
@@ -130,15 +130,17 @@ func TestBellState(t *testing.T) {
 	g0 := gate.H().TensorProduct(gate.I())
 	g1 := gate.CNOT(2, 0, 1)
 
-	bell := Zero(2).Apply(g0.Apply(g1))
-	bell.MeasureAll()
+	q := Zero(2).Apply(g0.Apply(g1))
+	q.Measure(0)
+	q.Measure(1)
 
-	if bell.Probability()[1] != 0 {
-		t.Error(bell)
+	p := q.Probability()
+	if p[1] != 0 {
+		t.Error(q)
 	}
 
-	if bell.Probability()[2] != 0 {
-		t.Error(bell)
+	if p[2] != 0 {
+		t.Error(q)
 	}
 }
 

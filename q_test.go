@@ -775,9 +775,12 @@ func TestGrover2qubit(t *testing.T) {
 	qc := h2.Apply(oracle).Apply(amp)
 	q := qubit.Zero(2).Apply(qc)
 
-	q.MeasureAll()
-	if math.Abs(q.Probability()[3]-1) > 1e-13 {
-		t.Error(q.Probability())
+	q.Measure(0)
+	q.Measure(1)
+
+	p := q.Probability()
+	if math.Abs(p[3]-1) > 1e-13 {
+		t.Error(p)
 	}
 }
 

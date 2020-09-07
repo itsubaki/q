@@ -1,9 +1,8 @@
 package q
 
 import (
-	"fmt"
 	"math"
-	"strconv"
+	"strings"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/quantum/gate"
@@ -58,10 +57,6 @@ func (q *Q) Amplitude() []complex128 {
 
 func (q *Q) Probability() []float64 {
 	return q.internal.Probability()
-}
-
-func (q *Q) MeasureAll(seed ...int64) *qubit.Qubit {
-	return q.internal.MeasureAll(seed...)
 }
 
 func (q *Q) Measure(input Qubit, seed ...int64) *qubit.Qubit {
@@ -196,15 +191,10 @@ func (q *Q) Swap(q0, q1 Qubit) *Q {
 	return q
 }
 
-func (q *Q) Estimate(input Qubit, loop ...int) *qubit.Qubit {
-	limit := 1000
-	if len(loop) > 0 {
-		limit = loop[0]
-	}
-
-	c0, c1 := 0, 0
+func (q *Q) Estimate(input Qubit, seed ...int64) *qubit.Qubit {
+	c0, c1, limit := 0, 0, 1000
 	for i := 0; i < limit; i++ {
-		m := q.Clone().Measure(input)
+		m := q.Clone().Measure(input, seed...)
 
 		if m.IsZero() {
 			c0++
@@ -220,25 +210,19 @@ func (q *Q) Estimate(input Qubit, loop ...int) *qubit.Qubit {
 	return qubit.New(complex(z, 0), complex(o, 0))
 }
 
-func (q *Q) Binary(seed ...int64) string {
+func (q *Q) BinaryString(seed ...int64) string {
 	n := q.NumberOfBit()
-	f := "%0" + fmt.Sprintf("%d", n) + "s"
+	c := q.Clone()
 
-	i := int64(q.Int(seed...))
-	b := strconv.FormatInt(i, 2)
-
-	return fmt.Sprintf(f, b)
-}
-
-func (q *Q) Int(seed ...int64) int {
-	p := q.Clone().MeasureAll(seed...).Probability()
-	for i := range p {
-		if p[i] == 0 {
+	var sb strings.Builder
+	for i := 0; i < n; i++ {
+		if c.Measure(Qubit(i), seed...).IsZero() {
+			sb.WriteString("0")
 			continue
 		}
 
-		return i
+		sb.WriteString("1")
 	}
 
-	panic(fmt.Sprintf("invalid probability: %v", p))
+	return sb.String()
 }

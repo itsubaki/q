@@ -131,23 +131,6 @@ func (q *Qubit) Probability() []float64 {
 	return list
 }
 
-func (q *Qubit) MeasureAll(seed ...int64) *Qubit {
-	r := Random(seed...)
-	prob := q.Probability()
-
-	var sum float64
-	for i, p := range prob {
-		if sum <= r && r < sum+p {
-			q.vector = vector.NewZero(len(q.vector))
-			q.vector[i] = 1
-			break
-		}
-		sum = sum + p
-	}
-
-	return q
-}
-
 func (q *Qubit) Measure(bit int, seed ...int64) *Qubit {
 	index, p := q.ProbabilityZeroAt(bit)
 	r := Random(seed...)
@@ -241,17 +224,21 @@ func (q *Qubit) ProbabilityOneAt(bit int) ([]int, []float64) {
 	return index, p
 }
 
-func (q *Qubit) Int(seed ...int64) int {
+func (q *Qubit) Int() int {
 	n := q.NumberOfBit()
 	if n != 1 {
 		panic(fmt.Sprintf("invalid number of bit=%d", n))
 	}
 
-	if q.Clone().MeasureAll(seed...).IsZero() {
+	if q.IsZero() {
 		return 0
 	}
 
-	return 1
+	if q.IsOne() {
+		return 1
+	}
+
+	panic("invalid state")
 }
 
 func TensorProduct(q ...*Qubit) *Qubit {
