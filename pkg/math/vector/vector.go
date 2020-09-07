@@ -26,6 +26,10 @@ func NewZero(n int) Vector {
 	return out
 }
 
+func (v Vector) Complex() []complex128 {
+	return []complex128(v)
+}
+
 func (v Vector) Clone() Vector {
 	clone := Vector{}
 	for i := 0; i < len(v); i++ {

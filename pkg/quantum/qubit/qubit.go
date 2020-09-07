@@ -11,6 +11,7 @@ import (
 
 type Qubit struct {
 	vector vector.Vector
+	rand   func(seed ...int64) float64
 }
 
 func New(z ...complex128) *Qubit {
@@ -19,17 +20,27 @@ func New(z ...complex128) *Qubit {
 		v = append(v, zi)
 	}
 
-	q := &Qubit{v}
+	q := &Qubit{
+		vector: v,
+		rand:   MathRand,
+	}
+
 	q.Normalize()
 	return q
 }
 
 func Zero(bit ...int) *Qubit {
-	return &Qubit{vector.TensorProductN(vector.Vector{1, 0}, bit...)}
+	v := vector.TensorProductN(vector.Vector{1, 0}, bit...)
+	return New(v.Complex()...)
 }
 
 func One(bit ...int) *Qubit {
-	return &Qubit{vector.TensorProductN(vector.Vector{0, 1}, bit...)}
+	v := vector.TensorProductN(vector.Vector{0, 1}, bit...)
+	return New(v.Complex()...)
+}
+
+func (q *Qubit) SetRand(rand func(seed ...int64) float64) {
+	q.rand = rand
 }
 
 func (q *Qubit) NumberOfBit() int {
@@ -59,7 +70,10 @@ func (q *Qubit) Dimension() int {
 }
 
 func (q *Qubit) Clone() *Qubit {
-	return &Qubit{q.vector.Clone()}
+	return &Qubit{
+		vector: q.vector.Clone(),
+		rand:   q.rand,
+	}
 }
 
 func (q *Qubit) Fidelity(q0 *Qubit) float64 {
@@ -131,9 +145,9 @@ func (q *Qubit) Probability() []float64 {
 	return list
 }
 
-func (q *Qubit) Measure(bit int, seed ...int64) *Qubit {
+func (q *Qubit) Measure(bit int) *Qubit {
 	index, p := q.ProbabilityZeroAt(bit)
-	r := Random(seed...)
+	r := q.rand()
 
 	var sum float64
 	for _, pp := range p {

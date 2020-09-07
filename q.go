@@ -9,10 +9,6 @@ import (
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
 
-type Q struct {
-	internal *qubit.Qubit
-}
-
 type Qubit int
 
 func (q Qubit) Index() int {
@@ -28,8 +24,16 @@ func Index(input ...Qubit) []int {
 	return index
 }
 
+type Q struct {
+	internal *qubit.Qubit
+}
+
 func New() *Q {
 	return &Q{}
+}
+
+func (q *Q) SetRand(rand func(seed ...int64) float64) {
+	q.internal.SetRand(rand)
 }
 
 func (q *Q) New(z ...complex128) Qubit {
@@ -59,8 +63,8 @@ func (q *Q) Probability() []float64 {
 	return q.internal.Probability()
 }
 
-func (q *Q) Measure(input Qubit, seed ...int64) *qubit.Qubit {
-	return q.internal.Measure(input.Index(), seed...)
+func (q *Q) Measure(input Qubit) *qubit.Qubit {
+	return q.internal.Measure(input.Index())
 }
 
 func (q *Q) NumberOfBit() int {
@@ -191,10 +195,10 @@ func (q *Q) Swap(q0, q1 Qubit) *Q {
 	return q
 }
 
-func (q *Q) Estimate(input Qubit, seed ...int64) *qubit.Qubit {
+func (q *Q) Estimate(input Qubit) *qubit.Qubit {
 	c0, c1, limit := 0, 0, 1000
 	for i := 0; i < limit; i++ {
-		m := q.Clone().Measure(input, seed...)
+		m := q.Clone().Measure(input)
 
 		if m.IsZero() {
 			c0++
@@ -210,13 +214,13 @@ func (q *Q) Estimate(input Qubit, seed ...int64) *qubit.Qubit {
 	return qubit.New(complex(z, 0), complex(o, 0))
 }
 
-func (q *Q) BinaryString(seed ...int64) string {
+func (q *Q) BinaryString() string {
 	n := q.NumberOfBit()
 	c := q.Clone()
 
 	var sb strings.Builder
 	for i := 0; i < n; i++ {
-		if c.Measure(Qubit(i), seed...).IsZero() {
+		if c.Measure(Qubit(i)).IsZero() {
 			sb.WriteString("0")
 			continue
 		}
