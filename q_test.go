@@ -252,40 +252,25 @@ func TestQSimFactoring15(t *testing.T) {
 }
 
 func TestQSimGrover3qubit(t *testing.T) {
-	print := func(q *Q) {
-		p := q.Amplitude()
-		n := q.NumberOfBit()
-		f := "%0" + strconv.Itoa(n) + "s %1.3f, "
-
-		var out string
-		for i := range p {
-			bit := strconv.FormatInt(int64(i), 2)
-			out = out + fmt.Sprintf(f, bit, p[i])
-		}
-		out = out[:len(out)-2] // remove last ,
-		fmt.Println(out)
-	}
-
 	qsim := New()
 
+	// initial state
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 	q2 := qsim.Zero()
 	q3 := qsim.One()
 
+	// superposition
 	qsim.H(q0, q1, q2, q3)
-	print(qsim)
 
 	// oracle
 	qsim.X(q0).ControlledNot([]Qubit{q0, q1, q2}, q3).X(q0)
-	print(qsim)
 
 	// amp
 	qsim.H(q0, q1, q2, q3)
 	qsim.X(q0, q1, q2)
 	qsim.ControlledZ([]Qubit{q0, q1}, q2)
 	qsim.H(q0, q1, q2)
-	print(qsim)
 
 	// q3 is always |1>
 	m3 := qsim.Measure(q3)
@@ -307,7 +292,6 @@ func TestQSimGrover3qubit(t *testing.T) {
 		if i%2 == 1 && i != 7 && math.Abs(pp-0.03125) > 1e-13 {
 			t.Error(qsim.Probability())
 		}
-
 	}
 
 	for i, pp := range p {

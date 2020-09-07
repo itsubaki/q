@@ -236,6 +236,10 @@ func (q *Qubit) ProbabilityOneAt(bit int) ([]int, []float64) {
 	return index, p
 }
 
+func (q *Qubit) String() string {
+	return fmt.Sprintf("%v", q.vector)
+}
+
 func (q *Qubit) Int() int {
 	n := q.NumberOfBit()
 	if n != 1 {

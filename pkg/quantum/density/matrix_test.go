@@ -10,11 +10,9 @@ import (
 )
 
 func TestPartialTrace(t *testing.T) {
-	bell := qubit.Zero(2).Apply(gate.H().TensorProduct(gate.I())).Apply(gate.CNOT(2, 0, 1))
-	fmt.Println(bell)
-
-	rho := New().Add(1, bell)
-	fmt.Println(rho)
+	qc := gate.H().TensorProduct(gate.I()).Apply(gate.CNOT(2, 0, 1))
+	q := qubit.Zero(2).Apply(qc)
+	rho := New().Add(1.0, q)
 
 	pt := rho.PartialTrace(0, qubit.Zero(), qubit.One())
 	fmt.Println(pt)
