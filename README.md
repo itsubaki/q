@@ -29,14 +29,13 @@ qsim.Estimate(q1).Probability()
 qsim.Probability()
 // -> (0.5, 0, 0, 0.5)
 
-qsim.Measure()
-qsim.Probability()
-// -> (1, 0, 0, 0) or (0, 0, 0, 1)
-
 m0 := qsim.Measure(q0)
 m1 := qsim.Measure(q1)
 // -> m0 = |0> then m1 = |0>
 // -> m0 = |1> then m1 = |1>
+
+qsim.Probability()
+// -> (1, 0, 0, 0) or (0, 0, 0, 1)
 ```
 
 ## Quantum teleportation
