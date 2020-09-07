@@ -8,6 +8,7 @@ import (
 
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/math/number"
+	"github.com/itsubaki/q/pkg/math/rand"
 	"github.com/itsubaki/q/pkg/quantum/gate"
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
@@ -181,6 +182,7 @@ func TestQSimFactoring15(t *testing.T) {
 
 		// initial state
 		qsim := New()
+		qsim.Rand = rand.Crypto
 
 		q0 := qsim.Zero()
 		q1 := qsim.Zero()

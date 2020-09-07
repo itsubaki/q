@@ -6,12 +6,13 @@ import (
 	"math/cmplx"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
+	"github.com/itsubaki/q/pkg/math/rand"
 	"github.com/itsubaki/q/pkg/math/vector"
 )
 
 type Qubit struct {
 	vector vector.Vector
-	rand   func(seed ...int64) float64
+	Rand   func(seed ...int64) float64
 }
 
 func New(z ...complex128) *Qubit {
@@ -22,7 +23,7 @@ func New(z ...complex128) *Qubit {
 
 	q := &Qubit{
 		vector: v,
-		rand:   MathRand,
+		Rand:   rand.Math,
 	}
 
 	q.Normalize()
@@ -37,10 +38,6 @@ func Zero(bit ...int) *Qubit {
 func One(bit ...int) *Qubit {
 	v := vector.TensorProductN(vector.Vector{0, 1}, bit...)
 	return New(v.Complex()...)
-}
-
-func (q *Qubit) SetRand(rand func(seed ...int64) float64) {
-	q.rand = rand
 }
 
 func (q *Qubit) NumberOfBit() int {
@@ -72,7 +69,7 @@ func (q *Qubit) Dimension() int {
 func (q *Qubit) Clone() *Qubit {
 	return &Qubit{
 		vector: q.vector.Clone(),
-		rand:   q.rand,
+		Rand:   q.Rand,
 	}
 }
 
@@ -147,7 +144,7 @@ func (q *Qubit) Probability() []float64 {
 
 func (q *Qubit) Measure(bit int) *Qubit {
 	index, p := q.ProbabilityZeroAt(bit)
-	r := q.rand()
+	r := q.Rand()
 
 	var sum float64
 	for _, pp := range p {
@@ -225,6 +222,7 @@ func (q *Qubit) ProbabilityOneAt(bit int) ([]int, []float64) {
 				break
 			}
 		}
+
 		if !found {
 			one = append(one, i)
 		}

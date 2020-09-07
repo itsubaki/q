@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
+	"github.com/itsubaki/q/pkg/math/rand"
 	"github.com/itsubaki/q/pkg/quantum/gate"
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
@@ -26,19 +27,20 @@ func Index(input ...Qubit) []int {
 
 type Q struct {
 	internal *qubit.Qubit
+	Rand     func(seed ...int64) float64
 }
 
 func New() *Q {
-	return &Q{}
-}
-
-func (q *Q) SetRand(rand func(seed ...int64) float64) {
-	q.internal.SetRand(rand)
+	return &Q{
+		internal: nil,
+		Rand:     rand.Math,
+	}
 }
 
 func (q *Q) New(z ...complex128) Qubit {
 	if q.internal == nil {
 		q.internal = qubit.New(z...)
+		q.internal.Rand = q.Rand
 		return Qubit(0)
 	}
 
@@ -72,7 +74,17 @@ func (q *Q) NumberOfBit() int {
 }
 
 func (q *Q) Clone() *Q {
-	return &Q{internal: q.internal.Clone()}
+	if q.internal == nil {
+		return &Q{
+			internal: nil,
+			Rand:     q.Rand,
+		}
+	}
+
+	return &Q{
+		internal: q.internal.Clone(),
+		Rand:     q.internal.Rand,
+	}
 }
 
 func (q *Q) H(input ...Qubit) *Q {
