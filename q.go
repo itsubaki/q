@@ -200,6 +200,11 @@ func (q *Q) Swap(q0, q1 Qubit) *Q {
 	return q
 }
 
+func (q *Q) InverseQFT(input ...Qubit) *Q {
+
+	return q
+}
+
 func (q *Q) Estimate(input Qubit) *qubit.Qubit {
 	c0, c1, limit := 0, 0, 1000
 	for i := 0; i < limit; i++ {

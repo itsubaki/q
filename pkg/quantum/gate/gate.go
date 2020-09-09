@@ -185,12 +185,16 @@ func ControlledNot(bit int, c []int, t int) matrix.Matrix {
 	return cnot
 }
 
-func Toffoli() matrix.Matrix {
-	return ControlledNot(3, []int{0, 1}, 2)
-}
-
 func CNOT(bit, c, t int) matrix.Matrix {
 	return ControlledNot(bit, []int{c}, t)
+}
+
+func CCNOT(bit, c0, c1, t int) matrix.Matrix {
+	return ControlledNot(bit, []int{c0, c1}, t)
+}
+
+func Toffoli(bit, c0, c1, t int) matrix.Matrix {
+	return CCNOT(bit, c0, c1, t)
 }
 
 func ControlledZ(bit int, c []int, t int) matrix.Matrix {
