@@ -252,7 +252,7 @@ func TestQSimGrover3qubit(t *testing.T) {
 	// oracle
 	qsim.X(q0).ControlledNot([]Qubit{q0, q1, q2}, q3).X(q0)
 
-	// amp
+	// amplification
 	qsim.H(q0, q1, q2, q3)
 	qsim.X(q0, q1, q2)
 	qsim.ControlledZ([]Qubit{q0, q1}, q2)
@@ -285,7 +285,7 @@ func TestQSimGrover3qubit(t *testing.T) {
 			continue
 		}
 
-		fmt.Printf("%04s %v\n", strconv.FormatInt(int64(i), 2), pp)
+		fmt.Printf("%04s %.6f\n", strconv.FormatInt(int64(i), 2), pp)
 	}
 }
 
