@@ -107,6 +107,7 @@ qsim.Estimate(q0).Probability() // (0.2, 0.8)
 ```golang
 qsim := q.New()
 
+// initial state
 q0 := qsim.Zero()
 q1 := qsim.Zero()
 q2 := qsim.Zero()

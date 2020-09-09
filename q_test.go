@@ -25,9 +25,9 @@ func TestQsimFactoring85(t *testing.T) {
 	for {
 		i++
 
-		// initial state
 		qsim := New()
 
+		// initial state
 		q0 := qsim.Zero()
 		q1 := qsim.Zero()
 		q2 := qsim.Zero()
@@ -101,9 +101,9 @@ func TestQsimFactoring51(t *testing.T) {
 	for {
 		i++
 
-		// initial state
 		qsim := New()
 
+		// initial state
 		q0 := qsim.Zero()
 		q1 := qsim.Zero()
 		q2 := qsim.Zero()
@@ -177,9 +177,9 @@ func TestQSimFactoring15(t *testing.T) {
 	for {
 		i++
 
-		// initial state
 		qsim := New()
 
+		// initial state
 		q0 := qsim.Zero()
 		q1 := qsim.Zero()
 		q2 := qsim.Zero()
