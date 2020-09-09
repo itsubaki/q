@@ -60,15 +60,12 @@ func TestQsimFactoring85(t *testing.T) {
 		qsim.H(q0)
 
 		// measure
-		m0 := qsim.Measure(q0)
-		m1 := qsim.Measure(q1)
-		m2 := qsim.Measure(q2)
-		m3 := qsim.Measure(q3)
+		m := qsim.MeasureAsBinary(q0, q1, q2, q3)
 
-		b := []int{m0.Int(), m1.Int(), m2.Int(), m3.Int()}
-		d := number.BinaryFraction(b)
-
+		// continued fractions
+		d := number.BinaryFraction(m)
 		_, s, r := number.ContinuedFraction(d)
+
 		if number.IsOdd(r) {
 			continue
 		}
@@ -77,7 +74,7 @@ func TestQsimFactoring85(t *testing.T) {
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
 		// result
-		fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", i, N, a, p0, p1, s, r, b, d)
+		fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", i, N, a, p0, p1, s, r, m, d)
 
 		// check
 		for _, p := range []int{p0, p1} {
@@ -137,15 +134,12 @@ func TestQsimFactoring51(t *testing.T) {
 		qsim.H(q0)
 
 		// measure
-		m0 := qsim.Measure(q0)
-		m1 := qsim.Measure(q1)
-		m2 := qsim.Measure(q2)
-		m3 := qsim.Measure(q3)
+		m := qsim.MeasureAsBinary(q0, q1, q2, q3)
 
-		b := []int{m0.Int(), m1.Int(), m2.Int(), m3.Int()}
-		d := number.BinaryFraction(b)
-
+		// continued fractions
+		d := number.BinaryFraction(m)
 		_, s, r := number.ContinuedFraction(d)
+
 		if number.IsOdd(r) {
 			continue
 		}
@@ -154,7 +148,7 @@ func TestQsimFactoring51(t *testing.T) {
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
 		// result
-		fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", i, N, a, p0, p1, s, r, b, d)
+		fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", i, N, a, p0, p1, s, r, m, d)
 
 		// check
 		for _, p := range []int{p0, p1} {
@@ -208,10 +202,7 @@ func TestQSimFactoring15(t *testing.T) {
 		qsim.CCNOT(q1, q4, q6)
 
 		// inverse QFT
-		qsim.Swap(q0, q2)
-		qsim.H(q2)
-		qsim.CR(q2, q1, 2).H(q1)
-		qsim.CR(q2, q0, 3).CR(q1, q0, 2).H(q0)
+		qsim.InverseQFT(q0, q1, q2)
 
 		// measure q0, q1, q2
 		m := qsim.MeasureAsBinary(q0, q1, q2)
@@ -222,7 +213,7 @@ func TestQSimFactoring15(t *testing.T) {
 		// 0.25 -> 1/4, 0.75 -> 3/4, ...
 		_, s, r := number.ContinuedFraction(d)
 
-		// r is even
+		// if r is odd, algorithm is failed.
 		if number.IsOdd(r) {
 			continue
 		}
@@ -234,7 +225,7 @@ func TestQSimFactoring15(t *testing.T) {
 		// result
 		fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", i, N, a, p0, p1, s, r, m, d)
 
-		// check
+		// check non-trivial factor
 		for _, p := range []int{p0, p1} {
 			if 1 < p && p < N && N%p == 0 {
 				fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
@@ -352,6 +343,41 @@ func TestPOVM(t *testing.T) {
 	q1 := qubit.Zero().Apply(gate.H())
 	if q1.Apply(E2).InnerProduct(q1) != complex(0, 0) {
 		t.Fail()
+	}
+}
+
+func TestQSimInverseQFT(t *testing.T) {
+	qsim := New()
+
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
+
+	qsim.InverseQFT(q0, q1, q2)
+
+	p := qsim.Probability()
+
+	ex := New()
+
+	e0 := ex.Zero()
+	e1 := ex.Zero()
+	e2 := ex.Zero()
+
+	ex.Swap(e0, e2)
+	ex.H(e2)
+	ex.CR(e2, e1, 2).H(e1)
+	ex.CR(e2, e0, 3).CR(e1, e0, 2).H(e0)
+
+	ep := ex.Probability()
+
+	for len(ep) != len(p) {
+		t.Fail()
+	}
+
+	for i := range ep {
+		if math.Abs(ep[i]-p[i]) > 1e-13 {
+			t.Fail()
+		}
 	}
 }
 
