@@ -175,16 +175,6 @@ func (q *Q) CNOT(control, target Qubit) *Q {
 	return q.ControlledNot([]Qubit{control}, target)
 }
 
-func (q *Q) QFT() *Q {
-	q.internal.Apply(gate.QFT(q.NumberOfBit()))
-	return q
-}
-
-func (q *Q) InverseQFT() *Q {
-	q.internal.Apply(gate.QFT(q.NumberOfBit()).Dagger())
-	return q
-}
-
 func (q *Q) ConditionX(condition bool, input ...Qubit) *Q {
 	if condition {
 		return q.X(input...)
