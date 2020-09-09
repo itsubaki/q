@@ -66,7 +66,7 @@ func TestQsimFactoring85(t *testing.T) {
 		m3 := qsim.Measure(q3)
 
 		b := []int{m0.Int(), m1.Int(), m2.Int(), m3.Int()}
-		d := number.BinaryFraction(b...)
+		d := number.BinaryFraction(b)
 
 		_, s, r := number.ContinuedFraction(d)
 		if number.IsOdd(r) {
@@ -143,7 +143,7 @@ func TestQsimFactoring51(t *testing.T) {
 		m3 := qsim.Measure(q3)
 
 		b := []int{m0.Int(), m1.Int(), m2.Int(), m3.Int()}
-		d := number.BinaryFraction(b...)
+		d := number.BinaryFraction(b)
 
 		_, s, r := number.ContinuedFraction(d)
 		if number.IsOdd(r) {
@@ -208,12 +208,10 @@ func TestQSimFactoring15(t *testing.T) {
 		qsim.CCNOT(q1, q4, q6)
 
 		// inverse QFT
+		qsim.Swap(q0, q2)
 		qsim.H(q2)
-		qsim.CR(q2, q1, 2)
-		qsim.H(q1)
-		qsim.CR(q2, q0, 3)
-		qsim.CR(q1, q0, 2)
-		qsim.H(q0)
+		qsim.CR(q2, q1, 2).H(q1)
+		qsim.CR(q2, q0, 3).CR(q1, q0, 2).H(q0)
 
 		// measure q0, q1, q2
 		m := qsim.MeasureAsBinary(q0, q1, q2)

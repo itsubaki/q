@@ -177,30 +177,25 @@ for {
   qsim.CNOT(q2, q5)
 
   // Controlled-U^2
-  qsim.ControlledNot([]Qubit{q1, q3}, q5)
-  qsim.ControlledNot([]Qubit{q1, q5}, q3)
-  qsim.ControlledNot([]Qubit{q1, q3}, q5)
+  qsim.CCNOT(q1, q3, q5)
+  qsim.CCNOT(q1, q5, q3)
+  qsim.CCNOT(q1, q3, q5)
 
-  qsim.ControlledNot([]Qubit{q1, q4}, q6)
-  qsim.ControlledNot([]Qubit{q1, q6}, q4)
-  qsim.ControlledNot([]Qubit{q1, q4}, q6)
+  qsim.CCNOT(q1, q4, q6)
+  qsim.CCNOT(q1, q6, q4)
+  qsim.CCNOT(q1, q4, q6)
 
   // inverse QFT
+  qsim.Swap(q0, q2)
   qsim.H(q2)
-  qsim.CR(q2, q1, 2)
-  qsim.H(q1)
-  qsim.CR(q2, q0, 3)
-  qsim.CR(q1, q0, 2)
-  qsim.H(q0)
+  qsim.CR(q2, q1, 2).H(q1)
+  qsim.CR(q2, q0, 3).CR(q1, q0, 2).H(q0)
 
   // measure q0, q1, q2
-  m0 := qsim.Measure(q0)
-  m1 := qsim.Measure(q1)
-  m2 := qsim.Measure(q2)
+  m := qsim.MeasureAsBinary(q0, q1, q2)
 
   // |0>|1>|0> -> 0.25, |1>|1>|0> -> 0.75, ...
-  b := []int{m0.Int(), m1.Int(), m2.Int()}
-  d := number.BinaryFraction(b...)
+  d := number.BinaryFraction(m)
 
   // 0.25 -> 1/4, 0.75 -> 3/4, ...
   _, s, r := number.ContinuedFraction(d)
@@ -215,7 +210,7 @@ for {
   p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
   // result
-  fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", i, N, a, p0, p1, s, r, b, d)
+  fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", i, N, a, p0, p1, s, r, m, d)
 
   // check
   for _, p := range []int{p0, p1} {
