@@ -175,6 +175,14 @@ func (q *Q) CNOT(control, target Qubit) *Q {
 	return q.ControlledNot([]Qubit{control}, target)
 }
 
+func (q *Q) CCNOT(control0, control1, target Qubit) *Q {
+	return q.ControlledNot([]Qubit{control0, control1}, target)
+}
+
+func (q *Q) Toffoli(control0, control1, target Qubit) *Q {
+	return q.CCNOT(control0, control1, target)
+}
+
 func (q *Q) ConditionX(condition bool, input ...Qubit) *Q {
 	if condition {
 		return q.X(input...)

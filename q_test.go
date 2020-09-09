@@ -201,13 +201,13 @@ func TestQSimFactoring15(t *testing.T) {
 		qsim.CNOT(q2, q5)
 
 		// Controlled-U^2
-		qsim.ControlledNot([]Qubit{q1, q3}, q5)
-		qsim.ControlledNot([]Qubit{q1, q5}, q3)
-		qsim.ControlledNot([]Qubit{q1, q3}, q5)
+		qsim.CCNOT(q1, q3, q5)
+		qsim.CCNOT(q1, q5, q3)
+		qsim.CCNOT(q1, q3, q5)
 
-		qsim.ControlledNot([]Qubit{q1, q4}, q6)
-		qsim.ControlledNot([]Qubit{q1, q6}, q4)
-		qsim.ControlledNot([]Qubit{q1, q4}, q6)
+		qsim.CCNOT(q1, q4, q6)
+		qsim.CCNOT(q1, q6, q4)
+		qsim.CCNOT(q1, q4, q6)
 
 		// inverse QFT
 		qsim.H(q2)
