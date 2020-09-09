@@ -5,7 +5,7 @@ import (
 	"math"
 )
 
-func BinaryFraction(q ...int) float64 {
+func BinaryFraction(q []int) float64 {
 	var d float64
 	for i, m := range q {
 		if m != 0 && m != 1 {

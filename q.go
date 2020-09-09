@@ -69,6 +69,15 @@ func (q *Q) Measure(input Qubit) *qubit.Qubit {
 	return q.internal.Measure(input.Index())
 }
 
+func (q *Q) MeasureAsBinary(input ...Qubit) []int {
+	b := make([]int, 0)
+	for _, i := range input {
+		b = append(b, q.Measure(i).Int())
+	}
+
+	return b
+}
+
 func (q *Q) NumberOfBit() int {
 	return q.internal.NumberOfBit()
 }

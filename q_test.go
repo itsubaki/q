@@ -8,7 +8,6 @@ import (
 
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/math/number"
-	"github.com/itsubaki/q/pkg/math/rand"
 	"github.com/itsubaki/q/pkg/quantum/gate"
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
@@ -182,7 +181,6 @@ func TestQSimFactoring15(t *testing.T) {
 
 		// initial state
 		qsim := New()
-		qsim.Rand = rand.Crypto
 
 		q0 := qsim.Zero()
 		q1 := qsim.Zero()
@@ -218,13 +216,10 @@ func TestQSimFactoring15(t *testing.T) {
 		qsim.H(q0)
 
 		// measure q0, q1, q2
-		m0 := qsim.Measure(q0)
-		m1 := qsim.Measure(q1)
-		m2 := qsim.Measure(q2)
+		m := qsim.MeasureAsBinary(q0, q1, q2)
 
 		// |0>|1>|0> -> 0.25, |1>|1>|0> -> 0.75, ...
-		b := []int{m0.Int(), m1.Int(), m2.Int()}
-		d := number.BinaryFraction(b...)
+		d := number.BinaryFraction(m)
 
 		// 0.25 -> 1/4, 0.75 -> 3/4, ...
 		_, s, r := number.ContinuedFraction(d)
@@ -239,7 +234,7 @@ func TestQSimFactoring15(t *testing.T) {
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
 		// result
-		fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", i, N, a, p0, p1, s, r, b, d)
+		fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", i, N, a, p0, p1, s, r, m, d)
 
 		// check
 		for _, p := range []int{p0, p1} {

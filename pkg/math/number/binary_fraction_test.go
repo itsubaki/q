@@ -4,8 +4,8 @@ import "testing"
 
 func TestBinaryFraction(t *testing.T) {
 	cases := []struct {
-		input  []int
-		output float64
+		binary []int
+		float  float64
 	}{
 		{[]int{0, 0, 0}, 0.0},
 		{[]int{1, 0, 0}, 0.5},
@@ -18,11 +18,11 @@ func TestBinaryFraction(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		result := BinaryFraction(c.input...)
-		if result == c.output {
+		result := BinaryFraction(c.binary)
+		if result == c.float {
 			continue
 		}
 
-		t.Errorf("expected=%v, actual=%v", c.output, result)
+		t.Errorf("expected=%v, actual=%v", c.float, result)
 	}
 }
