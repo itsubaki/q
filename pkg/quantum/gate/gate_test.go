@@ -96,7 +96,7 @@ func TestToffoli(t *testing.T) {
 		expected = expected.Apply(gate)
 	}
 
-	actual := Toffoli()
+	actual := Toffoli(3, 0, 1, 2)
 	if !actual.Equals(expected, 1e-13) {
 		t.Error(actual)
 	}
