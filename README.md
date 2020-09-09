@@ -191,10 +191,8 @@ for {
   // measure q0, q1, q2
   m := qsim.MeasureAsBinary(q0, q1, q2)
 
-  // |0>|1>|0> -> 0.25, |1>|1>|0> -> 0.75, ...
+  // find s/r. 010 -> 0.25 -> 1/4, 110 -> 0.75 -> 3/4, ...
   d := number.BinaryFraction(m)
-
-  // 0.25 -> 1/4, 0.75 -> 3/4, ...
   _, s, r := number.ContinuedFraction(d)
 
   // if r is odd, algorithm is failed
