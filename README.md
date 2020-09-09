@@ -186,10 +186,7 @@ for {
   qsim.CCNOT(q1, q4, q6)
 
   // inverse QFT
-  qsim.Swap(q0, q2)
-  qsim.H(q2)
-  qsim.CR(q2, q1, 2).H(q1)
-  qsim.CR(q2, q0, 3).CR(q1, q0, 2).H(q0)
+  qsim.InverseQFT(q0, q1, q2)
 
   // measure q0, q1, q2
   m := qsim.MeasureAsBinary(q0, q1, q2)
@@ -200,7 +197,7 @@ for {
   // 0.25 -> 1/4, 0.75 -> 3/4, ...
   _, s, r := number.ContinuedFraction(d)
 
-  // r is even
+  // if r is odd, algorithm is failed
   if number.IsOdd(r) {
     continue
   }
@@ -212,7 +209,7 @@ for {
   // result
   fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", i, N, a, p0, p1, s, r, m, d)
 
-  // check
+  // check non-trivial factor
   for _, p := range []int{p0, p1} {
     if 1 < p && p < N && N%p == 0 {
       fmt.Printf("answer: p=%v, q=%v\n", p, N/p)

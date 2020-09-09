@@ -213,7 +213,7 @@ func TestQSimFactoring15(t *testing.T) {
 		// 0.25 -> 1/4, 0.75 -> 3/4, ...
 		_, s, r := number.ContinuedFraction(d)
 
-		// if r is odd, algorithm is failed.
+		// if r is odd, algorithm is failed
 		if number.IsOdd(r) {
 			continue
 		}
