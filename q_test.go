@@ -68,7 +68,7 @@ func TestQsimFactoring85(t *testing.T) {
 		d := number.BinaryFraction(m)
 		_, s, r := number.ContinuedFraction(d)
 
-		if number.IsOdd(r) {
+		if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
 			continue
 		}
 
@@ -144,7 +144,7 @@ func TestQsimFactoring51(t *testing.T) {
 		d := number.BinaryFraction(m)
 		_, s, r := number.ContinuedFraction(d)
 
-		if number.IsOdd(r) {
+		if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
 			continue
 		}
 
@@ -216,7 +216,7 @@ func TestQSimFactoring15(t *testing.T) {
 		_, s, r := number.ContinuedFraction(d)
 
 		// if r is odd, algorithm is failed
-		if number.IsOdd(r) {
+		if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
 			continue
 		}
 
