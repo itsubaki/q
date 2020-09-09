@@ -82,6 +82,23 @@ func (q *Q) MeasureAsBinary(input ...Qubit) []int {
 	return b
 }
 
+func (q *Q) BinaryString() string {
+	n := q.NumberOfBit()
+	c := q.Clone()
+
+	var sb strings.Builder
+	for i := 0; i < n; i++ {
+		if c.Measure(Qubit(i)).IsZero() {
+			sb.WriteString("0")
+			continue
+		}
+
+		sb.WriteString("1")
+	}
+
+	return sb.String()
+}
+
 func (q *Q) H(input ...Qubit) *Q {
 	return q.Apply(gate.H(), input...)
 }
@@ -262,21 +279,4 @@ func (q *Q) Clone() *Q {
 
 func (q *Q) String() string {
 	return q.internal.String()
-}
-
-func (q *Q) BinaryString() string {
-	n := q.NumberOfBit()
-	c := q.Clone()
-
-	var sb strings.Builder
-	for i := 0; i < n; i++ {
-		if c.Measure(Qubit(i)).IsZero() {
-			sb.WriteString("0")
-			continue
-		}
-
-		sb.WriteString("1")
-	}
-
-	return sb.String()
 }
