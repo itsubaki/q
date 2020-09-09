@@ -160,6 +160,10 @@ func (q *Q) CZ(control, target Qubit) *Q {
 	return q.ControlledZ([]Qubit{control}, target)
 }
 
+func (q *Q) CCZ(control0, control1, target Qubit) *Q {
+	return q.ControlledZ([]Qubit{control0, control1}, target)
+}
+
 func (q *Q) ControlledNot(control []Qubit, target Qubit) *Q {
 	cnot := gate.ControlledNot(q.NumberOfBit(), Index(control...), target.Index())
 	q.internal.Apply(cnot)
@@ -172,6 +176,10 @@ func (q *Q) CNOT(control, target Qubit) *Q {
 
 func (q *Q) CCNOT(control0, control1, target Qubit) *Q {
 	return q.ControlledNot([]Qubit{control0, control1}, target)
+}
+
+func (q *Q) CCCNOT(control0, control1, control2, target Qubit) *Q {
+	return q.ControlledNot([]Qubit{control0, control1, control2}, target)
 }
 
 func (q *Q) Toffoli(control0, control1, target Qubit) *Q {

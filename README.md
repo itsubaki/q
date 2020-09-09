@@ -117,12 +117,11 @@ q3 := qsim.One()
 qsim.H(q0, q1, q2, q3)
 
 // oracle for |011>|1>
-qsim.X(q0).ControlledNot([]Qubit{q0, q1, q2}, q3).X(q0)
+qsim.X(q0).CCCNOT(q0, q1, q2, q3).X(q0)
 
-// amp
+// amplification
 qsim.H(q0, q1, q2, q3)
-qsim.X(q0, q1, q2)
-qsim.ControlledZ([]Qubit{q0, q1}, q2)
+qsim.X(q0, q1, q2).CCZ(q0, q1, q2).X(q0, q1, q2)
 qsim.H(q0, q1, q2)
 
 p := qsim.Probability()
