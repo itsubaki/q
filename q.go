@@ -57,6 +57,10 @@ func (q *Q) One() Qubit {
 	return q.New(0, 1)
 }
 
+func (q *Q) NumberOfBit() int {
+	return q.internal.NumberOfBit()
+}
+
 func (q *Q) Amplitude() []complex128 {
 	return q.internal.Amplitude()
 }
@@ -76,24 +80,6 @@ func (q *Q) MeasureAsBinary(input ...Qubit) []int {
 	}
 
 	return b
-}
-
-func (q *Q) NumberOfBit() int {
-	return q.internal.NumberOfBit()
-}
-
-func (q *Q) Clone() *Q {
-	if q.internal == nil {
-		return &Q{
-			internal: nil,
-			Rand:     q.Rand,
-		}
-	}
-
-	return &Q{
-		internal: q.internal.Clone(),
-		Rand:     q.internal.Rand,
-	}
 }
 
 func (q *Q) H(input ...Qubit) *Q {
@@ -231,6 +217,24 @@ func (q *Q) Estimate(input Qubit) *qubit.Qubit {
 	o := math.Sqrt(float64(c1) / float64(limit))
 
 	return qubit.New(complex(z, 0), complex(o, 0))
+}
+
+func (q *Q) Clone() *Q {
+	if q.internal == nil {
+		return &Q{
+			internal: nil,
+			Rand:     q.Rand,
+		}
+	}
+
+	return &Q{
+		internal: q.internal.Clone(),
+		Rand:     q.internal.Rand,
+	}
+}
+
+func (q *Q) String() string {
+	return q.internal.String()
 }
 
 func (q *Q) BinaryString() string {
