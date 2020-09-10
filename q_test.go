@@ -45,8 +45,7 @@ func TestQsimFactoring85(t *testing.T) {
 		qsim.CNOT(q3, q7)
 
 		// inverse QFT
-		qsim.Swap(q0, q3)
-		qsim.Swap(q1, q2)
+		qsim.Swap(q0, q1, q2, q3)
 		qsim.H(q3)
 		qsim.CR(q3, q2, 2)
 		qsim.H(q2)
@@ -125,8 +124,7 @@ func TestQsimFactoring51(t *testing.T) {
 		qsim.CNOT(q3, q7)
 
 		// inverse QFT
-		qsim.Swap(q0, q3)
-		qsim.Swap(q1, q2)
+		qsim.Swap(q0, q1, q2, q3)
 		qsim.H(q3)
 		qsim.CR(q3, q2, 2)
 		qsim.H(q2)

@@ -231,9 +231,16 @@ func (q *Q) ConditionZ(condition bool, input ...Qubit) *Q {
 	return q
 }
 
-func (q *Q) Swap(q0, q1 Qubit) *Q {
-	swap := gate.Swap(q.NumberOfBit(), q0.Index(), q1.Index())
-	q.internal.Apply(swap)
+func (q *Q) Swap(input ...Qubit) *Q {
+	n := q.NumberOfBit()
+	l := len(input)
+
+	for i := 0; i < l/2; i++ {
+		q0, q1 := input[i], input[(l-1)-i]
+		swap := gate.Swap(n, q0.Index(), q1.Index())
+		q.internal.Apply(swap)
+	}
+
 	return q
 }
 
