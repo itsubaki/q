@@ -46,16 +46,11 @@ func TestQsimFactoring85(t *testing.T) {
 
 		// inverse QFT
 		qsim.Swap(q0, q1, q2, q3)
+
 		qsim.H(q3)
-		qsim.CR(q3, q2, 2)
-		qsim.H(q2)
-		qsim.CR(q3, q1, 3)
-		qsim.CR(q2, q1, 2)
-		qsim.H(q1)
-		qsim.CR(q3, q0, 4)
-		qsim.CR(q2, q0, 3)
-		qsim.CR(q1, q0, 2)
-		qsim.H(q0)
+		qsim.CR(q3, q2, 2).H(q2)
+		qsim.CR(q3, q1, 3).CR(q2, q1, 2).H(q1)
+		qsim.CR(q3, q0, 4).CR(q2, q0, 3).CR(q1, q0, 2).H(q0)
 
 		// estimate
 		e0 := qsim.Estimate(q0).Probability()
@@ -397,10 +392,8 @@ func TestQSimQFT3qubit(t *testing.T) {
 	qsim.H(q0)
 	qsim.CR(q1, q0, 2)
 	qsim.CR(q2, q0, 3)
-
 	qsim.H(q1)
 	qsim.CR(q2, q1, 2)
-
 	qsim.H(q2)
 
 	qsim.Swap(q0, q2)

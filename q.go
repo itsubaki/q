@@ -244,6 +244,21 @@ func (q *Q) Swap(input ...Qubit) *Q {
 	return q
 }
 
+func (q *Q) QFT(input ...Qubit) *Q {
+	l := len(input)
+	for i := 0; i < l; i++ {
+		q.H(input[i])
+
+		k := 2
+		for j := i + 1; j < l; j++ {
+			q.CR(input[j], input[i], k)
+			k++
+		}
+	}
+
+	return q
+}
+
 func (q *Q) InverseQFT(input ...Qubit) *Q {
 	l := len(input)
 	for i := l - 1; i > -1; i-- {
