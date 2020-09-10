@@ -298,9 +298,5 @@ func QFT(bit int) matrix.Matrix {
 		}
 	}
 
-	for i := 0; i < bit/2; i++ {
-		out = out.Apply(Swap(bit, i, bit-1-i))
-	}
-
 	return out
 }
