@@ -196,7 +196,7 @@ for {
   _, s, r := number.ContinuedFraction(d)
 
   // if r is odd, algorithm is failed
-  if number.IsOdd(r) {
+  if number.IsOdd(r) || number.Pow(a, r/2)%N == -1{
     continue
   }
 
