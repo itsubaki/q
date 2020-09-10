@@ -298,13 +298,17 @@ func QFT(bit int) matrix.Matrix {
 
 // CModExp returns Unitary Matrix of Controlled U^(2^j)|y> -> |a^(2^j)*y mod N>
 func CModExp(bit, N, a, j, control int, target []int) matrix.Matrix {
+	fmt.Printf("bit=%v N=%v a=%v j=%v\n", bit, N, a, j)
+
 	mat := I([]int{bit}...)
 	dim, _ := mat.Dimension()
 	r1len := len(target)
 	r0len := bit - len(target)
+	fmt.Printf("dim=%v r0len=%v r1len=%v\n", dim, r0len, r1len)
 
 	pow := number.Pow(2, j)
 	a2j := number.Pow(a, pow)
+	fmt.Printf("pow=%v a2j=%v\n", pow, a2j)
 
 	f := "%0" + strconv.Itoa(bit) + "s"
 	tf := "%0" + strconv.Itoa(r1len) + "s"
@@ -326,8 +330,11 @@ func CModExp(bit, N, a, j, control int, target []int) matrix.Matrix {
 				a2jkmodN := (int64(a2j) * k) % int64(N)
 				a2jkmodNs := fmt.Sprintf(tf, strconv.FormatInt(a2jkmodN, 2))
 				bits = append(r0bits, []rune(a2jkmodNs)...)
+				fmt.Printf("%v: %v=%2v -> %2v=%5s -> ", string(r0bits), string(r1bits), k, a2jkmodN, a2jkmodNs)
 			}
 		}
+
+		fmt.Println(string(bits))
 
 		v, err := strconv.ParseInt(string(bits), 2, 0)
 		if err != nil {

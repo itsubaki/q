@@ -7,7 +7,14 @@ import (
 	"github.com/itsubaki/q/pkg/math/matrix"
 )
 
-func TestModExp(t *testing.T) {
+func TestCModExp21(t *testing.T) {
+	a := CModExp(8, 21, 4, 0, 2, []int{4, 5, 6, 7, 8})
+	if !a.IsUnitary() {
+		t.Errorf("a is not unitary")
+	}
+}
+
+func TestCModExp15(t *testing.T) {
 	g0 := CNOT(7, 3, 5)
 	g1 := CCNOT(7, 1, 5, 3)
 	g2 := CNOT(7, 3, 5)

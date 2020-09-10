@@ -12,6 +12,78 @@ import (
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
 
+func TestQSimFactoringN(t *testing.T) {
+	N := 21
+	a := 4
+
+	if number.GCD(N, a) != 1 {
+		t.Errorf("%v %v\n", N, a)
+	}
+
+	qsim := New()
+	qsim.UseCryptoRand()
+
+	// initial state
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
+
+	q3 := qsim.Zero()
+	q4 := qsim.Zero()
+	q5 := qsim.Zero()
+	q6 := qsim.Zero()
+	q7 := qsim.One()
+
+	// superposition
+	qsim.H(q0, q1, q2)
+
+	// Controlled-U^(2^j)
+	for j, c := range []Qubit{q2, q1, q0} {
+		qsim.CModExp(N, a, j, c, q3, q4, q5, q6)
+	}
+
+	// inverse QFT
+	qsim.Swap(q0, q2)
+	qsim.InverseQFT(q0, q1, q2)
+
+	// estimate
+	e0 := qsim.Estimate(q0).Probability()
+	e1 := qsim.Estimate(q1).Probability()
+	e2 := qsim.Estimate(q2).Probability()
+	fmt.Printf("%.3f %.3f %.3f\n", e0, e1, e2)
+
+	plist := make([]int, 0)
+	for i := 0; i < 100; i++ {
+		// measure q0, q1, q2
+		m := qsim.Clone().MeasureAsBinary(q0, q1, q2)
+
+		// find s/r. 010 -> 0.25 -> 1/4, 110 -> 0.75 -> 3/4, ...
+		d := number.BinaryFraction(m)
+		_, s, r := number.ContinuedFraction(d)
+
+		// if r is odd, algorithm is failed
+		if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
+			fmt.Printf("  i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v=%.3f). N/A\n", i, N, a, s, r, m, d)
+			continue
+		}
+
+		// gcd(a^(r/2)-1, N), gcd(a^(r/2)+1, N)
+		p0 := number.GCD(number.Pow(a, r/2)-1, N)
+		p1 := number.GCD(number.Pow(a, r/2)+1, N)
+
+		// check non-trivial factor
+		found := " "
+		for _, p := range []int{p0, p1} {
+			if 1 < p && p < N && N%p == 0 {
+				found = "*"
+				plist = append(plist, p)
+			}
+		}
+
+		fmt.Printf("%s i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v=%.3f). p=%v, q=%v.\n", found, i, N, a, s, r, m, d, p0, p1)
+	}
+}
+
 func TestQsimFactoring85(t *testing.T) {
 	N := 85
 	a := 3 // 3, 6, 7, 11, 12, 14, 22, 23, 24, 27, 28, 29, 31, 37, 39, 41, 44, 46, 48, 54, 56, 57, 58, 61, 62, 63, 71, 73, 74, 78, 79, 82
@@ -190,18 +262,13 @@ func TestQSimFactoring15(t *testing.T) {
 		// superposition
 		qsim.H(q0, q1, q2)
 
-		// // Controlled-U^(2^0)
-		// qsim.CNOT(q2, q4)
-		// qsim.CNOT(q2, q5)
+		// Controlled-U^(2^0)
+		qsim.CNOT(q2, q4)
+		qsim.CNOT(q2, q5)
 
-		// // Controlled-U^(2^1)
-		// qsim.CNOT(q3, q5).CCNOT(q1, q5, q3).CNOT(q3, q5)
-		// qsim.CNOT(q4, q6).CCNOT(q1, q6, q4).CNOT(q4, q6)
-
-		// Controlled-U^(2^j)
-		for j, c := range []Qubit{q2, q1, q0} {
-			qsim.CModExp(N, a, j, c, q3, q4, q5, q6)
-		}
+		// Controlled-U^(2^1)
+		qsim.CNOT(q3, q5).CCNOT(q1, q5, q3).CNOT(q3, q5)
+		qsim.CNOT(q4, q6).CCNOT(q1, q6, q4).CNOT(q4, q6)
 
 		// inverse QFT
 		qsim.Swap(q0, q2)
