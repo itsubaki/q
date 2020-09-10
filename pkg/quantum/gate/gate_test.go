@@ -1,11 +1,18 @@
 package gate
 
 import (
+	"fmt"
 	"math/cmplx"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
 )
+
+func TestModExp(t *testing.T) {
+	// U^(2^j)|y> -> |a^(2^j)*y mod N>
+	m := ModExp(15, 7, 2, 2, []int{0, 1, 2}, []int{3, 4, 5, 6})
+	fmt.Println(m)
+}
 
 func TestInverseU(t *testing.T) {
 	m := U(1.0, 1.1, 1.2, 1.3)

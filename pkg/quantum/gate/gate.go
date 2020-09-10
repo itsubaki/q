@@ -295,6 +295,6 @@ func QFT(bit int) matrix.Matrix {
 	return out
 }
 
-func ModExp(N, a, p int, control int, target []int) matrix.Matrix {
+func ModExp(N, a, j, control int, r0, r1 []int) matrix.Matrix {
 	return nil
 }
