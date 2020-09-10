@@ -174,13 +174,8 @@ for i := 0; i < 10; i++{
   qsim.CNOT(q2, q5)
 
   // Controlled-U^2
-  qsim.CCNOT(q1, q3, q5)
-  qsim.CCNOT(q1, q5, q3)
-  qsim.CCNOT(q1, q3, q5)
-
-  qsim.CCNOT(q1, q4, q6)
-  qsim.CCNOT(q1, q6, q4)
-  qsim.CCNOT(q1, q4, q6)
+  qsim.CNOT(q3, q5).CCNOT(q1, q5, q3).CNOT(q3, q5)
+  qsim.CNOT(q4, q6).CCNOT(q1, q6, q4).CNOT(q4, q6)
 
   // inverse QFT
   qsim.Swap(q0, q2)
@@ -194,7 +189,7 @@ for i := 0; i < 10; i++{
   _, s, r := number.ContinuedFraction(d)
 
   // if r is odd, algorithm is failed
-  if number.IsOdd(r) || number.Pow(a, r/2)%N == -1{
+  if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
     continue
   }
 
