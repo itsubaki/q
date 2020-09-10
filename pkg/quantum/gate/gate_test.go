@@ -23,7 +23,7 @@ func TestCModExp15(t *testing.T) {
 	g5 := CNOT(7, 4, 6)
 	ex := g0.Apply(g1).Apply(g2).Apply(g3).Apply(g4).Apply(g5)
 
-	// returns Controlled(q1) 7^(2^1) mod 15 of 7 qubits (3 qubits(controll) + 4 qubits(target))
+	// returns Controlled(q1) 7^(2^1) mod 15 of 7 qubits (3 qubits(control) + 4 qubits(target))
 	a := CModExp(7, 15, 7, 1, 1, []int{4, 5, 6, 7})
 	if !a.IsUnitary() {
 		t.Errorf("modexp is not unitary")
