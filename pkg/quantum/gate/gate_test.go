@@ -9,9 +9,39 @@ import (
 )
 
 func TestModExp(t *testing.T) {
-	// U^(2^j)|y> -> |a^(2^j)*y mod N>
-	m := ModExp(15, 7, 2, 2, []int{0, 1, 2}, []int{3, 4, 5, 6})
-	fmt.Println(m)
+	// g0 := CNOT(7, 3, 5)
+	// g1 := CCNOT(7, 1, 5, 3)
+	// g2 := CNOT(7, 3, 5)
+	// g3 := CNOT(7, 4, 6)
+	// g4 := CCNOT(7, 1, 6, 4)
+	// g5 := CNOT(7, 4, 6)
+	// ex := g0.Apply(g1).Apply(g2).Apply(g3).Apply(g4).Apply(g5)
+
+	a := ModExp(15, 7, 1, 2, []int{0, 1, 2}, []int{3, 4, 5, 6})
+	// if !a.IsUnitary() {
+	// 	t.Errorf("modexp is not unitary")
+	// }
+
+	// id[16][16]=(2+0i)
+	// id[31][31]=(0+0i)
+	// id[48][48]=(2+0i)
+	// id[63][63]=(0+0i)
+	// id[80][80]=(2+0i)
+	// id[95][95]=(0+0i)
+	// id[112][112]=(2+0i)
+	// id[127][127]=(0+0i)
+	id := a.Apply(a.Dagger())
+	for i := range id {
+		for j := range id[i] {
+			if i == j && id[i][j] != complex(1, 0) {
+				fmt.Printf("id[%d][%d]=%v\n", i, i, id[i][i])
+			}
+
+			if i != j && id[i][j] != complex(0, 0) {
+				t.Fail()
+			}
+		}
+	}
 }
 
 func TestInverseU(t *testing.T) {

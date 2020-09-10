@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
+	"github.com/itsubaki/q/pkg/math/number"
 )
 
 func New(v ...[]complex128) matrix.Matrix {
@@ -109,42 +110,9 @@ func T(bit ...int) matrix.Matrix {
 	return matrix.TensorProductN(m, bit...)
 }
 
-func ControlledR(bit int, c []int, t, k int) matrix.Matrix {
-	out := I([]int{bit}...)
-	dim, _ := out.Dimension()
-
-	p := 2 * math.Pi / math.Pow(2, float64(k))
-	e := cmplx.Exp(complex(0, p))
-
-	f := "%0" + strconv.Itoa(bit) + "s"
-	for i := 0; i < dim; i++ {
-		s := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
-		bits := []rune(s)
-
-		// Apply R(k)
-		apply := true
-		for i := range c {
-			if bits[c[i]] == '0' {
-				apply = false
-				break
-			}
-		}
-
-		if apply && bits[t] == '1' {
-			out[i][i] = e * out[i][i]
-		}
-	}
-
-	return out
-}
-
-func CR(bit, c, t, k int) matrix.Matrix {
-	return ControlledR(bit, []int{c}, t, k)
-}
-
 func ControlledNot(bit int, c []int, t int) matrix.Matrix {
-	out := I([]int{bit}...)
-	dim, _ := out.Dimension()
+	mat := I([]int{bit}...)
+	dim, _ := mat.Dimension()
 
 	index := make([]int64, 0)
 	f := "%0" + strconv.Itoa(bit) + "s"
@@ -177,12 +145,12 @@ func ControlledNot(bit int, c []int, t int) matrix.Matrix {
 		index = append(index, v)
 	}
 
-	cnot := make(matrix.Matrix, dim)
+	out := make(matrix.Matrix, dim)
 	for i, ii := range index {
-		cnot[i] = out[ii]
+		out[i] = mat[ii]
 	}
 
-	return cnot
+	return out
 }
 
 func CNOT(bit, c, t int) matrix.Matrix {
@@ -257,6 +225,39 @@ func CS(bit, c, t int) matrix.Matrix {
 	return ControlledS(bit, []int{c}, t)
 }
 
+func ControlledR(bit int, c []int, t, k int) matrix.Matrix {
+	out := I([]int{bit}...)
+	dim, _ := out.Dimension()
+
+	p := 2 * math.Pi / math.Pow(2, float64(k))
+	e := cmplx.Exp(complex(0, p))
+
+	f := "%0" + strconv.Itoa(bit) + "s"
+	for i := 0; i < dim; i++ {
+		s := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
+		bits := []rune(s)
+
+		// Apply R(k)
+		apply := true
+		for i := range c {
+			if bits[c[i]] == '0' {
+				apply = false
+				break
+			}
+		}
+
+		if apply && bits[t] == '1' {
+			out[i][i] = e * out[i][i]
+		}
+	}
+
+	return out
+}
+
+func CR(bit, c, t, k int) matrix.Matrix {
+	return ControlledR(bit, []int{c}, t, k)
+}
+
 func Swap(bit, c, t int) matrix.Matrix {
 	g0 := CNOT(bit, c, t)
 	g1 := CNOT(bit, t, c)
@@ -295,6 +296,51 @@ func QFT(bit int) matrix.Matrix {
 	return out
 }
 
+// ModExp(15, 7, 2, 2, []int{0, 1, 2}, []int{3, 4, 5, 6})
+// U^(2^j)|y> -> |a^(2^j)*y mod N>
 func ModExp(N, a, j, control int, r0, r1 []int) matrix.Matrix {
-	return nil
+	bit := len(r0) + len(r1)
+	mat := I([]int{bit}...)
+	dim, _ := mat.Dimension()
+
+	p2 := number.Pow(2, j)
+	a2j := number.Pow(a, p2)
+
+	f := "%0" + strconv.Itoa(bit) + "s"
+	tf := "%0" + strconv.Itoa(len(r1)) + "s"
+
+	index := make([]int64, 0)
+	for i := 0; i < dim; i++ {
+		s := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
+		bits := []rune(s)
+
+		if bits[control] == '1' {
+			k, err := strconv.ParseInt(string(bits[len(r0):]), 2, 0)
+			if err != nil {
+				panic(fmt.Sprintf("parse int: %v", err))
+			}
+
+			t := (int64(a2j) * k) % int64(N)
+			ts := fmt.Sprintf(tf, strconv.FormatInt(t, 2))
+
+			fmt.Printf("%v: %v=%2v -> %2v=%s -> ", string(bits[:len(r0)]), string(bits[len(r0):]), k, t, ts)
+			bits = append(bits[:len(r0)], []rune(ts)...)
+		}
+
+		fmt.Println(string(bits))
+
+		v, err := strconv.ParseInt(string(bits), 2, 0)
+		if err != nil {
+			panic(fmt.Sprintf("parse int: %v", err))
+		}
+
+		index = append(index, v)
+	}
+
+	out := make(matrix.Matrix, dim)
+	for i, ii := range index {
+		out[i] = mat[ii]
+	}
+
+	return out
 }

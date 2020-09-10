@@ -190,11 +190,11 @@ func TestQSimFactoring15(t *testing.T) {
 		// superposition
 		qsim.H(q0, q1, q2)
 
-		// Controlled-U
+		// Controlled-U^(2^0)
 		qsim.CNOT(q2, q4)
 		qsim.CNOT(q2, q5)
 
-		// Controlled-U^2
+		// Controlled-U^(2^1)
 		qsim.CNOT(q3, q5).CCNOT(q1, q5, q3).CNOT(q3, q5)
 		qsim.CNOT(q4, q6).CCNOT(q1, q6, q4).CNOT(q4, q6)
 
