@@ -297,13 +297,14 @@ func QFT(bit int) matrix.Matrix {
 }
 
 // CModExp returns Unitary Matrix of Controlled U^(2^j)|y> -> |a^(2^j)*y mod N>
-func CModExp(N, a, j, control, r0len, r1len int) matrix.Matrix {
-	bit := r0len + r1len
+func CModExp(bit, N, a, j, control int, target []int) matrix.Matrix {
 	mat := I([]int{bit}...)
 	dim, _ := mat.Dimension()
+	r1len := len(target)
+	r0len := bit - len(target)
 
-	p := number.Pow(2, j)
-	a2j := number.Pow(a, p)
+	pow := number.Pow(2, j)
+	a2j := number.Pow(a, pow)
 
 	f := "%0" + strconv.Itoa(bit) + "s"
 	tf := "%0" + strconv.Itoa(r1len) + "s"

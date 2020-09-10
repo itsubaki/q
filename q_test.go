@@ -190,19 +190,18 @@ func TestQSimFactoring15(t *testing.T) {
 		// superposition
 		qsim.H(q0, q1, q2)
 
-		// Controlled-U^(2^0)
-		qsim.CNOT(q2, q4)
-		qsim.CNOT(q2, q5)
+		// // Controlled-U^(2^0)
+		// qsim.CNOT(q2, q4)
+		// qsim.CNOT(q2, q5)
 
-		// Controlled-U^(2^1)
-		qsim.CNOT(q3, q5).CCNOT(q1, q5, q3).CNOT(q3, q5)
-		qsim.CNOT(q4, q6).CCNOT(q1, q6, q4).CNOT(q4, q6)
+		// // Controlled-U^(2^1)
+		// qsim.CNOT(q3, q5).CCNOT(q1, q5, q3).CNOT(q3, q5)
+		// qsim.CNOT(q4, q6).CCNOT(q1, q6, q4).CNOT(q4, q6)
 
 		// Controlled-U^(2^j)
-		// r0, r1 := []Qubit{q2, q1, q0}, []Qubit{q3, q4, q5, q6}
-		// for j, c := range r0 {
-		// 	qsim.CModExp(N, a, j, c, len(r1))
-		// }
+		for j, c := range []Qubit{q2, q1, q0} {
+			qsim.CModExp(N, a, j, c, q3, q4, q5, q6)
+		}
 
 		// inverse QFT
 		qsim.Swap(q0, q2)
