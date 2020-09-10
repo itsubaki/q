@@ -66,6 +66,24 @@ func (q *Q) One() Qubit {
 	return q.New(0, 1)
 }
 
+func (q *Q) ZeroWith(bit int) []Qubit {
+	r := make([]Qubit, 0)
+	for i := 0; i < bit; i++ {
+		r = append(r, q.Zero())
+	}
+
+	return r
+}
+
+func (q *Q) OneWith(bit int) []Qubit {
+	r := make([]Qubit, 0)
+	for i := 0; i < bit; i++ {
+		r = append(r, q.One())
+	}
+
+	return r
+}
+
 func (q *Q) NumberOfBit() int {
 	return q.internal.NumberOfBit()
 }

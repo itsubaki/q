@@ -13,7 +13,7 @@ import (
 )
 
 func TestQSimFactoringN(t *testing.T) {
-	N := 57
+	N := 15
 	a := 7
 
 	if number.GCD(N, a) != 1 {
@@ -24,40 +24,31 @@ func TestQSimFactoringN(t *testing.T) {
 	qsim.UseCryptoRand()
 
 	// initial state
-	r1 := make([]Qubit, 0)
-	for i := 0; i < 3; i++ {
-		r1 = append(r1, qsim.Zero())
-	}
-
-	// ancilla
-	r2 := make([]Qubit, 0)
-	for i := 0; i < int(math.Ceil(math.Log2(float64(N)))); i++ {
-		r2 = append(r2, qsim.Zero())
-	}
-	qsim.X(r2[len(r2)-1])
+	r0 := qsim.ZeroWith(4)
+	r1 := qsim.ZeroWith(int(math.Ceil(math.Log2(float64(N)))))
+	qsim.X(r1[len(r1)-1])
 
 	// superposition
-	qsim.H(r1...)
+	qsim.H(r0...)
 
 	// Controlled-U^(2^j)
-	for j := 0; j < len(r1); j++ {
-		qsim.CModExp(N, a, j, r1[(len(r1)-1)-j], r2...)
+	for j := 0; j < len(r0); j++ {
+		qsim.CModExp(N, a, j, r0[(len(r0)-1)-j], r1...)
 	}
 
 	// inverse QFT
-	qsim.Swap(r1...)
-	qsim.InverseQFT(r1...)
+	qsim.Swap(r0...)
+	qsim.InverseQFT(r0...)
 
 	// estimate
-	for _, r := range r1 {
+	for _, r := range r0 {
 		fmt.Printf("%.3f ", qsim.Estimate(r).Probability())
 	}
 	fmt.Println()
 
-	plist := make([]int, 0)
 	for i := 0; i < 10; i++ {
 		// measure
-		m := qsim.Clone().MeasureAsBinary(r1...)
+		m := qsim.Clone().MeasureAsBinary(r0...)
 
 		// find s/r
 		d := number.BinaryFraction(m)
@@ -78,7 +69,7 @@ func TestQSimFactoringN(t *testing.T) {
 		for _, p := range []int{p0, p1} {
 			if 1 < p && p < N && N%p == 0 {
 				found = "*"
-				plist = append(plist, p)
+				break
 			}
 		}
 
