@@ -2,6 +2,7 @@ package q
 
 import (
 	"math"
+	"strconv"
 	"strings"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
@@ -73,6 +74,16 @@ func (q *Q) Measure(input Qubit) *qubit.Qubit {
 	return q.internal.Measure(input.Index())
 }
 
+func (q *Q) MeasureAsInt(input ...Qubit) int64 {
+	b := q.BinaryString(input...)
+	i, err := strconv.ParseInt(b, 2, 0)
+	if err != nil {
+		panic(err)
+	}
+
+	return i
+}
+
 func (q *Q) MeasureAsBinary(input ...Qubit) []int {
 	b := make([]int, 0)
 	for _, i := range input {
@@ -82,13 +93,10 @@ func (q *Q) MeasureAsBinary(input ...Qubit) []int {
 	return b
 }
 
-func (q *Q) BinaryString() string {
-	n := q.NumberOfBit()
-	c := q.Clone()
-
+func (q *Q) BinaryString(input ...Qubit) string {
 	var sb strings.Builder
-	for i := 0; i < n; i++ {
-		if c.Measure(Qubit(i)).IsZero() {
+	for _, i := range input {
+		if q.Measure(i).IsZero() {
 			sb.WriteString("0")
 			continue
 		}
@@ -231,10 +239,6 @@ func (q *Q) Swap(q0, q1 Qubit) *Q {
 
 func (q *Q) InverseQFT(input ...Qubit) *Q {
 	l := len(input)
-	for i := 0; i < l/2; i++ {
-		q.Swap(input[i], input[(l-1)-i])
-	}
-
 	for i := l - 1; i > -1; i-- {
 		k := l - i
 		for j := l - 1; j > i; j-- {

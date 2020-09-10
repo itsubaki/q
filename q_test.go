@@ -21,10 +21,7 @@ func TestQsimFactoring85(t *testing.T) {
 		t.Errorf("%v %v\n", N, a)
 	}
 
-	var i int
-	for {
-		i++
-
+	for i := 0; i < 10; i++ {
 		qsim := New()
 
 		// initial state
@@ -104,10 +101,7 @@ func TestQsimFactoring51(t *testing.T) {
 		t.Errorf("%v %v\n", N, a)
 	}
 
-	var i int
-	for {
-		i++
-
+	for i := 0; i < 10; i++ {
 		qsim := New()
 
 		// initial state
@@ -187,10 +181,7 @@ func TestQSimFactoring15(t *testing.T) {
 		t.Errorf("%v %v\n", N, a)
 	}
 
-	var i int
-	for {
-		i++
-
+	for i := 0; i < 10; i++ {
 		qsim := New()
 
 		// initial state
@@ -215,6 +206,7 @@ func TestQSimFactoring15(t *testing.T) {
 		qsim.CNOT(q4, q6).CCNOT(q1, q6, q4).CNOT(q4, q6)
 
 		// inverse QFT
+		qsim.Swap(q0, q2)
 		qsim.InverseQFT(q0, q1, q2)
 
 		// estimate

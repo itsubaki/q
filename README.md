@@ -153,10 +153,7 @@ if number.GCD(N, a) != 1 {
   t.Errorf("%v %v\n", N, a)
 }
 
-var i int
-for {
-  i++
-
+for i := 0; i < 10; i++{
   qsim := q.New()
 
   // initial state
@@ -186,6 +183,7 @@ for {
   qsim.CCNOT(q1, q4, q6)
 
   // inverse QFT
+  qsim.Swap(q0, q2)
   qsim.InverseQFT(q0, q1, q2)
 
   // measure q0, q1, q2
