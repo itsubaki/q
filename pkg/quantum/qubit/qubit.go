@@ -184,17 +184,17 @@ func (q *Qubit) Measure(bit int) *Qubit {
 }
 
 func (q *Qubit) ProbabilityZeroAt(bit int) ([]int, []float64) {
-	p := make([]float64, 0)
 	index := make([]int, 0)
+	prob := make([]float64, 0)
 
 	dim := q.Dimension()
 	den := int(math.Pow(2, float64(bit+1)))
 	div := dim / den
 
-	prob := q.Probability()
+	p := q.Probability()
 	for i := 0; i < dim; i++ {
-		p = append(p, prob[i])
 		index = append(index, i)
+		prob = append(prob, p[i])
 
 		if len(p) == dim/2 {
 			break
@@ -205,12 +205,12 @@ func (q *Qubit) ProbabilityZeroAt(bit int) ([]int, []float64) {
 		}
 	}
 
-	return index, p
+	return index, prob
 }
 
 func (q *Qubit) ProbabilityOneAt(bit int) ([]int, []float64) {
-	p := make([]float64, 0)
 	index := make([]int, 0)
+	prob := make([]float64, 0)
 
 	zi, _ := q.ProbabilityZeroAt(bit)
 	one := make([]int, 0)
@@ -228,12 +228,13 @@ func (q *Qubit) ProbabilityOneAt(bit int) ([]int, []float64) {
 		}
 	}
 
+	p := q.Probability()
 	for _, i := range one {
-		p = append(p, q.Probability()[i])
 		index = append(index, i)
+		prob = append(prob, p[i])
 	}
 
-	return index, p
+	return index, prob
 }
 
 func (q *Qubit) String() string {
