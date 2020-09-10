@@ -199,7 +199,7 @@ func TestQSimFactoring15(t *testing.T) {
 		qsim.CNOT(q4, q6).CCNOT(q1, q6, q4).CNOT(q4, q6)
 
 		// Controlled-U^(2^j)
-		// r0, r1 := []Qubit{q2, q1}, []Qubit{q3, q4, q5, q6}
+		// r0, r1 := []Qubit{q2, q1, q0}, []Qubit{q3, q4, q5, q6}
 		// for j, c := range r0 {
 		// 	qsim.CModExp(N, a, j, c, len(r1))
 		// }

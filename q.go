@@ -38,6 +38,14 @@ func New() *Q {
 	}
 }
 
+func (q *Q) UseCryptoRand() {
+	q.Rand = rand.Crypto
+
+	if q.internal != nil {
+		q.internal.Rand = rand.Crypto
+	}
+}
+
 func (q *Q) New(z ...complex128) Qubit {
 	if q.internal == nil {
 		q.internal = qubit.New(z...)
