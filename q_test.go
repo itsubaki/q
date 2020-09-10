@@ -1,8 +1,10 @@
 package q
 
 import (
+	"crypto/rand"
 	"fmt"
 	"math"
+	"math/big"
 	"strconv"
 	"testing"
 
@@ -13,19 +15,27 @@ import (
 )
 
 func TestQSimFactoringN(t *testing.T) {
-	N := 21
-	a := 13
+	N := 3 * 13
+	a := func(N int) int {
+		for {
+			r, err := rand.Int(rand.Reader, big.NewInt(int64(N-1)))
+			if err != nil {
+				panic(err)
+			}
 
-	if number.GCD(N, a) != 1 {
-		t.Fatalf("gcd(%d, %d) != 1\n", N, a)
-	}
+			a := int(r.Int64())
+			if 2 < a && number.GCD(N, a) == 1 {
+				return a
+			}
+		}
+	}(N)
 
 	qsim := New()
 	qsim.UseCryptoRand()
 
 	// initial state
 	n := int(math.Log2(float64(N))) + 1
-	r0 := qsim.ZeroWith(4)
+	r0 := qsim.ZeroWith(3)
 	r1 := qsim.ZeroWith(n)
 	qsim.X(r1[len(r1)-1])
 
