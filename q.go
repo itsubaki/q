@@ -99,6 +99,10 @@ func (q *Q) BinaryString() string {
 	return sb.String()
 }
 
+func (q *Q) I(input ...Qubit) *Q {
+	return q.Apply(gate.I(), input...)
+}
+
 func (q *Q) H(input ...Qubit) *Q {
 	return q.Apply(gate.H(), input...)
 }
