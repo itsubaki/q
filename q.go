@@ -231,6 +231,13 @@ func (q *Q) ConditionZ(condition bool, input ...Qubit) *Q {
 	return q
 }
 
+func (q *Q) CModExp(N, a, j int, control Qubit, r1len int) *Q {
+	n := q.NumberOfBit()
+	g := gate.CModExp(N, a, j, control.Index(), n-r1len, r1len)
+	q.internal.Apply(g)
+	return q
+}
+
 func (q *Q) Swap(input ...Qubit) *Q {
 	n := q.NumberOfBit()
 	l := len(input)
