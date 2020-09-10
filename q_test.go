@@ -17,13 +17,14 @@ import (
 func TestQSimFactoringN(t *testing.T) {
 	N := 3 * 13
 	a := func(N int) int {
+		min := 2
 		for {
-			r, err := rand.Int(rand.Reader, big.NewInt(int64(N-1-2)))
+			r, err := rand.Int(rand.Reader, big.NewInt(int64(N-1-min)))
 			if err != nil {
 				panic(err)
 			}
 
-			a := int(r.Int64()) + 2
+			a := int(r.Int64()) + min
 			if number.GCD(N, a) == 1 {
 				return a
 			}
