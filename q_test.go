@@ -13,19 +13,20 @@ import (
 )
 
 func TestQSimFactoringN(t *testing.T) {
-	N := 15
-	a := 7
+	N := 21
+	a := 13
 
 	if number.GCD(N, a) != 1 {
-		t.Errorf("%v %v\n", N, a)
+		t.Fatalf("gcd(%d, %d) != 1\n", N, a)
 	}
 
 	qsim := New()
 	qsim.UseCryptoRand()
 
 	// initial state
+	n := int(math.Log2(float64(N))) + 1
 	r0 := qsim.ZeroWith(4)
-	r1 := qsim.ZeroWith(int(math.Ceil(math.Log2(float64(N)))))
+	r1 := qsim.ZeroWith(n)
 	qsim.X(r1[len(r1)-1])
 
 	// superposition
@@ -83,7 +84,7 @@ func TestQsimFactoring85(t *testing.T) {
 
 	// co-prime
 	if number.GCD(N, a) != 1 {
-		t.Errorf("%v %v\n", N, a)
+		t.Fatalf("gcd(%d, %d) != 1\n", N, a)
 	}
 
 	for i := 0; i < 10; i++ {
@@ -157,7 +158,7 @@ func TestQsimFactoring51(t *testing.T) {
 
 	// co-prime
 	if number.GCD(N, a) != 1 {
-		t.Errorf("%v %v\n", N, a)
+		t.Fatalf("gcd(%d, %d) != 1\n", N, a)
 	}
 
 	for i := 0; i < 10; i++ {
@@ -236,7 +237,7 @@ func TestQSimFactoring15(t *testing.T) {
 
 	// co-prime
 	if number.GCD(N, a) != 1 {
-		t.Errorf("%v %v\n", N, a)
+		t.Fatalf("gcd(%d, %d) != 1\n", N, a)
 	}
 
 	for i := 0; i < 10; i++ {
