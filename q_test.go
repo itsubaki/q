@@ -61,6 +61,13 @@ func TestQsimFactoring85(t *testing.T) {
 		qsim.CR(q1, q0, 2)
 		qsim.H(q0)
 
+		// estimate
+		e0 := qsim.Estimate(q0).Probability()
+		e1 := qsim.Estimate(q1).Probability()
+		e2 := qsim.Estimate(q2).Probability()
+		e3 := qsim.Estimate(q3).Probability()
+		fmt.Printf("%.3f %.3f %.3f %.3f\n", e0, e1, e2, e3)
+
 		// measure
 		m := qsim.MeasureAsBinary(q0, q1, q2, q3)
 
@@ -137,6 +144,13 @@ func TestQsimFactoring51(t *testing.T) {
 		qsim.CR(q1, q0, 2)
 		qsim.H(q0)
 
+		// estimate
+		e0 := qsim.Estimate(q0).Probability()
+		e1 := qsim.Estimate(q1).Probability()
+		e2 := qsim.Estimate(q2).Probability()
+		e3 := qsim.Estimate(q3).Probability()
+		fmt.Printf("%.3f %.3f %.3f %.3f\n", e0, e1, e2, e3)
+
 		// measure
 		m := qsim.MeasureAsBinary(q0, q1, q2, q3)
 
@@ -197,16 +211,17 @@ func TestQSimFactoring15(t *testing.T) {
 		qsim.CNOT(q2, q5)
 
 		// Controlled-U^2
-		qsim.CCNOT(q1, q3, q5)
-		qsim.CCNOT(q1, q5, q3)
-		qsim.CCNOT(q1, q3, q5)
-
-		qsim.CCNOT(q1, q4, q6)
-		qsim.CCNOT(q1, q6, q4)
-		qsim.CCNOT(q1, q4, q6)
+		qsim.CNOT(q3, q5).CCNOT(q1, q5, q3).CNOT(q3, q5)
+		qsim.CNOT(q4, q6).CCNOT(q1, q6, q4).CNOT(q4, q6)
 
 		// inverse QFT
 		qsim.InverseQFT(q0, q1, q2)
+
+		// estimate
+		e0 := qsim.Estimate(q0).Probability()
+		e1 := qsim.Estimate(q1).Probability()
+		e2 := qsim.Estimate(q2).Probability()
+		fmt.Printf("%.3f %.3f %.3f\n", e0, e1, e2)
 
 		// measure q0, q1, q2
 		m := qsim.MeasureAsBinary(q0, q1, q2)
