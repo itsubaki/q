@@ -329,9 +329,12 @@ func CModExp(bit, N, a, j, control int, target []int) matrix.Matrix {
 			if k < int64(N) {
 				a2jkmodN := (number.ModExp2(a, j, N) * k) % int64(N)
 				a2jkmodNs := fmt.Sprintf(tf, strconv.FormatInt(a2jkmodN, 2))
+
+				// fmt.Printf("%v: %v=%2v -> %2v=%s -> ", string(bits[:r0len]), string(bits[r0len:]), k, a2jkmodN, a2jkmodNs)
 				bits = append(r0bits, []rune(a2jkmodNs)...)
 			}
 		}
+		// fmt.Println(string(bits))
 
 		v, err := strconv.ParseInt(string(bits), 2, 0)
 		if err != nil {
