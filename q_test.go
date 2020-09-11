@@ -17,9 +17,9 @@ import (
 func TestQSimFactoringN(t *testing.T) {
 	N := 3 * 13
 	a := func(N int) int {
-		min := 2
+		min, max := 2, (N - 1)
 		for {
-			r, err := rand.Int(rand.Reader, big.NewInt(int64(N-1-min)))
+			r, err := rand.Int(rand.Reader, big.NewInt(int64(max-min)))
 			if err != nil {
 				panic(err)
 			}
