@@ -338,7 +338,7 @@ func CModExp(bit, N, a, j, control int, target []int) matrix.Matrix {
 
 		v, err := strconv.ParseInt(string(bits), 2, 0)
 		if err != nil {
-			panic(fmt.Sprintf("parse int: %v", err))
+			panic(fmt.Sprintf("parse int a2j=%d: %v", a2j, err))
 		}
 
 		index = append(index, v)
