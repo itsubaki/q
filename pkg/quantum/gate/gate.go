@@ -310,15 +310,12 @@ func CModExp(bit, N, a, j, control int, target []int) matrix.Matrix {
 	r0len := bit - len(target)
 	r1len := len(target)
 
-	pow := number.Pow(2, j)
-	a2j := number.Pow(a, pow)
-
-	f := "%0" + strconv.Itoa(bit) + "s"
+	bf := "%0" + strconv.Itoa(bit) + "s"
 	tf := "%0" + strconv.Itoa(r1len) + "s"
 
 	index := make([]int64, 0)
 	for i := 0; i < dim; i++ {
-		s := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
+		s := fmt.Sprintf(bf, strconv.FormatInt(int64(i), 2))
 		bits := []rune(s)
 
 		if bits[control] == '1' {
@@ -330,7 +327,7 @@ func CModExp(bit, N, a, j, control int, target []int) matrix.Matrix {
 			}
 
 			if k < int64(N) {
-				a2jkmodN := (int64(a2j) * k) % int64(N)
+				a2jkmodN := (number.ModExp2(a, j, N) * k) % int64(N)
 				a2jkmodNs := fmt.Sprintf(tf, strconv.FormatInt(a2jkmodN, 2))
 				bits = append(r0bits, []rune(a2jkmodNs)...)
 			}
@@ -338,7 +335,7 @@ func CModExp(bit, N, a, j, control int, target []int) matrix.Matrix {
 
 		v, err := strconv.ParseInt(string(bits), 2, 0)
 		if err != nil {
-			panic(fmt.Sprintf("parse int a2j=%d: %v", a2j, err))
+			panic(fmt.Sprintf("parse int: %v", err))
 		}
 
 		index = append(index, v)

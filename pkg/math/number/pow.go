@@ -16,3 +16,21 @@ func Pow(a, r int) int {
 
 	return p
 }
+
+// ModExp2 returns a^(2^j) mod N
+func ModExp2(a, j, N int) int64 {
+	if a == 0 {
+		return 0
+	}
+
+	if j == 0 {
+		return int64(a % N)
+	}
+
+	p := a
+	for i := 0; i < j; i++ {
+		p = (p * a) % N
+	}
+
+	return int64(p)
+}
