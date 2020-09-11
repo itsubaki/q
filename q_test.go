@@ -15,7 +15,7 @@ import (
 )
 
 func TestQSimFactoringN(t *testing.T) {
-	N := 15
+	N := 21
 	a := func(N int) int {
 		min, max := 2, (N - 1)
 		for {
@@ -66,6 +66,7 @@ func TestQSimFactoringN(t *testing.T) {
 
 	// inverse QFT
 	qsim.Swap(r0...)
+	print("swap", qsim, r0, r1)
 	qsim.InverseQFT(r0...)
 	print("iqft", qsim, r0, r1)
 
