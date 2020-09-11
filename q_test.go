@@ -33,14 +33,15 @@ func TestQSimFactoringN(t *testing.T) {
 
 	fmt.Printf("N=%v, a=%v\n", N, a)
 
-	print := func(name string, qsim *Q, r ...[]Qubit) {
-		for i, list := range r {
-			fmt.Printf("%s[%d]: ", name, i)
-			for _, rr := range list {
-				fmt.Printf("%.3f ", qsim.Estimate(rr).Probability())
+	print := func(name string, qsim *Q, reg ...[]Qubit) {
+		fmt.Printf("%s: ", name)
+		for _, list := range reg {
+			for _, r := range list {
+				fmt.Printf("%.3f", qsim.Estimate(r).Probability())
 			}
-			fmt.Println()
+			fmt.Printf(" ")
 		}
+		fmt.Println()
 	}
 
 	qsim := New()
