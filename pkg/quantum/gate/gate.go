@@ -265,6 +265,7 @@ func Swap(bit, c, t int) matrix.Matrix {
 	return g0.Apply(g1).Apply(g2)
 }
 
+// Fredkin returns unitary matrix of Controlled-Swap operation
 func Fredkin(bit, c, t0, t1 int) matrix.Matrix {
 	g0 := CNOT(bit, t0, t1)
 	g1 := CCNOT(bit, c, t1, t0)
@@ -272,6 +273,7 @@ func Fredkin(bit, c, t0, t1 int) matrix.Matrix {
 	return g0.Apply(g1).Apply(g2)
 }
 
+// QFT returns unitary matrix of Quantum Fourier Transform
 func QFT(bit int) matrix.Matrix {
 	out := I(bit)
 
@@ -296,7 +298,7 @@ func QFT(bit int) matrix.Matrix {
 	return out
 }
 
-// CModExp returns Unitary Matrix of Controlled U^(2^j)|y> -> |a^(2^j)*y mod N>
+// CModExp returns unitary matrix of Controlled-U^(2^j)|k> -> |a^(2^j)*k mod N> operation
 func CModExp(bit, N, a, j, control int, target []int) matrix.Matrix {
 	min := int(math.Log2(float64(N))) + 1
 	if bit < min {
@@ -305,8 +307,8 @@ func CModExp(bit, N, a, j, control int, target []int) matrix.Matrix {
 
 	mat := I([]int{bit}...)
 	dim, _ := mat.Dimension()
-	r1len := len(target)
 	r0len := bit - len(target)
+	r1len := len(target)
 
 	pow := number.Pow(2, j)
 	a2j := number.Pow(a, pow)
