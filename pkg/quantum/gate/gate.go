@@ -299,7 +299,7 @@ func QFT(bit int) matrix.Matrix {
 }
 
 // CModExp returns unitary matrix of Controlled-U^(2^j)|k> -> |a^(2^j)*k mod N> operation
-func CModExp(bit, N, a, j, control int, target []int) matrix.Matrix {
+func CModExp2(bit, N, a, j, control int, target []int) matrix.Matrix {
 	min := int(math.Log2(float64(N))) + 1
 	if bit < min {
 		panic(fmt.Sprintf("invalid parameter. bit=%v < log2(%d)=%v", bit, N, min))
