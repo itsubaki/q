@@ -52,22 +52,22 @@ func TestQSimFactoringN(t *testing.T) {
 	r0 := qsim.ZeroWith(3)
 	r1 := qsim.ZeroWith(n)
 	qsim.X(r1[len(r1)-1])
-	print("Init", qsim, r0, r1)
+	print("init", qsim, r0, r1)
 
 	// superposition
 	qsim.H(r0...)
-	print("Hada", qsim, r0, r1)
+	print("hada", qsim, r0, r1)
 
 	// Controlled-U^(2^j)
 	for j := 0; j < len(r0); j++ {
 		qsim.CModExp(N, a, j, r0[(len(r0)-1)-j], r1...)
 	}
-	print("ModE", qsim, r0, r1)
+	print("mode", qsim, r0, r1)
 
 	// inverse QFT
 	qsim.Swap(r0...)
 	qsim.InverseQFT(r0...)
-	print("iQFT", qsim, r0, r1)
+	print("iqft", qsim, r0, r1)
 
 	for i := 0; i < 10; i++ {
 		// measure
