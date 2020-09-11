@@ -15,22 +15,35 @@ func TestCModExp21(t *testing.T) {
 }
 
 func TestCModExp15(t *testing.T) {
-	g0 := CNOT(7, 3, 5)
-	g1 := CCNOT(7, 1, 5, 3)
-	g2 := CNOT(7, 3, 5)
-	g3 := CNOT(7, 4, 6)
-	g4 := CCNOT(7, 1, 6, 4)
-	g5 := CNOT(7, 4, 6)
-	ex := g0.Apply(g1).Apply(g2).Apply(g3).Apply(g4).Apply(g5)
+	{
+		ex := CNOT(7, 2, 4).Apply(CNOT(7, 2, 5))
+		a := CModExp(7, 15, 7, 0, 2, []int{4, 5, 6, 7})
+		if !a.IsUnitary() {
+			t.Errorf("modexp is not unitary")
+		}
 
-	// returns Controlled(q1) 7^(2^1) mod 15 of 7 qubits (3 qubits(control) + 4 qubits(target))
-	a := CModExp(7, 15, 7, 1, 1, []int{4, 5, 6, 7})
-	if !a.IsUnitary() {
-		t.Errorf("modexp is not unitary")
+		if !a.Equals(ex, 1e-13) {
+			t.Fail()
+		}
 	}
+	{
+		g0 := CNOT(7, 3, 5)
+		g1 := CCNOT(7, 1, 5, 3)
+		g2 := CNOT(7, 3, 5)
+		g3 := CNOT(7, 4, 6)
+		g4 := CCNOT(7, 1, 6, 4)
+		g5 := CNOT(7, 4, 6)
+		ex := g0.Apply(g1).Apply(g2).Apply(g3).Apply(g4).Apply(g5)
 
-	if !a.Equals(ex, 1e-13) {
-		t.Fail()
+		// returns Controlled(q1) 7^(2^1) mod 15 of 7 qubits (3 qubits(control) + 4 qubits(target))
+		a := CModExp(7, 15, 7, 1, 1, []int{4, 5, 6, 7})
+		if !a.IsUnitary() {
+			t.Errorf("modexp is not unitary")
+		}
+
+		if !a.Equals(ex, 1e-13) {
+			t.Fail()
+		}
 	}
 }
 

@@ -307,8 +307,12 @@ func (q *Q) InverseQFT(input ...Qubit) *Q {
 	return q
 }
 
-func (q *Q) Estimate(input Qubit) *qubit.Qubit {
+func (q *Q) Estimate(input Qubit, loop ...int) *qubit.Qubit {
 	c0, c1, limit := 0, 0, 1000
+	if len(loop) > 0 {
+		limit = loop[0]
+	}
+
 	for i := 0; i < limit; i++ {
 		m := q.Clone().Measure(input)
 
