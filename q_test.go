@@ -15,7 +15,7 @@ import (
 )
 
 func TestQSimFactoringN(t *testing.T) {
-	N := 3 * 13
+	N := 15
 	a := func(N int) int {
 		min, max := 2, (N - 1)
 		for {
@@ -31,6 +31,18 @@ func TestQSimFactoringN(t *testing.T) {
 		}
 	}(N)
 
+	fmt.Printf("N=%v, a=%v\n", N, a)
+
+	print := func(name string, qsim *Q, r ...[]Qubit) {
+		for i, list := range r {
+			fmt.Printf("%s[%d]: ", name, i)
+			for _, rr := range list {
+				fmt.Printf("%.3f ", qsim.Estimate(rr).Probability())
+			}
+			fmt.Println()
+		}
+	}
+
 	qsim := New()
 	qsim.UseCryptoRand()
 
@@ -39,24 +51,22 @@ func TestQSimFactoringN(t *testing.T) {
 	r0 := qsim.ZeroWith(3)
 	r1 := qsim.ZeroWith(n)
 	qsim.X(r1[len(r1)-1])
+	print("Init", qsim, r0, r1)
 
 	// superposition
 	qsim.H(r0...)
+	print("Hada", qsim, r0, r1)
 
 	// Controlled-U^(2^j)
 	for j := 0; j < len(r0); j++ {
 		qsim.CModExp(N, a, j, r0[(len(r0)-1)-j], r1...)
 	}
+	print("ModE", qsim, r0, r1)
 
 	// inverse QFT
 	qsim.Swap(r0...)
 	qsim.InverseQFT(r0...)
-
-	// estimate
-	for _, r := range r0 {
-		fmt.Printf("%.3f ", qsim.Estimate(r).Probability())
-	}
-	fmt.Println()
+	print("iQFT", qsim, r0, r1)
 
 	for i := 0; i < 10; i++ {
 		// measure
