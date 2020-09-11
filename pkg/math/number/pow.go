@@ -29,7 +29,7 @@ func ModExp2(a, j, N int) int64 {
 
 	p := a
 	for i := 0; i < j; i++ {
-		p = (p * a) % N
+		p = (p * p) % N
 	}
 
 	return int64(p)
