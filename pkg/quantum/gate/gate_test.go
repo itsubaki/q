@@ -8,7 +8,7 @@ import (
 )
 
 func TestCModExp21(t *testing.T) {
-	a := CModExp2(8, 21, 4, 0, 2, []int{4, 5, 6, 7, 8})
+	a := CModExp2(8, 4, 0, 21, 2, []int{4, 5, 6, 7, 8})
 	if !a.IsUnitary() {
 		t.Errorf("a is not unitary")
 	}
@@ -24,7 +24,7 @@ func TestCModExp15j1(t *testing.T) {
 	ex := g0.Apply(g1).Apply(g2).Apply(g3).Apply(g4).Apply(g5)
 
 	// returns Controlled(q1) 7^(2^1) mod 15 of 7 qubits (3 qubits(control) + 4 qubits(target))
-	a := CModExp2(7, 15, 7, 1, 1, []int{4, 5, 6, 7})
+	a := CModExp2(7, 7, 1, 15, 1, []int{4, 5, 6, 7})
 	if !a.IsUnitary() {
 		t.Errorf("modexp is not unitary")
 	}

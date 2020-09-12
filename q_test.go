@@ -60,7 +60,7 @@ func TestQSimFactoringN(t *testing.T) {
 
 	// Controlled-U^(2^j)
 	for j := 0; j < len(r0); j++ {
-		qsim.CModExp2(N, a, j, r0[(len(r0)-1)-j], r1...)
+		qsim.CModExp2(a, j, N, r0[(len(r0)-1)-j], r1...)
 	}
 	print("mode", qsim, r0, r1)
 
