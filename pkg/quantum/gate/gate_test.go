@@ -7,31 +7,32 @@ import (
 	"github.com/itsubaki/q/pkg/math/matrix"
 )
 
-func TestCModExp21(t *testing.T) {
-	a := CModExp2(8, 4, 0, 21, 2, []int{4, 5, 6, 7, 8})
-	if !a.IsUnitary() {
-		t.Errorf("a is not unitary")
-	}
-}
+func TestCModExp2(t *testing.T) {
+	g1 := CNOT(7, 3, 5).Apply(CCNOT(7, 1, 5, 3)).Apply(CNOT(7, 3, 5))
+	g2 := CNOT(7, 4, 6).Apply(CCNOT(7, 1, 6, 4)).Apply(CNOT(7, 4, 6))
 
-func TestCModExp15j1(t *testing.T) {
-	g0 := CNOT(7, 3, 5)
-	g1 := CCNOT(7, 1, 5, 3)
-	g2 := CNOT(7, 3, 5)
-	g3 := CNOT(7, 4, 6)
-	g4 := CCNOT(7, 1, 6, 4)
-	g5 := CNOT(7, 4, 6)
-	ex := g0.Apply(g1).Apply(g2).Apply(g3).Apply(g4).Apply(g5)
-
-	// returns Controlled(q1) 7^(2^1) mod 15 of 7 qubits (3 qubits(control) + 4 qubits(target))
-	a := CModExp2(7, 7, 1, 15, 1, []int{4, 5, 6, 7})
-	if !a.IsUnitary() {
-		t.Errorf("modexp is not unitary")
+	cases := []struct {
+		bit, a, j, N int
+		c            int
+		t            []int
+		result       matrix.Matrix
+	}{
+		// returns Controlled(q1) 7^(2^1) mod 15 of 7 qubits (3 qubits(control) + 4 qubits(target))
+		{7, 7, 1, 15, 1, []int{4, 5, 6, 7}, g1.Apply(g2)},
+		{8, 4, 0, 21, 2, []int{4, 5, 6, 7, 8}, nil},
 	}
 
-	if !a.Equals(ex, 1e-13) {
-		t.Fail()
+	for _, c := range cases {
+		a := CModExp2(c.bit, c.a, c.j, c.N, c.c, c.t)
+		if !a.IsUnitary() {
+			t.Errorf("modexp is not unitary")
+		}
+
+		if c.result != nil && !a.Equals(c.result, 1e-13) {
+			t.Fail()
+		}
 	}
+
 }
 
 func TestInverseU(t *testing.T) {
