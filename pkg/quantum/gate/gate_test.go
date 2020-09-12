@@ -8,6 +8,33 @@ import (
 	"github.com/itsubaki/q/pkg/math/vector"
 )
 
+func TestCModExp2op(t *testing.T) {
+	v0 := vector.TensorProduct(vector.TensorProductN(vector.New(1, 0), 6), vector.New(0, 1))
+	g0 := CNOT(7, 2, 4).Apply(CNOT(7, 2, 5))
+
+	cases := []struct {
+		b, a, j, N int
+		c          int
+		t          []int
+		v          vector.Vector
+	}{
+		{7, 7, 0, 15, 2, []int{4, 5, 6, 7}, v0.Clone().Apply(g0)},
+	}
+
+	for _, c := range cases {
+		// returns Controlled a^(2^j) mod M of b qubits (c qubits + t qubits )
+		a := CModExp2(c.b, c.a, c.j, c.N, c.c, c.t)
+		if !a.IsUnitary() {
+			t.Errorf("modexp is not unitary")
+		}
+
+		if !v0.Apply(a).Equals(c.v) {
+			t.Fail()
+		}
+	}
+
+}
+
 func TestCModExp2(t *testing.T) {
 	g1 := CNOT(7, 3, 5).Apply(CCNOT(7, 1, 5, 3)).Apply(CNOT(7, 3, 5))
 	g2 := CNOT(7, 4, 6).Apply(CCNOT(7, 1, 6, 4)).Apply(CNOT(7, 4, 6))
@@ -26,7 +53,7 @@ func TestCModExp2(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		// returns Controlled(q1) a^(2^j) mod M of b qubits (c qubits + t qubits )
+		// returns Controlled a^(2^j) mod M of b qubits (c qubits + t qubits )
 		a := CModExp2(c.b, c.a, c.j, c.N, c.c, c.t)
 		if !a.IsUnitary() {
 			t.Errorf("modexp is not unitary")
@@ -35,16 +62,6 @@ func TestCModExp2(t *testing.T) {
 		if c.m != nil && !a.Equals(c.m) {
 			t.Fail()
 		}
-	}
-
-	v0 := vector.TensorProduct(vector.TensorProductN(vector.New(1, 0), 6), vector.New(0, 1))
-	g0 := CNOT(7, 2, 4).Apply(CNOT(7, 2, 5))
-
-	v0a := v0.Clone()
-	g0a := CModExp2(7, 7, 0, 15, 2, []int{4, 5, 6, 7})
-
-	if !v0.Apply(g0).Equals(v0a.Apply(g0a)) {
-		t.Fail()
 	}
 }
 
