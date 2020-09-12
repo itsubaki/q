@@ -15,7 +15,7 @@ import (
 )
 
 func TestQSimFactoringN(t *testing.T) {
-	N := 51
+	N := 3 * 17
 	a := func(N int) int {
 		min, max := 2, (N - 1)
 		for {
@@ -30,14 +30,13 @@ func TestQSimFactoringN(t *testing.T) {
 			}
 		}
 	}(N)
-
 	fmt.Printf("N=%v, a=%v\n", N, a)
 
 	print := func(name string, qsim *Q, reg ...[]Qubit) {
 		fmt.Printf("%s: ", name)
 		for _, list := range reg {
 			for _, r := range list {
-				fmt.Printf("%.3f", qsim.Estimate(r).Probability())
+				fmt.Printf("%.2f", qsim.Estimate(r, 100).Probability())
 			}
 			fmt.Printf(" ")
 		}
@@ -65,13 +64,11 @@ func TestQSimFactoringN(t *testing.T) {
 
 	// Controlled-U^(2^j)
 	for j := 0; j < len(r0); j++ {
-		qsim.CModExp2(a, j, N, r0[(len(r0)-1)-j], r1...)
+		qsim.CModExp2(a, j, N, r0[j], r1...)
 	}
 	print("mode", qsim, r0, r1)
 
 	// inverse QFT
-	qsim.Swap(r0...)
-	print("swap", qsim, r0, r1)
 	qsim.InverseQFT(r0...)
 	print("iqft", qsim, r0, r1)
 
