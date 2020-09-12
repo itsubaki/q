@@ -15,7 +15,7 @@ import (
 )
 
 func TestQSimFactoringN(t *testing.T) {
-	N := 21
+	N := 51
 	a := func(N int) int {
 		min, max := 2, (N - 1)
 		for {
@@ -49,8 +49,13 @@ func TestQSimFactoringN(t *testing.T) {
 
 	// initial state
 	n := int(math.Log2(float64(N))) + 1
-	r0 := qsim.ZeroWith(3)
+	r0 := qsim.ZeroWith(4)
 	r1 := qsim.ZeroWith(n)
+
+	for j := 0; j < len(r0); j++ {
+		fmt.Printf("%d^(2^%d) mod %d = %d\n", a, j, N, number.ModExp2(a, j, N))
+	}
+
 	qsim.X(r1[len(r1)-1])
 	print("init", qsim, r0, r1)
 

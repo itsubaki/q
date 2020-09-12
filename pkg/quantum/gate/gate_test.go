@@ -5,34 +5,47 @@ import (
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
+	"github.com/itsubaki/q/pkg/math/vector"
 )
 
 func TestCModExp2(t *testing.T) {
 	g1 := CNOT(7, 3, 5).Apply(CCNOT(7, 1, 5, 3)).Apply(CNOT(7, 3, 5))
 	g2 := CNOT(7, 4, 6).Apply(CCNOT(7, 1, 6, 4)).Apply(CNOT(7, 4, 6))
+	g3 := I(7)
 
 	cases := []struct {
-		bit, a, j, N int
-		c            int
-		t            []int
-		result       matrix.Matrix
+		b, a, j, N int
+		c          int
+		t          []int
+		m          matrix.Matrix
 	}{
-		// returns Controlled(q1) 7^(2^1) mod 15 of 7 qubits (3 qubits(control) + 4 qubits(target))
+		{7, 7, 0, 15, 2, []int{4, 5, 6, 7}, nil},
 		{7, 7, 1, 15, 1, []int{4, 5, 6, 7}, g1.Apply(g2)},
+		{7, 7, 2, 15, 0, []int{4, 5, 6, 7}, g3},
 		{8, 4, 0, 21, 2, []int{4, 5, 6, 7, 8}, nil},
 	}
 
 	for _, c := range cases {
-		a := CModExp2(c.bit, c.a, c.j, c.N, c.c, c.t)
+		// returns Controlled(q1) a^(2^j) mod M of b qubits (c qubits + t qubits )
+		a := CModExp2(c.b, c.a, c.j, c.N, c.c, c.t)
 		if !a.IsUnitary() {
 			t.Errorf("modexp is not unitary")
 		}
 
-		if c.result != nil && !a.Equals(c.result, 1e-13) {
+		if c.m != nil && !a.Equals(c.m) {
 			t.Fail()
 		}
 	}
 
+	v0 := vector.TensorProduct(vector.TensorProductN(vector.New(1, 0), 6), vector.New(0, 1))
+	g0 := CNOT(7, 2, 4).Apply(CNOT(7, 2, 5))
+
+	v0a := v0.Clone()
+	g0a := CModExp2(7, 7, 0, 15, 2, []int{4, 5, 6, 7})
+
+	if !v0.Apply(g0).Equals(v0a.Apply(g0a)) {
+		t.Fail()
+	}
 }
 
 func TestInverseU(t *testing.T) {
