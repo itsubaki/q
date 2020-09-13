@@ -76,6 +76,11 @@ func (q *Q) OneWith(bit int) []Qubit {
 	return r
 }
 
+func (q *Q) ZeroLog2(N int) []Qubit {
+	n := int(math.Log2(float64(N))) + 1
+	return q.ZeroWith(n)
+}
+
 func (q *Q) NumberOfBit() int {
 	return q.internal.NumberOfBit()
 }
@@ -249,10 +254,18 @@ func (q *Q) ConditionZ(condition bool, input ...Qubit) *Q {
 	return q
 }
 
-func (q *Q) CModExp2(a, j, N int, control Qubit, target ...Qubit) *Q {
+func (q *Q) CModExp2(a, j, N int, control Qubit, target []Qubit) *Q {
 	n := q.NumberOfBit()
 	g := gate.CModExp2(n, a, j, N, control.Index(), Index(target...))
 	q.internal.Apply(g)
+	return q
+}
+
+func (q *Q) CModExp2j(a, N int, control []Qubit, target []Qubit) *Q {
+	for j := 0; j < len(control); j++ {
+		q.CModExp2(a, j, N, control[j], target)
+	}
+
 	return q
 }
 

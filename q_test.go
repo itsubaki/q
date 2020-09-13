@@ -32,9 +32,8 @@ func TestQSimFactoringN(t *testing.T) {
 	qsim := New()
 
 	// initial state
-	n := int(math.Log2(float64(N))) + 1
 	r0 := qsim.ZeroWith(4)
-	r1 := qsim.ZeroWith(n)
+	r1 := qsim.ZeroLog2(N)
 
 	for j := 0; j < len(r0); j++ {
 		fmt.Printf("%d^(2^%d) mod %d = %d\n", a, j, N, number.ModExp2(a, j, N))
@@ -48,9 +47,7 @@ func TestQSimFactoringN(t *testing.T) {
 	print("hada", qsim, r0, r1)
 
 	// Controlled-U^(2^j)
-	for j := 0; j < len(r0); j++ {
-		qsim.CModExp2(a, j, N, r0[j], r1...)
-	}
+	qsim.CModExp2j(a, N, r0, r1)
 	print("mode", qsim, r0, r1)
 
 	// inverse QFT
