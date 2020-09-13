@@ -5,14 +5,14 @@ import (
 	"math"
 )
 
-func BinaryFraction(q []int) float64 {
+func BinaryFraction(binary []int) float64 {
 	var d float64
-	for i, m := range q {
-		if m != 0 && m != 1 {
-			panic(fmt.Sprintf("invalid input: %v", q))
+	for i, b := range binary {
+		if b != 0 && b != 1 {
+			panic(fmt.Sprintf("invalid input: %v", binary))
 		}
 
-		if m == 0 {
+		if b == 0 {
 			continue
 		}
 

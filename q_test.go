@@ -30,49 +30,34 @@ func TestQSimFactoringN(t *testing.T) {
 	}
 
 	qsim := New()
-
-	// initial state
 	r0 := qsim.ZeroWith(4)
 	r1 := qsim.ZeroLog2(N)
-
-	for j := 0; j < len(r0); j++ {
-		fmt.Printf("%d^(2^%d) mod %d = %d\n", a, j, N, number.ModExp2(a, j, N))
-	}
 
 	qsim.X(r1[len(r1)-1])
 	print("init", qsim, r0, r1)
 
-	// superposition
 	qsim.H(r0...)
 	print("hada", qsim, r0, r1)
 
-	// Controlled-U^(2^j)
 	qsim.CModExp2(a, N, r0, r1)
 	print("mode", qsim, r0, r1)
 
-	// inverse QFT
 	qsim.InverseQFT(r0...)
 	print("iqft", qsim, r0, r1)
 
 	for i := 0; i < 10; i++ {
-		// measure
 		m := qsim.Clone().MeasureAsBinary(r0...)
-
-		// find s/r
 		d := number.BinaryFraction(m)
 		_, s, r := number.ContinuedFraction(d)
 
-		// if r is odd, algorithm is failed
 		if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
 			fmt.Printf("  i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v=%.3f). N/A\n", i, N, a, s, r, m, d)
 			continue
 		}
 
-		// gcd(a^(r/2)-1, N), gcd(a^(r/2)+1, N)
 		p0 := number.GCD(number.Pow(a, r/2)-1, N)
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
-		// check non-trivial factor
 		found := " "
 		for _, p := range []int{p0, p1} {
 			if 1 < p && p < N && N%p == 0 {
