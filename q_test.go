@@ -47,7 +47,7 @@ func TestQSimFactoringN(t *testing.T) {
 	print("hada", qsim, r0, r1)
 
 	// Controlled-U^(2^j)
-	qsim.CModExp2j(a, N, r0, r1)
+	qsim.CModExp2(a, N, r0, r1)
 	print("mode", qsim, r0, r1)
 
 	// inverse QFT
