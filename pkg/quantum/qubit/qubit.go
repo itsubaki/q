@@ -23,7 +23,7 @@ func New(z ...complex128) *Qubit {
 
 	q := &Qubit{
 		vector: v,
-		Rand:   rand.Math,
+		Rand:   rand.Crypto,
 	}
 
 	q.Normalize()

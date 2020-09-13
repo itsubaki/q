@@ -34,15 +34,7 @@ type Q struct {
 func New() *Q {
 	return &Q{
 		internal: nil,
-		Rand:     rand.Math,
-	}
-}
-
-func (q *Q) UseCryptoRand() {
-	q.Rand = rand.Crypto
-
-	if q.internal != nil {
-		q.internal.Rand = rand.Crypto
+		Rand:     rand.Crypto,
 	}
 }
 

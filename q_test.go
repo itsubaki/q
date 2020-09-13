@@ -1,35 +1,21 @@
 package q
 
 import (
-	"crypto/rand"
 	"fmt"
 	"math"
-	"math/big"
 	"strconv"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/math/number"
+	"github.com/itsubaki/q/pkg/math/rand"
 	"github.com/itsubaki/q/pkg/quantum/gate"
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
 
 func TestQSimFactoringN(t *testing.T) {
 	N := 3 * 17
-	a := func(N int) int {
-		min, max := 2, (N - 1)
-		for {
-			r, err := rand.Int(rand.Reader, big.NewInt(int64(max-min)))
-			if err != nil {
-				panic(err)
-			}
-
-			a := int(r.Int64()) + min
-			if number.GCD(N, a) == 1 {
-				return a
-			}
-		}
-	}(N)
+	a := rand.Coprime(N)
 	fmt.Printf("N=%v, a=%v\n", N, a)
 
 	print := func(name string, qsim *Q, reg ...[]Qubit) {
@@ -44,7 +30,6 @@ func TestQSimFactoringN(t *testing.T) {
 	}
 
 	qsim := New()
-	qsim.UseCryptoRand()
 
 	// initial state
 	n := int(math.Log2(float64(N))) + 1
