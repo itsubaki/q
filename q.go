@@ -312,6 +312,10 @@ func (q *Q) InverseQFT(input ...Qubit) *Q {
 	return q
 }
 
+func (q *Q) InvQFT(input ...Qubit) *Q {
+	return q.InverseQFT(input...)
+}
+
 func (q *Q) Estimate(input Qubit, loop ...int) *qubit.Qubit {
 	c0, c1, limit := 0, 0, 1000
 	if len(loop) > 0 {

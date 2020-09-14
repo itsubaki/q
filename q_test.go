@@ -42,7 +42,7 @@ func TestQSimFactoringN(t *testing.T) {
 	qsim.CModExp2(a, N, r0, r1)
 	print("mode", qsim, r0, r1)
 
-	qsim.InverseQFT(r0...)
+	qsim.InvQFT(r0...)
 	print("iqft", qsim, r0, r1)
 
 	for i := 0; i < 10; i++ {
