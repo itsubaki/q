@@ -39,7 +39,7 @@ func TestQSimFactoringN(t *testing.T) {
 	qsim.H(r0...)
 	print("hada", qsim, r0, r1)
 
-	qsim.CModExp2(a, N, r0, r1)
+	qsim.CModExp2(N, a, r0, r1)
 	print("mode", qsim, r0, r1)
 
 	qsim.InvQFT(r0...)
