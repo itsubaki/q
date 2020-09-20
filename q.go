@@ -359,7 +359,7 @@ func (q *Q) String() string {
 }
 
 func (q *Q) RegString(reg ...[]Qubit) string {
-	return q.RegStringWith("\n", reg...)
+	return q.RegStringWith(" ", reg...)
 }
 
 func (q *Q) RegStringWith(delimiter string, reg ...[]Qubit) string {

@@ -18,39 +18,25 @@ func TestQSimFactoringN(t *testing.T) {
 	a := rand.Coprime(N)
 	fmt.Printf("N=%v, a=%v\n", N, a)
 
-	prob := func(tag string, qsim *Q, reg ...[]Qubit) {
-		fmt.Printf("%s", tag)
-		for _, r := range reg {
-			for _, q := range r {
-				fmt.Printf("%.1f", qsim.Estimate(q, 100).Probability())
-			}
-			fmt.Printf(" ")
-		}
-		fmt.Println()
-	}
-
 	qsim := New()
 	r0 := qsim.ZeroWith(3)
 	r1 := qsim.ZeroLog2(N)
 
 	qsim.X(r1[len(r1)-1])
 	fmt.Println("initial state")
-	fmt.Println(qsim.RegString(r0, r1))
+	fmt.Println(qsim.RegStringWith("\n", r0, r1))
 
 	qsim.H(r0...)
 	fmt.Println("hadamard")
-	fmt.Println(qsim.RegString(r0, r1))
+	fmt.Println(qsim.RegStringWith("\n", r0, r1))
 
 	qsim.CModExp2(N, a, r0, r1)
 	fmt.Println("apply controlled-U")
-	fmt.Println(qsim.RegString(r0, r1))
+	fmt.Println(qsim.RegStringWith("\n", r0, r1))
 
 	qsim.InvQFT(r0...)
 	fmt.Println("apply inverse qft")
-	fmt.Println(qsim.RegString(r0, r1))
-
-	prob("prob: ", qsim, r0, r1)
-	fmt.Println()
+	fmt.Println(qsim.RegStringWith("\n", r0, r1))
 
 	for i := 0; i < 10; i++ {
 		m := qsim.Clone().MeasureAsBinary(r0...)
@@ -58,7 +44,7 @@ func TestQSimFactoringN(t *testing.T) {
 		_, s, r := number.ContinuedFraction(d)
 
 		if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
-			fmt.Printf("  i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v=%.3f). N/A\n", i, N, a, s, r, m, d)
+			fmt.Printf("  i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v=%.3f). N/A.\n", i, N, a, s, r, m, d)
 			continue
 		}
 
