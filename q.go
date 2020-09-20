@@ -18,10 +18,10 @@ func (q Qubit) Index() int {
 	return int(q)
 }
 
-func Index(input ...Qubit) []int {
+func Index(qb ...Qubit) []int {
 	index := make([]int, 0)
-	for i := range input {
-		index = append(index, input[i].Index())
+	for i := range qb {
+		index = append(index, qb[i].Index())
 	}
 
 	return index
@@ -94,12 +94,12 @@ func (q *Q) Probability() []float64 {
 	return q.internal.Probability()
 }
 
-func (q *Q) Measure(input Qubit) *qubit.Qubit {
-	return q.internal.Measure(input.Index())
+func (q *Q) Measure(qb Qubit) *qubit.Qubit {
+	return q.internal.Measure(qb.Index())
 }
 
-func (q *Q) MeasureAsInt(input ...Qubit) int64 {
-	b := q.BinaryString(input...)
+func (q *Q) MeasureAsInt(qb ...Qubit) int64 {
+	b := q.BinaryString(qb...)
 	i, err := strconv.ParseInt(b, 2, 0)
 	if err != nil {
 		panic(err)
@@ -108,18 +108,18 @@ func (q *Q) MeasureAsInt(input ...Qubit) int64 {
 	return i
 }
 
-func (q *Q) MeasureAsBinary(input ...Qubit) []int {
+func (q *Q) MeasureAsBinary(qb ...Qubit) []int {
 	b := make([]int, 0)
-	for _, i := range input {
+	for _, i := range qb {
 		b = append(b, q.Measure(i).Int())
 	}
 
 	return b
 }
 
-func (q *Q) BinaryString(input ...Qubit) string {
+func (q *Q) BinaryString(qb ...Qubit) string {
 	var sb strings.Builder
-	for _, i := range input {
+	for _, i := range qb {
 		if q.Measure(i).IsZero() {
 			sb.WriteString("0")
 			continue
@@ -131,41 +131,41 @@ func (q *Q) BinaryString(input ...Qubit) string {
 	return sb.String()
 }
 
-func (q *Q) I(input ...Qubit) *Q {
-	return q.Apply(gate.I(), input...)
+func (q *Q) I(qb ...Qubit) *Q {
+	return q.Apply(gate.I(), qb...)
 }
 
-func (q *Q) H(input ...Qubit) *Q {
-	return q.Apply(gate.H(), input...)
+func (q *Q) H(qb ...Qubit) *Q {
+	return q.Apply(gate.H(), qb...)
 }
 
-func (q *Q) X(input ...Qubit) *Q {
-	return q.Apply(gate.X(), input...)
+func (q *Q) X(qb ...Qubit) *Q {
+	return q.Apply(gate.X(), qb...)
 }
 
-func (q *Q) Y(input ...Qubit) *Q {
-	return q.Apply(gate.Y(), input...)
+func (q *Q) Y(qb ...Qubit) *Q {
+	return q.Apply(gate.Y(), qb...)
 }
 
-func (q *Q) Z(input ...Qubit) *Q {
-	return q.Apply(gate.Z(), input...)
+func (q *Q) Z(qb ...Qubit) *Q {
+	return q.Apply(gate.Z(), qb...)
 }
 
-func (q *Q) S(input ...Qubit) *Q {
-	return q.Apply(gate.S(), input...)
+func (q *Q) S(qb ...Qubit) *Q {
+	return q.Apply(gate.S(), qb...)
 }
 
-func (q *Q) T(input ...Qubit) *Q {
-	return q.Apply(gate.T(), input...)
+func (q *Q) T(qb ...Qubit) *Q {
+	return q.Apply(gate.T(), qb...)
 }
 
-func (q *Q) Apply(mat matrix.Matrix, input ...Qubit) *Q {
-	if len(input) < 1 {
+func (q *Q) Apply(mat matrix.Matrix, qb ...Qubit) *Q {
+	if len(qb) < 1 {
 		q.internal.Apply(mat)
 		return q
 	}
 
-	index := Index(input...)
+	index := Index(qb...)
 
 	g := gate.I()
 	if index[0] == 0 {
@@ -239,17 +239,17 @@ func (q *Q) Toffoli(control0, control1, target Qubit) *Q {
 	return q.CCNOT(control0, control1, target)
 }
 
-func (q *Q) ConditionX(condition bool, input ...Qubit) *Q {
+func (q *Q) ConditionX(condition bool, qb ...Qubit) *Q {
 	if condition {
-		return q.X(input...)
+		return q.X(qb...)
 	}
 
 	return q
 }
 
-func (q *Q) ConditionZ(condition bool, input ...Qubit) *Q {
+func (q *Q) ConditionZ(condition bool, qb ...Qubit) *Q {
 	if condition {
-		return q.Z(input...)
+		return q.Z(qb...)
 	}
 
 	return q
@@ -270,12 +270,12 @@ func (q *Q) CModExp2(N, a int, c []Qubit, t []Qubit) *Q {
 	return q
 }
 
-func (q *Q) Swap(input ...Qubit) *Q {
+func (q *Q) Swap(qb ...Qubit) *Q {
 	n := q.NumberOfBit()
-	l := len(input)
+	l := len(qb)
 
 	for i := 0; i < l/2; i++ {
-		q0, q1 := input[i], input[(l-1)-i]
+		q0, q1 := qb[i], qb[(l-1)-i]
 		swap := gate.Swap(n, q0.Index(), q1.Index())
 		q.internal.Apply(swap)
 	}
@@ -283,14 +283,14 @@ func (q *Q) Swap(input ...Qubit) *Q {
 	return q
 }
 
-func (q *Q) QFT(input ...Qubit) *Q {
-	l := len(input)
+func (q *Q) QFT(qb ...Qubit) *Q {
+	l := len(qb)
 	for i := 0; i < l; i++ {
-		q.H(input[i])
+		q.H(qb[i])
 
 		k := 2
 		for j := i + 1; j < l; j++ {
-			q.CR(input[j], input[i], k)
+			q.CR(qb[j], qb[i], k)
 			k++
 		}
 	}
@@ -298,33 +298,33 @@ func (q *Q) QFT(input ...Qubit) *Q {
 	return q
 }
 
-func (q *Q) InverseQFT(input ...Qubit) *Q {
-	l := len(input)
+func (q *Q) InverseQFT(qb ...Qubit) *Q {
+	l := len(qb)
 	for i := l - 1; i > -1; i-- {
 		k := l - i
 		for j := l - 1; j > i; j-- {
-			q.CR(input[j], input[i], k)
+			q.CR(qb[j], qb[i], k)
 			k--
 		}
 
-		q.H(input[i])
+		q.H(qb[i])
 	}
 
 	return q
 }
 
-func (q *Q) InvQFT(input ...Qubit) *Q {
-	return q.InverseQFT(input...)
+func (q *Q) InvQFT(qb ...Qubit) *Q {
+	return q.InverseQFT(qb...)
 }
 
-func (q *Q) Estimate(input Qubit, loop ...int) *qubit.Qubit {
+func (q *Q) Estimate(qb Qubit, loop ...int) *qubit.Qubit {
 	c0, c1, limit := 0, 0, 1000
 	if len(loop) > 0 {
 		limit = loop[0]
 	}
 
 	for i := 0; i < limit; i++ {
-		m := q.Clone().Measure(input)
+		m := q.Clone().Measure(qb)
 
 		if m.IsZero() {
 			c0++
