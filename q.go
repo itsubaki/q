@@ -386,16 +386,20 @@ func (q *Q) RegStringWith(delimiter string, reg ...[]Qubit) string {
 		sb.WriteString(fmt.Sprintf("%.2v", a))
 
 		bin := fmt.Sprintf(binf, strconv.FormatInt(int64(i), 2))
-		first := 0
 		for _, r := range reg {
-			last := first + len(r)
-			rint, err := strconv.ParseInt(bin[first:last], 2, 0)
+			var rbin strings.Builder
+			for _, qb := range r {
+				idx := qb.Index()
+				rbin.WriteString(bin[idx : idx+1])
+			}
+
+			rstr := rbin.String()
+			rint, err := strconv.ParseInt(rstr, 2, 0)
 			if err != nil {
-				panic(fmt.Sprintf("parse int bin=%s, first=%d, last=%d", bin, first, last))
+				panic(fmt.Sprintf("parse int bin=%s, rstr=%s", bin, rstr))
 			}
 
 			sb.WriteString(fmt.Sprintf("|%d>", rint))
-			first = last
 		}
 		sb.WriteString(delimiter)
 	}
