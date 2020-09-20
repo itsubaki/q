@@ -362,6 +362,10 @@ func (q *Q) RegString(reg ...[]Qubit) string {
 	return q.RegStringWith(" ", reg...)
 }
 
+func (q *Q) RegStringln(reg ...[]Qubit) string {
+	return q.RegStringWith("\n", reg...)
+}
+
 func (q *Q) RegStringWith(delimiter string, reg ...[]Qubit) string {
 	if len(reg) == 0 {
 		return ""
