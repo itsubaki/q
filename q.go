@@ -1,6 +1,7 @@
 package q
 
 import (
+	"fmt"
 	"math"
 	"strconv"
 	"strings"
@@ -355,4 +356,45 @@ func (q *Q) Clone() *Q {
 
 func (q *Q) String() string {
 	return q.internal.String()
+}
+
+func (q *Q) RegString(reg ...[]Qubit) string {
+	return q.RegStringWith("\n", reg...)
+}
+
+func (q *Q) RegStringWith(delimiter string, reg ...[]Qubit) string {
+	if len(reg) == 0 {
+		return ""
+	}
+
+	var sb strings.Builder
+	binf := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(q.NumberOfBit()), "s")
+	for i, a := range q.Amplitude() {
+		if a == 0 {
+			continue
+		}
+		if math.Abs(real(a)) < 1e-13 {
+			a = complex(0, imag(a))
+		}
+		if math.Abs(imag(a)) < 1e-13 {
+			a = complex(real(a), 0)
+		}
+		sb.WriteString(fmt.Sprintf("%.2v", a))
+
+		bin := fmt.Sprintf(binf, strconv.FormatInt(int64(i), 2))
+		first := 0
+		for _, r := range reg {
+			last := first + len(r)
+			rint, err := strconv.ParseInt(bin[first:last], 2, 0)
+			if err != nil {
+				panic(fmt.Sprintf("parse int bin=%s, first=%d, last=%d", bin, first, last))
+			}
+
+			sb.WriteString(fmt.Sprintf("|%d>", rint))
+			first = last
+		}
+		sb.WriteString(delimiter)
+	}
+
+	return sb.String()
 }
