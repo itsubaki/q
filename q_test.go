@@ -14,15 +14,35 @@ import (
 )
 
 func TestQSimFactoringN(t *testing.T) {
-	N := 3 * 17
+	N := 15
 	a := rand.Coprime(N)
 	fmt.Printf("N=%v, a=%v\n", N, a)
 
-	print := func(name string, qsim *Q, reg ...[]Qubit) {
-		fmt.Printf("%s: ", name)
-		for _, list := range reg {
-			for _, r := range list {
-				fmt.Printf("%.2f", qsim.Estimate(r, 100).Probability())
+	amp := func(name string, qsim *Q, r0, _ []Qubit) {
+		fmt.Printf("%s", name)
+
+		r0len := len(r0)
+		n := qsim.NumberOfBit()
+		f := "%0" + strconv.Itoa(n) + "s"
+		for i, r := range qsim.Amplitude() {
+			if r == 0 {
+				continue
+			}
+
+			str := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
+			r0i, _ := strconv.ParseInt(str[:r0len], 2, 0)
+			r1i, _ := strconv.ParseInt(str[r0len:], 2, 0)
+			fmt.Printf("%.2v|%d>|%d> ", r, r0i, r1i)
+
+		}
+		fmt.Println()
+	}
+
+	prob := func(name string, qsim *Q, reg ...[]Qubit) {
+		fmt.Printf("%s", name)
+		for _, r := range reg {
+			for _, q := range r {
+				fmt.Printf("%.1f", qsim.Estimate(q, 100).Probability())
 			}
 			fmt.Printf(" ")
 		}
@@ -30,20 +50,23 @@ func TestQSimFactoringN(t *testing.T) {
 	}
 
 	qsim := New()
-	r0 := qsim.ZeroWith(4)
+	r0 := qsim.ZeroWith(3)
 	r1 := qsim.ZeroLog2(N)
 
 	qsim.X(r1[len(r1)-1])
-	print("init", qsim, r0, r1)
+	amp("init: ", qsim, r0, r1)
 
 	qsim.H(r0...)
-	print("hada", qsim, r0, r1)
+	amp("hada: ", qsim, r0, r1)
 
 	qsim.CModExp2(N, a, r0, r1)
-	print("mode", qsim, r0, r1)
+	amp("mode: ", qsim, r0, r1)
 
 	qsim.InvQFT(r0...)
-	print("iqft", qsim, r0, r1)
+	amp("iqft: ", qsim, r0, r1)
+
+	prob("prob: ", qsim, r0, r1)
+	fmt.Println()
 
 	for i := 0; i < 10; i++ {
 		m := qsim.Clone().MeasureAsBinary(r0...)
