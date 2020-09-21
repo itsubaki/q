@@ -358,15 +358,15 @@ func (q *Q) String() string {
 	return q.internal.String()
 }
 
-func (q *Q) StringRegister(reg ...[]Qubit) string {
-	return q.StringRegisterWith(" ", reg...)
+func (q *Q) Sprint(reg ...[]Qubit) string {
+	return q.Sprintf("%.2v", "|%d>", " ", reg...)
 }
 
-func (q *Q) StringRegisterln(reg ...[]Qubit) string {
-	return q.StringRegisterWith("\n", reg...)
+func (q *Q) Sprintln(reg ...[]Qubit) string {
+	return q.Sprintf("%.2v", "|%d>", "\n", reg...)
 }
 
-func (q *Q) StringRegisterWith(delimiter string, reg ...[]Qubit) string {
+func (q *Q) Sprintf(ampf, ketf, sep string, reg ...[]Qubit) string {
 	if len(reg) == 0 {
 		return ""
 	}
@@ -383,7 +383,7 @@ func (q *Q) StringRegisterWith(delimiter string, reg ...[]Qubit) string {
 		if math.Abs(imag(a)) < 1e-13 {
 			a = complex(real(a), 0)
 		}
-		sb.WriteString(fmt.Sprintf("%.2v", a))
+		sb.WriteString(fmt.Sprintf(ampf, a))
 
 		bin := fmt.Sprintf(binf, strconv.FormatInt(int64(i), 2))
 		for _, r := range reg {
@@ -399,9 +399,10 @@ func (q *Q) StringRegisterWith(delimiter string, reg ...[]Qubit) string {
 				panic(fmt.Sprintf("parse int bin=%s, rstr=%s", bin, rstr))
 			}
 
-			sb.WriteString(fmt.Sprintf("|%d>", rint))
+			sb.WriteString(fmt.Sprintf(ketf, rint))
 		}
-		sb.WriteString(delimiter)
+
+		sb.WriteString(sep)
 	}
 
 	return sb.String()
