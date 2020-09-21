@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
@@ -14,8 +15,10 @@ import (
 )
 
 func TestQSimFactoringN(t *testing.T) {
-	print := func(sim *Q, r0, r1 []Qubit) {
-		sim.Printfln("%.2g", "|%d>", "\n", r0, r1)
+	print := func(qsim *Q, r0, r1 []Qubit) {
+		str := qsim.Sprint(r0, r1)
+		line := strings.ReplaceAll(str, " ", "\n")
+		fmt.Println(line)
 		fmt.Println()
 	}
 
