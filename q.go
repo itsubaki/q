@@ -396,6 +396,7 @@ func (q *Q) Sprintf(ampf, ketf, sep string, reg ...[]Qubit) string {
 		sb.WriteString(fmt.Sprintf(ampf, a))
 
 		bin := fmt.Sprintf(binf, strconv.FormatInt(int64(i), 2))
+
 		for _, r := range reg {
 			var rbin strings.Builder
 			for _, qb := range r {
@@ -415,5 +416,6 @@ func (q *Q) Sprintf(ampf, ketf, sep string, reg ...[]Qubit) string {
 		sb.WriteString(sep)
 	}
 
-	return sb.String()
+	str := sb.String()
+	return str[:len(str)-len(sep)-1]
 }
