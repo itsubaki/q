@@ -363,7 +363,7 @@ func (q *Q) Print(reg ...[]Qubit) (int, error) {
 }
 
 func (q *Q) Println(reg ...[]Qubit) (int, error) {
-	return fmt.Println(q.Sprintln(reg...))
+	return fmt.Println(q.Sprint(reg...))
 }
 
 func (q *Q) Printf(ampf, ketf, sep string, reg ...[]Qubit) (int, error) {
@@ -375,19 +375,12 @@ func (q *Q) Printfln(ampf, ketf, sep string, reg ...[]Qubit) (int, error) {
 }
 
 func (q *Q) Sprint(reg ...[]Qubit) string {
-	return q.Sprintf("%.2v", "|%d>", " ", reg...)
-}
-
-func (q *Q) Sprintln(reg ...[]Qubit) string {
-	return q.Sprintf("%.2v", "|%d>", "\n", reg...)
+	return q.Sprintf("%.2g", "|%d>", " ", reg...)
 }
 
 func (q *Q) Sprintf(ampf, ketf, sep string, reg ...[]Qubit) string {
-	if len(reg) == 0 {
-		return ""
-	}
-
 	var sb strings.Builder
+
 	binf := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(q.NumberOfBit()), "s")
 	for i, a := range q.Amplitude() {
 		if a == 0 {
@@ -399,6 +392,7 @@ func (q *Q) Sprintf(ampf, ketf, sep string, reg ...[]Qubit) string {
 		if math.Abs(imag(a)) < 1e-13 {
 			a = complex(real(a), 0)
 		}
+
 		sb.WriteString(fmt.Sprintf(ampf, a))
 
 		bin := fmt.Sprintf(binf, strconv.FormatInt(int64(i), 2))

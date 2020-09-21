@@ -14,6 +14,10 @@ import (
 )
 
 func TestQSimFactoringN(t *testing.T) {
+	print := func(qsim *Q, r0, r1 []Qubit) {
+		qsim.Printfln("%.2g", "|%d>", "\n", r0, r1)
+	}
+
 	N := 15
 	a := rand.Coprime(N)
 	fmt.Printf("N=%v, a=%v\n", N, a)
@@ -24,19 +28,19 @@ func TestQSimFactoringN(t *testing.T) {
 
 	fmt.Println("initial state")
 	qsim.X(r1[len(r1)-1])
-	qsim.Println(r0, r1)
+	print(qsim, r0, r1)
 
 	fmt.Println("create superposition")
 	qsim.H(r0...)
-	qsim.Println(r0, r1)
+	print(qsim, r0, r1)
 
 	fmt.Println("apply controlled-U")
 	qsim.CModExp2(N, a, r0, r1)
-	qsim.Println(r0, r1)
+	print(qsim, r0, r1)
 
 	fmt.Println("apply inverse qft")
 	qsim.InvQFT(r0...)
-	qsim.Println(r0, r1)
+	print(qsim, r0, r1)
 
 	for i := 0; i < 10; i++ {
 		m := qsim.Clone().MeasureAsBinary(r0...)
