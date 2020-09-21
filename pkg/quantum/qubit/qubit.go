@@ -241,23 +241,6 @@ func (q *Qubit) String() string {
 	return fmt.Sprintf("%v", q.vector)
 }
 
-func (q *Qubit) Int() int {
-	n := q.NumberOfBit()
-	if n != 1 {
-		panic(fmt.Sprintf("invalid number of bit=%d", n))
-	}
-
-	if q.IsZero() {
-		return 0
-	}
-
-	if q.IsOne() {
-		return 1
-	}
-
-	panic("invalid state")
-}
-
 func TensorProduct(qb ...*Qubit) *Qubit {
 	q := qb[0]
 	for i := 1; i < len(qb); i++ {

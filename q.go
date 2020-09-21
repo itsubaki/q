@@ -111,7 +111,12 @@ func (q *Q) MeasureAsInt(qb ...Qubit) int64 {
 func (q *Q) MeasureAsBinary(qb ...Qubit) []int {
 	b := make([]int, 0)
 	for _, i := range qb {
-		b = append(b, q.Measure(i).Int())
+		if q.Measure(i).IsZero() {
+			b = append(b, 0)
+			continue
+		}
+
+		b = append(b, 1)
 	}
 
 	return b

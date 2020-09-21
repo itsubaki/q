@@ -464,8 +464,8 @@ func TestQSimEstimate(t *testing.T) {
 
 	for _, q := range []Qubit{q0, q1} {
 		p0, p1 := qsim.Estimate(q)
-		if math.Abs(p0-0.5) > 1e-2 || math.Abs(p1-0.5) > 1e-2 {
-			t.Fatalf("p0=%v, p1=%v", p0, p1)
+		if math.Abs(p0-0.5) > 1e-1 {
+			t.Fatalf("p0=%v, p1=%v. eps=%v", p0, p1, math.Abs(p0-0.5))
 		}
 	}
 }
@@ -555,7 +555,6 @@ func TestQsimQuantumTeleportation2(t *testing.T) {
 		if !mx.Equals(tt.mx) {
 			t.Error(p)
 		}
-
 	}
 }
 
