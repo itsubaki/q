@@ -358,6 +358,22 @@ func (q *Q) String() string {
 	return q.internal.String()
 }
 
+func (q *Q) Print(reg ...[]Qubit) (int, error) {
+	return fmt.Print(q.Sprint(reg...))
+}
+
+func (q *Q) Println(reg ...[]Qubit) (int, error) {
+	return fmt.Println(q.Sprintln(reg...))
+}
+
+func (q *Q) Printf(ampf, ketf, sep string, reg ...[]Qubit) (int, error) {
+	return fmt.Print(q.Sprintf(ampf, ketf, sep, reg...))
+}
+
+func (q *Q) Printfln(ampf, ketf, sep string, reg ...[]Qubit) (int, error) {
+	return fmt.Println(q.Sprintf(ampf, ketf, sep, reg...))
+}
+
 func (q *Q) Sprint(reg ...[]Qubit) string {
 	return q.Sprintf("%.2v", "|%d>", " ", reg...)
 }
