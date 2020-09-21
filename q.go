@@ -317,7 +317,7 @@ func (q *Q) InvQFT(qb ...Qubit) *Q {
 	return q.InverseQFT(qb...)
 }
 
-func (q *Q) Estimate(qb Qubit, loop ...int) *qubit.Qubit {
+func (q *Q) Estimate(qb Qubit, loop ...int) (float64, float64) {
 	c0, c1, limit := 0, 0, 1000
 	if len(loop) > 0 {
 		limit = loop[0]
@@ -334,10 +334,9 @@ func (q *Q) Estimate(qb Qubit, loop ...int) *qubit.Qubit {
 		c1++
 	}
 
-	z := math.Sqrt(float64(c0) / float64(limit))
-	o := math.Sqrt(float64(c1) / float64(limit))
-
-	return qubit.New(complex(z, 0), complex(o, 0))
+	p0 := float64(c0) / float64(limit)
+	p1 := float64(c1) / float64(limit)
+	return p0, p1
 }
 
 func (q *Q) Clone() *Q {

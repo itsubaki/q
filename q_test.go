@@ -105,13 +105,6 @@ func TestQsimFactoring85(t *testing.T) {
 		qsim.CR(q3, q1, 3).CR(q2, q1, 2).H(q1)
 		qsim.CR(q3, q0, 4).CR(q2, q0, 3).CR(q1, q0, 2).H(q0)
 
-		// estimate
-		e0 := qsim.Estimate(q0).Probability()
-		e1 := qsim.Estimate(q1).Probability()
-		e2 := qsim.Estimate(q2).Probability()
-		e3 := qsim.Estimate(q3).Probability()
-		fmt.Printf("%.3f %.3f %.3f %.3f\n", e0, e1, e2, e3)
-
 		// measure
 		m := qsim.MeasureAsBinary(q0, q1, q2, q3)
 
@@ -184,13 +177,6 @@ func TestQsimFactoring51(t *testing.T) {
 		qsim.CR(q1, q0, 2)
 		qsim.H(q0)
 
-		// estimate
-		e0 := qsim.Estimate(q0).Probability()
-		e1 := qsim.Estimate(q1).Probability()
-		e2 := qsim.Estimate(q2).Probability()
-		e3 := qsim.Estimate(q3).Probability()
-		fmt.Printf("%.3f %.3f %.3f %.3f\n", e0, e1, e2, e3)
-
 		// measure
 		m := qsim.MeasureAsBinary(q0, q1, q2, q3)
 
@@ -254,12 +240,6 @@ func TestQSimFactoring15(t *testing.T) {
 		// inverse QFT
 		qsim.Swap(q0, q2)
 		qsim.InverseQFT(q0, q1, q2)
-
-		// estimate
-		e0 := qsim.Estimate(q0).Probability()
-		e1 := qsim.Estimate(q1).Probability()
-		e2 := qsim.Estimate(q2).Probability()
-		fmt.Printf("%.3f %.3f %.3f\n", e0, e1, e2)
 
 		// measure q0, q1, q2
 		m := qsim.MeasureAsBinary(q0, q1, q2)
@@ -480,28 +460,13 @@ func TestQSimEstimate(t *testing.T) {
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
-
 	qsim.H(q0, q1)
 
-	for _, p := range qsim.Probability() {
-		if math.Abs(p-0.25) > 1e-13 {
-			t.Error(qsim.Probability())
+	for _, q := range []Qubit{q0, q1} {
+		p0, p1 := qsim.Estimate(q)
+		if math.Abs(p0-0.5) > 1e-2 || math.Abs(p1-0.5) > 1e-2 {
+			t.Fatalf("p0=%v, p1=%v", p0, p1)
 		}
-	}
-
-	ex := qubit.Zero().Apply(gate.H())
-	e0 := qsim.Estimate(q0)
-	e1 := qsim.Estimate(q1)
-
-	f0 := ex.Fidelity(e0)
-	f1 := ex.Fidelity(e1)
-
-	if math.Abs(f0-1) > 1e-2 {
-		t.Errorf("%v: %v\n", f0, e0)
-	}
-
-	if math.Abs(f1-1) > 1e-2 {
-		t.Errorf("%v: %v\n", f1, e1)
 	}
 }
 
@@ -681,17 +646,15 @@ func TestQsimErrorCorrectionZero(t *testing.T) {
 	qsim.ConditionX(m3.IsOne() && m4.IsOne(), q1)
 	qsim.ConditionX(m3.IsZero() && m4.IsOne(), q2)
 
+	// decoding
+	qsim.CNOT(q0, q2).CNOT(q0, q1)
+
 	// |q0q1q2> = |000>
-	if !qsim.Estimate(q0).IsZero() {
-		t.Error(qsim.Estimate(q0))
-	}
-
-	if !qsim.Estimate(q1).IsZero() {
-		t.Error(qsim.Estimate(q1))
-	}
-
-	if !qsim.Estimate(q2).IsZero() {
-		t.Error(qsim.Estimate(q2))
+	for _, q := range []Qubit{q0, q1, q2} {
+		p0, p1 := qsim.Estimate(q)
+		if math.Abs(p0-1) > 1e-13 || p1 > 1e-13 {
+			t.Fatalf("p0=%v, p1=%v", p0, p1)
+		}
 	}
 
 	// |000>|10>
@@ -703,7 +666,8 @@ func TestQsimErrorCorrectionZero(t *testing.T) {
 func TestQsimErrorCorrection(t *testing.T) {
 	qsim := New()
 
-	q0 := qsim.New(1, 9)
+	q0 := qsim.New(0.01, 0.09)
+	e0, e1 := qsim.Probability()[0], qsim.Probability()[1]
 
 	// encoding
 	q1 := qsim.Zero()
@@ -728,21 +692,19 @@ func TestQsimErrorCorrection(t *testing.T) {
 	qsim.ConditionX(m3.IsOne() && m4.IsOne(), q1)
 	qsim.ConditionX(m3.IsZero() && m4.IsOne(), q2)
 
-	ex := qubit.New(1, 9)
-	f0 := ex.Fidelity(qsim.Estimate(q0))
-	f1 := ex.Fidelity(qsim.Estimate(q1))
-	f2 := ex.Fidelity(qsim.Estimate(q2))
+	// decoding
+	qsim.CNOT(q0, q2).CNOT(q0, q1)
 
-	if math.Abs(f0-1) > 1e-3 {
-		t.Errorf("%v\n", f0)
+	p0, p1 := qsim.Estimate(q0)
+	if math.Abs(p0-e0) > 1e-2 || math.Abs(p1-e1) > 1e-2 {
+		t.Fatalf("p0=%v, p1=%v", p0, p1)
 	}
 
-	if math.Abs(f1-1) > 1e-3 {
-		t.Errorf("%v\n", f1)
-	}
-
-	if math.Abs(f2-1) > 1e-3 {
-		t.Errorf("%v\n", f2)
+	for _, q := range []Qubit{q1, q2} {
+		p0, p1 := qsim.Estimate(q)
+		if math.Abs(p0-1) > 1e-13 || p1 > 1e-13 {
+			t.Fatalf("p0=%v, p1=%v", p0, p1)
+		}
 	}
 }
 

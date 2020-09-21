@@ -21,9 +21,9 @@ q1 := qsim.Zero()
 qsim.H(q0).CNOT(q0, q1)
 
 // estimate
-qsim.Estimate(q0).Probability()
+qsim.Estimate(q0)
 // -> (0.5, 0.5)
-qsim.Estimate(q1).Probability()
+qsim.Estimate(q1)
 // -> (0.5, 0.5)
 
 qsim.Probability()
@@ -61,7 +61,7 @@ qsim.ConditionZ(mz.IsOne(), q1)
 qsim.ConditionX(mx.IsOne(), q1)
 
 // Bob got |phi> state
-qsim.Estimate(q1).Probability()
+qsim.Estimate(q1)
 // -> (0.2, 0.8)
 ```
 
@@ -99,7 +99,7 @@ qsim.ConditionX(m3.IsZero() && m4.IsOne(), q2)
 qsim.CNOT(q0, q2).CNOT(q0, q1)
 
 // estimate
-qsim.Estimate(q0).Probability() // (0.2, 0.8)
+qsim.Estimate(q0) // (0.2, 0.8)
 ```
 
 ### Grover's search algorithm
