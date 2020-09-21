@@ -358,15 +358,15 @@ func (q *Q) String() string {
 	return q.internal.String()
 }
 
-func (q *Q) RegString(reg ...[]Qubit) string {
-	return q.RegStringWith(" ", reg...)
+func (q *Q) StringRegister(reg ...[]Qubit) string {
+	return q.StringRegisterWith(" ", reg...)
 }
 
-func (q *Q) RegStringln(reg ...[]Qubit) string {
-	return q.RegStringWith("\n", reg...)
+func (q *Q) StringRegisterln(reg ...[]Qubit) string {
+	return q.StringRegisterWith("\n", reg...)
 }
 
-func (q *Q) RegStringWith(delimiter string, reg ...[]Qubit) string {
+func (q *Q) StringRegisterWith(delimiter string, reg ...[]Qubit) string {
 	if len(reg) == 0 {
 		return ""
 	}
