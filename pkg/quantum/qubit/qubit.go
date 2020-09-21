@@ -54,12 +54,12 @@ func (q *Qubit) IsOne(eps ...float64) bool {
 	return q.Equals(One(), eps...)
 }
 
-func (q *Qubit) InnerProduct(q0 *Qubit) complex128 {
-	return q.vector.InnerProduct(q0.vector)
+func (q *Qubit) InnerProduct(qb *Qubit) complex128 {
+	return q.vector.InnerProduct(qb.vector)
 }
 
-func (q *Qubit) OuterProduct(q0 *Qubit) matrix.Matrix {
-	return q.vector.OuterProduct(q0.vector)
+func (q *Qubit) OuterProduct(qb *Qubit) matrix.Matrix {
+	return q.vector.OuterProduct(qb.vector)
 }
 
 func (q *Qubit) Dimension() int {
@@ -73,8 +73,8 @@ func (q *Qubit) Clone() *Qubit {
 	}
 }
 
-func (q *Qubit) Fidelity(q0 *Qubit) float64 {
-	p0 := q0.Probability()
+func (q *Qubit) Fidelity(qb *Qubit) float64 {
+	p0 := qb.Probability()
 	p1 := q.Probability()
 
 	var sum float64
@@ -85,8 +85,8 @@ func (q *Qubit) Fidelity(q0 *Qubit) float64 {
 	return sum
 }
 
-func (q *Qubit) TraceDistance(q0 *Qubit) float64 {
-	p0 := q0.Probability()
+func (q *Qubit) TraceDistance(qb *Qubit) float64 {
+	p0 := qb.Probability()
 	p1 := q.Probability()
 
 	var sum float64
@@ -97,12 +97,12 @@ func (q *Qubit) TraceDistance(q0 *Qubit) float64 {
 	return sum / 2
 }
 
-func (q *Qubit) Equals(q0 *Qubit, eps ...float64) bool {
-	return q.vector.Equals(q0.vector, eps...)
+func (q *Qubit) Equals(qb *Qubit, eps ...float64) bool {
+	return q.vector.Equals(qb.vector, eps...)
 }
 
-func (q *Qubit) TensorProduct(q0 *Qubit) *Qubit {
-	q.vector = q.vector.TensorProduct(q0.vector)
+func (q *Qubit) TensorProduct(qb *Qubit) *Qubit {
+	q.vector = q.vector.TensorProduct(qb.vector)
 	return q
 }
 
@@ -258,11 +258,11 @@ func (q *Qubit) Int() int {
 	panic("invalid state")
 }
 
-func TensorProduct(q ...*Qubit) *Qubit {
-	q1 := q[0]
-	for i := 1; i < len(q); i++ {
-		q1 = q1.TensorProduct(q[i])
+func TensorProduct(qb ...*Qubit) *Qubit {
+	q := qb[0]
+	for i := 1; i < len(qb); i++ {
+		q = q.TensorProduct(qb[i])
 	}
 
-	return q1
+	return q
 }
