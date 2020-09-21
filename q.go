@@ -417,5 +417,5 @@ func (q *Q) Sprintf(ampf, ketf, sep string, reg ...[]Qubit) string {
 	}
 
 	str := sb.String()
-	return str[:len(str)-len(sep)-1]
+	return str[:len(str)-len(sep)]
 }
