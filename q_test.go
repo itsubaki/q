@@ -16,7 +16,7 @@ import (
 func TestQSimFactoringN(t *testing.T) {
 	print := func(tag string, qsim *Q, r0, r1 []Qubit) {
 		fmt.Println(tag)
-		fmt.Println(qsim.SprintSepln(r0, r1))
+		qsim.PrintSeplnln(r0, r1)
 		fmt.Println()
 	}
 
