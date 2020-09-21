@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"strconv"
-	"strings"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
@@ -15,10 +14,9 @@ import (
 )
 
 func TestQSimFactoringN(t *testing.T) {
-	print := func(qsim *Q, r0, r1 []Qubit) {
-		str := qsim.Sprint(r0, r1)
-		line := strings.ReplaceAll(str, " ", "\n")
-		fmt.Println(line)
+	print := func(tag string, qsim *Q, r0, r1 []Qubit) {
+		fmt.Println(tag)
+		fmt.Println(qsim.SprintSepln(r0, r1))
 		fmt.Println()
 	}
 
@@ -30,21 +28,17 @@ func TestQSimFactoringN(t *testing.T) {
 	r0 := qsim.ZeroWith(3)
 	r1 := qsim.ZeroLog2(N)
 
-	fmt.Println("initial state")
 	qsim.X(r1[len(r1)-1])
-	print(qsim, r0, r1)
+	print("initial state", qsim, r0, r1)
 
-	fmt.Println("create superposition")
 	qsim.H(r0...)
-	print(qsim, r0, r1)
+	print("create superposition", qsim, r0, r1)
 
-	fmt.Println("apply controlled-U")
 	qsim.CModExp2(N, a, r0, r1)
-	print(qsim, r0, r1)
+	print("apply controlled-U", qsim, r0, r1)
 
-	fmt.Println("apply inverse qft")
 	qsim.InvQFT(r0...)
-	print(qsim, r0, r1)
+	print("apply inverse QFT", qsim, r0, r1)
 
 	for i := 0; i < 10; i++ {
 		m := qsim.Clone().MeasureAsBinary(r0...)
