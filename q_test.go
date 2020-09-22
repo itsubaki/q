@@ -479,7 +479,7 @@ func TestQSimBellState(t *testing.T) {
 	qsim.H(q0).CNOT(q0, q1)
 
 	p := qsim.Probability()
-	if math.Abs(qubit.Sum(p)-1) > 1e-13 {
+	if math.Abs(number.Sum(p)-1) > 1e-13 {
 		t.Error(p)
 	}
 
@@ -517,7 +517,7 @@ func TestQsimQuantumTeleportation2(t *testing.T) {
 	mx := qsim.Measure(q0)
 
 	p := qsim.Probability()
-	if math.Abs(qubit.Sum(p)-1) > 1e-13 {
+	if math.Abs(number.Sum(p)-1) > 1e-13 {
 		t.Error(p)
 	}
 
@@ -575,7 +575,7 @@ func TestQSimQuantumTeleportation(t *testing.T) {
 	qsim.ConditionX(mx.IsOne(), q1)
 
 	p := qsim.Probability()
-	if math.Abs(qubit.Sum(p)-1) > 1e-13 {
+	if math.Abs(number.Sum(p)-1) > 1e-13 {
 		t.Error(p)
 	}
 
@@ -809,7 +809,7 @@ func TestQuantumTeleportation(t *testing.T) {
 	}
 
 	p := phi.Probability()
-	if math.Abs(qubit.Sum(p)-1) > 1e-13 {
+	if math.Abs(number.Sum(p)-1) > 1e-13 {
 		t.Error(p)
 	}
 
@@ -869,7 +869,7 @@ func TestQuantumTeleportation2(t *testing.T) {
 	}
 
 	p := phi.Probability()
-	if math.Abs(qubit.Sum(p)-1) > 1e-13 {
+	if math.Abs(number.Sum(p)-1) > 1e-13 {
 		t.Error(p)
 	}
 
