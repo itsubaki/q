@@ -1,8 +1,6 @@
 package number
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestModExp2(t *testing.T) {
 	cases := []struct {
