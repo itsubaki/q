@@ -362,35 +362,19 @@ func (q *Q) String() string {
 	return q.internal.String()
 }
 
-func (q *Q) Print(reg ...[]Qubit) (int, error) {
-	return fmt.Print(q.Sprint(reg...))
-}
-
-func (q *Q) Println(reg ...[]Qubit) (int, error) {
-	return fmt.Println(q.Sprint(reg...))
-}
-
-func (q *Q) PrintSeplnln(reg ...[]Qubit) (int, error) {
-	return fmt.Println(q.SprintSepln(reg...))
-}
-
-func (q *Q) Printf(ampf, ketf, sep string, reg ...[]Qubit) (int, error) {
-	return fmt.Print(q.Sprintf(ampf, ketf, sep, reg...))
-}
-
-func (q *Q) Printfln(ampf, ketf, sep string, reg ...[]Qubit) (int, error) {
-	return fmt.Println(q.Sprintf(ampf, ketf, sep, reg...))
-}
-
 func (q *Q) Sprint(reg ...[]Qubit) string {
-	return q.Sprintf("%.2g", "|%d>", " ", reg...)
+	var sb strings.Builder
+
+	sb.WriteString("%.2g")
+	for i := 0; i < len(reg); i++ {
+		sb.WriteString("|%d>")
+	}
+	sb.WriteString(" ")
+
+	return q.Sprintf(sb.String(), reg...)
 }
 
-func (q *Q) SprintSepln(reg ...[]Qubit) string {
-	return q.Sprintf("%.2g", "|%d>", "\n", reg...)
-}
-
-func (q *Q) Sprintf(ampf, ketf, sep string, reg ...[]Qubit) string {
+func (q *Q) Sprintf(format string, reg ...[]Qubit) string {
 	var sb strings.Builder
 
 	binf := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(q.NumberOfBit()), "s")
@@ -405,10 +389,8 @@ func (q *Q) Sprintf(ampf, ketf, sep string, reg ...[]Qubit) string {
 			a = complex(real(a), 0)
 		}
 
-		sb.WriteString(fmt.Sprintf(ampf, a))
-
+		val := append([]interface{}{}, a)
 		bin := fmt.Sprintf(binf, strconv.FormatInt(int64(i), 2))
-
 		for _, r := range reg {
 			var rbin strings.Builder
 			for _, qb := range r {
@@ -422,12 +404,11 @@ func (q *Q) Sprintf(ampf, ketf, sep string, reg ...[]Qubit) string {
 				panic(fmt.Sprintf("parse int bin=%s, rstr=%s", bin, rstr))
 			}
 
-			sb.WriteString(fmt.Sprintf(ketf, rint))
+			val = append(val, rint)
 		}
 
-		sb.WriteString(sep)
+		sb.WriteString(fmt.Sprintf(format, val...))
 	}
 
-	str := sb.String()
-	return str[:len(str)-len(sep)]
+	return sb.String()
 }
