@@ -3,6 +3,7 @@ package q
 import (
 	"fmt"
 	"math"
+	"math/cmplx"
 	"strconv"
 	"strings"
 
@@ -84,10 +85,6 @@ func (q *Q) ZeroLog2(N int) []Qubit {
 
 func (q *Q) NumberOfBit() int {
 	return q.internal.NumberOfBit()
-}
-
-func (q *Q) Amplitude() []complex128 {
-	return q.internal.Amplitude()
 }
 
 func (q *Q) Probability() []float64 {
@@ -362,23 +359,25 @@ func (q *Q) String() string {
 	return q.internal.String()
 }
 
-func (q *Q) Sprint(reg ...[]Qubit) string {
-	var sb strings.Builder
-
-	sb.WriteString("%.2g")
-	for i := 0; i < len(reg); i++ {
-		sb.WriteString("|%d>")
-	}
-	sb.WriteString(" ")
-
-	return q.Sprintf(sb.String(), reg...)
+type Amplitude struct {
+	Value  complex128
+	Int    []int64
+	Binary []string
 }
 
-func (q *Q) Sprintf(format string, reg ...[]Qubit) string {
-	var sb strings.Builder
+func (a Amplitude) Probability() float64 {
+	return math.Pow(cmplx.Abs(a.Value), 2)
+}
+
+func (a Amplitude) String() string {
+	return fmt.Sprintf("%.2g%d", a.Value, a.Int)
+}
+
+func (q *Q) Amplitude(reg ...[]Qubit) []Amplitude {
+	amp := make([]Amplitude, 0)
 
 	binf := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(q.NumberOfBit()), "s")
-	for i, a := range q.Amplitude() {
+	for i, a := range q.internal.Amplitude() {
 		if a == 0 {
 			continue
 		}
@@ -389,26 +388,27 @@ func (q *Q) Sprintf(format string, reg ...[]Qubit) string {
 			a = complex(real(a), 0)
 		}
 
-		val := append([]interface{}{}, a)
+		val := Amplitude{Value: a, Int: make([]int64, 0)}
 		bin := fmt.Sprintf(binf, strconv.FormatInt(int64(i), 2))
 		for _, r := range reg {
-			var rbin strings.Builder
-			for _, qb := range r {
-				idx := qb.Index()
-				rbin.WriteString(bin[idx : idx+1])
+			var bb strings.Builder
+			for _, b := range r {
+				idx := b.Index()
+				bb.WriteString(bin[idx : idx+1])
 			}
 
-			rstr := rbin.String()
-			rint, err := strconv.ParseInt(rstr, 2, 0)
+			bstr := bb.String()
+			bint, err := strconv.ParseInt(bstr, 2, 0)
 			if err != nil {
-				panic(fmt.Sprintf("parse int bin=%s, reg=%s", bin, rstr))
+				panic(fmt.Sprintf("parse int bin=%s, reg=%s", bin, bstr))
 			}
 
-			val = append(val, rint)
+			val.Int = append(val.Int, bint)
+			val.Binary = append(val.Binary, bstr)
 		}
 
-		sb.WriteString(fmt.Sprintf(format, val...))
+		amp = append(amp, val)
 	}
 
-	return sb.String()
+	return amp
 }
