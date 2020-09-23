@@ -371,13 +371,13 @@ type State struct {
 }
 
 func (s State) String() string {
-	return fmt.Sprintf("%v%v%.4g: %.4f", s.Binary, s.Index, s.Amplitude, s.Probability)
+	return fmt.Sprintf("%v%v% .4g: %.4f", s.Binary, s.Index, s.Amplitude, s.Probability)
 }
 
 func (q *Q) State(reg ...[]Qubit) []State {
 	state := make([]State, 0)
 
-	binf := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(q.NumberOfBit()), "s")
+	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(q.NumberOfBit()), "s")
 	for i, a := range q.internal.Amplitude() {
 		if a == 0 {
 			continue
@@ -389,8 +389,8 @@ func (q *Q) State(reg ...[]Qubit) []State {
 			a = complex(real(a), 0)
 		}
 
-		s := State{Amplitude: a, Probability: math.Pow(cmplx.Abs(a), 2), Index: make([]int64, 0)}
-		bin := fmt.Sprintf(binf, strconv.FormatInt(int64(i), 2))
+		s := State{Amplitude: a, Probability: math.Pow(cmplx.Abs(a), 2)}
+		bin := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
 		for _, r := range reg {
 			var bb strings.Builder
 			for _, b := range r {
