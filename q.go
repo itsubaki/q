@@ -397,14 +397,13 @@ func (q *Q) Amplitude(reg ...[]Qubit) []Amplitude {
 				bb.WriteString(bin[idx : idx+1])
 			}
 
-			bstr := bb.String()
-			bint, err := strconv.ParseInt(bstr, 2, 0)
+			bbin := bb.String()
+			bint, err := strconv.ParseInt(bbin, 2, 0)
 			if err != nil {
-				panic(fmt.Sprintf("parse int bin=%s, reg=%s", bin, bstr))
+				panic(fmt.Sprintf("parse int bin=%s, reg=%s", bin, bbin))
 			}
 
-			val.Int = append(val.Int, bint)
-			val.Binary = append(val.Binary, bstr)
+			val.Int, val.Binary = append(val.Int, bint), append(val.Binary, bbin)
 		}
 
 		amp = append(amp, val)
