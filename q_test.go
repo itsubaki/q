@@ -16,8 +16,8 @@ import (
 func TestQSimFactoringN(t *testing.T) {
 	print := func(tag string, qsim *Q, r0, r1 []Qubit) {
 		fmt.Println(tag)
-		for _, a := range qsim.Amplitude(r0, r1) {
-			fmt.Println(a)
+		for _, s := range qsim.State(r0, r1) {
+			fmt.Println(s)
 		}
 		fmt.Println()
 	}

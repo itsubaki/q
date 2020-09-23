@@ -87,6 +87,10 @@ func (q *Q) NumberOfBit() int {
 	return q.internal.NumberOfBit()
 }
 
+func (q *Q) Amplitude() []complex128 {
+	return q.internal.Amplitude()
+}
+
 func (q *Q) Probability() []float64 {
 	return q.internal.Probability()
 }
@@ -359,22 +363,19 @@ func (q *Q) String() string {
 	return q.internal.String()
 }
 
-type Amplitude struct {
-	Value  complex128
-	Index  []int64
-	Binary []string
+type State struct {
+	Amplitude   complex128
+	Probability float64
+	Index       []int64
+	Binary      []string
 }
 
-func (a Amplitude) Probability() float64 {
-	return math.Pow(cmplx.Abs(a.Value), 2)
+func (s State) String() string {
+	return fmt.Sprintf("%v%v%.4g: %.4f", s.Binary, s.Index, s.Amplitude, s.Probability)
 }
 
-func (a Amplitude) String() string {
-	return fmt.Sprintf("%v%v%.2g: %.2f", a.Binary, a.Index, a.Value, a.Probability())
-}
-
-func (q *Q) Amplitude(reg ...[]Qubit) []Amplitude {
-	amp := make([]Amplitude, 0)
+func (q *Q) State(reg ...[]Qubit) []State {
+	state := make([]State, 0)
 
 	binf := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(q.NumberOfBit()), "s")
 	for i, a := range q.internal.Amplitude() {
@@ -388,7 +389,7 @@ func (q *Q) Amplitude(reg ...[]Qubit) []Amplitude {
 			a = complex(real(a), 0)
 		}
 
-		val := Amplitude{Value: a, Index: make([]int64, 0)}
+		s := State{Amplitude: a, Probability: math.Pow(cmplx.Abs(a), 2), Index: make([]int64, 0)}
 		bin := fmt.Sprintf(binf, strconv.FormatInt(int64(i), 2))
 		for _, r := range reg {
 			var bb strings.Builder
@@ -403,11 +404,11 @@ func (q *Q) Amplitude(reg ...[]Qubit) []Amplitude {
 				panic(fmt.Sprintf("parse int bin=%s, reg=%s", bin, bbin))
 			}
 
-			val.Index, val.Binary = append(val.Index, bint), append(val.Binary, bbin)
+			s.Index, s.Binary = append(s.Index, bint), append(s.Binary, bbin)
 		}
 
-		amp = append(amp, val)
+		state = append(state, s)
 	}
 
-	return amp
+	return state
 }
