@@ -401,7 +401,7 @@ func (q *Q) Sprintf(format string, reg ...[]Qubit) string {
 			rstr := rbin.String()
 			rint, err := strconv.ParseInt(rstr, 2, 0)
 			if err != nil {
-				panic(fmt.Sprintf("parse int bin=%s, rstr=%s", bin, rstr))
+				panic(fmt.Sprintf("parse int bin=%s, reg=%s", bin, rstr))
 			}
 
 			val = append(val, rint)
