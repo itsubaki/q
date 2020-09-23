@@ -361,7 +361,7 @@ func (q *Q) String() string {
 
 type Amplitude struct {
 	Value  complex128
-	Int    []int64
+	Index  []int64
 	Binary []string
 }
 
@@ -370,7 +370,7 @@ func (a Amplitude) Probability() float64 {
 }
 
 func (a Amplitude) String() string {
-	return fmt.Sprintf("%.2g%d", a.Value, a.Int)
+	return fmt.Sprintf("%v%v%.2g: %.2f", a.Binary, a.Index, a.Value, a.Probability())
 }
 
 func (q *Q) Amplitude(reg ...[]Qubit) []Amplitude {
@@ -388,7 +388,7 @@ func (q *Q) Amplitude(reg ...[]Qubit) []Amplitude {
 			a = complex(real(a), 0)
 		}
 
-		val := Amplitude{Value: a, Int: make([]int64, 0)}
+		val := Amplitude{Value: a, Index: make([]int64, 0)}
 		bin := fmt.Sprintf(binf, strconv.FormatInt(int64(i), 2))
 		for _, r := range reg {
 			var bb strings.Builder
@@ -403,7 +403,7 @@ func (q *Q) Amplitude(reg ...[]Qubit) []Amplitude {
 				panic(fmt.Sprintf("parse int bin=%s, reg=%s", bin, bbin))
 			}
 
-			val.Int, val.Binary = append(val.Int, bint), append(val.Binary, bbin)
+			val.Index, val.Binary = append(val.Index, bint), append(val.Binary, bbin)
 		}
 
 		amp = append(amp, val)
