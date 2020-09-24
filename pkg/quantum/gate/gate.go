@@ -273,7 +273,7 @@ func Fredkin(bit, c, t0, t1 int) matrix.Matrix {
 	return g0.Apply(g1).Apply(g2)
 }
 
-// QFT returns unitary matrix of Quantum Fourier Transform
+// QFT returns unitary matrix of Quantum Fourier Transform operation
 func QFT(bit int) matrix.Matrix {
 	out := I(bit)
 
@@ -298,7 +298,7 @@ func QFT(bit int) matrix.Matrix {
 	return out
 }
 
-// CModExp returns unitary matrix of Controlled-U^(2^j)|k> -> |a^(2^j)*k mod N> operation
+// CModExp2 returns unitary matrix of Controlled-U^(2^j)|k> -> |a^(2^j)*k mod N> operation
 func CModExp2(bit, N, a, j, control int, target []int) matrix.Matrix {
 	min := int(math.Log2(float64(N))) + 1
 	if len(target) < min {
