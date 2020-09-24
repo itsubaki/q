@@ -27,7 +27,7 @@ func TestQSimFactoringN(t *testing.T) {
 	fmt.Printf("N=%v, a=%v\n", N, a)
 
 	qsim := New()
-	r0 := qsim.ZeroWith(3)
+	r0 := qsim.ZeroWith(4)
 	r1 := qsim.ZeroLog2(N)
 
 	qsim.X(r1[len(r1)-1])
@@ -41,6 +41,9 @@ func TestQSimFactoringN(t *testing.T) {
 
 	qsim.InvQFT(r0...)
 	print("apply inverse QFT", qsim, r0, r1)
+
+	qsim.Measure(r1...)
+	print("measure reg1", qsim, r0, r1)
 
 	for i := 0; i < 10; i++ {
 		m := qsim.Clone().MeasureAsBinary(r0...)
