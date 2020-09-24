@@ -18,19 +18,10 @@ func TestQSimFactoringN(t *testing.T) {
 	print := func(tag string, qsim *Q, reg ...[]Qubit) {
 		fmt.Println(tag)
 
-		p := make([]float64, 0)
+		max := number.Max(qsim.Probability())
 		for _, s := range qsim.State(reg...) {
-			p = append(p, s.Probability)
-		}
-		max := number.Max(p)
-
-		for _, s := range qsim.State(reg...) {
-			var sb strings.Builder
-			for i := 0; i < int(s.Probability/max*32); i++ {
-				sb.WriteString("*")
-			}
-
-			fmt.Printf("%s: %s\n", s, sb.String())
+			p := strings.Repeat("*", int(s.Probability/max*32))
+			fmt.Printf("%s: %s\n", s, p)
 		}
 
 		fmt.Println()
