@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"strconv"
-	"strings"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
@@ -15,40 +14,17 @@ import (
 )
 
 func TestQSimFactoringN(t *testing.T) {
-	print := func(desc string, qsim *Q, reg ...[]Qubit) {
-		fmt.Println(desc)
-
-		max := number.Max(qsim.Probability())
-		for _, s := range qsim.State(reg...) {
-			p := strings.Repeat("*", int(s.Probability/max*32))
-			fmt.Printf("%s: %s\n", s, p)
-		}
-
-		fmt.Println()
-	}
-
 	N := 21
 	a := rand.Coprime(N)
-	fmt.Printf("N=%v, a=%v\n\n", N, a)
 
 	qsim := New()
 	r0 := qsim.ZeroWith(4)
 	r1 := qsim.ZeroLog2(N)
 
 	qsim.X(r1[len(r1)-1])
-	print("initial state", qsim, r0, r1)
-
 	qsim.H(r0...)
-	print("create superposition", qsim, r0, r1)
-
 	qsim.CModExp2(N, a, r0, r1)
-	print("apply controlled-U", qsim, r0, r1)
-
 	qsim.InvQFT(r0...)
-	print("apply inverse QFT", qsim, r0, r1)
-
-	qsim.Measure(r1...)
-	print("measure reg1", qsim, r0, r1)
 
 	for i := 0; i < 10; i++ {
 		m := qsim.Clone().MeasureAsBinary(r0...)
@@ -56,22 +32,22 @@ func TestQSimFactoringN(t *testing.T) {
 		_, s, r := number.ContinuedFraction(d)
 
 		if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
-			fmt.Printf("  i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v=%.3f).\n", i, N, a, s, r, m, d)
 			continue
 		}
 
 		p0 := number.GCD(number.Pow(a, r/2)-1, N)
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
-		found := " "
+		// result
+		fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", i, N, a, p0, p1, s, r, m, d)
+
+		// check
 		for _, p := range []int{p0, p1} {
 			if 1 < p && p < N && N%p == 0 {
-				found = "*"
-				break
+				fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
+				return
 			}
 		}
-
-		fmt.Printf("%s i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v=%.3f). p=%v, q=%v.\n", found, i, N, a, s, r, m, d, p0, p1)
 	}
 }
 
@@ -84,39 +60,39 @@ func TestQsimFactoring85(t *testing.T) {
 		t.Fatalf("gcd(%d, %d) != 1\n", N, a)
 	}
 
+	qsim := New()
+
+	// initial state
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
+	q3 := qsim.Zero()
+
+	q4 := qsim.Zero()
+	q5 := qsim.Zero()
+	q6 := qsim.Zero()
+	q7 := qsim.Zero()
+
+	// superposition
+	qsim.H(q0, q1, q2, q3)
+
+	// Controlled-U
+	qsim.CNOT(q0, q4)
+	qsim.CNOT(q1, q5)
+	qsim.CNOT(q2, q6)
+	qsim.CNOT(q3, q7)
+
+	// inverse QFT
+	qsim.Swap(q0, q1, q2, q3)
+
+	qsim.H(q3)
+	qsim.CR(q3, q2, 2).H(q2)
+	qsim.CR(q3, q1, 3).CR(q2, q1, 2).H(q1)
+	qsim.CR(q3, q0, 4).CR(q2, q0, 3).CR(q1, q0, 2).H(q0)
+
 	for i := 0; i < 10; i++ {
-		qsim := New()
-
-		// initial state
-		q0 := qsim.Zero()
-		q1 := qsim.Zero()
-		q2 := qsim.Zero()
-		q3 := qsim.Zero()
-
-		q4 := qsim.Zero()
-		q5 := qsim.Zero()
-		q6 := qsim.Zero()
-		q7 := qsim.Zero()
-
-		// superposition
-		qsim.H(q0, q1, q2, q3)
-
-		// Controlled-U
-		qsim.CNOT(q0, q4)
-		qsim.CNOT(q1, q5)
-		qsim.CNOT(q2, q6)
-		qsim.CNOT(q3, q7)
-
-		// inverse QFT
-		qsim.Swap(q0, q1, q2, q3)
-
-		qsim.H(q3)
-		qsim.CR(q3, q2, 2).H(q2)
-		qsim.CR(q3, q1, 3).CR(q2, q1, 2).H(q1)
-		qsim.CR(q3, q0, 4).CR(q2, q0, 3).CR(q1, q0, 2).H(q0)
-
 		// measure
-		m := qsim.MeasureAsBinary(q0, q1, q2, q3)
+		m := qsim.Clone().MeasureAsBinary(q0, q1, q2, q3)
 
 		// find s/r
 		d := number.BinaryFraction(m)
@@ -151,44 +127,44 @@ func TestQsimFactoring51(t *testing.T) {
 		t.Fatalf("gcd(%d, %d) != 1\n", N, a)
 	}
 
+	qsim := New()
+
+	// initial state
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
+	q3 := qsim.Zero()
+
+	q4 := qsim.Zero()
+	q5 := qsim.Zero()
+	q6 := qsim.Zero()
+	q7 := qsim.Zero()
+
+	// superposition
+	qsim.H(q0, q1, q2, q3)
+
+	// Controlled-U
+	qsim.CNOT(q0, q4)
+	qsim.CNOT(q1, q5)
+	qsim.CNOT(q2, q6)
+	qsim.CNOT(q3, q7)
+
+	// inverse QFT
+	qsim.Swap(q0, q1, q2, q3)
+	qsim.H(q3)
+	qsim.CR(q3, q2, 2)
+	qsim.H(q2)
+	qsim.CR(q3, q1, 3)
+	qsim.CR(q2, q1, 2)
+	qsim.H(q1)
+	qsim.CR(q3, q0, 4)
+	qsim.CR(q2, q0, 3)
+	qsim.CR(q1, q0, 2)
+	qsim.H(q0)
+
 	for i := 0; i < 10; i++ {
-		qsim := New()
-
-		// initial state
-		q0 := qsim.Zero()
-		q1 := qsim.Zero()
-		q2 := qsim.Zero()
-		q3 := qsim.Zero()
-
-		q4 := qsim.Zero()
-		q5 := qsim.Zero()
-		q6 := qsim.Zero()
-		q7 := qsim.Zero()
-
-		// superposition
-		qsim.H(q0, q1, q2, q3)
-
-		// Controlled-U
-		qsim.CNOT(q0, q4)
-		qsim.CNOT(q1, q5)
-		qsim.CNOT(q2, q6)
-		qsim.CNOT(q3, q7)
-
-		// inverse QFT
-		qsim.Swap(q0, q1, q2, q3)
-		qsim.H(q3)
-		qsim.CR(q3, q2, 2)
-		qsim.H(q2)
-		qsim.CR(q3, q1, 3)
-		qsim.CR(q2, q1, 2)
-		qsim.H(q1)
-		qsim.CR(q3, q0, 4)
-		qsim.CR(q2, q0, 3)
-		qsim.CR(q1, q0, 2)
-		qsim.H(q0)
-
 		// measure
-		m := qsim.MeasureAsBinary(q0, q1, q2, q3)
+		m := qsim.Clone().MeasureAsBinary(q0, q1, q2, q3)
 
 		// find s/r
 		d := number.BinaryFraction(m)
@@ -223,36 +199,36 @@ func TestQSimFactoring15(t *testing.T) {
 		t.Fatalf("gcd(%d, %d) != 1\n", N, a)
 	}
 
+	qsim := New()
+
+	// initial state
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
+
+	q3 := qsim.Zero()
+	q4 := qsim.Zero()
+	q5 := qsim.Zero()
+	q6 := qsim.One()
+
+	// superposition
+	qsim.H(q0, q1, q2)
+
+	// Controlled-U^(2^0)
+	qsim.CNOT(q2, q4)
+	qsim.CNOT(q2, q5)
+
+	// Controlled-U^(2^1)
+	qsim.CNOT(q3, q5).CCNOT(q1, q5, q3).CNOT(q3, q5)
+	qsim.CNOT(q4, q6).CCNOT(q1, q6, q4).CNOT(q4, q6)
+
+	// inverse QFT
+	qsim.Swap(q0, q2)
+	qsim.InverseQFT(q0, q1, q2)
+
 	for i := 0; i < 10; i++ {
-		qsim := New()
-
-		// initial state
-		q0 := qsim.Zero()
-		q1 := qsim.Zero()
-		q2 := qsim.Zero()
-
-		q3 := qsim.Zero()
-		q4 := qsim.Zero()
-		q5 := qsim.Zero()
-		q6 := qsim.One()
-
-		// superposition
-		qsim.H(q0, q1, q2)
-
-		// Controlled-U^(2^0)
-		qsim.CNOT(q2, q4)
-		qsim.CNOT(q2, q5)
-
-		// Controlled-U^(2^1)
-		qsim.CNOT(q3, q5).CCNOT(q1, q5, q3).CNOT(q3, q5)
-		qsim.CNOT(q4, q6).CCNOT(q1, q6, q4).CNOT(q4, q6)
-
-		// inverse QFT
-		qsim.Swap(q0, q2)
-		qsim.InverseQFT(q0, q1, q2)
-
 		// measure q0, q1, q2
-		m := qsim.MeasureAsBinary(q0, q1, q2)
+		m := qsim.Clone().MeasureAsBinary(q0, q1, q2)
 
 		// find s/r. 010 -> 0.25 -> 1/4, 110 -> 0.75 -> 3/4, ...
 		d := number.BinaryFraction(m)
