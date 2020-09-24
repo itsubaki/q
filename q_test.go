@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
@@ -14,15 +15,30 @@ import (
 )
 
 func TestQSimFactoringN(t *testing.T) {
-	print := func(tag string, qsim *Q, r0, r1 []Qubit) {
+	print := func(tag string, qsim *Q, reg ...[]Qubit) {
 		fmt.Println(tag)
-		for _, s := range qsim.State(r0, r1) {
-			fmt.Println(s)
+
+		var max float64
+		for _, s := range qsim.State(reg...) {
+			if s.Probability > max {
+				max = s.Probability
+			}
 		}
+
+		for _, s := range qsim.State(reg...) {
+			list := make([]string, 0)
+			for i := 0; i < int(s.Probability/max*32); i++ {
+				list = append(list, "*")
+			}
+			g := strings.Join(list[:], "")
+
+			fmt.Printf("%s=%3d: %.4f: %s\n", s.Binary, s.Index, s.Probability, g)
+		}
+
 		fmt.Println()
 	}
 
-	N := 15
+	N := 21
 	a := rand.Coprime(N)
 	fmt.Printf("N=%v, a=%v\n", N, a)
 
