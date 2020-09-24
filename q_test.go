@@ -709,6 +709,25 @@ func TestQsimErrorCorrection(t *testing.T) {
 	}
 }
 
+func TestQSimMeasure(t *testing.T) {
+	qsim := New()
+	q0 := qsim.Zero()
+
+	if !qsim.Measure().IsZero() {
+		t.Errorf("qsim: %v", qsim.BinaryString())
+	}
+
+	if !qsim.Measure(q0).IsZero() {
+		t.Errorf("qsim: %v", qsim.BinaryString())
+	}
+
+	qc := qsim.Clone()
+	q1 := qc.One()
+	if !qc.Measure(q1).IsOne() {
+		t.Errorf("clone: %v", qc.BinaryString())
+	}
+}
+
 func TestGrover3qubit(t *testing.T) {
 	x := matrix.TensorProduct(gate.X(), gate.I(3))
 	oracle := x.Apply(gate.ControlledNot(4, []int{0, 1, 2}, 3)).Apply(x)
