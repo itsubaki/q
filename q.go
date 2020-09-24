@@ -180,6 +180,10 @@ func (q *Q) T(qb ...Qubit) *Q {
 	return q.Apply(gate.T(), qb...)
 }
 
+func (q *Q) U(alpha, beta, gamma, delta float64, qb ...Qubit) *Q {
+	return q.Apply(gate.U(alpha, beta, gamma, delta), qb...)
+}
+
 func (q *Q) Apply(mat matrix.Matrix, qb ...Qubit) *Q {
 	if len(qb) < 1 {
 		q.internal.Apply(mat)
