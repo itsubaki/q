@@ -15,8 +15,8 @@ import (
 )
 
 func TestQSimFactoringN(t *testing.T) {
-	print := func(tag string, qsim *Q, reg ...[]Qubit) {
-		fmt.Println(tag)
+	print := func(desc string, qsim *Q, reg ...[]Qubit) {
+		fmt.Println(desc)
 
 		max := number.Max(qsim.Probability())
 		for _, s := range qsim.State(reg...) {
@@ -29,7 +29,7 @@ func TestQSimFactoringN(t *testing.T) {
 
 	N := 21
 	a := rand.Coprime(N)
-	fmt.Printf("N=%v, a=%v\n", N, a)
+	fmt.Printf("N=%v, a=%v\n\n", N, a)
 
 	qsim := New()
 	r0 := qsim.ZeroWith(4)
@@ -56,7 +56,7 @@ func TestQSimFactoringN(t *testing.T) {
 		_, s, r := number.ContinuedFraction(d)
 
 		if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
-			fmt.Printf("  i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v=%.3f). N/A.\n", i, N, a, s, r, m, d)
+			fmt.Printf("  i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v=%.3f).\n", i, N, a, s, r, m, d)
 			continue
 		}
 
