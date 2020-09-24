@@ -96,9 +96,8 @@ func (q *Q) Probability() []float64 {
 }
 
 func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
-	m := make([]*qubit.Qubit, 0)
-
 	if len(qb) < 1 {
+		m := make([]*qubit.Qubit, 0)
 		for i := 0; i < q.NumberOfBit(); i++ {
 			m = append(m, q.internal.Measure(i))
 		}
@@ -106,6 +105,7 @@ func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
 		return qubit.TensorProduct(m...)
 	}
 
+	m := make([]*qubit.Qubit, 0)
 	m = append(m, q.internal.Measure(qb[0].Index()))
 	for i := 1; i < len(qb); i++ {
 		m = append(m, q.internal.Measure(qb[i].Index()))
