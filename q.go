@@ -386,7 +386,7 @@ type State struct {
 }
 
 func (s State) String() string {
-	return fmt.Sprintf("%v%v% .4g: %.4f", s.Binary, s.Index, s.Amplitude, s.Probability)
+	return fmt.Sprintf("%v%3v(% .4f% .4fi): %.4f", s.Binary, s.Index, real(s.Amplitude), imag(s.Amplitude), s.Probability)
 }
 
 func (q *Q) State(reg ...[]Qubit) []State {
