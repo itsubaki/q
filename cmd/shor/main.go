@@ -10,11 +10,11 @@ import (
 	"github.com/itsubaki/q/pkg/math/rand"
 )
 
-// go run main.go --N 15 --e 4 --shot 10
+// go run main.go --N 15 --t 4 --shot 10
 func main() {
-	var N, e, shot int
+	var N, t, shot int
 	flag.IntVar(&N, "N", 15, "")
-	flag.IntVar(&e, "e", 4, "")
+	flag.IntVar(&t, "t", 4, "")
 	flag.IntVar(&shot, "shot", 10, "")
 	flag.Parse()
 
@@ -24,10 +24,10 @@ func main() {
 	}
 
 	a := rand.Coprime(N)
-	fmt.Printf("N=%v, a=%v, eps=%v\n\n", N, a, e)
+	fmt.Printf("N=%v, a=%v, t=%v\n\n", N, a, t)
 
 	qsim := q.New()
-	r0 := qsim.ZeroWith(e)
+	r0 := qsim.ZeroWith(t)
 	r1 := qsim.ZeroLog2(N)
 
 	qsim.X(r1[len(r1)-1])
