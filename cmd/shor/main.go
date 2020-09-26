@@ -14,7 +14,7 @@ import (
 func main() {
 	var N, t, shot int
 	flag.IntVar(&N, "N", 15, "")
-	flag.IntVar(&t, "t", 4, "t = 2L + 1 + Ceil(log(2 + 1/2eps)), the L is bit of number N.")
+	flag.IntVar(&t, "t", 4, "t = 2L + 1 + Ceil(log(2 + 1/2eps)), L-bit number N.")
 	flag.IntVar(&shot, "shot", 10, "")
 	flag.Parse()
 
