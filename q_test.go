@@ -255,6 +255,55 @@ func TestQSimFactoring15(t *testing.T) {
 	}
 }
 
+func TestQsimGrover4qubit(t *testing.T) {
+	qsim := New()
+
+	// initial state
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
+	q3 := qsim.Zero()
+
+	// superposition
+	qsim.H(q0, q1, q2, q3)
+
+	// iteration
+	N := number.Pow(2, qsim.NumberOfBit())
+	r := math.Floor(math.Pi / 4 * math.Sqrt(float64(N)))
+	for i := 0; i < int(r); i++ {
+		qsim.X(q2, q3)
+		qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)
+		qsim.X(q2, q3)
+
+		qsim.H(q0, q1, q2, q3)
+		qsim.X(q0, q1, q2, q3)
+		qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)
+		qsim.X(q0, q1, q2, q3)
+		qsim.H(q0, q1, q2, q3)
+	}
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// [0000][  0]( 0.0508 0.0000i): 0.0026
+	// [0001][  1]( 0.0508 0.0000i): 0.0026
+	// [0010][  2]( 0.0508 0.0000i): 0.0026
+	// [0011][  3]( 0.0508 0.0000i): 0.0026
+	// [0100][  4]( 0.0508 0.0000i): 0.0026
+	// [0101][  5]( 0.0508 0.0000i): 0.0026
+	// [0110][  6]( 0.0508 0.0000i): 0.0026
+	// [0111][  7]( 0.0508 0.0000i): 0.0026
+	// [1000][  8]( 0.0508 0.0000i): 0.0026
+	// [1001][  9]( 0.0508 0.0000i): 0.0026
+	// [1010][ 10]( 0.0508 0.0000i): 0.0026
+	// [1011][ 11]( 0.0508 0.0000i): 0.0026
+	// [1100][ 12](-0.9805 0.0000i): 0.9613
+	// [1101][ 13]( 0.0508 0.0000i): 0.0026
+	// [1110][ 14]( 0.0508 0.0000i): 0.0026
+	// [1111][ 15]( 0.0508 0.0000i): 0.0026
+}
+
 func TestQSimGrover3qubit(t *testing.T) {
 	qsim := New()
 
