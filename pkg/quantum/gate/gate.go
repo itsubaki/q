@@ -28,23 +28,32 @@ func NewSlice(l ...int) []matrix.Matrix {
 }
 
 func U(alpha, beta, gamma, delta float64) matrix.Matrix {
-	m0 := make(matrix.Matrix, 2)
-	v0 := complex(0, 1*beta/2)
-	m0[0] = []complex128{cmplx.Exp(cmplx.Conj(v0)), 0}
-	m0[1] = []complex128{0, cmplx.Exp(v0)}
-
-	m1 := make(matrix.Matrix, 2)
-	v1 := complex(gamma/2, 0)
-	m1[0] = []complex128{cmplx.Cos(v1), -1 * cmplx.Sin(v1)}
-	m1[1] = []complex128{cmplx.Sin(v1), cmplx.Cos(v1)}
-
-	m2 := make(matrix.Matrix, 2)
-	v2 := complex(0, 1*delta/2)
-	m2[0] = []complex128{cmplx.Exp(cmplx.Conj(v2)), 0}
-	m2[1] = []complex128{0, cmplx.Exp(v2)}
-
-	u := m0.Apply(m1).Apply(m2)
+	u := RZ(beta).Apply(RY(gamma)).Apply(RZ(delta))
 	return u.Mul(cmplx.Exp(complex(0, alpha)))
+}
+
+func RX(theta float64) matrix.Matrix {
+	m := make(matrix.Matrix, 2)
+	v := complex(theta/2, 0)
+	m[0] = []complex128{cmplx.Cos(v), complex(0, -1) * cmplx.Sin(v)}
+	m[1] = []complex128{complex(0, -1) * cmplx.Sin(v), cmplx.Cos(v)}
+	return m
+}
+
+func RY(theta float64) matrix.Matrix {
+	m := make(matrix.Matrix, 2)
+	v := complex(theta/2, 0)
+	m[0] = []complex128{cmplx.Cos(v), -1 * cmplx.Sin(v)}
+	m[1] = []complex128{cmplx.Sin(v), cmplx.Cos(v)}
+	return m
+}
+
+func RZ(theta float64) matrix.Matrix {
+	m := make(matrix.Matrix, 2)
+	v := complex(0, 1*theta/2)
+	m[0] = []complex128{cmplx.Exp(cmplx.Conj(v)), 0}
+	m[1] = []complex128{0, cmplx.Exp(v)}
+	return m
 }
 
 func R(k int) matrix.Matrix {
