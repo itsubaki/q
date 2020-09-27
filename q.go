@@ -394,8 +394,16 @@ func (s State) String() string {
 }
 
 func (q *Q) State(reg ...[]Qubit) []State {
-	state := make([]State, 0)
+	if len(reg) < 1 {
+		qb := make([]Qubit, 0)
+		for i := 0; i < q.NumberOfBit(); i++ {
+			qb = append(qb, Qubit(i))
+		}
 
+		reg = append(reg, qb)
+	}
+
+	state := make([]State, 0)
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(q.NumberOfBit()), "s")
 	for i, a := range q.internal.Amplitude() {
 		if a == 0 {

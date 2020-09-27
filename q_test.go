@@ -3,7 +3,6 @@ package q
 import (
 	"fmt"
 	"math"
-	"strconv"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
@@ -280,6 +279,7 @@ func TestQSimGrover3qubit(t *testing.T) {
 	m3 := qsim.Measure(q3)
 	if !m3.IsOne() {
 		t.Error(m3)
+		return
 	}
 
 	p := qsim.Probability()
@@ -298,12 +298,12 @@ func TestQSimGrover3qubit(t *testing.T) {
 		}
 	}
 
-	for i, pp := range p {
-		if pp == 0 {
+	for _, s := range qsim.State() {
+		if s.Probability == 0 {
 			continue
 		}
 
-		fmt.Printf("%04s %.6f\n", strconv.FormatInt(int64(i), 2), pp)
+		fmt.Println(s)
 	}
 }
 
