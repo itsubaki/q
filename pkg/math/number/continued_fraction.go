@@ -37,15 +37,3 @@ func ContinuedFraction(f float64, eps ...float64) ([]int, int, int) {
 
 	return list, n, d
 }
-
-func IsOdd(v int) bool {
-	return !IsEven(v)
-}
-
-func IsEven(v int) bool {
-	if v%2 == 0 {
-		return true
-	}
-
-	return false
-}

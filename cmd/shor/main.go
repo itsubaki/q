@@ -19,7 +19,12 @@ func main() {
 	flag.Parse()
 
 	if number.IsEven(N) {
-		fmt.Printf("N=%v, p=%v, q=%v\n", N, 2, N/2)
+		fmt.Printf("N=%d is even. p=%v, q=%v\n", N, 2, N/2)
+		return
+	}
+
+	if number.IsPrime(N) {
+		fmt.Printf("N=%d is prime.\n", N)
 		return
 	}
 
