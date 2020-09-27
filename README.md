@@ -125,11 +125,11 @@ qsim.X(q0, q1, q2).CCZ(q0, q1, q2).X(q0, q1, q2)
 qsim.H(q0, q1, q2)
 
 for _, s := range qsim.State() {
-	if s.Probability == 0 {
-		continue
-	}
+  if s.Probability == 0 {
+    continue
+  }
 
-	fmt.Println(s)
+  fmt.Println(s)
 }
 
 // 0001 0.03125
