@@ -108,10 +108,11 @@ qsim.ConditionX(m3.IsZero() && m4.IsOne(), q2)
 // decoding
 qsim.CNOT(q0, q2).CNOT(q0, q1)
 
-for _, s := range qsim.State([]q.Qubit{q1}) {
+for _, s := range qsim.State([]q.Qubit{q0}) {
   fmt.Println(s)
 }
-// [0][  0]( 1.0000 0.0000i): 1.0000
+// [0][  0]( 0.4472 0.0000i): 0.2000
+// [1][  1]( 0.8944 0.0000i): 0.8000
 ```
 
 ### Grover's search algorithm
@@ -219,6 +220,9 @@ for i := 0; i < 10; i++{
     }
   }
 }
+
+// i=2: N=15, a=7. p=3, q=5. s/r=1/4 ([0 1 0]=0.250)
+// answer: p=3, q=5
 ```
 
 ## Density Matrix
