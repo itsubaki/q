@@ -5,7 +5,7 @@ import "testing"
 func TestModExp2(t *testing.T) {
 	cases := []struct {
 		a, j, N int
-		out     int64
+		out     int
 	}{
 		{7, 0, 15, 7},
 		{7, 1, 15, 4},

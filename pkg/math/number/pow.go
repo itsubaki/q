@@ -18,13 +18,13 @@ func Pow(a, r int) int {
 }
 
 // ModExp2 returns a^(2^j) mod N
-func ModExp2(a, j, N int) int64 {
+func ModExp2(a, j, N int) int {
 	if a == 0 {
 		return 0
 	}
 
 	if j == 0 {
-		return int64(a % N)
+		return a % N
 	}
 
 	p := a
@@ -32,5 +32,5 @@ func ModExp2(a, j, N int) int64 {
 		p = (p * p) % N
 	}
 
-	return int64(p)
+	return p
 }

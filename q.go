@@ -114,14 +114,14 @@ func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
 	return qubit.TensorProduct(m...)
 }
 
-func (q *Q) MeasureAsInt(qb ...Qubit) int64 {
+func (q *Q) MeasureAsInt(qb ...Qubit) int {
 	b := q.BinaryString(qb...)
 	i, err := strconv.ParseInt(b, 2, 0)
 	if err != nil {
 		panic(err)
 	}
 
-	return i
+	return int(i)
 }
 
 func (q *Q) MeasureAsBinary(qb ...Qubit) []int {
@@ -385,7 +385,7 @@ func (q *Q) String() string {
 type State struct {
 	Amplitude   complex128
 	Probability float64
-	Index       []int64
+	Index       []int
 	Binary      []string
 }
 
@@ -423,7 +423,7 @@ func (q *Q) State(reg ...[]Qubit) []State {
 				panic(fmt.Sprintf("parse int bin=%s, reg=%s", bin, bbin))
 			}
 
-			s.Index, s.Binary = append(s.Index, bint), append(s.Binary, bbin)
+			s.Index, s.Binary = append(s.Index, int(bint)), append(s.Binary, bbin)
 		}
 
 		state = append(state, s)
