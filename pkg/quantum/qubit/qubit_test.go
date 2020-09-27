@@ -8,7 +8,7 @@ import (
 	"github.com/itsubaki/q/pkg/quantum/gate"
 )
 
-func ExampleQubit_OuterProduct_oeprator_sum() {
+func ExampleQubit_OuterProduct_operator_sum() {
 	q0 := Zero()
 	q1 := Zero()
 
