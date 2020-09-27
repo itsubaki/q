@@ -13,18 +13,23 @@ import (
 // go run main.go --N 15 --t 4 --shot 10
 func main() {
 	var N, t, shot int
-	flag.IntVar(&N, "N", 15, "")
-	flag.IntVar(&t, "t", 4, "")
+	flag.IntVar(&N, "N", 15, "positive integer")
+	flag.IntVar(&t, "t", 4, "precision bits")
 	flag.IntVar(&shot, "shot", 10, "")
 	flag.Parse()
 
-	if number.IsEven(N) {
-		fmt.Printf("N=%d is even. p=%v, q=%v\n", N, 2, N/2)
+	if N < 2 {
+		fmt.Printf("N=%d must be greater than 1.\n", N)
 		return
 	}
 
 	if number.IsPrime(N) {
 		fmt.Printf("N=%d is prime.\n", N)
+		return
+	}
+
+	if number.IsEven(N) {
+		fmt.Printf("N=%d is even. p=%v, q=%v\n", N, 2, N/2)
 		return
 	}
 
