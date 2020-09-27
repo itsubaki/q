@@ -1,46 +1,35 @@
 package qubit
 
 import (
+	"fmt"
 	"math"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/quantum/gate"
 )
 
-func TestOperatorSum(t *testing.T) {
+func ExampleQubit_OuterProduct_oeprator_sum() {
 	q0 := Zero()
 	q1 := Zero()
 
 	q := q0.OuterProduct(q1)
 	e := gate.X().Dagger().Apply(q.Apply(gate.X()))
 
-	if q[0][0] != complex(1, 0) {
-		t.Error(q)
-	}
-	if e[1][1] != complex(1, 0) {
-		t.Error(e)
-	}
+	fmt.Println(q)
+	fmt.Println(e)
+
+	// Output:
+	// [[(1+0i) (0+0i)] [(0+0i) (0+0i)]]
+	// [[(0+0i) (0+0i)] [(0+0i) (1+0i)]]
 }
 
-func TestOuterProduct(t *testing.T) {
-	v0 := New(1, 0)
-	out := v0.OuterProduct(v0)
+func ExampleQubit_OuterProduct() {
+	v := New(1, 0)
+	op := v.OuterProduct(v)
+	fmt.Println(op)
 
-	if out[0][0] != complex(1, 0) {
-		t.Fail()
-	}
-
-	if out[1][0] != complex(0, 0) {
-		t.Fail()
-	}
-
-	if out[0][1] != complex(0, 0) {
-		t.Fail()
-	}
-
-	if out[1][1] != complex(0, 0) {
-		t.Fail()
-	}
+	// Output:
+	// [[(1+0i) (0+0i)] [(0+0i) (0+0i)]]
 }
 
 func TestQFT(t *testing.T) {
@@ -80,26 +69,36 @@ func TestIs(t *testing.T) {
 }
 
 func TestFidelity(t *testing.T) {
-	f0 := Zero().Fidelity(Zero())
-	if f0 != 1 {
-		t.Error(f0)
+	cases := []struct {
+		q0, q1 *Qubit
+		f      float64
+	}{
+		{Zero(), Zero(), 1.0},
+		{Zero(), One(), 0.0},
 	}
 
-	f1 := Zero().Fidelity(One())
-	if f1 != 0 {
-		t.Error(f1)
+	for _, c := range cases {
+		f := c.q0.Fidelity(c.q1)
+		if f != c.f {
+			t.Error(f)
+		}
 	}
 }
 
 func TestTraceDistance(t *testing.T) {
-	d0 := Zero().TraceDistance(Zero())
-	if d0 != 0 {
-		t.Error(d0)
+	cases := []struct {
+		q0, q1 *Qubit
+		d      float64
+	}{
+		{Zero(), Zero(), 0.0},
+		{Zero(), One(), 1.0},
 	}
 
-	d1 := Zero().TraceDistance(One())
-	if d1 != 1 {
-		t.Error(d1)
+	for _, c := range cases {
+		d := c.q0.TraceDistance(c.q1)
+		if d != c.d {
+			t.Error(d)
+		}
 	}
 }
 

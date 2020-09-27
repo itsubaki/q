@@ -13,17 +13,17 @@ func TestCModExp2op(t *testing.T) {
 	g0 := CNOT(7, 2, 4).Apply(CNOT(7, 2, 5))
 
 	cases := []struct {
-		bit, a, j, N int
-		c            int
-		t            []int
-		v            vector.Vector
+		b, a, j, N int
+		c          int
+		t          []int
+		v          vector.Vector
 	}{
 		{7, 7, 0, 15, 2, []int{4, 5, 6, 7}, v0.Clone().Apply(g0)},
 	}
 
 	for _, c := range cases {
-		// returns Controlled a^(2^j) mod M of b qubits (c qubits + t qubits )
-		a := CModExp2(c.bit, c.a, c.j, c.N, c.c, c.t)
+		// returns Controlled a^(2^j) mod N of b qubits (c qubits + t qubits )
+		a := CModExp2(c.b, c.a, c.j, c.N, c.c, c.t)
 		if !a.IsUnitary() {
 			t.Errorf("modexp is not unitary")
 		}
@@ -41,10 +41,10 @@ func TestCModExp2(t *testing.T) {
 	g3 := I(7)
 
 	cases := []struct {
-		bit, a, j, N int
-		c            int
-		t            []int
-		m            matrix.Matrix
+		b, a, j, N int
+		c          int
+		t          []int
+		m          matrix.Matrix
 	}{
 		{7, 7, 0, 15, 2, []int{4, 5, 6, 7}, nil},
 		{7, 7, 1, 15, 1, []int{4, 5, 6, 7}, g1.Apply(g2)},
@@ -53,8 +53,8 @@ func TestCModExp2(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		// returns Controlled a^(2^j) mod M of b qubits (c qubits + t qubits )
-		a := CModExp2(c.bit, c.a, c.j, c.N, c.c, c.t)
+		// returns Controlled a^(2^j) mod N of b qubits (c qubits + t qubits )
+		a := CModExp2(c.b, c.a, c.j, c.N, c.c, c.t)
 		if !a.IsUnitary() {
 			t.Errorf("modexp is not unitary")
 		}
@@ -70,18 +70,13 @@ func TestInverseU(t *testing.T) {
 
 	inv := m.Inverse()
 	im := m.Apply(inv)
+	sub := im.Sub(I())
 
-	mm, nn := im.Dimension()
+	mm, nn := sub.Dimension()
 	for i := 0; i < mm; i++ {
 		for j := 0; j < nn; j++ {
-			if i == j {
-				if cmplx.Abs(im[i][j]-complex(1, 0)) > 1e-13 {
-					t.Errorf("[%v][%v] %v\n", i, j, im[i][j])
-				}
-				continue
-			}
-			if cmplx.Abs(im[i][j]-complex(0, 0)) > 1e-13 {
-				t.Errorf("[%v][%v] %v\n", i, j, im[i][j])
+			if cmplx.Abs(sub[i][j]) > 1e-13 {
+				t.Errorf("[%v][%v] %v\n", i, j, sub[i][j])
 			}
 		}
 	}
@@ -179,54 +174,57 @@ func TestFredkin(t *testing.T) {
 }
 
 func TestIsHermite(t *testing.T) {
-	if !H().IsHermite() {
-		t.Error(H())
+	cases := []struct {
+		m matrix.Matrix
+	}{
+		{H()},
+		{X()},
+		{Y()},
+		{Z()},
 	}
 
-	if !X().IsHermite() {
-		t.Error(X())
-	}
-
-	if !Y().IsHermite() {
-		t.Error(Y())
-	}
-
-	if !Z().IsHermite() {
-		t.Error(Z())
+	for _, c := range cases {
+		if !c.m.IsHermite() {
+			t.Error(c.m)
+		}
 	}
 }
 
 func TestIsUnitary(t *testing.T) {
-	if !H().IsUnitary() {
-		t.Error(H())
+	cases := []struct {
+		m matrix.Matrix
+	}{
+		{I()},
+		{H()},
+		{X()},
+		{Y()},
+		{Z()},
+		{U(1, 2, 3, 4)},
 	}
 
-	if !X().IsUnitary() {
-		t.Error(X())
-	}
-
-	if !Y().IsUnitary() {
-		t.Error(Y())
-	}
-
-	if !Z().IsUnitary() {
-		t.Error(Z())
-	}
-
-	u := U(1, 2, 3, 4)
-	if !u.IsUnitary() {
-		t.Error(u)
+	for _, c := range cases {
+		if !c.m.IsUnitary() {
+			t.Error(c.m)
+		}
 	}
 }
 
 func TestTrace(t *testing.T) {
-	trA := I().Trace()
-	if trA != complex(2, 0) {
-		t.Error(trA)
+	cases := []struct {
+		m matrix.Matrix
+		t complex128
+	}{
+		{I(), complex(2, 0)},
+		{H(), complex(0, 0)},
+		{X(), complex(0, 0)},
+		{Y(), complex(0, 0)},
+		{Z(), complex(0, 0)},
 	}
 
-	trH := H().Trace()
-	if trH != complex(0, 0) {
-		t.Error(trH)
+	for _, c := range cases {
+		tr := c.m.Trace()
+		if tr != c.t {
+			t.Error(tr)
+		}
 	}
 }

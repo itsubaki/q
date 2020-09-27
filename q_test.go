@@ -255,7 +255,7 @@ func TestQSimFactoring15(t *testing.T) {
 	}
 }
 
-func TestQsimGrover4qubit(t *testing.T) {
+func ExampleQ_CCCNOT_grover_4qubit() {
 	qsim := New()
 
 	// initial state
@@ -286,6 +286,7 @@ func TestQsimGrover4qubit(t *testing.T) {
 		fmt.Println(s)
 	}
 
+	// Output:
 	// [0000][  0]( 0.0508 0.0000i): 0.0026
 	// [0001][  1]( 0.0508 0.0000i): 0.0026
 	// [0010][  2]( 0.0508 0.0000i): 0.0026
@@ -304,7 +305,7 @@ func TestQsimGrover4qubit(t *testing.T) {
 	// [1111][ 15]( 0.0508 0.0000i): 0.0026
 }
 
-func TestQSimGrover3qubit(t *testing.T) {
+func ExampleQ_CCCNOT_grover_3qubit() {
 	qsim := New()
 
 	// initial state
@@ -324,29 +325,6 @@ func TestQSimGrover3qubit(t *testing.T) {
 	qsim.X(q0, q1, q2).CCZ(q0, q1, q2).X(q0, q1, q2)
 	qsim.H(q0, q1, q2)
 
-	// q3 is always |1>
-	m3 := qsim.Measure(q3)
-	if !m3.IsOne() {
-		t.Error(m3)
-		return
-	}
-
-	p := qsim.Probability()
-	for i, pp := range p {
-		// |011>|1>
-		if i == 7 && math.Abs(pp-0.78125) > 1e-13 {
-			t.Error(qsim.Probability())
-		}
-
-		if i%2 == 0 && math.Abs(pp) > 1e-13 {
-			t.Error(qsim.Probability())
-		}
-
-		if i%2 == 1 && i != 7 && math.Abs(pp-0.03125) > 1e-13 {
-			t.Error(qsim.Probability())
-		}
-	}
-
 	for _, s := range qsim.State([]Qubit{q0, q1, q2}, []Qubit{q3}) {
 		if s.Probability == 0 {
 			continue
@@ -354,9 +332,19 @@ func TestQSimGrover3qubit(t *testing.T) {
 
 		fmt.Println(s)
 	}
+
+	// Output:
+	// [000 1][  0   1](-0.1768 0.0000i): 0.0313
+	// [001 1][  1   1](-0.1768 0.0000i): 0.0313
+	// [010 1][  2   1](-0.1768 0.0000i): 0.0313
+	// [011 1][  3   1](-0.8839 0.0000i): 0.7813
+	// [100 1][  4   1](-0.1768 0.0000i): 0.0313
+	// [101 1][  5   1](-0.1768 0.0000i): 0.0313
+	// [110 1][  6   1](-0.1768 0.0000i): 0.0313
+	// [111 1][  7   1](-0.1768 0.0000i): 0.0313
 }
 
-func TestApply(t *testing.T) {
+func ExampleQ_Apply() {
 	qsim := New()
 
 	i0 := qsim.Zero().Index()
@@ -369,86 +357,20 @@ func TestApply(t *testing.T) {
 
 	qsim.Apply(qc)
 
-	if math.Abs(qsim.Probability()[0]-0.5) > 1e13 {
-		t.Error(qsim.Probability())
+	for _, s := range qsim.State() {
+		fmt.Println(s)
 	}
 
-	if math.Abs(qsim.Probability()[1]) > 1e13 {
-		t.Error(qsim.Probability())
-	}
-
-	if math.Abs(qsim.Probability()[2]) > 1e13 {
-		t.Error(qsim.Probability())
-	}
-
-	if math.Abs(qsim.Probability()[3]-0.5) > 1e13 {
-		t.Error(qsim.Probability())
-	}
+	// Output:
+	// [00][  0]( 0.7071 0.0000i): 0.5000
+	// [11][  3]( 0.7071 0.0000i): 0.5000
 }
 
-func TestPOVM(t *testing.T) {
-	E1 := gate.New(
-		[]complex128{0, 0},
-		[]complex128{0, 1},
-	).Mul(complex(math.Sqrt(2)/(1.0+math.Sqrt(2)), 0))
-
-	E2 := gate.New(
-		[]complex128{1, -1},
-		[]complex128{-1, 1},
-	).Mul(complex(0.5, 0)).
-		Mul(complex(math.Sqrt(2)/(1.0+math.Sqrt(2)), 0))
-
-	E3 := gate.I().Sub(E1).Sub(E2)
-
-	if !E1.Add(E2).Add(E3).Equals(gate.I()) {
-		t.Fail()
-	}
-
-	q0 := qubit.Zero()
-	if q0.Apply(E1).InnerProduct(q0) != complex(0, 0) {
-		t.Fail()
-	}
-
-	q1 := qubit.Zero().Apply(gate.H())
-	if q1.Apply(E2).InnerProduct(q1) != complex(0, 0) {
-		t.Fail()
-	}
-}
-
-func TestQSimInverseQFT(t *testing.T) {
-	qsim := New()
-	q0 := qsim.Zero()
-	q1 := qsim.Zero()
-	q2 := qsim.Zero()
-	qsim.InverseQFT(q0, q1, q2)
-	p := qsim.Probability()
-
-	ex := New()
-	e0 := ex.Zero()
-	e1 := ex.Zero()
-	e2 := ex.Zero()
-	ex.Swap(e0, e2)
-	ex.H(e2)
-	ex.CR(e2, e1, 2).H(e1)
-	ex.CR(e2, e0, 3).CR(e1, e0, 2).H(e0)
-	ep := ex.Probability()
-
-	for len(ep) != len(p) {
-		t.Fail()
-	}
-
-	for i := range ep {
-		if math.Abs(ep[i]-p[i]) > 1e-13 {
-			t.Fail()
-		}
-	}
-}
-
-func TestQSimQFT3qubit(t *testing.T) {
+func ExampleQ_State_qft_3qubit() {
 	qsim := New()
 
 	q0 := qsim.Zero()
-	q1 := qsim.Zero()
+	q1 := qsim.One()
 	q2 := qsim.Zero()
 
 	qsim.H(q0)
@@ -460,31 +382,22 @@ func TestQSimQFT3qubit(t *testing.T) {
 
 	qsim.Swap(q0, q2)
 
-	p := qsim.Probability()
-	for _, pp := range p {
-		if math.Abs(pp-0.125) > 1e-13 {
-			t.Error(p)
-		}
+	for _, s := range qsim.State() {
+		fmt.Println(s)
 	}
+
+	// Output:
+	// [000][  0]( 0.3536 0.0000i): 0.1250
+	// [001][  1]( 0.0000 0.3536i): 0.1250
+	// [010][  2](-0.3536 0.0000i): 0.1250
+	// [011][  3]( 0.0000-0.3536i): 0.1250
+	// [100][  4]( 0.3536 0.0000i): 0.1250
+	// [101][  5]( 0.0000 0.3536i): 0.1250
+	// [110][  6](-0.3536 0.0000i): 0.1250
+	// [111][  7]( 0.0000-0.3536i): 0.1250
 }
 
-func TestQSimCNOT(t *testing.T) {
-	qsim := New()
-
-	q0 := qsim.Zero()
-	q1 := qsim.Zero()
-
-	p := qsim.ControlledNot([]Qubit{q0}, q1).Probability()
-	e := qubit.Zero(2).Apply(gate.CNOT(2, 0, 1)).Probability()
-
-	for i := range p {
-		if p[i] != e[i] {
-			t.Errorf("%v: %v\n", p, e)
-		}
-	}
-}
-
-func TestQSimBellState(t *testing.T) {
+func ExampleQ_CNOT_bellstate() {
 	qsim := New()
 
 	q0 := qsim.Zero()
@@ -496,87 +409,12 @@ func TestQSimBellState(t *testing.T) {
 		fmt.Println(s)
 	}
 
-	p := qsim.Probability()
-	if math.Abs(number.Sum(p)-1) > 1e-13 {
-		t.Error(p)
-	}
-
-	if math.Abs(p[0]-0.5) > 1e-13 {
-		t.Error(p)
-	}
-
-	if math.Abs(p[3]-0.5) > 1e-13 {
-		t.Error(p)
-	}
-
-	if qsim.Measure(q0).IsZero() && qsim.Measure(q1).IsOne() {
-		t.Error(qsim.Probability())
-	}
-
-	if qsim.Measure(q0).IsOne() && qsim.Measure(q1).IsZero() {
-		t.Error(qsim.Probability())
-	}
+	// Output:
+	// [00][  0]( 0.7071 0.0000i): 0.5000
+	// [11][  3]( 0.7071 0.0000i): 0.5000
 }
 
-func TestQsimQuantumTeleportation2(t *testing.T) {
-	qsim := New()
-
-	phi := qsim.New(1, 2)
-	q0 := qsim.Zero()
-	q1 := qsim.Zero()
-
-	qsim.H(q0).CNOT(q0, q1) // bell state
-	qsim.CNOT(phi, q0).H(phi)
-
-	qsim.CNOT(q0, q1)
-	qsim.CZ(phi, q1)
-
-	mz := qsim.Measure(phi)
-	mx := qsim.Measure(q0)
-
-	p := qsim.Probability()
-	if math.Abs(number.Sum(p)-1) > 1e-13 {
-		t.Error(p)
-	}
-
-	var test = []struct {
-		zero int
-		one  int
-		zval float64
-		oval float64
-		eps  float64
-		mz   *qubit.Qubit
-		mx   *qubit.Qubit
-	}{
-		{0, 1, 0.2, 0.8, 1e-13, qubit.Zero(), qubit.Zero()},
-		{2, 3, 0.2, 0.8, 1e-13, qubit.Zero(), qubit.One()},
-		{4, 5, 0.2, 0.8, 1e-13, qubit.One(), qubit.Zero()},
-		{6, 7, 0.2, 0.8, 1e-13, qubit.One(), qubit.One()},
-	}
-
-	for _, tt := range test {
-		if p[tt.zero] == 0 {
-			continue
-		}
-
-		if math.Abs(p[tt.zero]-tt.zval) > tt.eps {
-			t.Error(p)
-		}
-		if math.Abs(p[tt.one]-tt.oval) > tt.eps {
-			t.Error(p)
-		}
-
-		if !mz.Equals(tt.mz) {
-			t.Error(p)
-		}
-
-		if !mx.Equals(tt.mx) {
-			t.Error(p)
-		}
-	}
-}
-
-func TestQSimQuantumTeleportation(t *testing.T) {
+func ExampleQ_State_teleportation() {
 	qsim := New()
 
 	phi := qsim.New(1, 2)
@@ -590,101 +428,54 @@ func TestQSimQuantumTeleportation(t *testing.T) {
 	qsim.H(q0).CNOT(q0, q1) // bell state
 	qsim.CNOT(phi, q0).H(phi)
 
-	mz := qsim.Measure(phi)
-	mx := qsim.Measure(q0)
+	qsim.CNOT(q0, q1)
+	qsim.CZ(phi, q1)
 
-	qsim.ConditionZ(mz.IsOne(), q1)
-	qsim.ConditionX(mx.IsOne(), q1)
+	qsim.Measure(phi, q0)
 
 	for _, s := range qsim.State([]Qubit{q1}) {
 		fmt.Println(s)
 	}
 
-	p := qsim.Probability()
-	if math.Abs(number.Sum(p)-1) > 1e-13 {
-		t.Error(p)
-	}
-
-	var test = []struct {
-		zero int
-		one  int
-		zval float64
-		oval float64
-		eps  float64
-		mz   *qubit.Qubit
-		mx   *qubit.Qubit
-	}{
-		{0, 1, 0.2, 0.8, 1e-13, qubit.Zero(), qubit.Zero()},
-		{2, 3, 0.2, 0.8, 1e-13, qubit.Zero(), qubit.One()},
-		{4, 5, 0.2, 0.8, 1e-13, qubit.One(), qubit.Zero()},
-		{6, 7, 0.2, 0.8, 1e-13, qubit.One(), qubit.One()},
-	}
-
-	for _, tt := range test {
-		if p[tt.zero] == 0 {
-			continue
-		}
-
-		if math.Abs(p[tt.zero]-tt.zval) > tt.eps {
-			t.Error(p)
-		}
-		if math.Abs(p[tt.one]-tt.oval) > tt.eps {
-			t.Error(p)
-		}
-
-		if !mz.Equals(tt.mz) {
-			t.Error(p)
-		}
-
-		if !mx.Equals(tt.mx) {
-			t.Error(p)
-		}
-
-	}
+	// Output:
+	// [0][  0]( 0.4472 0.0000i): 0.2000
+	// [1][  1]( 0.8944 0.0000i): 0.8000
+	// [0][  0]( 0.4472 0.0000i): 0.2000
+	// [1][  1]( 0.8944 0.0000i): 0.8000
 }
 
-func TestQsimErrorCorrectionZero(t *testing.T) {
+func ExampleQ_ConditionX_teleportation() {
 	qsim := New()
 
+	phi := qsim.New(1, 2)
 	q0 := qsim.Zero()
-
-	// encoding
 	q1 := qsim.Zero()
-	q2 := qsim.Zero()
-	qsim.CNOT(q0, q1).CNOT(q0, q2)
 
-	// error: first qubit is flipped
-	qsim.X(q0)
-
-	// add ancilla qubit
-	q3 := qsim.Zero()
-	q4 := qsim.Zero()
-
-	// error correction
-	qsim.CNOT(q0, q3).CNOT(q1, q3)
-	qsim.CNOT(q1, q4).CNOT(q2, q4)
-
-	m3 := qsim.Measure(q3)
-	m4 := qsim.Measure(q4)
-
-	qsim.ConditionX(m3.IsOne() && m4.IsZero(), q0)
-	qsim.ConditionX(m3.IsOne() && m4.IsOne(), q1)
-	qsim.ConditionX(m3.IsZero() && m4.IsOne(), q2)
-
-	// decoding
-	qsim.CNOT(q0, q2).CNOT(q0, q1)
-
-	for _, s := range qsim.State([]Qubit{q0}) {
+	for _, s := range qsim.State([]Qubit{phi}) {
 		fmt.Println(s)
 	}
 
-	// |000>|10>
-	if qsim.Probability()[2] != 1 {
-		t.Error(qsim.Probability())
+	qsim.H(q0).CNOT(q0, q1)
+	qsim.CNOT(phi, q0).H(phi)
+
+	mz := qsim.Measure(phi)
+	mx := qsim.Measure(q0)
+
+	qsim.ConditionX(mx.IsOne(), q1)
+	qsim.ConditionZ(mz.IsOne(), q1)
+
+	for _, s := range qsim.State([]Qubit{q1}) {
+		fmt.Println(s)
 	}
+
+	// Output:
+	// [0][  0]( 0.4472 0.0000i): 0.2000
+	// [1][  1]( 0.8944 0.0000i): 0.8000
+	// [0][  0]( 0.4472 0.0000i): 0.2000
+	// [1][  1]( 0.8944 0.0000i): 0.8000
 }
 
-func TestQsimErrorCorrection(t *testing.T) {
+func ExampleQ_ConditionX_error_correction() {
 	qsim := New()
 
 	q0 := qsim.New(1, 2)
@@ -715,32 +506,41 @@ func TestQsimErrorCorrection(t *testing.T) {
 	// decoding
 	qsim.CNOT(q0, q2).CNOT(q0, q1)
 
-	s := qsim.State([]Qubit{q0})
-	if math.Abs(s[0].Probability-0.2) > 1e-13 {
-		t.Errorf("%v", s)
+	for _, s := range qsim.State([]Qubit{q0}) {
+		fmt.Println(s)
 	}
 
-	if math.Abs(s[1].Probability-0.8) > 1e-13 {
-		t.Errorf("%v", s)
-	}
+	// Output:
+	// [0][  0]( 0.4472 0.0000i): 0.2000
+	// [1][  1]( 0.8944 0.0000i): 0.8000
 }
 
-func TestQSimMeasure(t *testing.T) {
-	qsim := New()
-	q0 := qsim.Zero()
+func TestPOVM(t *testing.T) {
+	E1 := gate.New(
+		[]complex128{0, 0},
+		[]complex128{0, 1},
+	).Mul(complex(math.Sqrt(2)/(1.0+math.Sqrt(2)), 0))
 
-	if !qsim.Measure().IsZero() {
-		t.Errorf("qsim: %v", qsim.BinaryString())
+	E2 := gate.New(
+		[]complex128{1, -1},
+		[]complex128{-1, 1},
+	).Mul(complex(0.5, 0)).
+		Mul(complex(math.Sqrt(2)/(1.0+math.Sqrt(2)), 0))
+
+	E3 := gate.I().Sub(E1).Sub(E2)
+
+	if !E1.Add(E2).Add(E3).Equals(gate.I()) {
+		t.Fail()
 	}
 
-	if !qsim.Measure(q0).IsZero() {
-		t.Errorf("qsim: %v", qsim.BinaryString())
+	q0 := qubit.Zero()
+	if q0.Apply(E1).InnerProduct(q0) != complex(0, 0) {
+		t.Fail()
 	}
 
-	qc := qsim.Clone()
-	q1 := qc.One()
-	if !qc.Measure(q1).IsOne() {
-		t.Errorf("clone: %v", qc.BinaryString())
+	q1 := qubit.Zero().Apply(gate.H())
+	if q1.Apply(E2).InnerProduct(q1) != complex(0, 0) {
+		t.Fail()
 	}
 }
 

@@ -13,20 +13,22 @@ func TestInverse(t *testing.T) {
 		[]complex128{1, -2, -1, 1},
 	)
 
+	e := New(
+		[]complex128{1, 0, 0, 0},
+		[]complex128{0, 1, 0, 0},
+		[]complex128{0, 0, 1, 0},
+		[]complex128{0, 0, 0, 1},
+	)
+
 	inv := m.Inverse()
 	im := m.Apply(inv)
+	sub := im.Sub(e)
 
-	mm, nn := im.Dimension()
+	mm, nn := sub.Dimension()
 	for i := 0; i < mm; i++ {
 		for j := 0; j < nn; j++ {
-			if i == j {
-				if cmplx.Abs(im[i][j]-complex(1, 0)) > 1e-13 {
-					t.Errorf("[%v][%v] %v\n", i, j, im[i][j])
-				}
-				continue
-			}
-			if cmplx.Abs(im[i][j]-complex(0, 0)) > 1e-13 {
-				t.Errorf("[%v][%v] %v\n", i, j, im[i][j])
+			if cmplx.Abs(sub[i][j]) > 1e-13 {
+				t.Errorf("[%v][%v] %v\n", i, j, sub[i][j])
 			}
 		}
 	}

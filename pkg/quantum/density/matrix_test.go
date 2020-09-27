@@ -14,7 +14,7 @@ func TestPartialTrace(t *testing.T) {
 	q := qubit.Zero(2).Apply(qc)
 	rho := New().Add(1.0, q)
 
-	pt := rho.PartialTrace(0, qubit.Zero(), qubit.One())
+	pt := rho.PartialTrace(0)
 	fmt.Println(pt)
 }
 

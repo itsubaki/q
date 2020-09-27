@@ -54,7 +54,7 @@ func (m *Matrix) Trace() complex128 {
 	return m.internal.Trace()
 }
 
-func (m *Matrix) PartialTrace(i int, q ...*qubit.Qubit) *Matrix {
+func (m *Matrix) PartialTrace(i int) *Matrix {
 	n := m.NumberOfBit()
 	s := math.Pow(2, float64(n-1))
 	t := matrix.Zero(int(s))
