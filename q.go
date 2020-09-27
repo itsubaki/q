@@ -184,6 +184,18 @@ func (q *Q) U(alpha, beta, gamma, delta float64, qb ...Qubit) *Q {
 	return q.Apply(gate.U(alpha, beta, gamma, delta), qb...)
 }
 
+func (q *Q) RX(theta float64, qb ...Qubit) *Q {
+	return q.Apply(gate.RX(theta), qb...)
+}
+
+func (q *Q) RY(theta float64, qb ...Qubit) *Q {
+	return q.Apply(gate.RY(theta), qb...)
+}
+
+func (q *Q) RZ(theta float64, qb ...Qubit) *Q {
+	return q.Apply(gate.RZ(theta), qb...)
+}
+
 func (q *Q) Apply(mat matrix.Matrix, qb ...Qubit) *Q {
 	if len(qb) < 1 {
 		q.internal.Apply(mat)
