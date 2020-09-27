@@ -354,28 +354,6 @@ func (q *Q) InvQFT(qb ...Qubit) *Q {
 	return q.InverseQFT(qb...)
 }
 
-func (q *Q) Estimate(qb Qubit, loop ...int) (float64, float64) {
-	c0, c1, limit := 0, 0, 1000
-	if len(loop) > 0 {
-		limit = loop[0]
-	}
-
-	for i := 0; i < limit; i++ {
-		m := q.Clone().Measure(qb)
-
-		if m.IsZero() {
-			c0++
-			continue
-		}
-
-		c1++
-	}
-
-	p0 := float64(c0) / float64(limit)
-	p1 := float64(c1) / float64(limit)
-	return p0, p1
-}
-
 func (q *Q) Clone() *Q {
 	if q.internal == nil {
 		return &Q{

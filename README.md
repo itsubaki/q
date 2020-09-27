@@ -20,22 +20,23 @@ q1 := qsim.Zero()
 // apply quantum circuit
 qsim.H(q0).CNOT(q0, q1)
 
-// estimate
-qsim.Estimate(q0)
-// -> (0.5, 0.5)
-qsim.Estimate(q1)
-// -> (0.5, 0.5)
-
-qsim.Probability()
-// -> (0.5, 0, 0, 0.5)
+for _, s := range qsim.State() {
+  fmt.Println(s)
+}
+// [00][  0]( 0.7071 0.0000i): 0.5000
+// [11][  3]( 0.7071 0.0000i): 0.5000
 
 m0 := qsim.Measure(q0)
 m1 := qsim.Measure(q1)
 // -> m0 = |0> then m1 = |0>
 // -> m0 = |1> then m1 = |1>
 
-qsim.Probability()
-// -> (1, 0, 0, 0) or (0, 0, 0, 1)
+for _, s := range qsim.State() {
+  fmt.Println(s)
+}
+// [00][  0]( 1.0000 0.0000i): 1.0000
+// or
+// [11][  3]( 1.0000 0.0000i): 1.0000
 ```
 
 ## Quantum teleportation
@@ -44,10 +45,16 @@ qsim.Probability()
 qsim := q.New()
 
 // generate qubits of |phi>|0>|0>
-// |phi> is normalized. |phi> = a|0> + b|1>, |a|^2 = 0.2, |b|^2 = 0.8
 phi := qsim.New(1, 2)
 q0 := qsim.Zero()
 q1 := qsim.Zero()
+
+// |phi> is normalized. |phi> = a|0> + b|1>, |a|^2 = 0.2, |b|^2 = 0.8
+for _, s := range qsim.State([]q.Qubit{phi}) {
+  fmt.Println(s)
+}
+// [0][  0]( 0.4472 0.0000i): 0.2000
+// [1][  1]( 0.8944 0.0000i): 0.8000
 
 qsim.H(q0).CNOT(q0, q1)
 qsim.CNOT(phi, q0).H(phi)
@@ -60,9 +67,12 @@ mx := qsim.Measure(q0)
 qsim.ConditionZ(mz.IsOne(), q1)
 qsim.ConditionX(mx.IsOne(), q1)
 
-// Bob got |phi> state
-qsim.Estimate(q1)
-// -> (0.2, 0.8)
+// Bob got |phi> state with q1
+for _, s := range qsim.State([]q.Qubit{q1}) {
+  fmt.Println(s)
+}
+// [0][  0]( 0.4472 0.0000i): 0.2000
+// [1][  1]( 0.8944 0.0000i): 0.8000
 ```
 
 ## Error correction
@@ -98,8 +108,10 @@ qsim.ConditionX(m3.IsZero() && m4.IsOne(), q2)
 // decoding
 qsim.CNOT(q0, q2).CNOT(q0, q1)
 
-// estimate
-qsim.Estimate(q0) // (0.2, 0.8)
+for _, s := range qsim.State([]q.Qubit{q1}) {
+  fmt.Println(s)
+}
+// [0][  0]( 1.0000 0.0000i): 1.0000
 ```
 
 ### Grover's search algorithm
@@ -124,22 +136,22 @@ qsim.H(q0, q1, q2, q3)
 qsim.X(q0, q1, q2).CCZ(q0, q1, q2).X(q0, q1, q2)
 qsim.H(q0, q1, q2)
 
-for _, s := range qsim.State() {
+for _, s := range qsim.State([]q.Qubit{q0, q1, q2}, []q.Qubit{q3}) {
   if s.Probability == 0 {
     continue
   }
-
+  
   fmt.Println(s)
 }
 
-// 0001 0.03125
-// 0011 0.03125
-// 0101 0.03125
-// 0111 0.78125 -> answer!
-// 1001 0.03125
-// 1011 0.03125
-// 1101 0.03125
-// 1111 0.03125
+// [000 1][ 0  1](-0.1768 0.0000i): 0.0312
+// [001 1][ 1  1](-0.1768 0.0000i): 0.0312
+// [010 1][ 2  1](-0.1768 0.0000i): 0.0312
+// [011 1][ 3  1](-0.8839 0.0000i): 0.7813 -> answer!
+// [100 1][ 4  1](-0.1768 0.0000i): 0.0312
+// [101 1][ 5  1](-0.1768 0.0000i): 0.0312
+// [110 1][ 6  1](-0.1768 0.0000i): 0.0312
+// [111 1][ 7  1](-0.1768 0.0000i): 0.0313
 ```
 
 ## Factoring 15

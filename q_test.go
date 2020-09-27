@@ -347,7 +347,7 @@ func TestQSimGrover3qubit(t *testing.T) {
 		}
 	}
 
-	for _, s := range qsim.State() {
+	for _, s := range qsim.State([]Qubit{q0, q1, q2}, []Qubit{q3}) {
 		if s.Probability == 0 {
 			continue
 		}
@@ -417,26 +417,20 @@ func TestPOVM(t *testing.T) {
 
 func TestQSimInverseQFT(t *testing.T) {
 	qsim := New()
-
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 	q2 := qsim.Zero()
-
 	qsim.InverseQFT(q0, q1, q2)
-
 	p := qsim.Probability()
 
 	ex := New()
-
 	e0 := ex.Zero()
 	e1 := ex.Zero()
 	e2 := ex.Zero()
-
 	ex.Swap(e0, e2)
 	ex.H(e2)
 	ex.CR(e2, e1, 2).H(e1)
 	ex.CR(e2, e0, 3).CR(e1, e0, 2).H(e0)
-
 	ep := ex.Probability()
 
 	for len(ep) != len(p) {
@@ -490,21 +484,6 @@ func TestQSimCNOT(t *testing.T) {
 	}
 }
 
-func TestQSimEstimate(t *testing.T) {
-	qsim := New()
-
-	q0 := qsim.Zero()
-	q1 := qsim.Zero()
-	qsim.H(q0, q1)
-
-	for _, q := range []Qubit{q0, q1} {
-		p0, p1 := qsim.Estimate(q)
-		if math.Abs(p0-0.5) > 1e-1 {
-			t.Fatalf("p0=%v, p1=%v. eps=%v", p0, p1, math.Abs(p0-0.5))
-		}
-	}
-}
-
 func TestQSimBellState(t *testing.T) {
 	qsim := New()
 
@@ -512,6 +491,10 @@ func TestQSimBellState(t *testing.T) {
 	q1 := qsim.Zero()
 
 	qsim.H(q0).CNOT(q0, q1)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
 
 	p := qsim.Probability()
 	if math.Abs(number.Sum(p)-1) > 1e-13 {
@@ -600,6 +583,10 @@ func TestQSimQuantumTeleportation(t *testing.T) {
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 
+	for _, s := range qsim.State([]Qubit{phi}) {
+		fmt.Println(s)
+	}
+
 	qsim.H(q0).CNOT(q0, q1) // bell state
 	qsim.CNOT(phi, q0).H(phi)
 
@@ -608,6 +595,10 @@ func TestQSimQuantumTeleportation(t *testing.T) {
 
 	qsim.ConditionZ(mz.IsOne(), q1)
 	qsim.ConditionX(mx.IsOne(), q1)
+
+	for _, s := range qsim.State([]Qubit{q1}) {
+		fmt.Println(s)
+	}
 
 	p := qsim.Probability()
 	if math.Abs(number.Sum(p)-1) > 1e-13 {
@@ -683,12 +674,8 @@ func TestQsimErrorCorrectionZero(t *testing.T) {
 	// decoding
 	qsim.CNOT(q0, q2).CNOT(q0, q1)
 
-	// |q0q1q2> = |000>
-	for _, q := range []Qubit{q0, q1, q2} {
-		p0, p1 := qsim.Estimate(q)
-		if math.Abs(p0-1) > 1e-13 || p1 > 1e-13 {
-			t.Fatalf("p0=%v, p1=%v", p0, p1)
-		}
+	for _, s := range qsim.State([]Qubit{q0}) {
+		fmt.Println(s)
 	}
 
 	// |000>|10>
@@ -700,8 +687,7 @@ func TestQsimErrorCorrectionZero(t *testing.T) {
 func TestQsimErrorCorrection(t *testing.T) {
 	qsim := New()
 
-	q0 := qsim.New(0.01, 0.09)
-	e0, e1 := qsim.Probability()[0], qsim.Probability()[1]
+	q0 := qsim.New(1, 2)
 
 	// encoding
 	q1 := qsim.Zero()
@@ -729,16 +715,13 @@ func TestQsimErrorCorrection(t *testing.T) {
 	// decoding
 	qsim.CNOT(q0, q2).CNOT(q0, q1)
 
-	p0, p1 := qsim.Estimate(q0)
-	if math.Abs(p0-e0) > 1e-2 || math.Abs(p1-e1) > 1e-2 {
-		t.Fatalf("p0=%v, p1=%v", p0, p1)
+	s := qsim.State([]Qubit{q0})
+	if math.Abs(s[0].Probability-0.2) > 1e-13 {
+		t.Errorf("%v", s)
 	}
 
-	for _, q := range []Qubit{q1, q2} {
-		p0, p1 := qsim.Estimate(q)
-		if math.Abs(p0-1) > 1e-13 || p1 > 1e-13 {
-			t.Fatalf("p0=%v, p1=%v", p0, p1)
-		}
+	if math.Abs(s[1].Probability-0.8) > 1e-13 {
+		t.Errorf("%v", s)
 	}
 }
 
