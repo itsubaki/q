@@ -14,7 +14,7 @@ import (
 func main() {
 	var N, t, shot int
 	flag.IntVar(&N, "N", 15, "")
-	flag.IntVar(&t, "t", 4, "t = 2L + 1 + Ceil(log(2 + 1/2eps)), L-bit number N.")
+	flag.IntVar(&t, "t", 4, "")
 	flag.IntVar(&shot, "shot", 10, "")
 	flag.Parse()
 
@@ -36,7 +36,7 @@ func main() {
 	qsim.H(r0...)
 	print("create superposition", qsim, r0, r1)
 
-	qsim.CModExp2(N, a, r0, r1)
+	qsim.CModExp2(a, N, r0, r1)
 	print("apply controlled-U", qsim, r0, r1)
 
 	qsim.InvQFT(r0...)

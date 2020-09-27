@@ -299,16 +299,17 @@ func QFT(bit int) matrix.Matrix {
 }
 
 // CModExp2 returns unitary matrix of Controlled-U^(2^j)|k> -> |a^(2^j)*k mod N> operation
-func CModExp2(bit, N, a, j, control int, target []int) matrix.Matrix {
+func CModExp2(bit, a, j, N, c int, t []int) matrix.Matrix {
 	min := int(math.Log2(float64(N))) + 1
-	if len(target) < min {
-		panic(fmt.Sprintf("invalid input. len(target)=%v < log2(%d)=%v", len(target), N, min))
+	if len(t) < min {
+		panic(fmt.Sprintf("invalid input. len(target)=%v < log2(%d)=%v", len(t), N, min))
 	}
 
 	mat := I([]int{bit}...)
 	dim, _ := mat.Dimension()
-	r0len := bit - len(target)
-	r1len := len(target)
+	r0len := bit - len(t)
+	r1len := len(t)
+	a2jmodN := number.ModExp2(a, j, N)
 
 	bf := "%0" + strconv.Itoa(bit) + "s"
 	tf := "%0" + strconv.Itoa(r1len) + "s"
@@ -318,7 +319,7 @@ func CModExp2(bit, N, a, j, control int, target []int) matrix.Matrix {
 		s := fmt.Sprintf(bf, strconv.FormatInt(int64(i), 2))
 		bits := []rune(s)
 
-		if bits[control] == '1' {
+		if bits[c] == '1' {
 			r0bits, r1bits := bits[:r0len], bits[r0len:]
 
 			k, err := strconv.ParseInt(string(r1bits), 2, 0)
@@ -327,7 +328,7 @@ func CModExp2(bit, N, a, j, control int, target []int) matrix.Matrix {
 			}
 
 			if int(k) < N {
-				a2jkmodN := (number.ModExp2(a, j, N) * int(k)) % N
+				a2jkmodN := (a2jmodN * int(k)) % N
 				a2jkmodNs := fmt.Sprintf(tf, strconv.FormatInt(int64(a2jkmodN), 2))
 
 				// fmt.Printf("%v: %v=%2v -> %2v=%s -> ", string(bits[:r0len]), string(bits[r0len:]), k, a2jkmodN, a2jkmodNs)

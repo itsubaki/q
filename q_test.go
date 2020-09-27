@@ -23,7 +23,7 @@ func TestQSimFactoringN(t *testing.T) {
 
 	qsim.X(r1[len(r1)-1])
 	qsim.H(r0...)
-	qsim.CModExp2(N, a, r0, r1)
+	qsim.CModExp2(a, N, r0, r1)
 	qsim.InvQFT(r0...)
 
 	for i := 0; i < 10; i++ {

@@ -13,17 +13,17 @@ func TestCModExp2op(t *testing.T) {
 	g0 := CNOT(7, 2, 4).Apply(CNOT(7, 2, 5))
 
 	cases := []struct {
-		bit, N, a, j int
+		bit, a, j, N int
 		c            int
 		t            []int
 		v            vector.Vector
 	}{
-		{7, 15, 7, 0, 2, []int{4, 5, 6, 7}, v0.Clone().Apply(g0)},
+		{7, 7, 0, 15, 2, []int{4, 5, 6, 7}, v0.Clone().Apply(g0)},
 	}
 
 	for _, c := range cases {
 		// returns Controlled a^(2^j) mod M of b qubits (c qubits + t qubits )
-		a := CModExp2(c.bit, c.N, c.a, c.j, c.c, c.t)
+		a := CModExp2(c.bit, c.a, c.j, c.N, c.c, c.t)
 		if !a.IsUnitary() {
 			t.Errorf("modexp is not unitary")
 		}
@@ -41,20 +41,20 @@ func TestCModExp2(t *testing.T) {
 	g3 := I(7)
 
 	cases := []struct {
-		bit, N, a, j int
+		bit, a, j, N int
 		c            int
 		t            []int
 		m            matrix.Matrix
 	}{
-		{7, 15, 7, 0, 2, []int{4, 5, 6, 7}, nil},
-		{7, 15, 7, 1, 1, []int{4, 5, 6, 7}, g1.Apply(g2)},
-		{7, 15, 7, 2, 0, []int{4, 5, 6, 7}, g3},
-		{8, 15, 4, 0, 2, []int{4, 5, 6, 7, 8}, nil},
+		{7, 7, 0, 15, 2, []int{4, 5, 6, 7}, nil},
+		{7, 7, 1, 15, 1, []int{4, 5, 6, 7}, g1.Apply(g2)},
+		{7, 7, 2, 15, 0, []int{4, 5, 6, 7}, g3},
+		{8, 4, 0, 15, 2, []int{4, 5, 6, 7, 8}, nil},
 	}
 
 	for _, c := range cases {
 		// returns Controlled a^(2^j) mod M of b qubits (c qubits + t qubits )
-		a := CModExp2(c.bit, c.N, c.a, c.j, c.c, c.t)
+		a := CModExp2(c.bit, c.a, c.j, c.N, c.c, c.t)
 		if !a.IsUnitary() {
 			t.Errorf("modexp is not unitary")
 		}
