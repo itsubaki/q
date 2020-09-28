@@ -344,7 +344,7 @@ func ExampleQ_CCCNOT_grover_3qubit() {
 	// [111 1][  7   1](-0.1768 0.0000i): 0.0313
 }
 
-func ExampleQ_Apply() {
+func ExampleQ_Apply_bellstate() {
 	qsim := New()
 
 	i0 := qsim.Zero().Index()
@@ -366,7 +366,7 @@ func ExampleQ_Apply() {
 	// [11][  3]( 0.7071 0.0000i): 0.5000
 }
 
-func ExampleQ_State_qft_3qubit() {
+func ExampleQ_CR_qft_3qubit() {
 	qsim := New()
 
 	q0 := qsim.Zero()
@@ -414,7 +414,7 @@ func ExampleQ_CNOT_bellstate() {
 	// [11][  3]( 0.7071 0.0000i): 0.5000
 }
 
-func ExampleQ_State_teleportation() {
+func ExampleQ_CZ_teleportation() {
 	qsim := New()
 
 	phi := qsim.New(1, 2)
@@ -425,7 +425,7 @@ func ExampleQ_State_teleportation() {
 		fmt.Println(s)
 	}
 
-	qsim.H(q0).CNOT(q0, q1) // bell state
+	qsim.H(q0).CNOT(q0, q1)
 	qsim.CNOT(phi, q0).H(phi)
 
 	qsim.CNOT(q0, q1)
@@ -444,7 +444,7 @@ func ExampleQ_State_teleportation() {
 	// [1][  1]( 0.8944 0.0000i): 0.8000
 }
 
-func ExampleQ_ConditionX_teleportation() {
+func ExampleQ_ConditionZ_teleportation() {
 	qsim := New()
 
 	phi := qsim.New(1, 2)
@@ -480,13 +480,17 @@ func ExampleQ_ConditionX_error_correction() {
 
 	q0 := qsim.New(1, 2)
 
+	for _, s := range qsim.State([]Qubit{q0}) {
+		fmt.Println(s)
+	}
+
 	// encoding
 	q1 := qsim.Zero()
 	q2 := qsim.Zero()
 	qsim.CNOT(q0, q1).CNOT(q0, q2)
 
 	// error: first qubit is flipped
-	qsim.X(q1)
+	qsim.X(q0)
 
 	// add ancilla qubit
 	q3 := qsim.Zero()
@@ -511,6 +515,8 @@ func ExampleQ_ConditionX_error_correction() {
 	}
 
 	// Output:
+	// [0][  0]( 0.4472 0.0000i): 0.2000
+	// [1][  1]( 0.8944 0.0000i): 0.8000
 	// [0][  0]( 0.4472 0.0000i): 0.2000
 	// [1][  1]( 0.8944 0.0000i): 0.8000
 }
