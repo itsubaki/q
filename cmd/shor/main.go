@@ -10,12 +10,15 @@ import (
 	"github.com/itsubaki/q/pkg/math/rand"
 )
 
-// go run main.go --N 15 --t 4 --shot 10
+// go run main.go --N 21
 func main() {
-	var N, t, shot int
-	flag.IntVar(&N, "N", 15, "positive integer")
+	var N, t, shot, a int
+	var seed int64
+	flag.IntVar(&N, "N", 21, "positive integer")
 	flag.IntVar(&t, "t", 4, "precision bits")
-	flag.IntVar(&shot, "shot", 10, "")
+	flag.IntVar(&shot, "shot", 10, "number of measurements")
+	flag.IntVar(&a, "a", -1, "for excludes randomness")
+	flag.Int64Var(&seed, "seed", -1, "for excludes randomness")
 	flag.Parse()
 
 	if N < 2 {
@@ -38,10 +41,17 @@ func main() {
 		return
 	}
 
-	a := rand.Coprime(N)
+	if a < 0 {
+		a = rand.Coprime(N)
+	}
 	fmt.Printf("N=%d, a=%d, t=%d\n\n", N, a, t)
 
 	qsim := q.New()
+	if seed > 0 {
+		qsim.Seed = []int64{seed}
+		qsim.Rand = rand.Math
+	}
+
 	r0 := qsim.ZeroWith(t)
 	r1 := qsim.ZeroLog2(N)
 
