@@ -387,6 +387,7 @@ func Example_quantumTeleportation() {
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 
+	fmt.Println("phi:")
 	for _, s := range qsim.State([]Qubit{phi}) {
 		fmt.Println(s)
 	}
@@ -399,13 +400,16 @@ func Example_quantumTeleportation() {
 
 	qsim.Measure(phi, q0)
 
+	fmt.Println("q1:")
 	for _, s := range qsim.State([]Qubit{q1}) {
 		fmt.Println(s)
 	}
 
 	// Output:
+	// phi:
 	// [0][  0]( 0.4472 0.0000i): 0.2000
 	// [1][  1]( 0.8944 0.0000i): 0.8000
+	// q1:
 	// [0][  0]( 0.4472 0.0000i): 0.2000
 	// [1][  1]( 0.8944 0.0000i): 0.8000
 }
@@ -436,6 +440,7 @@ func ExampleQ_ConditionZ_quantumTeleportation() {
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 
+	fmt.Println("phi:")
 	for _, s := range qsim.State([]Qubit{phi}) {
 		fmt.Println(s)
 	}
@@ -449,13 +454,16 @@ func ExampleQ_ConditionZ_quantumTeleportation() {
 	qsim.ConditionX(mx.IsOne(), q1)
 	qsim.ConditionZ(mz.IsOne(), q1)
 
+	fmt.Println("q1:")
 	for _, s := range qsim.State([]Qubit{q1}) {
 		fmt.Println(s)
 	}
 
 	// Output:
+	// phi:
 	// [0][  0]( 0.4472 0.0000i): 0.2000
 	// [1][  1]( 0.8944 0.0000i): 0.8000
+	// q1:
 	// [0][  0]( 0.4472 0.0000i): 0.2000
 	// [1][  1]( 0.8944 0.0000i): 0.8000
 }
@@ -465,6 +473,7 @@ func ExampleQ_ConditionX_errorCorrection() {
 
 	q0 := qsim.New(1, 2)
 
+	fmt.Println("q0:")
 	for _, s := range qsim.State([]Qubit{q0}) {
 		fmt.Println(s)
 	}
@@ -476,6 +485,11 @@ func ExampleQ_ConditionX_errorCorrection() {
 
 	// error: first qubit is flipped
 	qsim.X(q0)
+
+	fmt.Println("q0(flipped):")
+	for _, s := range qsim.State([]Qubit{q0}) {
+		fmt.Println(s)
+	}
 
 	// add ancilla qubit
 	q3 := qsim.Zero()
@@ -495,13 +509,19 @@ func ExampleQ_ConditionX_errorCorrection() {
 	// decoding
 	qsim.CNOT(q0, q2).CNOT(q0, q1)
 
+	fmt.Println("q0(corrected):")
 	for _, s := range qsim.State([]Qubit{q0}) {
 		fmt.Println(s)
 	}
 
 	// Output:
+	// q0:
 	// [0][  0]( 0.4472 0.0000i): 0.2000
 	// [1][  1]( 0.8944 0.0000i): 0.8000
+	// q0(flipped):
+	// [0][  0]( 0.8944 0.0000i): 0.8000
+	// [1][  1]( 0.4472 0.0000i): 0.2000
+	// q0(corrected):
 	// [0][  0]( 0.4472 0.0000i): 0.2000
 	// [1][  1]( 0.8944 0.0000i): 0.8000
 }
