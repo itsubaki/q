@@ -64,9 +64,9 @@ qsim.CNOT(phi, q0).H(phi)
 mz := qsim.Measure(phi)
 mx := qsim.Measure(q0)
 
-// Bob Apply Z and X
-qsim.ConditionZ(mz.IsOne(), q1)
+// Bob Apply X and Z
 qsim.ConditionX(mx.IsOne(), q1)
+qsim.ConditionZ(mz.IsOne(), q1)
 
 // Bob got |phi> state with q1
 for _, s := range qsim.State([]q.Qubit{q1}) {
