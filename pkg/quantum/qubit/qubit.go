@@ -108,8 +108,11 @@ func (q *Qubit) TensorProduct(qb *Qubit) *Qubit {
 	return q
 }
 
-func (q *Qubit) Apply(m matrix.Matrix) *Qubit {
-	q.vector = q.vector.Apply(m)
+func (q *Qubit) Apply(m ...matrix.Matrix) *Qubit {
+	for _, mm := range m {
+		q.vector = q.vector.Apply(mm)
+	}
+
 	return q
 }
 

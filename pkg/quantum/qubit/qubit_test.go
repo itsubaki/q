@@ -42,9 +42,8 @@ func Example_pOVM() {
 func Example_bellState() {
 	g0 := gate.H().TensorProduct(gate.I())
 	g1 := gate.CNOT(2, 0, 1)
-	qc := g0.Apply(g1)
 
-	q := Zero(2).Apply(qc)
+	q := Zero(2).Apply(g0, g1)
 	fmt.Println(q.Amplitude())
 
 	// Output:
@@ -58,8 +57,7 @@ func Example_grover2qubit() {
 	x2 := gate.X(2)
 	amp := h2.Apply(x2).Apply(gate.CZ(2, 0, 1)).Apply(x2).Apply(h2)
 
-	qc := h2.Apply(oracle).Apply(amp)
-	q := Zero(2).Apply(qc)
+	q := Zero(2).Apply(h2, oracle, amp)
 
 	q.Measure(0)
 	q.Measure(1)
@@ -88,24 +86,22 @@ func Example_quantumTeleportation() {
 
 	g0 := matrix.TensorProduct(gate.H(), gate.I())
 	g1 := gate.CNOT(2, 0, 1)
-	bell := Zero(2).Apply(g0).Apply(g1)
+	bell := Zero(2).Apply(g0, g1)
 	phi.TensorProduct(bell)
 
 	g2 := gate.CNOT(3, 0, 1)
 	g3 := matrix.TensorProduct(gate.H(), gate.I(2))
-	phi.Apply(g2).Apply(g3)
+	phi.Apply(g2, g3)
 
 	mz := phi.Measure(0)
 	mx := phi.Measure(1)
 
 	if mz.IsOne() {
-		z := matrix.TensorProduct(gate.I(2), gate.Z())
-		phi.Apply(z)
+		phi.Apply(matrix.TensorProduct(gate.I(2), gate.Z()))
 	}
 
 	if mx.IsOne() {
-		x := matrix.TensorProduct(gate.I(2), gate.X())
-		phi.Apply(x)
+		phi.Apply(matrix.TensorProduct(gate.I(2), gate.X()))
 	}
 
 	for _, p := range phi.Probability() {
@@ -135,7 +131,7 @@ func Example_quantumTeleportation2() {
 
 	g0 := matrix.TensorProduct(gate.H(), gate.I())
 	g1 := gate.CNOT(2, 0, 1)
-	bell := Zero(2).Apply(g0).Apply(g1)
+	bell := Zero(2).Apply(g0, g1)
 	phi.TensorProduct(bell)
 
 	g2 := gate.CNOT(3, 0, 1)
@@ -143,7 +139,7 @@ func Example_quantumTeleportation2() {
 	g4 := gate.CNOT(3, 1, 2)
 	g5 := gate.CZ(3, 0, 2)
 
-	phi.Apply(g2).Apply(g3).Apply(g4).Apply(g5)
+	phi.Apply(g2, g3, g4, g5)
 	phi.Measure(0)
 	phi.Measure(1)
 
@@ -173,7 +169,7 @@ func Example_grover3qubit() {
 	amp := h4.Apply(x3).Apply(cz).Apply(x3).Apply(h3)
 
 	q := TensorProduct(Zero(3), One())
-	q.Apply(gate.H(4)).Apply(oracle).Apply(amp)
+	q.Apply(gate.H(4), oracle, amp)
 
 	for i, p := range q.Probability() {
 		if p == 0 {
@@ -209,10 +205,10 @@ func Example_errorCorrectionBitFlip() {
 	phi.TensorProduct(Zero(2))
 
 	// z1z2
-	phi.Apply(gate.CNOT(5, 0, 3)).Apply(gate.CNOT(5, 1, 3))
+	phi.Apply(gate.CNOT(5, 0, 3), gate.CNOT(5, 1, 3))
 
 	// z2z3
-	phi.Apply(gate.CNOT(5, 1, 4)).Apply(gate.CNOT(5, 2, 4))
+	phi.Apply(gate.CNOT(5, 1, 4), gate.CNOT(5, 2, 4))
 
 	// measure
 	m3 := phi.Measure(3)
@@ -264,10 +260,10 @@ func Example_errorCorrectionPhaseFlip() {
 	phi.TensorProduct(Zero(2))
 
 	// x1x2
-	phi.Apply(gate.CNOT(5, 0, 3)).Apply(gate.CNOT(5, 1, 3))
+	phi.Apply(gate.CNOT(5, 0, 3), gate.CNOT(5, 1, 3))
 
 	// x2x3
-	phi.Apply(gate.CNOT(5, 1, 4)).Apply(gate.CNOT(5, 2, 4))
+	phi.Apply(gate.CNOT(5, 1, 4), gate.CNOT(5, 2, 4))
 
 	// H
 	phi.Apply(matrix.TensorProduct(gate.H(3), gate.I(2)))
