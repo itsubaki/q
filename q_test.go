@@ -25,30 +25,27 @@ func Example_shorFactoring21() {
 	qsim.CModExp2(a, N, r0, r1)
 	qsim.InvQFT(r0...)
 
-	for i := 0; i < 10; i++ {
-		m := qsim.Clone().MeasureAsBinary(r0...)
-		d := number.BinaryFraction(m)
-		_, s, r := number.ContinuedFraction(d)
+	m := qsim.MeasureAsBinary(r0...)
+	d := number.BinaryFraction(m)
+	_, s, r := number.ContinuedFraction(d)
 
-		if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
-			continue
-		}
+	if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
+		return
+	}
 
-		p0 := number.GCD(number.Pow(a, r/2)-1, N)
-		p1 := number.GCD(number.Pow(a, r/2)+1, N)
+	p0 := number.GCD(number.Pow(a, r/2)-1, N)
+	p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
-		fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", i, N, a, p0, p1, s, r, m, d)
-
-		for _, p := range []int{p0, p1} {
-			if 1 < p && p < N && N%p == 0 {
-				fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
-				return
-			}
+	for _, p := range []int{p0, p1} {
+		if 1 < p && p < N && N%p == 0 {
+			fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", N, a, p0, p1, s, r, m, d)
+			fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
+			return
 		}
 	}
 
 	// Output:
-	// i=0: N=21, a=5. p=3, q=1. s/r=11/16 ([1 0 1 1]=0.688)
+	// N=21, a=5. p=3, q=1. s/r=11/16 ([1 0 1 1]=0.688)
 	// answer: p=3, q=7
 }
 
@@ -88,35 +85,31 @@ func Example_shorFactoring85() {
 	qsim.CR(q3, q1, 3).CR(q2, q1, 2).H(q1)
 	qsim.CR(q3, q0, 4).CR(q2, q0, 3).CR(q1, q0, 2).H(q0)
 
-	for i := 0; i < 10; i++ {
-		// measure
-		m := qsim.Clone().MeasureAsBinary(q0, q1, q2, q3)
+	// measure
+	m := qsim.MeasureAsBinary(q0, q1, q2, q3)
 
-		// find s/r
-		d := number.BinaryFraction(m)
-		_, s, r := number.ContinuedFraction(d)
+	// find s/r
+	d := number.BinaryFraction(m)
+	_, s, r := number.ContinuedFraction(d)
 
-		if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
-			continue
-		}
+	if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
+		return
+	}
 
-		p0 := number.GCD(number.Pow(a, r/2)-1, N)
-		p1 := number.GCD(number.Pow(a, r/2)+1, N)
+	p0 := number.GCD(number.Pow(a, r/2)-1, N)
+	p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
-		// result
-		fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", i, N, a, p0, p1, s, r, m, d)
-
-		// check
-		for _, p := range []int{p0, p1} {
-			if 1 < p && p < N && N%p == 0 {
-				fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
-				return
-			}
+	// check
+	for _, p := range []int{p0, p1} {
+		if 1 < p && p < N && N%p == 0 {
+			fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", N, a, p0, p1, s, r, m, d)
+			fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
+			return
 		}
 	}
 
 	// Output:
-	// i=0: N=85, a=3. p=5, q=17. s/r=15/16 ([1 1 1 1]=0.938)
+	// N=85, a=3. p=5, q=17. s/r=15/16 ([1 1 1 1]=0.938)
 	// answer: p=5, q=17
 }
 
@@ -161,35 +154,31 @@ func Example_shorFactoring51() {
 	qsim.CR(q1, q0, 2)
 	qsim.H(q0)
 
-	for i := 0; i < 10; i++ {
-		// measure
-		m := qsim.Clone().MeasureAsBinary(q0, q1, q2, q3)
+	// measure
+	m := qsim.MeasureAsBinary(q0, q1, q2, q3)
 
-		// find s/r
-		d := number.BinaryFraction(m)
-		_, s, r := number.ContinuedFraction(d)
+	// find s/r
+	d := number.BinaryFraction(m)
+	_, s, r := number.ContinuedFraction(d)
 
-		if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
-			continue
-		}
+	if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
+		return
+	}
 
-		p0 := number.GCD(number.Pow(a, r/2)-1, N)
-		p1 := number.GCD(number.Pow(a, r/2)+1, N)
+	p0 := number.GCD(number.Pow(a, r/2)-1, N)
+	p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
-		// result
-		fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", i, N, a, p0, p1, s, r, m, d)
-
-		// check
-		for _, p := range []int{p0, p1} {
-			if 1 < p && p < N && N%p == 0 {
-				fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
-				return
-			}
+	// check
+	for _, p := range []int{p0, p1} {
+		if 1 < p && p < N && N%p == 0 {
+			fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", N, a, p0, p1, s, r, m, d)
+			fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
+			return
 		}
 	}
 
 	// Output:
-	// i=0: N=51, a=5. p=3, q=17. s/r=15/16 ([1 1 1 1]=0.938)
+	// N=51, a=5. p=3, q=17. s/r=15/16 ([1 1 1 1]=0.938)
 	// answer: p=3, q=17
 }
 
@@ -226,37 +215,33 @@ func Example_shorFactoring15() {
 	qsim.Swap(q0, q2)
 	qsim.InverseQFT(q0, q1, q2)
 
-	for i := 0; i < 10; i++ {
-		// measure q0, q1, q2
-		m := qsim.Clone().MeasureAsBinary(q0, q1, q2)
+	// measure q0, q1, q2
+	m := qsim.MeasureAsBinary(q0, q1, q2)
 
-		// find s/r. 010 -> 0.25 -> 1/4, 110 -> 0.75 -> 3/4, ...
-		d := number.BinaryFraction(m)
-		_, s, r := number.ContinuedFraction(d)
+	// find s/r. 010 -> 0.25 -> 1/4, 110 -> 0.75 -> 3/4, ...
+	d := number.BinaryFraction(m)
+	_, s, r := number.ContinuedFraction(d)
 
-		// if r is odd, algorithm is failed
-		if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
-			continue
-		}
+	// if r is odd, algorithm is failed
+	if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
+		return
+	}
 
-		// gcd(a^(r/2)-1, N), gcd(a^(r/2)+1, N)
-		p0 := number.GCD(number.Pow(a, r/2)-1, N)
-		p1 := number.GCD(number.Pow(a, r/2)+1, N)
+	// gcd(a^(r/2)-1, N), gcd(a^(r/2)+1, N)
+	p0 := number.GCD(number.Pow(a, r/2)-1, N)
+	p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
-		// result
-		fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", i, N, a, p0, p1, s, r, m, d)
-
-		// check non-trivial factor
-		for _, p := range []int{p0, p1} {
-			if 1 < p && p < N && N%p == 0 {
-				fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
-				return
-			}
+	// check non-trivial factor
+	for _, p := range []int{p0, p1} {
+		if 1 < p && p < N && N%p == 0 {
+			fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", N, a, p0, p1, s, r, m, d)
+			fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
+			return
 		}
 	}
 
 	// Output:
-	// i=0: N=15, a=7. p=3, q=5. s/r=3/4 ([1 1 0]=0.750)
+	// N=15, a=7. p=3, q=5. s/r=3/4 ([1 1 0]=0.750)
 	// answer: p=3, q=5
 }
 
