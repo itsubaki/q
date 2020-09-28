@@ -1,4 +1,4 @@
-package qubit
+package qubit_test
 
 import (
 	"fmt"
@@ -10,6 +10,7 @@ import (
 	"github.com/itsubaki/q/pkg/math/number"
 	"github.com/itsubaki/q/pkg/math/rand"
 	"github.com/itsubaki/q/pkg/quantum/gate"
+	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
 
 func Example_pOVM() {
@@ -29,10 +30,10 @@ func Example_pOVM() {
 	add := E1.Add(E2).Add(E3)
 	fmt.Println(add.Equals(gate.I()))
 
-	q0 := Zero()
+	q0 := qubit.Zero()
 	fmt.Println(q0.Apply(E1).InnerProduct(q0))
 
-	q1 := Zero().Apply(gate.H())
+	q1 := qubit.Zero().Apply(gate.H())
 	fmt.Println(q1.Apply(E2).InnerProduct(q1))
 
 	// Output:
@@ -45,7 +46,7 @@ func Example_bellState() {
 	g0 := gate.H().TensorProduct(gate.I())
 	g1 := gate.CNOT(2, 0, 1)
 
-	q := Zero(2).Apply(g0, g1)
+	q := qubit.Zero(2).Apply(g0, g1)
 	fmt.Println(q.Amplitude())
 
 	// Output:
@@ -59,7 +60,7 @@ func Example_grover2qubit() {
 	x2 := gate.X(2)
 	amp := h2.Apply(x2).Apply(gate.CZ(2, 0, 1)).Apply(x2).Apply(h2)
 
-	q := Zero(2).Apply(h2, oracle, amp)
+	q := qubit.Zero(2).Apply(h2, oracle, amp)
 
 	q.Measure(0)
 	q.Measure(1)
@@ -86,7 +87,7 @@ func Example_grover3qubit() {
 	h3 := matrix.TensorProduct(gate.H(3), gate.I())
 	amp := h4.Apply(x3).Apply(cz).Apply(x3).Apply(h3)
 
-	q := TensorProduct(Zero(3), One())
+	q := qubit.TensorProduct(qubit.Zero(3), qubit.One())
 	q.Apply(gate.H(4), oracle, amp)
 
 	for i, p := range q.Probability() {
@@ -109,10 +110,10 @@ func Example_grover3qubit() {
 }
 
 func Example_errorCorrectionBitFlip() {
-	phi := New(1, 2)
+	phi := qubit.New(1, 2)
 
 	// encoding
-	phi.TensorProduct(Zero(2))
+	phi.TensorProduct(qubit.Zero(2))
 	phi.Apply(gate.CNOT(3, 0, 1))
 	phi.Apply(gate.CNOT(3, 0, 2))
 
@@ -120,7 +121,7 @@ func Example_errorCorrectionBitFlip() {
 	phi.Apply(matrix.TensorProduct(gate.X(), gate.I(2)))
 
 	// add ancilla qubit
-	phi.TensorProduct(Zero(2))
+	phi.TensorProduct(qubit.Zero(2))
 
 	// z1z2
 	phi.Apply(gate.CNOT(5, 0, 3), gate.CNOT(5, 1, 3))
@@ -163,10 +164,10 @@ func Example_errorCorrectionBitFlip() {
 }
 
 func Example_errorCorrectionPhaseFlip() {
-	phi := New(1, 2)
+	phi := qubit.New(1, 2)
 
 	// encoding
-	phi.TensorProduct(Zero(2))
+	phi.TensorProduct(qubit.Zero(2))
 	phi.Apply(gate.CNOT(3, 0, 1))
 	phi.Apply(gate.CNOT(3, 0, 2))
 	phi.Apply(gate.H(3))
@@ -178,7 +179,7 @@ func Example_errorCorrectionPhaseFlip() {
 	phi.Apply(gate.H(3))
 
 	// add ancilla qubit
-	phi.TensorProduct(Zero(2))
+	phi.TensorProduct(qubit.Zero(2))
 
 	// x1x2
 	phi.Apply(gate.CNOT(5, 0, 3), gate.CNOT(5, 1, 3))
@@ -225,13 +226,13 @@ func Example_errorCorrectionPhaseFlip() {
 }
 
 func Example_quantumTeleportation() {
-	phi := New(1, 2)
+	phi := qubit.New(1, 2)
 	phi.Seed = []int64{1}
 	phi.Rand = rand.Math
 
 	g0 := matrix.TensorProduct(gate.H(), gate.I())
 	g1 := gate.CNOT(2, 0, 1)
-	bell := Zero(2).Apply(g0, g1)
+	bell := qubit.Zero(2).Apply(g0, g1)
 	phi.TensorProduct(bell)
 
 	fmt.Println("before:")
@@ -279,13 +280,13 @@ func Example_quantumTeleportation() {
 }
 
 func Example_quantumTeleportation2() {
-	phi := New(1, 2)
+	phi := qubit.New(1, 2)
 	phi.Seed = []int64{1}
 	phi.Rand = rand.Math
 
 	g0 := matrix.TensorProduct(gate.H(), gate.I())
 	g1 := gate.CNOT(2, 0, 1)
-	bell := Zero(2).Apply(g0, g1)
+	bell := qubit.Zero(2).Apply(g0, g1)
 	phi.TensorProduct(bell)
 
 	fmt.Println("before:")
@@ -327,7 +328,7 @@ func Example_quantumTeleportation2() {
 }
 
 func ExampleQubit_OuterProduct() {
-	v := New(1, 0)
+	v := qubit.New(1, 0)
 	op := v.OuterProduct(v)
 	fmt.Println(op)
 
@@ -336,7 +337,7 @@ func ExampleQubit_OuterProduct() {
 }
 
 func ExampleQubit_OuterProduct_operatorSum() {
-	v := New(1, 0)
+	v := qubit.New(1, 0)
 	q := v.OuterProduct(v)
 	e := gate.X().Dagger().Apply(q.Apply(gate.X()))
 
@@ -348,7 +349,7 @@ func ExampleQubit_OuterProduct_operatorSum() {
 
 func TestNumberOfBit(t *testing.T) {
 	for i := 1; i < 10; i++ {
-		if Zero(i).NumberOfBit() != i {
+		if qubit.Zero(i).NumberOfBit() != i {
 			t.Fail()
 		}
 	}
@@ -356,12 +357,12 @@ func TestNumberOfBit(t *testing.T) {
 
 func TestIsZero(t *testing.T) {
 	cases := []struct {
-		qb     *Qubit
+		qb     *qubit.Qubit
 		isZero bool
 		isOne  bool
 	}{
-		{Zero(), true, false},
-		{One(), false, true},
+		{qubit.Zero(), true, false},
+		{qubit.One(), false, true},
 	}
 
 	for _, c := range cases {
@@ -376,11 +377,11 @@ func TestIsZero(t *testing.T) {
 
 func TestFidelity(t *testing.T) {
 	cases := []struct {
-		q0, q1 *Qubit
+		q0, q1 *qubit.Qubit
 		f      float64
 	}{
-		{Zero(), Zero(), 1.0},
-		{Zero(), One(), 0.0},
+		{qubit.Zero(), qubit.Zero(), 1.0},
+		{qubit.Zero(), qubit.One(), 0.0},
 	}
 
 	for _, c := range cases {
@@ -393,11 +394,11 @@ func TestFidelity(t *testing.T) {
 
 func TestTraceDistance(t *testing.T) {
 	cases := []struct {
-		q0, q1 *Qubit
+		q0, q1 *qubit.Qubit
 		d      float64
 	}{
-		{Zero(), Zero(), 0.0},
-		{Zero(), One(), 1.0},
+		{qubit.Zero(), qubit.Zero(), 0.0},
+		{qubit.Zero(), qubit.One(), 1.0},
 	}
 
 	for _, c := range cases {
@@ -410,12 +411,12 @@ func TestTraceDistance(t *testing.T) {
 
 func TestNormalize(t *testing.T) {
 	cases := []struct {
-		q *Qubit
+		q *qubit.Qubit
 	}{
-		{New(1, 0)},
-		{New(0, 1)},
-		{New(4, 5)},
-		{New(10, 5)},
+		{qubit.New(1, 0)},
+		{qubit.New(0, 1)},
+		{qubit.New(4, 5)},
+		{qubit.New(10, 5)},
 	}
 
 	for _, c := range cases {
@@ -427,7 +428,7 @@ func TestNormalize(t *testing.T) {
 }
 
 func TestMeasure(t *testing.T) {
-	q := Zero(3).Apply(gate.H(3))
+	q := qubit.Zero(3).Apply(gate.H(3))
 
 	q.Measure(0)
 	for _, p := range q.Probability() {

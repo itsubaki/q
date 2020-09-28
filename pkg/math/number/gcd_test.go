@@ -1,6 +1,10 @@
-package number
+package number_test
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/itsubaki/q/pkg/math/number"
+)
 
 func TestGCD(t *testing.T) {
 	cases := []struct {
@@ -15,7 +19,7 @@ func TestGCD(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		gcd := GCD(c.a, c.b)
+		gcd := number.GCD(c.a, c.b)
 		if gcd != c.c {
 			t.Errorf("gcd=%d", gcd)
 		}

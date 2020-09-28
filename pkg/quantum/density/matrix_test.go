@@ -1,4 +1,4 @@
-package density
+package density_test
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
+	"github.com/itsubaki/q/pkg/quantum/density"
 	"github.com/itsubaki/q/pkg/quantum/gate"
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
@@ -13,7 +14,7 @@ import (
 func TestPartialTrace(t *testing.T) {
 	qc := gate.H().TensorProduct(gate.I()).Apply(gate.CNOT(2, 0, 1))
 	q := qubit.Zero(2).Apply(qc)
-	rho := New().Add(1.0, q)
+	rho := density.New().Add(1.0, q)
 
 	pt := rho.PartialTrace(0)
 	fmt.Println(pt)
@@ -42,7 +43,7 @@ func TestDensityMatrix(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho := New()
+		rho := density.New()
 		for i := range c.p {
 			rho.Add(c.p[i], c.q[i])
 		}

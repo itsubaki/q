@@ -1,6 +1,10 @@
-package number
+package number_test
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/itsubaki/q/pkg/math/number"
+)
 
 func TestModExp2(t *testing.T) {
 	cases := []struct {
@@ -25,7 +29,7 @@ func TestModExp2(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		v := ModExp2(c.a, c.j, c.N)
+		v := number.ModExp2(c.a, c.j, c.N)
 		if v != c.out {
 			t.Errorf("%d^(2^%d) mod %d = %d. actual=%d\n", c.a, c.j, c.N, c.out, v)
 		}
@@ -45,7 +49,7 @@ func TestBaseExp(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		a, b, ok := BaseExp(c.N)
+		a, b, ok := number.BaseExp(c.N)
 		if a != c.a || b != c.b || ok != c.ok {
 			t.Errorf("N=%v, a=%v, b=%v, ok=%v", c.N, a, b, ok)
 		}

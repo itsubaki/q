@@ -1,6 +1,10 @@
-package number
+package number_test
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/itsubaki/q/pkg/math/number"
+)
 
 func TestBinaryFraction(t *testing.T) {
 	cases := []struct {
@@ -18,7 +22,7 @@ func TestBinaryFraction(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		result := BinaryFraction(c.binary)
+		result := number.BinaryFraction(c.binary)
 		if result == c.float {
 			continue
 		}

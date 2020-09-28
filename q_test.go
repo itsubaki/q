@@ -1,9 +1,10 @@
-package q
+package q_test
 
 import (
 	"fmt"
 	"math"
 
+	"github.com/itsubaki/q"
 	"github.com/itsubaki/q/pkg/math/number"
 	"github.com/itsubaki/q/pkg/math/rand"
 	"github.com/itsubaki/q/pkg/quantum/gate"
@@ -13,7 +14,7 @@ func Example_shorFactoring21() {
 	N := 21
 	a := 5
 
-	qsim := New()
+	qsim := q.New()
 	qsim.Seed = []int64{1}
 	qsim.Rand = rand.Math
 
@@ -53,7 +54,7 @@ func Example_shorFactoring85() {
 	N := 85
 	a := 3 // 3, 6, 7, 11, 12, 14, 22, 23, 24, 27, 28, 29, 31, 37, 39, 41, 44, 46, 48, 54, 56, 57, 58, 61, 62, 63, 71, 73, 74, 78, 79, 82
 
-	qsim := New()
+	qsim := q.New()
 	qsim.Seed = []int64{1}
 	qsim.Rand = rand.Math
 
@@ -116,7 +117,7 @@ func Example_shorFactoring51() {
 	N := 51
 	a := 5 // 5, 7, 10, 11, 14, 20, 22, 23, 28, 29, 31, 37, 40, 41, 44, 46
 
-	qsim := New()
+	qsim := q.New()
 	qsim.Seed = []int64{1}
 	qsim.Rand = rand.Math
 
@@ -185,7 +186,7 @@ func Example_shorFactoring15() {
 	N := 15
 	a := 7
 
-	qsim := New()
+	qsim := q.New()
 	qsim.Seed = []int64{1}
 	qsim.Rand = rand.Math
 
@@ -245,7 +246,7 @@ func Example_shorFactoring15() {
 }
 
 func Example_grover4qubit() {
-	qsim := New()
+	qsim := q.New()
 
 	// initial state
 	q0 := qsim.Zero()
@@ -295,7 +296,7 @@ func Example_grover4qubit() {
 }
 
 func Example_grover3qubit() {
-	qsim := New()
+	qsim := q.New()
 
 	// initial state
 	q0 := qsim.Zero()
@@ -314,7 +315,7 @@ func Example_grover3qubit() {
 	qsim.X(q0, q1, q2).CCZ(q0, q1, q2).X(q0, q1, q2)
 	qsim.H(q0, q1, q2)
 
-	for _, s := range qsim.State([]Qubit{q0, q1, q2}, []Qubit{q3}) {
+	for _, s := range qsim.State([]q.Qubit{q0, q1, q2}, []q.Qubit{q3}) {
 		if s.Probability == 0 {
 			continue
 		}
@@ -334,7 +335,7 @@ func Example_grover3qubit() {
 }
 
 func Example_qFT3qubit() {
-	qsim := New()
+	qsim := q.New()
 
 	q0 := qsim.Zero()
 	q1 := qsim.One()
@@ -364,7 +365,7 @@ func Example_qFT3qubit() {
 }
 
 func Example_bellState() {
-	qsim := New()
+	qsim := q.New()
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
@@ -381,14 +382,14 @@ func Example_bellState() {
 }
 
 func Example_quantumTeleportation() {
-	qsim := New()
+	qsim := q.New()
 
 	phi := qsim.New(1, 2)
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 
 	fmt.Println("phi:")
-	for _, s := range qsim.State([]Qubit{phi}) {
+	for _, s := range qsim.State([]q.Qubit{phi}) {
 		fmt.Println(s)
 	}
 
@@ -401,7 +402,7 @@ func Example_quantumTeleportation() {
 	qsim.Measure(phi, q0)
 
 	fmt.Println("q1:")
-	for _, s := range qsim.State([]Qubit{q1}) {
+	for _, s := range qsim.State([]q.Qubit{q1}) {
 		fmt.Println(s)
 	}
 
@@ -415,7 +416,7 @@ func Example_quantumTeleportation() {
 }
 
 func ExampleQ_Apply() {
-	qsim := New()
+	qsim := q.New()
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
@@ -434,14 +435,14 @@ func ExampleQ_Apply() {
 }
 
 func ExampleQ_ConditionZ_quantumTeleportation() {
-	qsim := New()
+	qsim := q.New()
 
 	phi := qsim.New(1, 2)
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 
 	fmt.Println("phi:")
-	for _, s := range qsim.State([]Qubit{phi}) {
+	for _, s := range qsim.State([]q.Qubit{phi}) {
 		fmt.Println(s)
 	}
 
@@ -455,7 +456,7 @@ func ExampleQ_ConditionZ_quantumTeleportation() {
 	qsim.ConditionZ(mz.IsOne(), q1)
 
 	fmt.Println("q1:")
-	for _, s := range qsim.State([]Qubit{q1}) {
+	for _, s := range qsim.State([]q.Qubit{q1}) {
 		fmt.Println(s)
 	}
 
@@ -469,12 +470,12 @@ func ExampleQ_ConditionZ_quantumTeleportation() {
 }
 
 func ExampleQ_ConditionX_errorCorrection() {
-	qsim := New()
+	qsim := q.New()
 
 	q0 := qsim.New(1, 2)
 
 	fmt.Println("q0:")
-	for _, s := range qsim.State([]Qubit{q0}) {
+	for _, s := range qsim.State([]q.Qubit{q0}) {
 		fmt.Println(s)
 	}
 
@@ -487,7 +488,7 @@ func ExampleQ_ConditionX_errorCorrection() {
 	qsim.X(q0)
 
 	fmt.Println("q0(flipped):")
-	for _, s := range qsim.State([]Qubit{q0}) {
+	for _, s := range qsim.State([]q.Qubit{q0}) {
 		fmt.Println(s)
 	}
 
@@ -510,7 +511,7 @@ func ExampleQ_ConditionX_errorCorrection() {
 	qsim.CNOT(q0, q2).CNOT(q0, q1)
 
 	fmt.Println("q0(corrected):")
-	for _, s := range qsim.State([]Qubit{q0}) {
+	for _, s := range qsim.State([]q.Qubit{q0}) {
 		fmt.Println(s)
 	}
 

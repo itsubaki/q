@@ -1,12 +1,14 @@
-package vector
+package vector_test
 
 import (
 	"fmt"
 	"testing"
+
+	"github.com/itsubaki/q/pkg/math/vector"
 )
 
 func ExampleVector_OuterProduct() {
-	v := New(1, 0)
+	v := vector.New(1, 0)
 	op := v.OuterProduct(v)
 	fmt.Println(op)
 
@@ -16,15 +18,15 @@ func ExampleVector_OuterProduct() {
 
 func TestVector(t *testing.T) {
 	cases := []struct {
-		v0, v1       Vector
+		v0, v1       vector.Vector
 		innerProduct complex128
 		isOrthogonal bool
 		isUnit       bool
 		norm         complex128
 	}{
-		{New(1, 0), New(1, 0), complex(1, 0), false, true, complex(1, 0)},
-		{New(0, 1), New(0, 1), complex(1, 0), false, true, complex(1, 0)},
-		{New(1, 0), New(0, 1), complex(0, 0), true, true, complex(1, 0)},
+		{vector.New(1, 0), vector.New(1, 0), complex(1, 0), false, true, complex(1, 0)},
+		{vector.New(0, 1), vector.New(0, 1), complex(1, 0), false, true, complex(1, 0)},
+		{vector.New(1, 0), vector.New(0, 1), complex(0, 0), true, true, complex(1, 0)},
 	}
 
 	for _, c := range cases {

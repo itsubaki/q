@@ -1,6 +1,10 @@
-package number
+package number_test
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/itsubaki/q/pkg/math/number"
+)
 
 func TestContinuedFraction(t *testing.T) {
 	cases := []struct {
@@ -18,7 +22,7 @@ func TestContinuedFraction(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		f, n, d := ContinuedFraction(c.float, 1e-3)
+		f, n, d := number.ContinuedFraction(c.float, 1e-3)
 
 		if n != c.numerator {
 			t.Errorf("%v/%v", n, d)
