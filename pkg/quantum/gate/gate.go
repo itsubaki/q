@@ -19,7 +19,7 @@ func New(v ...[]complex128) matrix.Matrix {
 	return out
 }
 
-func NewSlice(l ...int) []matrix.Matrix {
+func Zero(l ...int) []matrix.Matrix {
 	if len(l) < 1 {
 		return make([]matrix.Matrix, 0)
 	}

@@ -5,6 +5,7 @@ import (
 	"math/cmplx"
 	"testing"
 
+	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/quantum/gate"
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
@@ -19,93 +20,43 @@ func TestPartialTrace(t *testing.T) {
 }
 
 func TestDensityMatrix(t *testing.T) {
-	p0, p1 := 0.1, 0.9
-	q0, q1 := qubit.Zero(), qubit.One()
-	rho := New().Add(p0, q0).Add(p1, q1)
-
-	if cmplx.Abs(rho.Trace()-complex(1, 0)) > 1e-13 {
-		t.Error(rho)
+	cases := []struct {
+		p         []float64
+		q         []*qubit.Qubit
+		tr, str   complex128
+		expectedM matrix.Matrix
+		expectedV complex128
+	}{
+		{
+			[]float64{0.1, 0.9},
+			[]*qubit.Qubit{qubit.Zero(), qubit.One()},
+			complex(1, 0), complex(0.82, 0),
+			gate.X(), 0.0,
+		},
+		{
+			[]float64{0.1, 0.9},
+			[]*qubit.Qubit{qubit.Zero(), qubit.Zero().Apply(gate.H())},
+			complex(1, 0), complex(0.91, 0),
+			gate.X(), 0.9,
+		},
 	}
 
-	if rho.Measure(q0) != complex(p0, 0) {
-		t.Error(rho)
-	}
+	for _, c := range cases {
+		rho := New()
+		for i := range c.p {
+			rho.Add(c.p[i], c.q[i])
+		}
 
-	if rho.Measure(q1) != complex(p1, 0) {
-		t.Error(rho)
-	}
+		if cmplx.Abs(rho.Trace()-c.tr) > 1e-13 {
+			t.Errorf("trace=%v", rho.Trace())
+		}
 
-	if cmplx.Abs(rho.ExpectedValue(gate.X())) > 1e-13 {
-		t.Error(rho)
-	}
+		if cmplx.Abs(rho.Squared().Trace()-c.str) > 1e-13 {
+			t.Errorf("strace%v", rho.Squared().Trace())
+		}
 
-	xrho := rho.Apply(gate.X())
-	if xrho.Measure(q0) != complex(p1, 0) {
-		t.Error(xrho)
-	}
-
-	if xrho.Measure(q1) != complex(p0, 0) {
-		t.Error(xrho)
-	}
-}
-
-func TestDensityMatrix2(t *testing.T) {
-	p0, p1 := 0.1, 0.9
-	q0, q1 := qubit.Zero(), qubit.Zero().Apply(gate.H())
-	rho := New().Add(p0, q0).Add(p1, q1)
-
-	if cmplx.Abs(rho.Trace()-complex(1, 0)) > 1e-13 {
-		t.Error(rho)
-	}
-
-	e0 := rho.ExpectedValue(gate.X())
-	if cmplx.Abs(e0-complex(p1, 0)) > 1e-13 {
-		t.Error(e0)
-	}
-
-	trrho2 := rho.Squared().Trace() // < 1
-	if cmplx.Abs(trrho2-complex(1, 0)) < 1e-13 {
-		t.Error(trrho2)
-	}
-}
-
-func TestDensityMatrixPureState(t *testing.T) {
-	rho := New().Add(1.0, qubit.Zero())
-
-	trrho2 := rho.Squared().Trace() // -> 1
-	if cmplx.Abs(trrho2-complex(1, 0)) > 1e-13 {
-		t.Error(trrho2)
-	}
-}
-
-func TestDepolarizing(t *testing.T) {
-	p0, p1 := 0.1, 0.9
-	q0, q1 := qubit.Zero(), qubit.One()
-	rho := New().Add(p0, q0).Add(p1, q1)
-
-	rho.Depolarizing(0)
-	if cmplx.Abs(rho.Trace()-complex(1, 0)) > 1e-13 {
-		t.Error(rho)
-	}
-
-	if rho.Measure(q0) != complex(p0, 0) {
-		t.Error(rho)
-	}
-
-	if rho.Measure(q1) != complex(p1, 0) {
-		t.Error(rho)
-	}
-
-	rho.Depolarizing(1)
-	if cmplx.Abs(rho.Trace()-complex(1, 0)) > 1e-13 {
-		t.Error(rho)
-	}
-
-	if rho.Measure(q0) != complex(0.5, 0) {
-		t.Error(rho)
-	}
-
-	if rho.Measure(q1) != complex(0.5, 0) {
-		t.Error(rho)
+		if cmplx.Abs(rho.ExpectedValue(c.expectedM)-c.expectedV) > 1e-13 {
+			t.Errorf("expected value=%v", rho.ExpectedValue(c.expectedM))
+		}
 	}
 }

@@ -17,7 +17,7 @@ func New(z ...complex128) Vector {
 	return out
 }
 
-func NewZero(n int) Vector {
+func Zero(n int) Vector {
 	out := Vector{}
 	for i := 0; i < n; i++ {
 		out = append(out, 0)
