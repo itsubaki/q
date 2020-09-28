@@ -125,35 +125,45 @@ qsim := q.New()
 q0 := qsim.Zero()
 q1 := qsim.Zero()
 q2 := qsim.Zero()
-q3 := qsim.One()
+q3 := qsim.Zero()
 
 // superposition
 qsim.H(q0, q1, q2, q3)
 
-// oracle for |011>|1>
-qsim.X(q0).CCCNOT(q0, q1, q2, q3).X(q0)
-
-// amplification
-qsim.H(q0, q1, q2, q3)
-qsim.X(q0, q1, q2).CCZ(q0, q1, q2).X(q0, q1, q2)
-qsim.H(q0, q1, q2)
-
-for _, s := range qsim.State([]q.Qubit{q0, q1, q2}, []q.Qubit{q3}) {
-  if s.Probability == 0 {
-    continue
-  }
+// iteration
+N := number.Pow(2, qsim.NumberOfBit())
+r := math.Floor(math.Pi / 4 * math.Sqrt(float64(N)))
+for i := 0; i < int(r); i++ {
+  qsim.X(q2, q3)
+  qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)
+  qsim.X(q2, q3)
   
-  fmt.Println(s)
+  qsim.H(q0, q1, q2, q3)
+  qsim.X(q0, q1, q2, q3)
+  qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)
+  qsim.X(q0, q1, q2, q3)
+  qsim.H(q0, q1, q2, q3)
 }
 
-// [000 1][ 0  1](-0.1768 0.0000i): 0.0312
-// [001 1][ 1  1](-0.1768 0.0000i): 0.0312
-// [010 1][ 2  1](-0.1768 0.0000i): 0.0312
-// [011 1][ 3  1](-0.8839 0.0000i): 0.7813 -> answer!
-// [100 1][ 4  1](-0.1768 0.0000i): 0.0312
-// [101 1][ 5  1](-0.1768 0.0000i): 0.0312
-// [110 1][ 6  1](-0.1768 0.0000i): 0.0312
-// [111 1][ 7  1](-0.1768 0.0000i): 0.0313
+for _, s := range qsim.State() {
+  fmt.Println(s)
+}
+// [0000][  0]( 0.0508 0.0000i): 0.0026
+// [0001][  1]( 0.0508 0.0000i): 0.0026
+// [0010][  2]( 0.0508 0.0000i): 0.0026
+// [0011][  3]( 0.0508 0.0000i): 0.0026
+// [0100][  4]( 0.0508 0.0000i): 0.0026
+// [0101][  5]( 0.0508 0.0000i): 0.0026
+// [0110][  6]( 0.0508 0.0000i): 0.0026
+// [0111][  7]( 0.0508 0.0000i): 0.0026
+// [1000][  8]( 0.0508 0.0000i): 0.0026
+// [1001][  9]( 0.0508 0.0000i): 0.0026
+// [1010][ 10]( 0.0508 0.0000i): 0.0026
+// [1011][ 11]( 0.0508 0.0000i): 0.0026
+// [1100][ 12](-0.9805 0.0000i): 0.9613 -> answer!
+// [1101][ 13]( 0.0508 0.0000i): 0.0026
+// [1110][ 14]( 0.0508 0.0000i): 0.0026
+// [1111][ 15]( 0.0508 0.0000i): 0.0026
 ```
 
 ## Factoring 15
@@ -161,10 +171,6 @@ for _, s := range qsim.State([]q.Qubit{q0, q1, q2}, []q.Qubit{q3}) {
 ```golang
 N := 15
 a := 7 // co-prime
-
-if number.GCD(N, a) != 1 {
-  t.Errorf("%v %v\n", N, a)
-}
 
 for i := 0; i < 10; i++{
   qsim := q.New()
@@ -192,7 +198,7 @@ for i := 0; i < 10; i++{
 
   // inverse QFT
   qsim.Swap(q0, q2)
-  qsim.InverseQFT(q0, q1, q2)
+  qsim.InvQFT(q0, q1, q2)
 
   // measure q0, q1, q2
   m := qsim.MeasureAsBinary(q0, q1, q2)
@@ -229,8 +235,8 @@ for i := 0; i < 10; i++{
 ## Density Matrix
 
 ```golang
-p0, p1 := 0.1, 0.9
-q0, q1 := qubit.Zero(), qubit.Zero().Apply(gate.H())
+p0, q0 := 0.1, qubit.Zero()
+p1, q1 := 0.9, qubit.Zero().Apply(gate.H())
 rho := density.New().Add(p0, q0).Add(p1, q1)
 
 rho.Trace() // -> 1
