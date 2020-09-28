@@ -30,6 +30,7 @@ func Index(qb ...Qubit) []int {
 
 type Q struct {
 	internal *qubit.Qubit
+	Seed     []int64
 	Rand     func(seed ...int64) float64
 }
 
@@ -43,6 +44,7 @@ func New() *Q {
 func (q *Q) New(z ...complex128) Qubit {
 	if q.internal == nil {
 		q.internal = qubit.New(z...)
+		q.internal.Seed = q.Seed
 		q.internal.Rand = q.Rand
 		return Qubit(0)
 	}
@@ -358,12 +360,14 @@ func (q *Q) Clone() *Q {
 	if q.internal == nil {
 		return &Q{
 			internal: nil,
+			Seed:     q.Seed,
 			Rand:     q.Rand,
 		}
 	}
 
 	return &Q{
 		internal: q.internal.Clone(),
+		Seed:     q.internal.Seed,
 		Rand:     q.internal.Rand,
 	}
 }

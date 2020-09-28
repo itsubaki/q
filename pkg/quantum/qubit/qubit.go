@@ -12,6 +12,7 @@ import (
 
 type Qubit struct {
 	vector vector.Vector
+	Seed   []int64
 	Rand   func(seed ...int64) float64
 }
 
@@ -69,6 +70,7 @@ func (q *Qubit) Dimension() int {
 func (q *Qubit) Clone() *Qubit {
 	return &Qubit{
 		vector: q.vector.Clone(),
+		Seed:   q.Seed,
 		Rand:   q.Rand,
 	}
 }
@@ -144,7 +146,7 @@ func (q *Qubit) Probability() []float64 {
 
 func (q *Qubit) Measure(bit int) *Qubit {
 	index, p := q.ProbabilityZeroAt(bit)
-	r := q.Rand()
+	r := q.Rand(q.Seed...)
 
 	var sum float64
 	for _, pp := range p {

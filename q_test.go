@@ -9,11 +9,14 @@ import (
 	"github.com/itsubaki/q/pkg/quantum/gate"
 )
 
-func Example_shorFactoringN() {
+func Example_shorFactoring21() {
 	N := 21
-	a := rand.Coprime(N)
+	a := 5
 
 	qsim := New()
+	qsim.Seed = []int64{1}
+	qsim.Rand = rand.Math
+
 	r0 := qsim.ZeroWith(4)
 	r1 := qsim.ZeroLog2(N)
 
@@ -25,7 +28,7 @@ func Example_shorFactoringN() {
 	for i := 0; i < 10; i++ {
 		m := qsim.Clone().MeasureAsBinary(r0...)
 		d := number.BinaryFraction(m)
-		_, _, r := number.ContinuedFraction(d)
+		_, s, r := number.ContinuedFraction(d)
 
 		if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
 			continue
@@ -34,6 +37,8 @@ func Example_shorFactoringN() {
 		p0 := number.GCD(number.Pow(a, r/2)-1, N)
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
+		fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", i, N, a, p0, p1, s, r, m, d)
+
 		for _, p := range []int{p0, p1} {
 			if 1 < p && p < N && N%p == 0 {
 				fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
@@ -41,6 +46,10 @@ func Example_shorFactoringN() {
 			}
 		}
 	}
+
+	// Output:
+	// i=0: N=21, a=5. p=3, q=1. s/r=11/16 ([1 0 1 1]=0.688)
+	// answer: p=3, q=7
 }
 
 func Example_shorFactoring85() {
@@ -48,6 +57,8 @@ func Example_shorFactoring85() {
 	a := 3 // 3, 6, 7, 11, 12, 14, 22, 23, 24, 27, 28, 29, 31, 37, 39, 41, 44, 46, 48, 54, 56, 57, 58, 61, 62, 63, 71, 73, 74, 78, 79, 82
 
 	qsim := New()
+	qsim.Seed = []int64{1}
+	qsim.Rand = rand.Math
 
 	// initial state
 	q0 := qsim.Zero()
@@ -103,6 +114,10 @@ func Example_shorFactoring85() {
 			}
 		}
 	}
+
+	// Output:
+	// i=0: N=85, a=3. p=5, q=17. s/r=15/16 ([1 1 1 1]=0.938)
+	// answer: p=5, q=17
 }
 
 func Example_shorFactoring51() {
@@ -110,6 +125,8 @@ func Example_shorFactoring51() {
 	a := 5 // 5, 7, 10, 11, 14, 20, 22, 23, 28, 29, 31, 37, 40, 41, 44, 46
 
 	qsim := New()
+	qsim.Seed = []int64{1}
+	qsim.Rand = rand.Math
 
 	// initial state
 	q0 := qsim.Zero()
@@ -170,6 +187,10 @@ func Example_shorFactoring51() {
 			}
 		}
 	}
+
+	// Output:
+	// i=0: N=51, a=5. p=3, q=17. s/r=15/16 ([1 1 1 1]=0.938)
+	// answer: p=3, q=17
 }
 
 func Example_shorFactoring15() {
@@ -177,6 +198,8 @@ func Example_shorFactoring15() {
 	a := 7
 
 	qsim := New()
+	qsim.Seed = []int64{1}
+	qsim.Rand = rand.Math
 
 	// initial state
 	q0 := qsim.Zero()
@@ -231,6 +254,10 @@ func Example_shorFactoring15() {
 			}
 		}
 	}
+
+	// Output:
+	// i=0: N=15, a=7. p=3, q=5. s/r=3/4 ([1 1 0]=0.750)
+	// answer: p=3, q=5
 }
 
 func Example_grover4qubit() {
