@@ -3,10 +3,12 @@ package qubit
 import (
 	"fmt"
 	"math"
+	"strconv"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/math/number"
+	"github.com/itsubaki/q/pkg/math/rand"
 	"github.com/itsubaki/q/pkg/quantum/gate"
 )
 
@@ -67,95 +69,11 @@ func Example_grover2qubit() {
 			continue
 		}
 
-		fmt.Printf("%2d: %.5f\n", i, p)
+		fmt.Printf("%03s: %.5f\n", strconv.FormatInt(int64(i), 2), p)
 	}
 
 	// Output:
-	// 3: 1.00000
-}
-
-func Example_quantumTeleportation() {
-	phi := New(1, 2)
-	for _, p := range phi.Probability() {
-		if p == 0 {
-			continue
-		}
-
-		fmt.Printf("%.5f\n", p)
-	}
-
-	g0 := matrix.TensorProduct(gate.H(), gate.I())
-	g1 := gate.CNOT(2, 0, 1)
-	bell := Zero(2).Apply(g0, g1)
-	phi.TensorProduct(bell)
-
-	g2 := gate.CNOT(3, 0, 1)
-	g3 := matrix.TensorProduct(gate.H(), gate.I(2))
-	phi.Apply(g2, g3)
-
-	mz := phi.Measure(0)
-	mx := phi.Measure(1)
-
-	if mz.IsOne() {
-		phi.Apply(matrix.TensorProduct(gate.I(2), gate.Z()))
-	}
-
-	if mx.IsOne() {
-		phi.Apply(matrix.TensorProduct(gate.I(2), gate.X()))
-	}
-
-	for _, p := range phi.Probability() {
-		if p == 0 {
-			continue
-		}
-
-		fmt.Printf("%.5f\n", p)
-	}
-
-	// Output:
-	// 0.20000
-	// 0.80000
-	// 0.20000
-	// 0.80000
-}
-
-func Example_quantumTeleportation2() {
-	phi := New(1, 2)
-	for _, p := range phi.Probability() {
-		if p == 0 {
-			continue
-		}
-
-		fmt.Printf("%.5f\n", p)
-	}
-
-	g0 := matrix.TensorProduct(gate.H(), gate.I())
-	g1 := gate.CNOT(2, 0, 1)
-	bell := Zero(2).Apply(g0, g1)
-	phi.TensorProduct(bell)
-
-	g2 := gate.CNOT(3, 0, 1)
-	g3 := matrix.TensorProduct(gate.H(), gate.I(2))
-	g4 := gate.CNOT(3, 1, 2)
-	g5 := gate.CZ(3, 0, 2)
-
-	phi.Apply(g2, g3, g4, g5)
-	phi.Measure(0)
-	phi.Measure(1)
-
-	for _, p := range phi.Probability() {
-		if p == 0 {
-			continue
-		}
-
-		fmt.Printf("%.5f\n", p)
-	}
-
-	// Output:
-	// 0.20000
-	// 0.80000
-	// 0.20000
-	// 0.80000
+	// 011: 1.00000
 }
 
 func Example_grover3qubit() {
@@ -176,18 +94,18 @@ func Example_grover3qubit() {
 			continue
 		}
 
-		fmt.Printf("%2d: %.5f\n", i, p)
+		fmt.Printf("%04s: %.5f\n", strconv.FormatInt(int64(i), 2), p)
 	}
 
 	// Output:
-	//  1: 0.03125
-	//  3: 0.03125
-	//  5: 0.03125
-	//  7: 0.78125
-	//  9: 0.03125
-	// 11: 0.03125
-	// 13: 0.03125
-	// 15: 0.03125
+	// 0001: 0.03125
+	// 0011: 0.03125
+	// 0101: 0.03125
+	// 0111: 0.78125
+	// 1001: 0.03125
+	// 1011: 0.03125
+	// 1101: 0.03125
+	// 1111: 0.03125
 }
 
 func Example_errorCorrectionBitFlip() {
@@ -227,18 +145,21 @@ func Example_errorCorrectionBitFlip() {
 		phi.Apply(matrix.TensorProduct(gate.I(2), gate.X(), gate.I(2)))
 	}
 
-	// answer is 0.2|000>|10> + 0.8|111>|10>
+	// decoding
+	phi.Apply(gate.CNOT(5, 0, 2))
+	phi.Apply(gate.CNOT(5, 0, 1))
+
 	for i, p := range phi.Probability() {
 		if p == 0 {
 			continue
 		}
 
-		fmt.Printf("%2d: %.5f\n", i, p)
+		fmt.Printf("%05s: %.5f\n", strconv.FormatInt(int64(i), 2), p)
 	}
 
 	// Output:
-	//  2: 0.20000
-	// 30: 0.80000
+	// 00010: 0.20000
+	// 10010: 0.80000
 }
 
 func Example_errorCorrectionPhaseFlip() {
@@ -285,19 +206,124 @@ func Example_errorCorrectionPhaseFlip() {
 		phi.Apply(matrix.TensorProduct(gate.I(2), gate.Z(), gate.I(2)))
 	}
 
+	// decoding
 	phi.Apply(matrix.TensorProduct(gate.H(3), gate.I(2)))
+	phi.Apply(gate.CNOT(5, 0, 2))
+	phi.Apply(gate.CNOT(5, 0, 1))
 
 	for i, p := range phi.Probability() {
 		if math.Abs(p) < 1e-13 {
 			continue
 		}
 
-		fmt.Printf("%2d: %.5f\n", i, p)
+		fmt.Printf("%05s: %.5f\n", strconv.FormatInt(int64(i), 2), p)
 	}
 
 	// Output:
-	//  2: 0.20000
-	// 30: 0.80000
+	// 00010: 0.20000
+	// 10010: 0.80000
+}
+
+func Example_quantumTeleportation() {
+	phi := New(1, 2)
+	phi.Seed = []int64{1}
+	phi.Rand = rand.Math
+
+	g0 := matrix.TensorProduct(gate.H(), gate.I())
+	g1 := gate.CNOT(2, 0, 1)
+	bell := Zero(2).Apply(g0, g1)
+	phi.TensorProduct(bell)
+
+	fmt.Println("before:")
+	for i, p := range phi.Probability() {
+		if p == 0 {
+			continue
+		}
+
+		fmt.Printf("%03s: %.5f\n", strconv.FormatInt(int64(i), 2), p)
+	}
+
+	g2 := gate.CNOT(3, 0, 1)
+	g3 := matrix.TensorProduct(gate.H(), gate.I(2))
+	phi.Apply(g2, g3)
+
+	mz := phi.Measure(0)
+	mx := phi.Measure(1)
+
+	if mz.IsOne() {
+		phi.Apply(matrix.TensorProduct(gate.I(2), gate.Z()))
+	}
+
+	if mx.IsOne() {
+		phi.Apply(matrix.TensorProduct(gate.I(2), gate.X()))
+	}
+
+	fmt.Println("after:")
+	for i, p := range phi.Probability() {
+		if p == 0 {
+			continue
+		}
+
+		fmt.Printf("%03s: %.5f\n", strconv.FormatInt(int64(i), 2), p)
+	}
+
+	// Output:
+	// before:
+	// 000: 0.10000
+	// 011: 0.10000
+	// 100: 0.40000
+	// 111: 0.40000
+	// after:
+	// 110: 0.20000
+	// 111: 0.80000
+}
+
+func Example_quantumTeleportation2() {
+	phi := New(1, 2)
+	phi.Seed = []int64{1}
+	phi.Rand = rand.Math
+
+	g0 := matrix.TensorProduct(gate.H(), gate.I())
+	g1 := gate.CNOT(2, 0, 1)
+	bell := Zero(2).Apply(g0, g1)
+	phi.TensorProduct(bell)
+
+	fmt.Println("before:")
+	for i, p := range phi.Probability() {
+		if p == 0 {
+			continue
+		}
+
+		fmt.Printf("%03s: %.5f\n", strconv.FormatInt(int64(i), 2), p)
+	}
+
+	g2 := gate.CNOT(3, 0, 1)
+	g3 := matrix.TensorProduct(gate.H(), gate.I(2))
+	g4 := gate.CNOT(3, 1, 2)
+	g5 := gate.CZ(3, 0, 2)
+
+	phi.Apply(g2, g3, g4, g5)
+	phi.Measure(0)
+	phi.Measure(1)
+
+	fmt.Println("after:")
+	for i, p := range phi.Probability() {
+		if p == 0 {
+			continue
+		}
+
+		fmt.Printf("%03s: %.5f\n", strconv.FormatInt(int64(i), 2), p)
+	}
+
+	// Output:
+	// before:
+	// 000: 0.10000
+	// 011: 0.10000
+	// 100: 0.40000
+	// 111: 0.40000
+	// after:
+	// 110: 0.20000
+	// 111: 0.80000
 }
 
 func ExampleQubit_OuterProduct() {
