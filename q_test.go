@@ -79,7 +79,6 @@ func Example_shorFactoring85() {
 
 	// inverse QFT
 	qsim.Swap(q0, q1, q2, q3)
-
 	qsim.H(q3)
 	qsim.CR(q3, q2, 2).H(q2)
 	qsim.CR(q3, q1, 3).CR(q2, q1, 2).H(q1)
@@ -213,7 +212,7 @@ func Example_shorFactoring15() {
 
 	// inverse QFT
 	qsim.Swap(q0, q2)
-	qsim.InverseQFT(q0, q1, q2)
+	qsim.InvQFT(q0, q1, q2)
 
 	// measure q0, q1, q2
 	m := qsim.MeasureAsBinary(q0, q1, q2)
@@ -347,7 +346,6 @@ func Example_qFT3qubit() {
 	qsim.H(q1)
 	qsim.CR(q2, q1, 2)
 	qsim.H(q2)
-
 	qsim.Swap(q0, q2)
 
 	for _, s := range qsim.State() {
