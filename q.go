@@ -292,16 +292,16 @@ func (q *Q) ConditionZ(condition bool, qb ...Qubit) *Q {
 	return q
 }
 
-func (q *Q) ControlledModExp2(a, j, N int, c Qubit, t []Qubit) *Q {
+func (q *Q) ControlledModExp2(a, j, N int, control Qubit, target []Qubit) *Q {
 	n := q.NumberOfBit()
-	g := gate.CModExp2(n, a, j, N, c.Index(), Index(t...))
+	g := gate.CModExp2(n, a, j, N, control.Index(), Index(target...))
 	q.internal.Apply(g)
 	return q
 }
 
-func (q *Q) CModExp2(a, N int, c []Qubit, t []Qubit) *Q {
-	for j := 0; j < len(c); j++ {
-		q.ControlledModExp2(a, j, N, c[j], t)
+func (q *Q) CModExp2(a, N int, control []Qubit, target []Qubit) *Q {
+	for j := 0; j < len(control); j++ {
+		q.ControlledModExp2(a, j, N, control[j], target)
 	}
 
 	return q
