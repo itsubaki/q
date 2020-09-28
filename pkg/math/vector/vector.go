@@ -160,12 +160,12 @@ func TensorProductN(v Vector, bit ...int) Vector {
 		return v
 	}
 
-	out := v
-	for i := 1; i < bit[0]; i++ {
-		out = out.TensorProduct(v)
+	list := make([]Vector, 0)
+	for i := 0; i < bit[0]; i++ {
+		list = append(list, v)
 	}
 
-	return out
+	return TensorProduct(list...)
 }
 
 func TensorProduct(v ...Vector) Vector {

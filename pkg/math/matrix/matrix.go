@@ -295,7 +295,6 @@ func TensorProductN(m Matrix, bit ...int) Matrix {
 		return m
 	}
 
-	// use a lot of memory
 	list := make([]Matrix, 0)
 	for i := 0; i < bit[0]; i++ {
 		list = append(list, m)
