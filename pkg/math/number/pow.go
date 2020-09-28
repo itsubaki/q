@@ -1,5 +1,10 @@
 package number
 
+import (
+	"math"
+	"strconv"
+)
+
 func Pow(a, r int) int {
 	if a == 0 {
 		return 0
@@ -33,4 +38,16 @@ func ModExp2(a, j, N int) int {
 	}
 
 	return p
+}
+
+func BaseExp(N int) (int, int, bool) {
+	l := len(strconv.FormatInt(int64(N), 2))
+	for i := l; 1 < i; i-- {
+		a := math.Pow(float64(N), 1.0/float64(i))
+		if Pow(int(a), i) == N {
+			return int(a), i, true
+		}
+	}
+
+	return 0, 0, false
 }

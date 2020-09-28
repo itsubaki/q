@@ -29,12 +29,17 @@ func main() {
 	}
 
 	if number.IsEven(N) {
-		fmt.Printf("N=%d is even. p=%v, q=%v\n", N, 2, N/2)
+		fmt.Printf("N=%d is even. p=%d, q=%d\n", N, 2, N/2)
+		return
+	}
+
+	if a, b, ok := number.BaseExp(N); ok {
+		fmt.Printf("N=%d, %d^%d\n", N, a, b)
 		return
 	}
 
 	a := rand.Coprime(N)
-	fmt.Printf("N=%v, a=%v, t=%v\n\n", N, a, t)
+	fmt.Printf("N=%d, a=%d, t=%d\n\n", N, a, t)
 
 	qsim := q.New()
 	r0 := qsim.ZeroWith(t)

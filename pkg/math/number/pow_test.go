@@ -31,3 +31,23 @@ func TestModExp2(t *testing.T) {
 		}
 	}
 }
+
+func TestBaseExp(t *testing.T) {
+	cases := []struct {
+		N, a, b int
+		ok      bool
+	}{
+		{9, 3, 2, true},
+		{25, 5, 2, true},
+		{49, 7, 2, true},
+		{125, 5, 3, true},
+		{10, 0, 0, false},
+	}
+
+	for _, c := range cases {
+		a, b, ok := BaseExp(c.N)
+		if a != c.a || b != c.b || ok != c.ok {
+			t.Errorf("N=%v, a=%v, b=%v, ok=%v", c.N, a, b, ok)
+		}
+	}
+}
