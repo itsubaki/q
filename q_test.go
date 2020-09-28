@@ -430,15 +430,12 @@ func Example_quantumTeleportation() {
 func ExampleQ_Apply() {
 	qsim := New()
 
-	i0 := qsim.Zero().Index()
-	i1 := qsim.Zero().Index()
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
 	n := qsim.NumberOfBit()
 
-	g0 := gate.H().TensorProduct(gate.I())
-	g1 := gate.CNOT(n, i0, i1)
-	qc := g0.Apply(g1)
-
-	qsim.Apply(qc)
+	qsim.Apply(gate.H(), q0)
+	qsim.Apply(gate.CNOT(n, q0.Index(), q1.Index()))
 
 	for _, s := range qsim.State() {
 		fmt.Println(s)
