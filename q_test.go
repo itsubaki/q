@@ -475,7 +475,7 @@ func ExampleQ_ConditionZ_teleportation() {
 	// [1][  1]( 0.8944 0.0000i): 0.8000
 }
 
-func ExampleQ_ConditionX_error_correction() {
+func ExampleQ_ConditionX_correction() {
 	qsim := New()
 
 	q0 := qsim.New(1, 2)
