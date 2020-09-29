@@ -183,8 +183,15 @@ func ExampleQ_ControlledModExp2() {
 		fmt.Println(s)
 	}
 
+	// 7^2^2 * 4 mod 15 = 4
+	qsim.ControlledModExp2(7, 2, 15, q0, r1)
+	for _, s := range qsim.State([]q.Qubit{q0}, r1) {
+		fmt.Println(s)
+	}
+
 	// Output:
 	// [1 0001][  1   1]( 1.0000 0.0000i): 1.0000
+	// [1 0100][  1   4]( 1.0000 0.0000i): 1.0000
 	// [1 0100][  1   4]( 1.0000 0.0000i): 1.0000
 }
 
