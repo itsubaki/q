@@ -2,28 +2,28 @@ package number
 
 import "math"
 
-func Max(prob []float64) float64 {
-	max := prob[0]
-	for _, p := range prob {
-		max = math.Max(max, p)
+func Max(p []float64) float64 {
+	max := p[0]
+	for _, pp := range p {
+		max = math.Max(max, pp)
 	}
 
 	return max
 }
 
-func Min(prob []float64) float64 {
-	min := prob[0]
-	for _, p := range prob {
-		min = math.Min(min, p)
+func Min(p []float64) float64 {
+	min := p[0]
+	for _, pp := range p {
+		min = math.Min(min, pp)
 	}
 
 	return min
 }
 
-func Sum(prob []float64) float64 {
+func Sum(p []float64) float64 {
 	var sum float64
-	for _, p := range prob {
-		sum = sum + p
+	for _, pp := range p {
+		sum = sum + pp
 	}
 
 	return sum
