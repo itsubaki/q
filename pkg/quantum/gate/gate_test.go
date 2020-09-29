@@ -7,7 +7,6 @@ import (
 
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/math/number"
-	"github.com/itsubaki/q/pkg/math/vector"
 	"github.com/itsubaki/q/pkg/quantum/gate"
 )
 
@@ -111,8 +110,6 @@ func ExampleCModExp2() {
 }
 
 func TestCModExp2(t *testing.T) {
-	v0 := vector.TensorProduct(vector.TensorProductN(vector.New(1, 0), 6), vector.New(0, 1))
-	g0 := gate.CNOT(7, 2, 4).Apply(gate.CNOT(7, 2, 5))
 	g1 := gate.CNOT(7, 3, 5).Apply(gate.CCNOT(7, 1, 5, 3)).Apply(gate.CNOT(7, 3, 5))
 	g2 := gate.CNOT(7, 4, 6).Apply(gate.CCNOT(7, 1, 6, 4)).Apply(gate.CNOT(7, 4, 6))
 	g3 := gate.I(7)
@@ -122,11 +119,9 @@ func TestCModExp2(t *testing.T) {
 		c          int
 		t          []int
 		m          matrix.Matrix
-		v          vector.Vector
 	}{
-		{7, 7, 0, 15, 2, []int{4, 5, 6, 7}, nil, v0.Clone().Apply(g0)},
-		{7, 7, 1, 15, 1, []int{4, 5, 6, 7}, g1.Apply(g2), nil},
-		{7, 7, 2, 15, 0, []int{4, 5, 6, 7}, g3, nil},
+		{7, 7, 1, 15, 1, []int{4, 5, 6, 7}, g1.Apply(g2)},
+		{7, 7, 2, 15, 0, []int{4, 5, 6, 7}, g3},
 	}
 
 	for _, c := range cases {
@@ -136,10 +131,6 @@ func TestCModExp2(t *testing.T) {
 		}
 
 		if c.m != nil && !a.Equals(c.m) {
-			t.Fail()
-		}
-
-		if c.v != nil && !v0.Clone().Apply(a).Equals(c.v) {
 			t.Fail()
 		}
 	}
