@@ -2,9 +2,11 @@ package gate_test
 
 import (
 	"fmt"
+	"strconv"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
+	"github.com/itsubaki/q/pkg/math/number"
 	"github.com/itsubaki/q/pkg/math/vector"
 	"github.com/itsubaki/q/pkg/quantum/gate"
 )
@@ -65,6 +67,47 @@ func ExampleEmpty() {
 
 	// Output:
 	// [[] [] []]
+}
+
+func ExampleCModExp2() {
+	a, j, N := 7, 1, 15
+	a2jmodN := number.ModExp2(a, j, N)
+
+	g := gate.CModExp2(5, a, j, N, 0, []int{1, 2, 3, 4})
+	for i, r := range g {
+		bin := strconv.FormatInt(int64(i), 2)
+		if bin[:1] == "0" { // control qubit is |0>
+			continue
+		}
+
+		// decimal number representation of target qubits
+		k, _ := strconv.ParseInt(bin[1:], 2, 64)
+		for ii, e := range r {
+			if i == ii || e == complex(0, 0) {
+				continue
+			}
+
+			// decimal number representation of a^2^j * k mod N
+			actual, _ := strconv.ParseInt(strconv.FormatInt(int64(ii), 2)[1:], 2, 64)
+			expected := (a2jmodN * int(k)) % N
+
+			fmt.Printf("%2d %2d %2d\n", k, actual, expected)
+		}
+	}
+
+	// Output:
+	//  1  4  4
+	//  2  8  8
+	//  3 12 12
+	//  4  1  1
+	//  6  9  9
+	//  7 13 13
+	//  8  2  2
+	//  9  6  6
+	// 11 14 14
+	// 12  3  3
+	// 13  7  7
+	// 14 11 11
 }
 
 func TestCModExp2(t *testing.T) {
