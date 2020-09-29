@@ -7,13 +7,29 @@ import (
 	"github.com/itsubaki/q/pkg/math/vector"
 )
 
-func ExampleVector_TensorProduct() {
+func ExampleZero() {
+	v := vector.Zero(3)
+	fmt.Println(v)
+
+	// Output:
+	// [(0+0i) (0+0i) (0+0i)]
+}
+
+func ExampleNew() {
 	v := vector.New(1, 0)
-	vv := v.TensorProduct(v)
+	fmt.Println(v)
+
+	// Output:
+	// [(1+0i) (0+0i)]
+}
+
+func ExampleVector_InnerProduct() {
+	v := vector.New(1, 0)
+	vv := v.InnerProduct(v)
 	fmt.Println(vv)
 
 	// Output:
-	// [(1+0i) (0+0i) (0+0i) (0+0i)]
+	// (1+0i)
 }
 
 func ExampleVector_OuterProduct() {
@@ -23,6 +39,34 @@ func ExampleVector_OuterProduct() {
 
 	// Output:
 	// [[(1+0i) (0+0i)] [(0+0i) (0+0i)]]
+}
+
+func ExampleVector_TensorProduct() {
+	v := vector.New(1, 0)
+	vv := v.TensorProduct(v)
+	fmt.Println(vv)
+
+	// Output:
+	// [(1+0i) (0+0i) (0+0i) (0+0i)]
+}
+
+func ExampleVector_IsOrthogonal() {
+	v0 := vector.New(1, 0)
+	v1 := vector.New(0, 1)
+	o := v0.IsOrthogonal(v1)
+	fmt.Println(o)
+
+	// Output:
+	// true
+}
+
+func ExampleVector_Norm() {
+	v := vector.New(1, 2)
+	n := v.Norm()
+	fmt.Printf("%.4f", n)
+
+	// Output:
+	// (2.2361+0.0000i)
 }
 
 func TestVector(t *testing.T) {
