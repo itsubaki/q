@@ -31,7 +31,7 @@ func TestContinuedFraction(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		f, n, d := number.ContinuedFraction(c.float, 1e-3)
+		f, n, d := number.ContinuedFraction(c.float)
 
 		if n != c.numerator {
 			t.Errorf("%v/%v", n, d)

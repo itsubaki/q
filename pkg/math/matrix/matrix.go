@@ -40,7 +40,11 @@ func (m Matrix) Equals(n Matrix, eps ...float64) bool {
 		return false
 	}
 
-	e := Eps(eps...)
+	e := 1e-13
+	if len(eps) > 0 {
+		e = eps[0]
+	}
+
 	for i := 0; i < p; i++ {
 		for j := 0; j < q; j++ {
 			if cmplx.Abs(m[i][j]-n[i][j]) > e {
@@ -96,7 +100,11 @@ func (m Matrix) IsHermite(eps ...float64) bool {
 	p, q := m.Dimension()
 	d := m.Dagger()
 
-	e := Eps(eps...)
+	e := 1e-13
+	if len(eps) > 0 {
+		e = eps[0]
+	}
+
 	for i := 0; i < p; i++ {
 		for j := 0; j < q; j++ {
 			if cmplx.Abs(m[i][j]-d[i][j]) > e {
@@ -112,7 +120,11 @@ func (m Matrix) IsUnitary(eps ...float64) bool {
 	p, q := m.Dimension()
 	d := m.Apply(m.Dagger())
 
-	e := Eps(eps...)
+	e := 1e-13
+	if len(eps) > 0 {
+		e = eps[0]
+	}
+
 	for i := 0; i < p; i++ {
 		for j := 0; j < q; j++ {
 			if i == j {
@@ -322,12 +334,4 @@ func AntiCommutator(m, n Matrix) Matrix {
 	mn := n.Apply(m)
 	nm := m.Apply(n)
 	return mn.Add(nm)
-}
-
-func Eps(eps ...float64) float64 {
-	if len(eps) > 0 {
-		return eps[0]
-	}
-
-	return 1e-13
 }
