@@ -62,6 +62,46 @@ func ExampleQ_ZeroLog2() {
 	// [11][  3]( 0.5000 0.0000i): 0.2500
 }
 
+func ExampleQ_Amplitude() {
+	qsim := q.New()
+
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+
+	qsim.H(q0)
+	qsim.CNOT(q0, q1)
+
+	for _, a := range qsim.Amplitude() {
+		fmt.Println(a)
+	}
+
+	// Output:
+	// (0.7071067811865476+0i)
+	// (0+0i)
+	// (0+0i)
+	// (0.7071067811865476+0i)
+}
+
+func ExampleQ_Probability() {
+	qsim := q.New()
+
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+
+	qsim.H(q0)
+	qsim.CNOT(q0, q1)
+
+	for _, p := range qsim.Probability() {
+		fmt.Printf("%.4f\n", p)
+	}
+
+	// Output:
+	// 0.5000
+	// 0.0000
+	// 0.0000
+	// 0.5000
+}
+
 func Example_shorFactoring21() {
 	N := 21
 	a := 5
