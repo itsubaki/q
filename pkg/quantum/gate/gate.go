@@ -308,6 +308,7 @@ func QFT(bit int) matrix.Matrix {
 }
 
 // CModExp2 returns unitary matrix of controlled modular exponentiation operation
+//  |k> -> |a^2^j * k mod N>
 func CModExp2(bit, a, j, N, c int, t []int) matrix.Matrix {
 	min := int(math.Log2(float64(N))) + 1
 	if len(t) < min {
