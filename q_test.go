@@ -171,8 +171,8 @@ func ExampleQ_ControlledModExp2() {
 
 	q0 := qsim.One()
 	r1 := qsim.ZeroLog2(15)
-	qsim.X(r1[len(r1)-1])
 
+	qsim.X(r1[len(r1)-1])
 	for _, s := range qsim.State([]q.Qubit{q0}, r1) {
 		fmt.Println(s)
 	}
@@ -189,10 +189,17 @@ func ExampleQ_ControlledModExp2() {
 		fmt.Println(s)
 	}
 
+	// 7^2^1 * 4 mod 15 = 1
+	qsim.ControlledModExp2(7, 1, 15, q0, r1)
+	for _, s := range qsim.State([]q.Qubit{q0}, r1) {
+		fmt.Println(s)
+	}
+
 	// Output:
 	// [1 0001][  1   1]( 1.0000 0.0000i): 1.0000
 	// [1 0100][  1   4]( 1.0000 0.0000i): 1.0000
 	// [1 0100][  1   4]( 1.0000 0.0000i): 1.0000
+	// [1 0001][  1   1]( 1.0000 0.0000i): 1.0000
 }
 
 func Example_shorFactoring21() {
