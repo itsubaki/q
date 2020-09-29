@@ -1,10 +1,19 @@
 package number_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/number"
 )
+
+func ExampleGCD() {
+	gcd := number.GCD(15, 7)
+	fmt.Println(gcd)
+
+	// Output:
+	// 1
+}
 
 func TestGCD(t *testing.T) {
 	cases := []struct {

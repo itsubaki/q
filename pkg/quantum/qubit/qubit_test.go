@@ -429,17 +429,22 @@ func TestNormalize(t *testing.T) {
 
 func TestMeasure(t *testing.T) {
 	q := qubit.Zero(3).Apply(gate.H(3))
+	for _, p := range q.Probability() {
+		if p != 0 && math.Abs(p-0.125) > 1e-13 {
+			t.Error(q.Probability())
+		}
+	}
 
 	q.Measure(0)
 	for _, p := range q.Probability() {
-		if p != 0 && p != 0.25 {
+		if p != 0 && math.Abs(p-0.25) > 1e-13 {
 			t.Error(q.Probability())
 		}
 	}
 
 	q.Measure(1)
 	for _, p := range q.Probability() {
-		if p != 0 && p != 0.4999999999999999 {
+		if p != 0 && math.Abs(p-0.5) > 1e-13 {
 			t.Error(q.Probability())
 		}
 	}

@@ -1,10 +1,20 @@
 package number_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/number"
 )
+
+func ExampleBinaryFraction() {
+	// 0.101 -> 1/2 + 1/8 = 0.5 + 0.125 = 0.625
+	f := number.BinaryFraction([]int{1, 0, 1})
+	fmt.Println(f)
+
+	// Output:
+	// 0.625
+}
 
 func TestBinaryFraction(t *testing.T) {
 	cases := []struct {
