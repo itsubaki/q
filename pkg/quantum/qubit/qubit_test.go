@@ -13,6 +13,22 @@ import (
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
 
+func ExampleZero() {
+	z := qubit.Zero()
+	fmt.Println("z:")
+	fmt.Println(z)
+
+	zz := qubit.Zero(2)
+	fmt.Println("zz:")
+	fmt.Println(zz)
+
+	// Output:
+	// z:
+	// [(1+0i) (0+0i)]
+	// zz:
+	// [(1+0i) (0+0i) (0+0i) (0+0i)]
+}
+
 func Example_pOVM() {
 	E1 := gate.New(
 		[]complex128{0, 0},

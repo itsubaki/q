@@ -1,10 +1,28 @@
 package number_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/number"
 )
+
+func ExampleBaseExp() {
+	a, b, ok := number.BaseExp(125)
+	fmt.Printf("%v^%v %v", a, b, ok)
+
+	// Output:
+	// 5^3 true
+}
+
+func ExampleModExp2() {
+	// 7^2^4 mod 15
+	v := number.ModExp2(7, 4, 15)
+	fmt.Println(v)
+
+	// Output:
+	// 1
+}
 
 func TestModExp2(t *testing.T) {
 	cases := []struct {

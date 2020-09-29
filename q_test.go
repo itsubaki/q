@@ -10,6 +10,15 @@ import (
 	"github.com/itsubaki/q/pkg/quantum/gate"
 )
 
+func ExampleQ_ZeroLog2() {
+	qsim := q.New()
+	reg := qsim.ZeroLog2(15)
+	fmt.Println(len(reg))
+
+	// Output:
+	// 4
+}
+
 func Example_shorFactoring21() {
 	N := 21
 	a := 5

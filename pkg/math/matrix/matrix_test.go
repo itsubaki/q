@@ -1,10 +1,63 @@
 package matrix_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
 )
+
+func ExampleMatrix_Apply() {
+	x := matrix.New(
+		[]complex128{0, 1},
+		[]complex128{1, 0},
+	)
+	fmt.Println("x:")
+	for _, r := range x {
+		fmt.Println(r)
+	}
+
+	xx := x.Apply(x)
+	fmt.Println("xx:")
+	for _, r := range xx {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// x:
+	// [(0+0i) (1+0i)]
+	// [(1+0i) (0+0i)]
+	// xx:
+	// [(1+0i) (0+0i)]
+	// [(0+0i) (1+0i)]
+}
+
+func ExampleMatrix_TensorProduct() {
+	x := matrix.New(
+		[]complex128{0, 1},
+		[]complex128{1, 0},
+	)
+	fmt.Println("x:")
+	for _, r := range x {
+		fmt.Println(r)
+	}
+
+	xx := x.TensorProduct(x)
+	fmt.Println("xx:")
+	for _, r := range xx {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// x:
+	// [(0+0i) (1+0i)]
+	// [(1+0i) (0+0i)]
+	// xx:
+	// [(0+0i) (0+0i) (0+0i) (1+0i)]
+	// [(0+0i) (0+0i) (1+0i) (0+0i)]
+	// [(0+0i) (1+0i) (0+0i) (0+0i)]
+	// [(1+0i) (0+0i) (0+0i) (0+0i)]
+}
 
 func TestInverse(t *testing.T) {
 	cases := []struct {

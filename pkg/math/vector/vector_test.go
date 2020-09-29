@@ -7,10 +7,19 @@ import (
 	"github.com/itsubaki/q/pkg/math/vector"
 )
 
+func ExampleVector_TensorProduct() {
+	v := vector.New(1, 0)
+	vv := v.TensorProduct(v)
+	fmt.Println(vv)
+
+	// Output:
+	// [(1+0i) (0+0i) (0+0i) (0+0i)]
+}
+
 func ExampleVector_OuterProduct() {
 	v := vector.New(1, 0)
-	op := v.OuterProduct(v)
-	fmt.Println(op)
+	vv := v.OuterProduct(v)
+	fmt.Println(vv)
 
 	// Output:
 	// [[(1+0i) (0+0i)] [(0+0i) (0+0i)]]

@@ -1,10 +1,19 @@
 package number_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/number"
 )
+
+func ExampleContinuedFraction() {
+	f, n, d := number.ContinuedFraction(0.8125)
+	fmt.Printf("%v %v/%v\n", f, n, d)
+
+	// Output:
+	// [0 1 4 3] 13/16
+}
 
 func TestContinuedFraction(t *testing.T) {
 	cases := []struct {

@@ -1,12 +1,63 @@
 package gate_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/math/vector"
 	"github.com/itsubaki/q/pkg/quantum/gate"
 )
+
+func ExampleX() {
+	x := gate.X()
+	fmt.Println("x:")
+	for _, r := range x {
+		fmt.Println(r)
+	}
+
+	xx := gate.X(2)
+	fmt.Println("xx:")
+	for _, r := range xx {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// x:
+	// [(0+0i) (1+0i)]
+	// [(1+0i) (0+0i)]
+	// xx:
+	// [(0+0i) (0+0i) (0+0i) (1+0i)]
+	// [(0+0i) (0+0i) (1+0i) (0+0i)]
+	// [(0+0i) (1+0i) (0+0i) (0+0i)]
+	// [(1+0i) (0+0i) (0+0i) (0+0i)]
+}
+
+func ExampleCNOT() {
+	g := gate.CNOT(2, 0, 1)
+	for _, r := range g {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [(1+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (1+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (1+0i)]
+	// [(0+0i) (0+0i) (1+0i) (0+0i)]
+}
+
+func ExampleSwap() {
+	g := gate.Swap(2, 0, 1)
+	for _, r := range g {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [(1+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (1+0i) (0+0i)]
+	// [(0+0i) (1+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (1+0i)]
+}
 
 func TestCModExp2(t *testing.T) {
 	v0 := vector.TensorProduct(vector.TensorProductN(vector.New(1, 0), 6), vector.New(0, 1))
