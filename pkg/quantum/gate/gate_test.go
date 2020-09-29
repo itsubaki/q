@@ -59,6 +59,14 @@ func ExampleSwap() {
 	// [(0+0i) (0+0i) (0+0i) (1+0i)]
 }
 
+func ExampleEmpty() {
+	g := gate.Empty(3)
+	fmt.Println(g)
+
+	// Output:
+	// [[] [] []]
+}
+
 func TestCModExp2(t *testing.T) {
 	v0 := vector.TensorProduct(vector.TensorProductN(vector.New(1, 0), 6), vector.New(0, 1))
 	g0 := gate.CNOT(7, 2, 4).Apply(gate.CNOT(7, 2, 5))
@@ -216,7 +224,7 @@ func TestControlledNot(t *testing.T) {
 }
 
 func TestToffoli(t *testing.T) {
-	g := gate.Zero(13)
+	g := gate.Empty(13)
 	g[0] = gate.I(2).TensorProduct(gate.H())
 	g[1] = gate.I(1).TensorProduct(gate.CNOT(2, 0, 1))
 	g[2] = gate.I(2).TensorProduct(gate.T().Dagger())

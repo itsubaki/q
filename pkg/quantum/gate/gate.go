@@ -19,12 +19,12 @@ func New(v ...[]complex128) matrix.Matrix {
 	return out
 }
 
-func Zero(l ...int) []matrix.Matrix {
-	if len(l) < 1 {
+func Empty(n ...int) []matrix.Matrix {
+	if len(n) < 1 {
 		return make([]matrix.Matrix, 0)
 	}
 
-	return make([]matrix.Matrix, l[0])
+	return make([]matrix.Matrix, n[0])
 }
 
 func U(alpha, beta, gamma, delta float64) matrix.Matrix {
