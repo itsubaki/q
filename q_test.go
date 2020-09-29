@@ -102,6 +102,70 @@ func ExampleQ_Probability() {
 	// 0.5000
 }
 
+func ExampleQ_BinaryString() {
+	qsim := q.New()
+	qsim.Seed = []int64{1}
+	qsim.Rand = rand.Math
+
+	r := qsim.ZeroWith(4)
+	qsim.H(r...)
+
+	b := qsim.BinaryString(r...)
+	fmt.Println(b)
+
+	// Output:
+	// 1111
+}
+
+func ExampleQ_Measure() {
+	qsim := q.New()
+	qsim.Seed = []int64{1}
+	qsim.Rand = rand.Math
+
+	q0 := qsim.Zero()
+	qsim.H(q0)
+
+	m := qsim.Measure(q0)
+	fmt.Println(m)
+
+	// Output:
+	// [(0+0i) (1+0i)]
+}
+
+func ExampleQ_MeasureAsInt() {
+	qsim := q.New()
+	qsim.Seed = []int64{1}
+	qsim.Rand = rand.Math
+
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
+	qsim.H(q0, q1, q2)
+
+	m := qsim.MeasureAsInt(q0, q1, q2)
+	fmt.Println(m)
+
+	// Output:
+	// 7
+}
+
+func ExampleQ_MeasureAsBinary() {
+	qsim := q.New()
+	qsim.Seed = []int64{1}
+	qsim.Rand = rand.Math
+
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
+	qsim.H(q0, q1, q2)
+
+	m := qsim.MeasureAsBinary(q0, q1, q2)
+	fmt.Println(m)
+
+	// Output:
+	// [1 1 1]
+}
+
 func Example_shorFactoring21() {
 	N := 21
 	a := 5
