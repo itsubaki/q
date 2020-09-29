@@ -10,13 +10,56 @@ import (
 	"github.com/itsubaki/q/pkg/quantum/gate"
 )
 
-func ExampleQ_ZeroLog2() {
+func ExampleQ_Zero() {
 	qsim := q.New()
-	reg := qsim.ZeroLog2(15)
-	fmt.Println(len(reg))
+
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	qsim.H(q0, q1)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
 
 	// Output:
-	// 4
+	// [00][  0]( 0.5000 0.0000i): 0.2500
+	// [01][  1]( 0.5000 0.0000i): 0.2500
+	// [10][  2]( 0.5000 0.0000i): 0.2500
+	// [11][  3]( 0.5000 0.0000i): 0.2500
+}
+
+func ExampleQ_ZeroWith() {
+	qsim := q.New()
+
+	r := qsim.ZeroWith(2)
+	qsim.H(r...)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00][  0]( 0.5000 0.0000i): 0.2500
+	// [01][  1]( 0.5000 0.0000i): 0.2500
+	// [10][  2]( 0.5000 0.0000i): 0.2500
+	// [11][  3]( 0.5000 0.0000i): 0.2500
+}
+
+func ExampleQ_ZeroLog2() {
+	qsim := q.New()
+
+	r := qsim.ZeroLog2(3)
+	qsim.H(r...)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00][  0]( 0.5000 0.0000i): 0.2500
+	// [01][  1]( 0.5000 0.0000i): 0.2500
+	// [10][  2]( 0.5000 0.0000i): 0.2500
+	// [11][  3]( 0.5000 0.0000i): 0.2500
 }
 
 func Example_shorFactoring21() {
