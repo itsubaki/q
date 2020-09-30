@@ -68,7 +68,7 @@ func ExampleEmpty() {
 	// [[] [] []]
 }
 
-func ExampleCModExp2_a7j0n15() {
+func ExampleCModExp2_a7j0mod15() {
 	bit, a, j, N := 5, 7, 0, 15
 	a2jmodN := number.ModExp2(a, j, N)
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(bit), "s")
@@ -127,7 +127,7 @@ func ExampleCModExp2_a7j0n15() {
 	// 1:1110=14 1:1000= 8  8
 }
 
-func ExampleCModExp2_a7j1n15() {
+func ExampleCModExp2_a7j1mod15() {
 	a, j, N := 7, 1, 15
 	a2jmodN := number.ModExp2(a, j, N)
 
@@ -185,7 +185,7 @@ func ExampleCModExp2_a7j1n15() {
 	// 1:1110=14 1:1011=11 11
 }
 
-func ExampleCModExp2_a7j2n15() {
+func ExampleCModExp2_a7j2mod15() {
 	a, j, N := 7, 2, 15
 	a2jmodN := number.ModExp2(a, j, N)
 
@@ -243,7 +243,7 @@ func ExampleCModExp2_a7j2n15() {
 	// 1:1110=14 1:1110=14 14
 }
 
-func ExampleCModExp2_a2j0n21() {
+func ExampleCModExp2_a2j0mod21() {
 	a, j, N := 2, 0, 21
 	a2jmodN := number.ModExp2(a, j, N)
 
@@ -307,7 +307,7 @@ func ExampleCModExp2_a2j0n21() {
 	// 1:10100=20 1:10011=19 19
 }
 
-func ExampleCModExp2_a2j1n21() {
+func ExampleCModExp2_a2j1mod21() {
 	a, j, N := 2, 1, 21
 	a2jmodN := number.ModExp2(a, j, N)
 
@@ -371,7 +371,7 @@ func ExampleCModExp2_a2j1n21() {
 	// 1:10100=20 1:10001=17 17
 }
 
-func ExampleCModExp2_a2j2n21() {
+func ExampleCModExp2_a2j2mod21() {
 	a, j, N := 2, 2, 21
 	a2jmodN := number.ModExp2(a, j, N)
 
