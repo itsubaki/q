@@ -166,40 +166,84 @@ func ExampleQ_MeasureAsBinary() {
 	// [1 1 1]
 }
 
-func ExampleQ_ControlledModExp2() {
+func ExampleQ_ControlledModExp2_mod21() {
 	qsim := q.New()
 
 	q0 := qsim.One()
-	r1 := qsim.ZeroLog2(15)
+	r1 := qsim.ZeroLog2(21)
 
 	qsim.X(r1[len(r1)-1])
 	for _, s := range qsim.State([]q.Qubit{q0}, r1) {
 		fmt.Println(s)
 	}
 
-	// 7^2^1 * 1 mod 15 = 4
+	// 2^2^0 * 1 mod 21 = 2
+	qsim.ControlledModExp2(2, 0, 21, q0, r1)
+	for _, s := range qsim.State([]q.Qubit{q0}, r1) {
+		fmt.Println(s)
+	}
+
+	// 2^2^1 * 2 mod 21 = 8
+	qsim.ControlledModExp2(2, 1, 21, q0, r1)
+	for _, s := range qsim.State([]q.Qubit{q0}, r1) {
+		fmt.Println(s)
+	}
+
+	// 2^2^2 * 8 mod 21 = 2
+	qsim.ControlledModExp2(2, 2, 21, q0, r1)
+	for _, s := range qsim.State([]q.Qubit{q0}, r1) {
+		fmt.Println(s)
+	}
+
+	// 2^2^3 * 2 mod 21 = 8
+	qsim.ControlledModExp2(2, 3, 21, q0, r1)
+	for _, s := range qsim.State([]q.Qubit{q0}, r1) {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [1 00001][  1   1]( 1.0000 0.0000i): 1.0000
+	// [1 00010][  1   2]( 1.0000 0.0000i): 1.0000
+	// [1 01000][  1   8]( 1.0000 0.0000i): 1.0000
+	// [1 00010][  1   2]( 1.0000 0.0000i): 1.0000
+	// [1 01000][  1   8]( 1.0000 0.0000i): 1.0000
+}
+
+func ExampleQ_ControlledModExp2_mod15() {
+	qsim := q.New()
+
+	q0 := qsim.One()
+	r1 := qsim.ZeroLog2(15)
+
+	// 1
+	qsim.X(r1[len(r1)-1])
+	for _, s := range qsim.State([]q.Qubit{q0}, r1) {
+		fmt.Println(s)
+	}
+
+	// 7^2^0 * 1 mod 15 = 7
+	qsim.ControlledModExp2(7, 0, 15, q0, r1)
+	for _, s := range qsim.State([]q.Qubit{q0}, r1) {
+		fmt.Println(s)
+	}
+
+	// 7^2^1 * 7 mod 15 = 13
 	qsim.ControlledModExp2(7, 1, 15, q0, r1)
 	for _, s := range qsim.State([]q.Qubit{q0}, r1) {
 		fmt.Println(s)
 	}
 
-	// 7^2^2 * 4 mod 15 = 4
+	// 7^2^2 * 13 mod 15 = 13
 	qsim.ControlledModExp2(7, 2, 15, q0, r1)
-	for _, s := range qsim.State([]q.Qubit{q0}, r1) {
-		fmt.Println(s)
-	}
-
-	// 7^2^1 * 4 mod 15 = 1
-	qsim.ControlledModExp2(7, 1, 15, q0, r1)
 	for _, s := range qsim.State([]q.Qubit{q0}, r1) {
 		fmt.Println(s)
 	}
 
 	// Output:
 	// [1 0001][  1   1]( 1.0000 0.0000i): 1.0000
-	// [1 0100][  1   4]( 1.0000 0.0000i): 1.0000
-	// [1 0100][  1   4]( 1.0000 0.0000i): 1.0000
-	// [1 0001][  1   1]( 1.0000 0.0000i): 1.0000
+	// [1 0111][  1   7]( 1.0000 0.0000i): 1.0000
+	// [1 1101][  1  13]( 1.0000 0.0000i): 1.0000
+	// [1 1101][  1  13]( 1.0000 0.0000i): 1.0000
 }
 
 func Example_shorFactoring21() {
