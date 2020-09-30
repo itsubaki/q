@@ -297,7 +297,7 @@ func (q *Q) ConditionZ(condition bool, qb ...Qubit) *Q {
 func (q *Q) ControlledModExp2(a, j, N int, control Qubit, target []Qubit) *Q {
 	n := q.NumberOfBit()
 	g := gate.CModExp2(n, a, j, N, control.Index(), Index(target...))
-	q.internal.Apply(g.Transpose())
+	q.internal.Apply(g)
 	return q
 }
 

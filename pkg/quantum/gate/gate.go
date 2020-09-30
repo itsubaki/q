@@ -360,5 +360,5 @@ func CModExp2(bit, a, j, N, c int, t []int) matrix.Matrix {
 		out[i] = mat[ii]
 	}
 
-	return out
+	return out.Transpose()
 }

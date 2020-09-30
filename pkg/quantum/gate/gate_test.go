@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
-	"github.com/itsubaki/q/pkg/math/number"
 	"github.com/itsubaki/q/pkg/quantum/gate"
 )
 
@@ -96,32 +95,31 @@ func ExampleCModExp2() {
 
 			// decimal number representation of a^2^j * k mod N
 			a2jkmodNs := fmt.Sprintf(f, strconv.FormatInt(int64(ii), 2)[1:])
-			actual, err := strconv.ParseInt(a2jkmodNs, 2, 64)
+			a2jkmodN, err := strconv.ParseInt(a2jkmodNs, 2, 64)
 			if err != nil {
 				panic(fmt.Sprintf("parse int a2jkmodNs=%s: %v", a2jkmodNs, err))
 			}
 
-			expected := (number.ModExp2(a, j, N) * int(k)) % N
-			fmt.Printf("%s:%s=%2d %s:%s=%2d %2d\n", bin[:1], bin[1:], k, bin[:1], a2jkmodNs[1:], actual, expected)
+			fmt.Printf("%s:%s=%2d %s:%s=%2d\n", bin[:1], a2jkmodNs[1:], a2jkmodN, bin[:1], bin[1:], k)
 		}
 	}
 
-	// Output:
-	// 1:0000= 0 1:0000= 0  0
-	// 1:0001= 1 1:0111= 7  7
-	// 1:0010= 2 1:1110=14 14
-	// 1:0011= 3 1:0110= 6  6
-	// 1:0100= 4 1:1101=13 13
-	// 1:0101= 5 1:0101= 5  5
-	// 1:0110= 6 1:1100=12 12
-	// 1:0111= 7 1:0100= 4  4
-	// 1:1000= 8 1:1011=11 11
-	// 1:1001= 9 1:0011= 3  3
-	// 1:1010=10 1:1010=10 10
-	// 1:1011=11 1:0010= 2  2
-	// 1:1100=12 1:1001= 9  9
-	// 1:1101=13 1:0001= 1  1
-	// 1:1110=14 1:1000= 8  8
+	// Unordered output:
+	// 1:0000= 0 1:0000= 0
+	// 1:0001= 1 1:0111= 7
+	// 1:0010= 2 1:1110=14
+	// 1:0011= 3 1:0110= 6
+	// 1:0100= 4 1:1101=13
+	// 1:0101= 5 1:0101= 5
+	// 1:0110= 6 1:1100=12
+	// 1:0111= 7 1:0100= 4
+	// 1:1000= 8 1:1011=11
+	// 1:1001= 9 1:0011= 3
+	// 1:1010=10 1:1010=10
+	// 1:1011=11 1:0010= 2
+	// 1:1100=12 1:1001= 9
+	// 1:1101=13 1:0001= 1
+	// 1:1110=14 1:1000= 8
 }
 
 func TestCModExp2(t *testing.T) {
