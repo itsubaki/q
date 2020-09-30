@@ -160,6 +160,24 @@ func (v Vector) Dimension() int {
 	return len(v)
 }
 
+func (v Vector) Real() []float64 {
+	out := make([]float64, 0)
+	for i := range v {
+		out = append(out, real(v[i]))
+	}
+
+	return out
+}
+
+func (v Vector) Imag() []float64 {
+	out := make([]float64, 0)
+	for i := range v {
+		out = append(out, imag(v[i]))
+	}
+
+	return out
+}
+
 func TensorProductN(v Vector, bit ...int) Vector {
 	if len(bit) < 1 {
 		return v

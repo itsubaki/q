@@ -86,6 +86,27 @@ func ExampleVector_Norm() {
 	// (2.2361+0.0000i)
 }
 
+func ExampleVector_Real() {
+	v := vector.New(complex(1, 2), complex(3, 4))
+	for _, r := range v.Real() {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// 1
+	// 3
+}
+func ExampleVector_Imag() {
+	v := vector.New(complex(1, 2), complex(3, 4))
+	for _, r := range v.Imag() {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// 2
+	// 4
+}
+
 func TestVector(t *testing.T) {
 	cases := []struct {
 		v0, v1       vector.Vector

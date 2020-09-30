@@ -223,6 +223,30 @@ func (m Matrix) Trace() complex128 {
 	return sum
 }
 
+func (m Matrix) Real() [][]float64 {
+	out := make([][]float64, 0)
+	for i, r := range m {
+		out = append(out, make([]float64, 0))
+		for j := range r {
+			out[i] = append(out[i], real(m[i][j]))
+		}
+	}
+
+	return out
+}
+
+func (m Matrix) Imag() [][]float64 {
+	out := make([][]float64, 0)
+	for i, r := range m {
+		out = append(out, make([]float64, 0))
+		for j := range r {
+			out[i] = append(out[i], imag(m[i][j]))
+		}
+	}
+
+	return out
+}
+
 func (m Matrix) Clone() Matrix {
 	p, q := m.Dimension()
 

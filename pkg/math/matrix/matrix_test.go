@@ -7,6 +7,36 @@ import (
 	"github.com/itsubaki/q/pkg/math/matrix"
 )
 
+func ExampleMatrix_Real() {
+	m := matrix.New(
+		[]complex128{complex(1, 1), complex(2, 3)},
+		[]complex128{complex(4, 5), complex(6, 7)},
+	)
+
+	for _, r := range m.Real() {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [1 2]
+	// [4 6]
+}
+
+func ExampleMatrix_Imag() {
+	m := matrix.New(
+		[]complex128{complex(1, 1), complex(2, 3)},
+		[]complex128{complex(4, 5), complex(6, 7)},
+	)
+
+	for _, r := range m.Imag() {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [1 3]
+	// [5 7]
+}
+
 func ExampleMatrix_Apply() {
 	x := matrix.New(
 		[]complex128{0, 1},
