@@ -68,7 +68,66 @@ func ExampleEmpty() {
 	// [[] [] []]
 }
 
-func ExampleCModExp2() {
+func ExampleCModExp2_a7j0n15() {
+	a, j, N, bit := 7, 0, 15, 5
+	a2jmodN := number.ModExp2(a, j, N)
+	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(bit), "s")
+
+	g := gate.CModExp2(bit, a, j, N, 0, []int{1, 2, 3, 4})
+	for i, r := range g {
+		bin := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
+		if bin[:1] == "0" { // control qubit is |0>
+			continue
+		}
+
+		// decimal number representation of target qubits
+		k, err := strconv.ParseInt(bin[1:], 2, 64)
+		if err != nil {
+			fmt.Printf("parse int bin=%s: %v", bin, k)
+			return
+		}
+
+		if !(int(k) < N) {
+			continue
+		}
+
+		for ii, e := range r {
+			if e == complex(0, 0) {
+				continue
+			}
+
+			// decimal number representation of a^2^j * k mod N
+			a2jkmodNs := fmt.Sprintf(f, strconv.FormatInt(int64(ii), 2)[1:])
+			actual, err := strconv.ParseInt(a2jkmodNs, 2, 64)
+			if err != nil {
+				fmt.Printf("parse int bin=%s: %v", bin, k)
+				return
+			}
+
+			expected := (a2jmodN * int(k)) % N
+			fmt.Printf("%s:%s=%2d %s:%s=%2d %2d\n", bin[:1], bin[1:], k, bin[:1], a2jkmodNs[1:], actual, expected)
+		}
+	}
+
+	// Output:
+	// 1:0000= 0 1:0000= 0  0
+	// 1:0001= 1 1:0111= 7  7
+	// 1:0010= 2 1:1110=14 14
+	// 1:0011= 3 1:0110= 6  6
+	// 1:0100= 4 1:1101=13 13
+	// 1:0101= 5 1:0101= 5  5
+	// 1:0110= 6 1:1100=12 12
+	// 1:0111= 7 1:0100= 4  4
+	// 1:1000= 8 1:1011=11 11
+	// 1:1001= 9 1:0011= 3  3
+	// 1:1010=10 1:1010=10 10
+	// 1:1011=11 1:0010= 2  2
+	// 1:1100=12 1:1001= 9  9
+	// 1:1101=13 1:0001= 1  1
+	// 1:1110=14 1:1000= 8  8
+}
+
+func ExampleCModExp2_a7j1n15() {
 	a, j, N := 7, 1, 15
 	a2jmodN := number.ModExp2(a, j, N)
 
@@ -104,26 +163,276 @@ func ExampleCModExp2() {
 			}
 
 			expected := (a2jmodN * int(k)) % N
-			fmt.Printf("%s=%2d %s=%2d %2d\n", bin, k, a2jkmodNs, actual, expected)
+			fmt.Printf("%s:%s=%2d %s:%s=%2d %2d\n", bin[:1], bin[1:], k, bin[:1], a2jkmodNs[1:], actual, expected)
 		}
 	}
 
 	// Output:
-	// 10000= 0 00000= 0  0
-	// 10001= 1 00100= 4  4
-	// 10010= 2 01000= 8  8
-	// 10011= 3 01100=12 12
-	// 10100= 4 00001= 1  1
-	// 10101= 5 00101= 5  5
-	// 10110= 6 01001= 9  9
-	// 10111= 7 01101=13 13
-	// 11000= 8 00010= 2  2
-	// 11001= 9 00110= 6  6
-	// 11010=10 01010=10 10
-	// 11011=11 01110=14 14
-	// 11100=12 00011= 3  3
-	// 11101=13 00111= 7  7
-	// 11110=14 01011=11 11
+	// 1:0000= 0 1:0000= 0  0
+	// 1:0001= 1 1:0100= 4  4
+	// 1:0010= 2 1:1000= 8  8
+	// 1:0011= 3 1:1100=12 12
+	// 1:0100= 4 1:0001= 1  1
+	// 1:0101= 5 1:0101= 5  5
+	// 1:0110= 6 1:1001= 9  9
+	// 1:0111= 7 1:1101=13 13
+	// 1:1000= 8 1:0010= 2  2
+	// 1:1001= 9 1:0110= 6  6
+	// 1:1010=10 1:1010=10 10
+	// 1:1011=11 1:1110=14 14
+	// 1:1100=12 1:0011= 3  3
+	// 1:1101=13 1:0111= 7  7
+	// 1:1110=14 1:1011=11 11
+}
+
+func ExampleCModExp2_a7j2n15() {
+	a, j, N := 7, 2, 15
+	a2jmodN := number.ModExp2(a, j, N)
+
+	g := gate.CModExp2(5, a, j, N, 0, []int{1, 2, 3, 4})
+	for i, r := range g {
+		bin := fmt.Sprintf("%05s", strconv.FormatInt(int64(i), 2))
+		if bin[:1] == "0" { // control qubit is |0>
+			continue
+		}
+
+		// decimal number representation of target qubits
+		k, err := strconv.ParseInt(bin[1:], 2, 64)
+		if err != nil {
+			fmt.Printf("parse int bin=%s: %v", bin, k)
+			return
+		}
+
+		if !(int(k) < N) {
+			continue
+		}
+
+		for ii, e := range r {
+			if e == complex(0, 0) {
+				continue
+			}
+
+			// decimal number representation of a^2^j * k mod N
+			a2jkmodNs := fmt.Sprintf("%05s", strconv.FormatInt(int64(ii), 2)[1:])
+			actual, err := strconv.ParseInt(a2jkmodNs, 2, 64)
+			if err != nil {
+				fmt.Printf("parse int bin=%s: %v", bin, k)
+				return
+			}
+
+			expected := (a2jmodN * int(k)) % N
+			fmt.Printf("%s:%s=%2d %s:%s=%2d %2d\n", bin[:1], bin[1:], k, bin[:1], a2jkmodNs[1:], actual, expected)
+		}
+	}
+
+	// Output:
+	// 1:0000= 0 1:0000= 0  0
+	// 1:0001= 1 1:0001= 1  1
+	// 1:0010= 2 1:0010= 2  2
+	// 1:0011= 3 1:0011= 3  3
+	// 1:0100= 4 1:0100= 4  4
+	// 1:0101= 5 1:0101= 5  5
+	// 1:0110= 6 1:0110= 6  6
+	// 1:0111= 7 1:0111= 7  7
+	// 1:1000= 8 1:1000= 8  8
+	// 1:1001= 9 1:1001= 9  9
+	// 1:1010=10 1:1010=10 10
+	// 1:1011=11 1:1011=11 11
+	// 1:1100=12 1:1100=12 12
+	// 1:1101=13 1:1101=13 13
+	// 1:1110=14 1:1110=14 14
+}
+
+func ExampleCModExp2_a2j0n21() {
+	a, j, N := 2, 0, 21
+	a2jmodN := number.ModExp2(a, j, N)
+
+	g := gate.CModExp2(6, a, j, N, 0, []int{1, 2, 3, 4, 5})
+	for i, r := range g {
+		bin := fmt.Sprintf("%06s", strconv.FormatInt(int64(i), 2))
+		if bin[:1] == "0" { // control qubit is |0>
+			continue
+		}
+
+		// decimal number representation of target qubits
+		k, err := strconv.ParseInt(bin[1:], 2, 64)
+		if err != nil {
+			fmt.Printf("parse int bin=%s: %v", bin, k)
+			return
+		}
+
+		if !(int(k) < N) {
+			continue
+		}
+
+		for ii, e := range r {
+			if e == complex(0, 0) {
+				continue
+			}
+
+			// decimal number representation of a^2^j * k mod N
+			a2jkmodNs := fmt.Sprintf("%06s", strconv.FormatInt(int64(ii), 2)[1:])
+			actual, err := strconv.ParseInt(a2jkmodNs, 2, 64)
+			if err != nil {
+				fmt.Printf("parse int bin=%s: %v", bin, k)
+				return
+			}
+
+			expected := (a2jmodN * int(k)) % N
+			fmt.Printf("%s:%s=%2d %s:%s=%2d %2d\n", bin[:1], bin[1:], k, bin[:1], a2jkmodNs[1:], actual, expected)
+		}
+	}
+
+	// Output:
+	// 1:00000= 0 1:00000= 0  0
+	// 1:00001= 1 1:00010= 2  2
+	// 1:00010= 2 1:00100= 4  4
+	// 1:00011= 3 1:00110= 6  6
+	// 1:00100= 4 1:01000= 8  8
+	// 1:00101= 5 1:01010=10 10
+	// 1:00110= 6 1:01100=12 12
+	// 1:00111= 7 1:01110=14 14
+	// 1:01000= 8 1:10000=16 16
+	// 1:01001= 9 1:10010=18 18
+	// 1:01010=10 1:10100=20 20
+	// 1:01011=11 1:00001= 1  1
+	// 1:01100=12 1:00011= 3  3
+	// 1:01101=13 1:00101= 5  5
+	// 1:01110=14 1:00111= 7  7
+	// 1:01111=15 1:01001= 9  9
+	// 1:10000=16 1:01011=11 11
+	// 1:10001=17 1:01101=13 13
+	// 1:10010=18 1:01111=15 15
+	// 1:10011=19 1:10001=17 17
+	// 1:10100=20 1:10011=19 19
+}
+
+func ExampleCModExp2_a2j1n21() {
+	a, j, N := 2, 1, 21
+	a2jmodN := number.ModExp2(a, j, N)
+
+	g := gate.CModExp2(6, a, j, N, 0, []int{1, 2, 3, 4, 5})
+	for i, r := range g {
+		bin := fmt.Sprintf("%06s", strconv.FormatInt(int64(i), 2))
+		if bin[:1] == "0" { // control qubit is |0>
+			continue
+		}
+
+		// decimal number representation of target qubits
+		k, err := strconv.ParseInt(bin[1:], 2, 64)
+		if err != nil {
+			fmt.Printf("parse int bin=%s: %v", bin, k)
+			return
+		}
+
+		if !(int(k) < N) {
+			continue
+		}
+
+		for ii, e := range r {
+			if e == complex(0, 0) {
+				continue
+			}
+
+			// decimal number representation of a^2^j * k mod N
+			a2jkmodNs := fmt.Sprintf("%06s", strconv.FormatInt(int64(ii), 2)[1:])
+			actual, err := strconv.ParseInt(a2jkmodNs, 2, 64)
+			if err != nil {
+				fmt.Printf("parse int bin=%s: %v", bin, k)
+				return
+			}
+
+			expected := (a2jmodN * int(k)) % N
+			fmt.Printf("%s:%s=%2d %s:%s=%2d %2d\n", bin[:1], bin[1:], k, bin[:1], a2jkmodNs[1:], actual, expected)
+		}
+	}
+
+	// Output:
+	// 1:00000= 0 1:00000= 0  0
+	// 1:00001= 1 1:00100= 4  4
+	// 1:00010= 2 1:01000= 8  8
+	// 1:00011= 3 1:01100=12 12
+	// 1:00100= 4 1:10000=16 16
+	// 1:00101= 5 1:10100=20 20
+	// 1:00110= 6 1:00011= 3  3
+	// 1:00111= 7 1:00111= 7  7
+	// 1:01000= 8 1:01011=11 11
+	// 1:01001= 9 1:01111=15 15
+	// 1:01010=10 1:10011=19 19
+	// 1:01011=11 1:00010= 2  2
+	// 1:01100=12 1:00110= 6  6
+	// 1:01101=13 1:01010=10 10
+	// 1:01110=14 1:01110=14 14
+	// 1:01111=15 1:10010=18 18
+	// 1:10000=16 1:00001= 1  1
+	// 1:10001=17 1:00101= 5  5
+	// 1:10010=18 1:01001= 9  9
+	// 1:10011=19 1:01101=13 13
+	// 1:10100=20 1:10001=17 17
+}
+
+func ExampleCModExp2_a2j2n21() {
+	a, j, N := 2, 2, 21
+	a2jmodN := number.ModExp2(a, j, N)
+
+	g := gate.CModExp2(6, a, j, N, 0, []int{1, 2, 3, 4, 5})
+	for i, r := range g {
+		bin := fmt.Sprintf("%06s", strconv.FormatInt(int64(i), 2))
+		if bin[:1] == "0" { // control qubit is |0>
+			continue
+		}
+
+		// decimal number representation of target qubits
+		k, err := strconv.ParseInt(bin[1:], 2, 64)
+		if err != nil {
+			fmt.Printf("parse int bin=%s: %v", bin, k)
+			return
+		}
+
+		if !(int(k) < N) {
+			continue
+		}
+
+		for ii, e := range r {
+			if e == complex(0, 0) {
+				continue
+			}
+
+			// decimal number representation of a^2^j * k mod N
+			a2jkmodNs := fmt.Sprintf("%06s", strconv.FormatInt(int64(ii), 2)[1:])
+			actual, err := strconv.ParseInt(a2jkmodNs, 2, 64)
+			if err != nil {
+				fmt.Printf("parse int bin=%s: %v", bin, k)
+				return
+			}
+
+			expected := (a2jmodN * int(k)) % N
+			fmt.Printf("%s:%s=%2d %s:%s=%2d %2d\n", bin[:1], bin[1:], k, bin[:1], a2jkmodNs[1:], actual, expected)
+		}
+	}
+
+	// Output:
+	// 1:00000= 0 1:00000= 0  0
+	// 1:00001= 1 1:10000=16 16
+	// 1:00010= 2 1:01011=11 11
+	// 1:00011= 3 1:00110= 6  6
+	// 1:00100= 4 1:00001= 1  1
+	// 1:00101= 5 1:10001=17 17
+	// 1:00110= 6 1:01100=12 12
+	// 1:00111= 7 1:00111= 7  7
+	// 1:01000= 8 1:00010= 2  2
+	// 1:01001= 9 1:10010=18 18
+	// 1:01010=10 1:01101=13 13
+	// 1:01011=11 1:01000= 8  8
+	// 1:01100=12 1:00011= 3  3
+	// 1:01101=13 1:10011=19 19
+	// 1:01110=14 1:01110=14 14
+	// 1:01111=15 1:01001= 9  9
+	// 1:10000=16 1:00100= 4  4
+	// 1:10001=17 1:10100=20 20
+	// 1:10010=18 1:01111=15 15
+	// 1:10011=19 1:01010=10 10
+	// 1:10100=20 1:00101= 5  5
 }
 
 func TestCModExp2(t *testing.T) {
