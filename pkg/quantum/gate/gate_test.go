@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/itsubaki/q/pkg/math/number"
+
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/quantum/gate"
 )
@@ -72,7 +74,7 @@ func ExampleCModExp2() {
 	g := gate.CModExp2(bit, a, j, N, 0, []int{1, 2, 3, 4})
 
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(bit), "s")
-	for i, r := range g {
+	for i, r := range g.Transpose() {
 		bin := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
 		if bin[:1] == "0" { // control qubit is |0>
 			continue
@@ -100,26 +102,27 @@ func ExampleCModExp2() {
 				panic(fmt.Sprintf("parse int a2jkmodNs=%s: %v", a2jkmodNs, err))
 			}
 
-			fmt.Printf("%s:%s=%2d %s:%s=%2d\n", bin[:1], a2jkmodNs[1:], a2jkmodN, bin[:1], bin[1:], k)
+			expected := (number.ModExp2(a, j, N) * int(k)) % N
+			fmt.Printf("%s:%s=%2d %s:%s=%2d %2d\n", bin[:1], bin[1:], k, bin[:1], a2jkmodNs[1:], a2jkmodN, expected)
 		}
 	}
 
-	// Unordered output:
-	// 1:0000= 0 1:0000= 0
-	// 1:0001= 1 1:0111= 7
-	// 1:0010= 2 1:1110=14
-	// 1:0011= 3 1:0110= 6
-	// 1:0100= 4 1:1101=13
-	// 1:0101= 5 1:0101= 5
-	// 1:0110= 6 1:1100=12
-	// 1:0111= 7 1:0100= 4
-	// 1:1000= 8 1:1011=11
-	// 1:1001= 9 1:0011= 3
-	// 1:1010=10 1:1010=10
-	// 1:1011=11 1:0010= 2
-	// 1:1100=12 1:1001= 9
-	// 1:1101=13 1:0001= 1
-	// 1:1110=14 1:1000= 8
+	// Output:
+	// 1:0000= 0 1:0000= 0  0
+	// 1:0001= 1 1:0111= 7  7
+	// 1:0010= 2 1:1110=14 14
+	// 1:0011= 3 1:0110= 6  6
+	// 1:0100= 4 1:1101=13 13
+	// 1:0101= 5 1:0101= 5  5
+	// 1:0110= 6 1:1100=12 12
+	// 1:0111= 7 1:0100= 4  4
+	// 1:1000= 8 1:1011=11 11
+	// 1:1001= 9 1:0011= 3  3
+	// 1:1010=10 1:1010=10 10
+	// 1:1011=11 1:0010= 2  2
+	// 1:1100=12 1:1001= 9  9
+	// 1:1101=13 1:0001= 1  1
+	// 1:1110=14 1:1000= 8  8
 }
 
 func TestCModExp2(t *testing.T) {
