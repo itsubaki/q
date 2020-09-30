@@ -69,7 +69,7 @@ func ExampleEmpty() {
 }
 
 func ExampleCModExp2_a7j0n15() {
-	a, j, N, bit := 7, 0, 15, 5
+	bit, a, j, N := 5, 7, 0, 15
 	a2jmodN := number.ModExp2(a, j, N)
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(bit), "s")
 
