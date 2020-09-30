@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/math/vector"
 )
 
@@ -21,6 +22,22 @@ func ExampleNew() {
 
 	// Output:
 	// [(1+0i) (0+0i)]
+}
+
+func ExampleVector_Apply() {
+	v := vector.New(1, 2)
+	fmt.Println(v)
+
+	m := matrix.New(
+		[]complex128{1, 2},
+		[]complex128{1, 3},
+	)
+
+	fmt.Println(v.Apply(m))
+
+	// Output:
+	// [(1+0i) (2+0i)]
+	// [(5+0i) (7+0i)]
 }
 
 func ExampleVector_InnerProduct() {

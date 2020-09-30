@@ -1,6 +1,7 @@
 package vector
 
 import (
+	"fmt"
 	"math/cmplx"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
@@ -117,12 +118,16 @@ func (v Vector) IsUnit() bool {
 }
 
 func (v Vector) Apply(m matrix.Matrix) Vector {
-	p, _ := m.Dimension()
+	p, q := m.Dimension()
+
+	if q != len(v) {
+		panic(fmt.Sprintf("invalid dimension. p=%d q=%d len(v)=%d", p, q, len(v)))
+	}
 
 	out := Vector{}
 	for i := 0; i < p; i++ {
 		tmp := complex(0, 0)
-		for j := 0; j < len(v); j++ {
+		for j := 0; j < q; j++ {
 			tmp = tmp + m[i][j]*v[j]
 		}
 
