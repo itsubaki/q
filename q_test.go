@@ -166,38 +166,65 @@ func ExampleQ_MeasureAsBinary() {
 	// [1 1 1]
 }
 
+func ExampleQ_CModExp2() {
+	qsim := q.New()
+
+	c := qsim.ZeroWith(3)
+	t := qsim.ZeroLog2(15)
+
+	qsim.X(c...)
+	qsim.X(t[len(t)-1])
+	for _, s := range qsim.State(c, t) {
+		fmt.Println(s)
+	}
+
+	// qsim.ControlledModExp2(7, 0, 15, c[0], t)
+	// qsim.ControlledModExp2(7, 1, 15, c[1], t)
+	// qsim.ControlledModExp2(7, 2, 15, c[2], t)
+	// equals to
+	qsim.CModExp2(7, 15, c, t)
+	for _, s := range qsim.State(c, t) {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [111 0001][  7   1]( 1.0000 0.0000i): 1.0000
+	// [111 1101][  7  13]( 1.0000 0.0000i): 1.0000
+}
+
 func ExampleQ_ControlledModExp2_mod21() {
 	qsim := q.New()
 
-	q0 := qsim.One()
-	r1 := qsim.ZeroLog2(21)
+	c := qsim.ZeroWith(1)
+	t := qsim.ZeroLog2(21)
 
-	qsim.X(r1[len(r1)-1])
-	for _, s := range qsim.State([]q.Qubit{q0}, r1) {
+	qsim.X(c...)
+	qsim.X(t[len(t)-1])
+	for _, s := range qsim.State(c, t) {
 		fmt.Println(s)
 	}
 
 	// 2^2^0 * 1 mod 21 = 2
-	qsim.ControlledModExp2(2, 0, 21, q0, r1)
-	for _, s := range qsim.State([]q.Qubit{q0}, r1) {
+	qsim.ControlledModExp2(2, 0, 21, c[0], t)
+	for _, s := range qsim.State(c, t) {
 		fmt.Println(s)
 	}
 
 	// 2^2^1 * 2 mod 21 = 8
-	qsim.ControlledModExp2(2, 1, 21, q0, r1)
-	for _, s := range qsim.State([]q.Qubit{q0}, r1) {
+	qsim.ControlledModExp2(2, 1, 21, c[0], t)
+	for _, s := range qsim.State(c, t) {
 		fmt.Println(s)
 	}
 
 	// 2^2^2 * 8 mod 21 = 2
-	qsim.ControlledModExp2(2, 2, 21, q0, r1)
-	for _, s := range qsim.State([]q.Qubit{q0}, r1) {
+	qsim.ControlledModExp2(2, 2, 21, c[0], t)
+	for _, s := range qsim.State(c, t) {
 		fmt.Println(s)
 	}
 
 	// 2^2^3 * 2 mod 21 = 8
-	qsim.ControlledModExp2(2, 3, 21, q0, r1)
-	for _, s := range qsim.State([]q.Qubit{q0}, r1) {
+	qsim.ControlledModExp2(2, 3, 21, c[0], t)
+	for _, s := range qsim.State(c, t) {
 		fmt.Println(s)
 	}
 
@@ -212,30 +239,30 @@ func ExampleQ_ControlledModExp2_mod21() {
 func ExampleQ_ControlledModExp2_mod15() {
 	qsim := q.New()
 
-	q0 := qsim.One()
-	r1 := qsim.ZeroLog2(15)
+	c := qsim.ZeroWith(1)
+	t := qsim.ZeroLog2(15)
 
-	// 1
-	qsim.X(r1[len(r1)-1])
-	for _, s := range qsim.State([]q.Qubit{q0}, r1) {
+	qsim.X(c...)
+	qsim.X(t[len(t)-1])
+	for _, s := range qsim.State(c, t) {
 		fmt.Println(s)
 	}
 
 	// 7^2^0 * 1 mod 15 = 7
-	qsim.ControlledModExp2(7, 0, 15, q0, r1)
-	for _, s := range qsim.State([]q.Qubit{q0}, r1) {
+	qsim.ControlledModExp2(7, 0, 15, c[0], t)
+	for _, s := range qsim.State(c, t) {
 		fmt.Println(s)
 	}
 
 	// 7^2^1 * 7 mod 15 = 13
-	qsim.ControlledModExp2(7, 1, 15, q0, r1)
-	for _, s := range qsim.State([]q.Qubit{q0}, r1) {
+	qsim.ControlledModExp2(7, 1, 15, c[0], t)
+	for _, s := range qsim.State(c, t) {
 		fmt.Println(s)
 	}
 
 	// 7^2^2 * 13 mod 15 = 13
-	qsim.ControlledModExp2(7, 2, 15, q0, r1)
-	for _, s := range qsim.State([]q.Qubit{q0}, r1) {
+	qsim.ControlledModExp2(7, 2, 15, c[0], t)
+	for _, s := range qsim.State(c, t) {
 		fmt.Println(s)
 	}
 
