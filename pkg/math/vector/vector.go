@@ -67,19 +67,19 @@ func (v Vector) Mul(z complex128) Vector {
 	return out
 }
 
-func (v Vector) TensorProduct(v1 Vector) Vector {
+func (v Vector) TensorProduct(w Vector) Vector {
 	out := Vector{}
 	for i := 0; i < len(v); i++ {
-		for j := 0; j < len(v1); j++ {
-			out = append(out, v[i]*v1[j])
+		for j := 0; j < len(w); j++ {
+			out = append(out, v[i]*w[j])
 		}
 	}
 
 	return out
 }
 
-func (v Vector) InnerProduct(v1 Vector) complex128 {
-	dual := v1.Dual()
+func (v Vector) InnerProduct(w Vector) complex128 {
+	dual := w.Dual()
 
 	out := complex(0, 0)
 	for i := 0; i < len(v); i++ {
@@ -89,8 +89,8 @@ func (v Vector) InnerProduct(v1 Vector) complex128 {
 	return out
 }
 
-func (v Vector) OuterProduct(v1 Vector) matrix.Matrix {
-	dual := v1.Dual()
+func (v Vector) OuterProduct(w Vector) matrix.Matrix {
+	dual := w.Dual()
 
 	out := matrix.Matrix{}
 	for i := 0; i < len(v); i++ {
@@ -105,8 +105,8 @@ func (v Vector) OuterProduct(v1 Vector) matrix.Matrix {
 	return out
 }
 
-func (v Vector) IsOrthogonal(v1 Vector) bool {
-	return v.InnerProduct(v1) == complex(0, 0)
+func (v Vector) IsOrthogonal(w Vector) bool {
+	return v.InnerProduct(w) == complex(0, 0)
 }
 
 func (v Vector) Norm() complex128 {
@@ -137,8 +137,8 @@ func (v Vector) Apply(m matrix.Matrix) Vector {
 	return out
 }
 
-func (v Vector) Equals(v1 Vector, eps ...float64) bool {
-	if len(v) != len(v1) {
+func (v Vector) Equals(w Vector, eps ...float64) bool {
+	if len(v) != len(w) {
 		return false
 	}
 
@@ -148,7 +148,7 @@ func (v Vector) Equals(v1 Vector, eps ...float64) bool {
 	}
 
 	for i := 0; i < len(v); i++ {
-		if cmplx.Abs(v[i]-v1[i]) > e {
+		if cmplx.Abs(v[i]-w[i]) > e {
 			return false
 		}
 	}
