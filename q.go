@@ -141,9 +141,9 @@ func (q *Q) RZ(theta float64, qb ...Qubit) *Q {
 	return q.Apply(gate.RZ(theta), qb...)
 }
 
-func (q *Q) Apply(mat matrix.Matrix, qb ...Qubit) *Q {
+func (q *Q) Apply(m matrix.Matrix, qb ...Qubit) *Q {
 	if len(qb) < 1 {
-		q.internal.Apply(mat)
+		q.internal.Apply(m)
 		return q
 	}
 
@@ -151,7 +151,7 @@ func (q *Q) Apply(mat matrix.Matrix, qb ...Qubit) *Q {
 
 	g := gate.I()
 	if index[0] == 0 {
-		g = mat
+		g = m
 	}
 
 	for i := 1; i < q.NumberOfBit(); i++ {
@@ -164,7 +164,7 @@ func (q *Q) Apply(mat matrix.Matrix, qb ...Qubit) *Q {
 		}
 
 		if found {
-			g = g.TensorProduct(mat)
+			g = g.TensorProduct(m)
 			continue
 		}
 
@@ -299,6 +299,7 @@ func (q *Q) InvQFT(qb ...Qubit) *Q {
 	return q.InverseQFT(qb...)
 }
 
+// Measure returns qubtis state after measured
 func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
 	if len(qb) < 1 {
 		m := make([]*qubit.Qubit, 0)
@@ -318,6 +319,7 @@ func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
 	return qubit.TensorProduct(m...)
 }
 
+// MeasureAsInt returns integer representation of qubtis state after measured
 func (q *Q) MeasureAsInt(qb ...Qubit) int {
 	b := q.BinaryString(qb...)
 	i, err := strconv.ParseInt(b, 2, 0)
@@ -328,6 +330,7 @@ func (q *Q) MeasureAsInt(qb ...Qubit) int {
 	return int(i)
 }
 
+//MeasureAsBinary returns binary representation of qubits state after measured
 func (q *Q) MeasureAsBinary(qb ...Qubit) []int {
 	b := make([]int, 0)
 	for _, i := range qb {
@@ -342,6 +345,7 @@ func (q *Q) MeasureAsBinary(qb ...Qubit) []int {
 	return b
 }
 
+// BinaryString returns binary string representation of qubits state after measured
 func (q *Q) BinaryString(qb ...Qubit) string {
 	var sb strings.Builder
 	for _, i := range qb {
