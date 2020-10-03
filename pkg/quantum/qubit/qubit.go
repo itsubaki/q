@@ -188,11 +188,9 @@ func (q *Qubit) ProbabilityZeroAt(bit int) ([]int, []float64) {
 	div := dim / den
 
 	p := q.Probability()
-	index := make([]int, 0)
-	prob := make([]float64, 0)
+	index, prob := make([]int, 0), make([]float64, 0)
 	for i := 0; i < dim; i++ {
-		index = append(index, i)
-		prob = append(prob, p[i])
+		index, prob = append(index, i), append(prob, p[i])
 
 		if len(p) == dim/2 {
 			break
@@ -207,12 +205,13 @@ func (q *Qubit) ProbabilityZeroAt(bit int) ([]int, []float64) {
 }
 
 func (q *Qubit) ProbabilityOneAt(bit int) ([]int, []float64) {
-	zi, _ := q.ProbabilityZeroAt(bit)
+	z, _ := q.ProbabilityZeroAt(bit)
+
 	one := make([]int, 0)
 	for i := range q.vector {
 		found := false
-		for _, zii := range zi {
-			if i == zii {
+		for _, zi := range z {
+			if i == zi {
 				found = true
 				break
 			}
@@ -224,11 +223,9 @@ func (q *Qubit) ProbabilityOneAt(bit int) ([]int, []float64) {
 	}
 
 	p := q.Probability()
-	index := make([]int, 0)
-	prob := make([]float64, 0)
+	index, prob := make([]int, 0), make([]float64, 0)
 	for _, i := range one {
-		index = append(index, i)
-		prob = append(prob, p[i])
+		index, prob = append(index, i), append(prob, p[i])
 	}
 
 	return index, prob
