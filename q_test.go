@@ -127,9 +127,11 @@ func ExampleQ_Measure() {
 
 	m := qsim.Measure(q0)
 	fmt.Println(m)
+	fmt.Println(m.IsOne())
 
 	// Output:
 	// [(0+0i) (1+0i)]
+	// true
 }
 
 func ExampleQ_MeasureAsInt() {
