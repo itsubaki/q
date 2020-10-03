@@ -118,29 +118,23 @@ func (q *Qubit) Apply(m ...matrix.Matrix) *Qubit {
 
 func (q *Qubit) Normalize() *Qubit {
 	var sum float64
-	for _, amp := range q.vector {
-		sum = sum + math.Pow(cmplx.Abs(amp), 2)
+	for _, a := range q.Amplitude() {
+		sum = sum + math.Pow(cmplx.Abs(a), 2)
 	}
 
 	z := 1 / math.Sqrt(sum)
 	q.vector = q.vector.Mul(complex(z, 0))
-
 	return q
 }
 
 func (q *Qubit) Amplitude() []complex128 {
-	a := make([]complex128, 0)
-	for _, amp := range q.vector {
-		a = append(a, amp)
-	}
-
-	return a
+	return q.vector.Complex()
 }
 
 func (q *Qubit) Probability() []float64 {
 	list := make([]float64, 0)
-	for _, amp := range q.vector {
-		p := math.Pow(cmplx.Abs(amp), 2)
+	for _, a := range q.Amplitude() {
+		p := math.Pow(cmplx.Abs(a), 2)
 		list = append(list, p)
 	}
 
