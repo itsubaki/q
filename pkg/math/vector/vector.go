@@ -178,13 +178,13 @@ func (v Vector) Imag() []float64 {
 	return out
 }
 
-func TensorProductN(v Vector, bit ...int) Vector {
-	if len(bit) < 1 {
+func TensorProductN(v Vector, n ...int) Vector {
+	if len(n) < 1 {
 		return v
 	}
 
 	list := make([]Vector, 0)
-	for i := 0; i < bit[0]; i++ {
+	for i := 0; i < n[0]; i++ {
 		list = append(list, v)
 	}
 
