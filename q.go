@@ -97,63 +97,6 @@ func (q *Q) Probability() []float64 {
 	return q.internal.Probability()
 }
 
-func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
-	if len(qb) < 1 {
-		m := make([]*qubit.Qubit, 0)
-		for i := 0; i < q.NumberOfBit(); i++ {
-			m = append(m, q.internal.Measure(i))
-		}
-
-		return qubit.TensorProduct(m...)
-	}
-
-	m := make([]*qubit.Qubit, 0)
-	m = append(m, q.internal.Measure(qb[0].Index()))
-	for i := 1; i < len(qb); i++ {
-		m = append(m, q.internal.Measure(qb[i].Index()))
-	}
-
-	return qubit.TensorProduct(m...)
-}
-
-func (q *Q) MeasureAsInt(qb ...Qubit) int {
-	b := q.BinaryString(qb...)
-	i, err := strconv.ParseInt(b, 2, 0)
-	if err != nil {
-		panic(err)
-	}
-
-	return int(i)
-}
-
-func (q *Q) MeasureAsBinary(qb ...Qubit) []int {
-	b := make([]int, 0)
-	for _, i := range qb {
-		if q.Measure(i).IsZero() {
-			b = append(b, 0)
-			continue
-		}
-
-		b = append(b, 1)
-	}
-
-	return b
-}
-
-func (q *Q) BinaryString(qb ...Qubit) string {
-	var sb strings.Builder
-	for _, i := range qb {
-		if q.Measure(i).IsZero() {
-			sb.WriteString("0")
-			continue
-		}
-
-		sb.WriteString("1")
-	}
-
-	return sb.String()
-}
-
 func (q *Q) I(qb ...Qubit) *Q {
 	return q.Apply(gate.I(), qb...)
 }
@@ -354,6 +297,63 @@ func (q *Q) InverseQFT(qb ...Qubit) *Q {
 
 func (q *Q) InvQFT(qb ...Qubit) *Q {
 	return q.InverseQFT(qb...)
+}
+
+func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
+	if len(qb) < 1 {
+		m := make([]*qubit.Qubit, 0)
+		for i := 0; i < q.NumberOfBit(); i++ {
+			m = append(m, q.internal.Measure(i))
+		}
+
+		return qubit.TensorProduct(m...)
+	}
+
+	m := make([]*qubit.Qubit, 0)
+	m = append(m, q.internal.Measure(qb[0].Index()))
+	for i := 1; i < len(qb); i++ {
+		m = append(m, q.internal.Measure(qb[i].Index()))
+	}
+
+	return qubit.TensorProduct(m...)
+}
+
+func (q *Q) MeasureAsInt(qb ...Qubit) int {
+	b := q.BinaryString(qb...)
+	i, err := strconv.ParseInt(b, 2, 0)
+	if err != nil {
+		panic(err)
+	}
+
+	return int(i)
+}
+
+func (q *Q) MeasureAsBinary(qb ...Qubit) []int {
+	b := make([]int, 0)
+	for _, i := range qb {
+		if q.Measure(i).IsZero() {
+			b = append(b, 0)
+			continue
+		}
+
+		b = append(b, 1)
+	}
+
+	return b
+}
+
+func (q *Q) BinaryString(qb ...Qubit) string {
+	var sb strings.Builder
+	for _, i := range qb {
+		if q.Measure(i).IsZero() {
+			sb.WriteString("0")
+			continue
+		}
+
+		sb.WriteString("1")
+	}
+
+	return sb.String()
 }
 
 func (q *Q) Clone() *Q {
