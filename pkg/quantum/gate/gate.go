@@ -11,12 +11,12 @@ import (
 )
 
 func New(v ...[]complex128) matrix.Matrix {
-	out := make(matrix.Matrix, len(v))
+	m := make(matrix.Matrix, len(v))
 	for i := 0; i < len(v); i++ {
-		out[i] = v[i]
+		m[i] = v[i]
 	}
 
-	return out
+	return m
 }
 
 func Empty(n ...int) []matrix.Matrix {
@@ -33,24 +33,27 @@ func U(alpha, beta, gamma, delta float64) matrix.Matrix {
 }
 
 func RX(theta float64) matrix.Matrix {
-	m := make(matrix.Matrix, 2)
 	v := complex(theta/2, 0)
+
+	m := make(matrix.Matrix, 2)
 	m[0] = []complex128{cmplx.Cos(v), complex(0, -1) * cmplx.Sin(v)}
 	m[1] = []complex128{complex(0, -1) * cmplx.Sin(v), cmplx.Cos(v)}
 	return m
 }
 
 func RY(theta float64) matrix.Matrix {
-	m := make(matrix.Matrix, 2)
 	v := complex(theta/2, 0)
+
+	m := make(matrix.Matrix, 2)
 	m[0] = []complex128{cmplx.Cos(v), -1 * cmplx.Sin(v)}
 	m[1] = []complex128{cmplx.Sin(v), cmplx.Cos(v)}
 	return m
 }
 
 func RZ(theta float64) matrix.Matrix {
-	m := make(matrix.Matrix, 2)
 	v := complex(0, 1*theta/2)
+
+	m := make(matrix.Matrix, 2)
 	m[0] = []complex128{cmplx.Exp(cmplx.Conj(v)), 0}
 	m[1] = []complex128{0, cmplx.Exp(v)}
 	return m
@@ -60,10 +63,10 @@ func R(k int) matrix.Matrix {
 	p := 2 * math.Pi / math.Pow(2, float64(k))
 	e := cmplx.Exp(complex(0, p))
 
-	out := make(matrix.Matrix, 2)
-	out[0] = []complex128{1, 0}
-	out[1] = []complex128{0, e}
-	return out
+	m := make(matrix.Matrix, 2)
+	m[0] = []complex128{1, 0}
+	m[1] = []complex128{0, e}
+	return m
 }
 
 func I(bit ...int) matrix.Matrix {
