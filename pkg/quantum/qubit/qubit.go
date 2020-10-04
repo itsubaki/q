@@ -133,12 +133,12 @@ func (q *Qubit) Probability() []float64 {
 }
 
 func (q *Qubit) Measure(bit int) *Qubit {
-	index, p := q.ProbabilityZeroAt(bit)
-	r := q.Rand(q.Seed...)
-
+	zero, p := q.ProbabilityZeroAt(bit)
 	sum := number.Sum(p)
+
+	r := q.Rand(q.Seed...)
 	if r > sum {
-		for _, i := range index {
+		for _, i := range zero {
 			q.vector[i] = complex(0, 0)
 		}
 
@@ -146,21 +146,7 @@ func (q *Qubit) Measure(bit int) *Qubit {
 		return One()
 	}
 
-	one := make([]int, 0)
-	for i := range q.vector {
-		found := false
-		for _, ix := range index {
-			if i == ix {
-				found = true
-				break
-			}
-		}
-
-		if !found {
-			one = append(one, i)
-		}
-	}
-
+	one, _ := q.ProbabilityOneAt(bit)
 	for _, i := range one {
 		q.vector[i] = complex(0, 0)
 	}
