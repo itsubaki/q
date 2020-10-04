@@ -6,6 +6,7 @@ import (
 	"math/cmplx"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
+	"github.com/itsubaki/q/pkg/math/number"
 	"github.com/itsubaki/q/pkg/math/rand"
 	"github.com/itsubaki/q/pkg/math/vector"
 )
@@ -17,13 +18,8 @@ type Qubit struct {
 }
 
 func New(z ...complex128) *Qubit {
-	v := vector.New()
-	for _, zi := range z {
-		v = append(v, zi)
-	}
-
 	q := &Qubit{
-		vector: v,
+		vector: vector.New(z...),
 		Rand:   rand.Crypto,
 	}
 
@@ -117,11 +113,7 @@ func (q *Qubit) Apply(m ...matrix.Matrix) *Qubit {
 }
 
 func (q *Qubit) Normalize() *Qubit {
-	var sum float64
-	for _, a := range q.Amplitude() {
-		sum = sum + math.Pow(cmplx.Abs(a), 2)
-	}
-
+	sum := number.Sum(q.Probability())
 	z := 1 / math.Sqrt(sum)
 	q.vector = q.vector.Mul(complex(z, 0))
 	return q
@@ -132,24 +124,19 @@ func (q *Qubit) Amplitude() []complex128 {
 }
 
 func (q *Qubit) Probability() []float64 {
-	list := make([]float64, 0)
+	p := make([]float64, 0)
 	for _, a := range q.Amplitude() {
-		p := math.Pow(cmplx.Abs(a), 2)
-		list = append(list, p)
+		p = append(p, math.Pow(cmplx.Abs(a), 2))
 	}
 
-	return list
+	return p
 }
 
 func (q *Qubit) Measure(bit int) *Qubit {
 	index, p := q.ProbabilityZeroAt(bit)
 	r := q.Rand(q.Seed...)
 
-	var sum float64
-	for _, pp := range p {
-		sum = sum + pp
-	}
-
+	sum := number.Sum(p)
 	if r > sum {
 		for _, i := range index {
 			q.vector[i] = complex(0, 0)
