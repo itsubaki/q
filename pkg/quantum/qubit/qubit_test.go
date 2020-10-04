@@ -46,16 +46,38 @@ func Example_pOVM() {
 	add := E1.Add(E2).Add(E3)
 	fmt.Println(add.Equals(gate.I()))
 
-	q0 := qubit.Zero()
-	fmt.Println(q0.Apply(E1).InnerProduct(q0))
+	{
+		q0 := qubit.Zero()
+		q1 := qubit.Zero()
+		q2 := qubit.Zero()
 
-	q1 := qubit.Zero().Apply(gate.H())
-	fmt.Println(q1.Apply(E2).InnerProduct(q1))
+		fmt.Println("zero:")
+		fmt.Println(q0.Apply(E1).InnerProduct(q0))
+		fmt.Println(q1.Apply(E2).InnerProduct(q1))
+		fmt.Println(q2.Apply(E3).InnerProduct(q2))
+	}
+
+	{
+		q0 := qubit.Zero().Apply(gate.H())
+		q1 := qubit.Zero().Apply(gate.H())
+		q2 := qubit.Zero().Apply(gate.H())
+
+		fmt.Println("H(zero):")
+		fmt.Println(q0.Apply(E1).InnerProduct(q0))
+		fmt.Println(q1.Apply(E2).InnerProduct(q1))
+		fmt.Println(q2.Apply(E3).InnerProduct(q2))
+	}
 
 	// Output:
 	// true
+	// zero:
 	// (0+0i)
+	// (0.17157287525381+0i)
+	// (0.5857864376269049+0i)
+	// H(zero):
+	// (0.17157287525381+0i)
 	// (0+0i)
+	// (0.5857864376269051+0i)
 }
 
 func Example_bellState() {
@@ -63,10 +85,17 @@ func Example_bellState() {
 	g1 := gate.CNOT(2, 0, 1)
 
 	q := qubit.Zero(2).Apply(g0, g1)
-	fmt.Println(q.Amplitude())
+	for i, a := range q.Amplitude() {
+		if a == 0 {
+			continue
+		}
+
+		fmt.Printf("%02s: %.5f\n", strconv.FormatInt(int64(i), 2), a)
+	}
 
 	// Output:
-	// [(0.7071067811865476+0i) (0+0i) (0+0i) (0.7071067811865476+0i)]
+	// 00: (0.70711+0.00000i)
+	// 11: (0.70711+0.00000i)
 }
 
 func Example_grover2qubit() {
