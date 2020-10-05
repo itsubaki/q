@@ -29,6 +29,7 @@ func TestBinaryFraction(t *testing.T) {
 		{[]int{1, 0, 1}, 0.625},
 		{[]int{0, 1, 1}, 0.375},
 		{[]int{1, 1, 1}, 0.875},
+		{[]int{0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1}, 0.41650390625},
 	}
 
 	for _, c := range cases {
