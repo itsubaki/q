@@ -1,9 +1,7 @@
 package q
 
 import (
-	"fmt"
 	"math"
-	"math/cmplx"
 	"strconv"
 	"strings"
 
@@ -41,15 +39,15 @@ func New() *Q {
 	}
 }
 
-func (q *Q) New(z, o complex128) Qubit {
+func (q *Q) New(z0, z1 complex128) Qubit {
 	if q.internal == nil {
-		q.internal = qubit.New(z, o)
+		q.internal = qubit.New(z0, z1)
 		q.internal.Seed = q.Seed
 		q.internal.Rand = q.Rand
 		return Qubit(0)
 	}
 
-	q.internal.TensorProduct(qubit.New(z, o))
+	q.internal.TensorProduct(qubit.New(z0, z1))
 	index := q.NumberOfBit() - 1
 	return Qubit(index)
 }
@@ -62,18 +60,18 @@ func (q *Q) One() Qubit {
 	return q.New(0, 1)
 }
 
-func (q *Q) ZeroWith(bit int) []Qubit {
+func (q *Q) ZeroWith(n int) []Qubit {
 	r := make([]Qubit, 0)
-	for i := 0; i < bit; i++ {
+	for i := 0; i < n; i++ {
 		r = append(r, q.Zero())
 	}
 
 	return r
 }
 
-func (q *Q) OneWith(bit int) []Qubit {
+func (q *Q) OneWith(n int) []Qubit {
 	r := make([]Qubit, 0)
-	for i := 0; i < bit; i++ {
+	for i := 0; i < n; i++ {
 		r = append(r, q.One())
 	}
 
@@ -380,60 +378,11 @@ func (q *Q) String() string {
 	return q.internal.String()
 }
 
-type State struct {
-	Amplitude   complex128
-	Probability float64
-	Index       []int
-	Binary      []string
-}
-
-func (s State) String() string {
-	return fmt.Sprintf("%v%3v(% .4f% .4fi): %.4f", s.Binary, s.Index, real(s.Amplitude), imag(s.Amplitude), s.Probability)
-}
-
-func (q *Q) State(reg ...[]Qubit) []State {
-	if len(reg) < 1 {
-		qb := make([]Qubit, 0)
-		for i := 0; i < q.NumberOfBit(); i++ {
-			qb = append(qb, Qubit(i))
-		}
-
-		reg = append(reg, qb)
+func (q *Q) State(reg ...[]Qubit) []qubit.State {
+	index := make([][]int, 0)
+	for _, r := range reg {
+		index = append(index, Index(r...))
 	}
 
-	state := make([]State, 0)
-	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(q.NumberOfBit()), "s")
-	for i, a := range q.internal.Amplitude() {
-		if a == 0 {
-			continue
-		}
-		if math.Abs(real(a)) < 1e-13 {
-			a = complex(0, imag(a))
-		}
-		if math.Abs(imag(a)) < 1e-13 {
-			a = complex(real(a), 0)
-		}
-
-		s := State{Amplitude: a, Probability: math.Pow(cmplx.Abs(a), 2)}
-		bin := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
-		for _, r := range reg {
-			var bb strings.Builder
-			for _, b := range r {
-				idx := b.Index()
-				bb.WriteString(bin[idx : idx+1])
-			}
-
-			bbin := bb.String()
-			bint, err := strconv.ParseInt(bbin, 2, 0)
-			if err != nil {
-				panic(fmt.Sprintf("parse int bin=%s, reg=%s", bin, bbin))
-			}
-
-			s.Index, s.Binary = append(s.Index, int(bint)), append(s.Binary, bbin)
-		}
-
-		state = append(state, s)
-	}
-
-	return state
+	return q.internal.State(index...)
 }

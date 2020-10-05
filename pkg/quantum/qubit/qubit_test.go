@@ -3,7 +3,6 @@ package qubit_test
 import (
 	"fmt"
 	"math"
-	"strconv"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
@@ -15,18 +14,20 @@ import (
 
 func ExampleZero() {
 	z := qubit.Zero()
-	fmt.Println("z:")
-	fmt.Println(z)
+	fmt.Print("z : ")
+	for _, s := range z.State() {
+		fmt.Println(s)
+	}
 
-	zz := qubit.Zero(2)
-	fmt.Println("zz:")
-	fmt.Println(zz)
+	z2 := qubit.Zero(2)
+	fmt.Print("z2:")
+	for _, s := range z2.State() {
+		fmt.Println(s)
+	}
 
 	// Output:
-	// z:
-	// [(1+0i) (0+0i)]
-	// zz:
-	// [(1+0i) (0+0i) (0+0i) (0+0i)]
+	// z : [0][  0]( 1.0000 0.0000i): 1.0000
+	// z2:[00][  0]( 1.0000 0.0000i): 1.0000
 }
 
 func Example_pOVM() {
@@ -85,17 +86,13 @@ func Example_bellState() {
 	g1 := gate.CNOT(2, 0, 1)
 
 	q := qubit.Zero(2).Apply(g0, g1)
-	for i, a := range q.Amplitude() {
-		if a == 0 {
-			continue
-		}
-
-		fmt.Printf("%02s: %.5f\n", strconv.FormatInt(int64(i), 2), a)
+	for _, s := range q.State() {
+		fmt.Println(s)
 	}
 
 	// Output:
-	// 00: (0.70711+0.00000i)
-	// 11: (0.70711+0.00000i)
+	// [00][  0]( 0.7071 0.0000i): 0.5000
+	// [11][  3]( 0.7071 0.0000i): 0.5000
 }
 
 func Example_grover2qubit() {
@@ -110,16 +107,12 @@ func Example_grover2qubit() {
 	q.Measure(0)
 	q.Measure(1)
 
-	for i, p := range q.Probability() {
-		if p == 0 {
-			continue
-		}
-
-		fmt.Printf("%03s: %.5f\n", strconv.FormatInt(int64(i), 2), p)
+	for _, s := range q.State() {
+		fmt.Println(s)
 	}
 
 	// Output:
-	// 011: 1.00000
+	// [11][  3](-1.0000 0.0000i): 1.0000
 }
 
 func Example_grover3qubit() {
@@ -135,23 +128,19 @@ func Example_grover3qubit() {
 	q := qubit.TensorProduct(qubit.Zero(3), qubit.One())
 	q.Apply(gate.H(4), oracle, amp)
 
-	for i, p := range q.Probability() {
-		if p == 0 {
-			continue
-		}
-
-		fmt.Printf("%04s: %.5f\n", strconv.FormatInt(int64(i), 2), p)
+	for _, s := range q.State() {
+		fmt.Println(s)
 	}
 
 	// Output:
-	// 0001: 0.03125
-	// 0011: 0.03125
-	// 0101: 0.03125
-	// 0111: 0.78125
-	// 1001: 0.03125
-	// 1011: 0.03125
-	// 1101: 0.03125
-	// 1111: 0.03125
+	// [0001][  1](-0.1768 0.0000i): 0.0313
+	// [0011][  3](-0.1768 0.0000i): 0.0313
+	// [0101][  5](-0.1768 0.0000i): 0.0313
+	// [0111][  7](-0.8839 0.0000i): 0.7813
+	// [1001][  9](-0.1768 0.0000i): 0.0313
+	// [1011][ 11](-0.1768 0.0000i): 0.0313
+	// [1101][ 13](-0.1768 0.0000i): 0.0313
+	// [1111][ 15](-0.1768 0.0000i): 0.0313
 }
 
 func Example_errorCorrectionBitFlip() {
@@ -195,17 +184,13 @@ func Example_errorCorrectionBitFlip() {
 	phi.Apply(gate.CNOT(5, 0, 2))
 	phi.Apply(gate.CNOT(5, 0, 1))
 
-	for i, p := range phi.Probability() {
-		if p == 0 {
-			continue
-		}
-
-		fmt.Printf("%05s: %.5f\n", strconv.FormatInt(int64(i), 2), p)
+	for _, s := range phi.State() {
+		fmt.Println(s)
 	}
 
 	// Output:
-	// 00010: 0.20000
-	// 10010: 0.80000
+	// [00010][  2]( 0.4472 0.0000i): 0.2000
+	// [10010][ 18]( 0.8944 0.0000i): 0.8000
 }
 
 func Example_errorCorrectionPhaseFlip() {
@@ -257,17 +242,13 @@ func Example_errorCorrectionPhaseFlip() {
 	phi.Apply(gate.CNOT(5, 0, 2))
 	phi.Apply(gate.CNOT(5, 0, 1))
 
-	for i, p := range phi.Probability() {
-		if math.Abs(p) < 1e-13 {
-			continue
-		}
-
-		fmt.Printf("%05s: %.5f\n", strconv.FormatInt(int64(i), 2), p)
+	for _, s := range phi.State() {
+		fmt.Println(s)
 	}
 
 	// Output:
-	// 00010: 0.20000
-	// 10010: 0.80000
+	// [00010][  2]( 0.4472 0.0000i): 0.2000
+	// [10010][ 18]( 0.8944 0.0000i): 0.8000
 }
 
 func Example_quantumTeleportation() {
@@ -275,19 +256,15 @@ func Example_quantumTeleportation() {
 	phi.Seed = []int64{1}
 	phi.Rand = rand.Math
 
+	fmt.Println("before:")
+	for _, s := range phi.State() {
+		fmt.Println(s)
+	}
+
 	g0 := matrix.TensorProduct(gate.H(), gate.I())
 	g1 := gate.CNOT(2, 0, 1)
 	bell := qubit.Zero(2).Apply(g0, g1)
 	phi.TensorProduct(bell)
-
-	fmt.Println("before:")
-	for i, p := range phi.Probability() {
-		if p == 0 {
-			continue
-		}
-
-		fmt.Printf("%03s: %.5f\n", strconv.FormatInt(int64(i), 2), p)
-	}
 
 	g2 := gate.CNOT(3, 0, 1)
 	g3 := matrix.TensorProduct(gate.H(), gate.I(2))
@@ -305,23 +282,17 @@ func Example_quantumTeleportation() {
 	}
 
 	fmt.Println("after:")
-	for i, p := range phi.Probability() {
-		if p == 0 {
-			continue
-		}
-
-		fmt.Printf("%03s: %.5f\n", strconv.FormatInt(int64(i), 2), p)
+	for _, s := range phi.State() {
+		fmt.Println(s)
 	}
 
 	// Output:
 	// before:
-	// 000: 0.10000
-	// 011: 0.10000
-	// 100: 0.40000
-	// 111: 0.40000
+	// [0][  0]( 0.4472 0.0000i): 0.2000
+	// [1][  1]( 0.8944 0.0000i): 0.8000
 	// after:
-	// 110: 0.20000
-	// 111: 0.80000
+	// [110][  6](-0.4472 0.0000i): 0.2000
+	// [111][  7](-0.8944 0.0000i): 0.8000
 }
 
 func Example_quantumTeleportation2() {
@@ -329,19 +300,15 @@ func Example_quantumTeleportation2() {
 	phi.Seed = []int64{1}
 	phi.Rand = rand.Math
 
+	fmt.Println("before:")
+	for _, s := range phi.State() {
+		fmt.Println(s)
+	}
+
 	g0 := matrix.TensorProduct(gate.H(), gate.I())
 	g1 := gate.CNOT(2, 0, 1)
 	bell := qubit.Zero(2).Apply(g0, g1)
 	phi.TensorProduct(bell)
-
-	fmt.Println("before:")
-	for i, p := range phi.Probability() {
-		if p == 0 {
-			continue
-		}
-
-		fmt.Printf("%03s: %.5f\n", strconv.FormatInt(int64(i), 2), p)
-	}
 
 	g2 := gate.CNOT(3, 0, 1)
 	g3 := matrix.TensorProduct(gate.H(), gate.I(2))
@@ -353,23 +320,17 @@ func Example_quantumTeleportation2() {
 	phi.Measure(1)
 
 	fmt.Println("after:")
-	for i, p := range phi.Probability() {
-		if p == 0 {
-			continue
-		}
-
-		fmt.Printf("%03s: %.5f\n", strconv.FormatInt(int64(i), 2), p)
+	for _, s := range phi.State() {
+		fmt.Println(s)
 	}
 
 	// Output:
 	// before:
-	// 000: 0.10000
-	// 011: 0.10000
-	// 100: 0.40000
-	// 111: 0.40000
+	// [0][  0]( 0.4472 0.0000i): 0.2000
+	// [1][  1]( 0.8944 0.0000i): 0.8000
 	// after:
-	// 110: 0.20000
-	// 111: 0.80000
+	// [110][  6]( 0.4472 0.0000i): 0.2000
+	// [111][  7]( 0.8944 0.0000i): 0.8000
 }
 
 func ExampleQubit_OuterProduct() {

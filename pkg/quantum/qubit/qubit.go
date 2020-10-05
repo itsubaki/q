@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math"
 	"math/cmplx"
+	"strconv"
+	"strings"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/math/number"
@@ -27,13 +29,13 @@ func New(z ...complex128) *Qubit {
 	return q
 }
 
-func Zero(bit ...int) *Qubit {
-	v := vector.TensorProductN(vector.Vector{1, 0}, bit...)
+func Zero(n ...int) *Qubit {
+	v := vector.TensorProductN(vector.Vector{1, 0}, n...)
 	return New(v.Complex()...)
 }
 
-func One(bit ...int) *Qubit {
-	v := vector.TensorProductN(vector.Vector{0, 1}, bit...)
+func One(n ...int) *Qubit {
+	v := vector.TensorProductN(vector.Vector{0, 1}, n...)
 	return New(v.Complex()...)
 }
 
@@ -132,8 +134,8 @@ func (q *Qubit) Probability() []float64 {
 	return p
 }
 
-func (q *Qubit) Measure(bit int) *Qubit {
-	zero, p := q.ProbabilityZeroAt(bit)
+func (q *Qubit) Measure(index int) *Qubit {
+	zero, p := q.ProbabilityZeroAt(index)
 	sum := number.Sum(p)
 
 	r := q.Rand(q.Seed...)
@@ -146,7 +148,7 @@ func (q *Qubit) Measure(bit int) *Qubit {
 		return One()
 	}
 
-	one, _ := q.ProbabilityOneAt(bit)
+	one, _ := q.ProbabilityOneAt(index)
 	for _, i := range one {
 		q.vector[i] = complex(0, 0)
 	}
@@ -155,15 +157,15 @@ func (q *Qubit) Measure(bit int) *Qubit {
 	return Zero()
 }
 
-func (q *Qubit) ProbabilityZeroAt(bit int) ([]int, []float64) {
+func (q *Qubit) ProbabilityZeroAt(index int) ([]int, []float64) {
 	dim := q.Dimension()
-	den := int(math.Pow(2, float64(bit+1)))
+	den := int(math.Pow(2, float64(index+1)))
 	div := dim / den
 
 	p := q.Probability()
-	index, prob := make([]int, 0), make([]float64, 0)
+	idx, prob := make([]int, 0), make([]float64, 0)
 	for i := 0; i < dim; i++ {
-		index, prob = append(index, i), append(prob, p[i])
+		idx, prob = append(idx, i), append(prob, p[i])
 
 		if len(p) == dim/2 {
 			break
@@ -174,11 +176,11 @@ func (q *Qubit) ProbabilityZeroAt(bit int) ([]int, []float64) {
 		}
 	}
 
-	return index, prob
+	return idx, prob
 }
 
-func (q *Qubit) ProbabilityOneAt(bit int) ([]int, []float64) {
-	z, _ := q.ProbabilityZeroAt(bit)
+func (q *Qubit) ProbabilityOneAt(index int) ([]int, []float64) {
+	z, _ := q.ProbabilityZeroAt(index)
 
 	one := make([]int, 0)
 	for i := range q.vector {
@@ -196,16 +198,75 @@ func (q *Qubit) ProbabilityOneAt(bit int) ([]int, []float64) {
 	}
 
 	p := q.Probability()
-	index, prob := make([]int, 0), make([]float64, 0)
+	idx, prob := make([]int, 0), make([]float64, 0)
 	for _, i := range one {
-		index, prob = append(index, i), append(prob, p[i])
+		idx, prob = append(idx, i), append(prob, p[i])
 	}
 
-	return index, prob
+	return idx, prob
 }
 
 func (q *Qubit) String() string {
 	return fmt.Sprintf("%v", q.vector)
+}
+
+type State struct {
+	Amplitude   complex128
+	Probability float64
+	Index       []int
+	Binary      []string
+}
+
+func (s State) String() string {
+	return fmt.Sprintf("%v%3v(% .4f% .4fi): %.4f", s.Binary, s.Index, real(s.Amplitude), imag(s.Amplitude), s.Probability)
+}
+
+func (q *Qubit) State(index ...[]int) []State {
+	if len(index) < 1 {
+		idx := make([]int, 0)
+		for i := 0; i < q.NumberOfBit(); i++ {
+			idx = append(idx, i)
+		}
+
+		index = append(index, idx)
+	}
+
+	state := make([]State, 0)
+	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(q.NumberOfBit()), "s")
+	for i, a := range q.Amplitude() {
+		p := math.Pow(cmplx.Abs(a), 2)
+		if a == 0 || math.Abs(p) < 1e-13 {
+			continue
+		}
+
+		if math.Abs(real(a)) < 1e-13 {
+			a = complex(0, imag(a))
+		}
+		if math.Abs(imag(a)) < 1e-13 {
+			a = complex(real(a), 0)
+		}
+
+		s := State{Amplitude: a, Probability: p}
+		bin := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
+		for _, idx := range index {
+			var b strings.Builder
+			for _, ii := range idx {
+				b.WriteString(bin[ii : ii+1])
+			}
+
+			bbin := b.String()
+			bint, err := strconv.ParseInt(bbin, 2, 0)
+			if err != nil {
+				panic(fmt.Sprintf("parse int bin=%s, reg=%s", bin, bbin))
+			}
+
+			s.Index, s.Binary = append(s.Index, int(bint)), append(s.Binary, bbin)
+		}
+
+		state = append(state, s)
+	}
+
+	return state
 }
 
 func TensorProduct(qb ...*Qubit) *Qubit {
