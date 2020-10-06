@@ -39,15 +39,15 @@ func New() *Q {
 	}
 }
 
-func (q *Q) New(z0, z1 complex128) Qubit {
+func (q *Q) New(v ...complex128) Qubit {
 	if q.internal == nil {
-		q.internal = qubit.New(z0, z1)
+		q.internal = qubit.New(v...)
 		q.internal.Seed = q.Seed
 		q.internal.Rand = q.Rand
 		return Qubit(0)
 	}
 
-	q.internal.TensorProduct(qubit.New(z0, z1))
+	q.internal.TensorProduct(qubit.New(v...))
 	index := q.NumberOfBit() - 1
 	return Qubit(index)
 }
