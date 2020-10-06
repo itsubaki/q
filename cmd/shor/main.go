@@ -55,7 +55,7 @@ func main() {
 		return
 	}
 
-	fmt.Printf("N=%d, a=%d, t=%d.\n\n", N, a, t)
+	fmt.Printf("N=%d, a=%d, t=%d, shot=%d, seed=%d.\n\n", N, a, t, shot, seed)
 
 	qsim := q.New()
 	if seed > 0 {
