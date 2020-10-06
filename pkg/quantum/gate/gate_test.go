@@ -5,9 +5,8 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/itsubaki/q/pkg/math/number"
-
 	"github.com/itsubaki/q/pkg/math/matrix"
+	"github.com/itsubaki/q/pkg/math/number"
 	"github.com/itsubaki/q/pkg/quantum/gate"
 )
 
