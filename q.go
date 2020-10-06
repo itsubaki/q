@@ -146,7 +146,6 @@ func (q *Q) Apply(m matrix.Matrix, qb ...Qubit) *Q {
 	}
 
 	index := Index(qb...)
-
 	g := gate.I()
 	if index[0] == 0 {
 		g = m
@@ -174,8 +173,9 @@ func (q *Q) Apply(m matrix.Matrix, qb ...Qubit) *Q {
 }
 
 func (q *Q) ControlledR(control []Qubit, target Qubit, k int) *Q {
-	cr := gate.ControlledR(q.NumberOfBit(), Index(control...), target.Index(), k)
-	q.internal.Apply(cr)
+	n := q.NumberOfBit()
+	g := gate.ControlledR(n, Index(control...), target.Index(), k)
+	q.internal.Apply(g)
 	return q
 }
 
@@ -184,8 +184,9 @@ func (q *Q) CR(control, target Qubit, k int) *Q {
 }
 
 func (q *Q) ControlledZ(control []Qubit, target Qubit) *Q {
-	cnot := gate.ControlledZ(q.NumberOfBit(), Index(control...), target.Index())
-	q.internal.Apply(cnot)
+	n := q.NumberOfBit()
+	g := gate.ControlledZ(n, Index(control...), target.Index())
+	q.internal.Apply(g)
 	return q
 }
 
@@ -198,8 +199,9 @@ func (q *Q) CCZ(control0, control1, target Qubit) *Q {
 }
 
 func (q *Q) ControlledNot(control []Qubit, target Qubit) *Q {
-	cnot := gate.ControlledNot(q.NumberOfBit(), Index(control...), target.Index())
-	q.internal.Apply(cnot)
+	n := q.NumberOfBit()
+	g := gate.ControlledNot(n, Index(control...), target.Index())
+	q.internal.Apply(g)
 	return q
 }
 
