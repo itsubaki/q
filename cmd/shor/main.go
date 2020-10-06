@@ -17,7 +17,7 @@ func main() {
 	flag.IntVar(&N, "N", 21, "positive integer")
 	flag.IntVar(&t, "t", 4, "precision bits")
 	flag.IntVar(&shot, "shot", 10, "number of measurements")
-	flag.IntVar(&a, "a", -1, "for excludes randomness")
+	flag.IntVar(&a, "a", -1, "coprime number of N")
 	flag.Int64Var(&seed, "seed", -1, "for excludes randomness")
 	flag.Parse()
 
