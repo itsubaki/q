@@ -51,7 +51,7 @@ func main() {
 	}
 
 	if number.GCD(N, a) != 1 {
-		fmt.Printf("N=%d, a=%d. a is not coprime, and non-trivial factor.\n", N, a)
+		fmt.Printf("N=%d, a=%d. a is not coprime. a is non-trivial factor.\n", N, a)
 		return
 	}
 
