@@ -249,12 +249,12 @@ func (q *Qubit) State(index ...[]int) []State {
 		s := State{Amplitude: a, Probability: p}
 		bin := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
 		for _, idx := range index {
-			var b strings.Builder
+			var sb strings.Builder
 			for _, ii := range idx {
-				b.WriteString(bin[ii : ii+1])
+				sb.WriteString(bin[ii : ii+1])
 			}
 
-			bbin := b.String()
+			bbin := sb.String()
 			bint, err := strconv.ParseInt(bbin, 2, 0)
 			if err != nil {
 				panic(fmt.Sprintf("parse int bin=%s, reg=%s", bin, bbin))
