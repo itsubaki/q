@@ -22,7 +22,7 @@ func main() {
 	flag.Parse()
 
 	if N < 2 {
-		fmt.Printf("N=%d must be greater than 1.\n", N)
+		fmt.Printf("N=%d. N must be greater than 1.\n", N)
 		return
 	}
 
@@ -32,19 +32,30 @@ func main() {
 	}
 
 	if number.IsEven(N) {
-		fmt.Printf("N=%d is even. p=%d, q=%d\n", N, 2, N/2)
+		fmt.Printf("N=%d is even. p=%d, q=%d.\n", N, 2, N/2)
 		return
 	}
 
 	if a, b, ok := number.BaseExp(N); ok {
-		fmt.Printf("N=%d, %d^%d\n", N, a, b)
+		fmt.Printf("N=%d. N is exponentiation. %d^%d.\n", N, a, b)
 		return
 	}
 
 	if a < 0 {
 		a = rand.Coprime(N)
 	}
-	fmt.Printf("N=%d, a=%d, t=%d\n\n", N, a, t)
+
+	if N-1 < a || a < 2 {
+		fmt.Printf("N=%d, a=%d. a must be 1 < a < N.\n", N, a)
+		return
+	}
+
+	if number.GCD(N, a) != 1 {
+		fmt.Printf("N=%d, a=%d. a is not coprime, and non-trivial factor.\n", N, a)
+		return
+	}
+
+	fmt.Printf("N=%d, a=%d, t=%d.\n\n", N, a, t)
 
 	qsim := q.New()
 	if seed > 0 {
