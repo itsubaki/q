@@ -18,7 +18,7 @@ func main() {
 	flag.IntVar(&t, "t", 4, "precision bits")
 	flag.IntVar(&shot, "shot", 10, "number of measurements")
 	flag.IntVar(&a, "a", -1, "coprime number of N")
-	flag.Int64Var(&seed, "seed", -1, "for excludes randomness")
+	flag.Int64Var(&seed, "seed", -1, "PRNG seed for measurements")
 	flag.Parse()
 
 	if N < 2 {
