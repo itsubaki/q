@@ -10,14 +10,13 @@ import (
 	"github.com/itsubaki/q/pkg/math/rand"
 )
 
-// go run main.go --N 21
+// go run main.go --N 15
 func main() {
-	var N, t, a, shot int
+	var N, t, a int
 	var seed int64
-	flag.IntVar(&N, "N", 21, "positive integer")
+	flag.IntVar(&N, "N", 15, "positive integer")
 	flag.IntVar(&t, "t", 4, "precision bits")
 	flag.IntVar(&a, "a", -1, "coprime number of N")
-	flag.IntVar(&shot, "shot", 10, "number of measurements")
 	flag.Int64Var(&seed, "seed", -1, "PRNG seed for measurements")
 	flag.Parse()
 
@@ -55,7 +54,7 @@ func main() {
 		return
 	}
 
-	fmt.Printf("N=%d, a=%d, t=%d, shot=%d, seed=%d.\n\n", N, a, t, shot, seed)
+	fmt.Printf("N=%d, a=%d, t=%d, seed=%d.\n\n", N, a, t, seed)
 
 	qsim := q.New()
 	if seed > 0 {
@@ -81,19 +80,18 @@ func main() {
 	qsim.Measure(r1...)
 	print("measure reg1", qsim, r0, r1)
 
-	for i := 0; i < shot; i++ {
-		m := qsim.Clone().MeasureAsBinary(r0...)
+	for _, state := range qsim.State(r0) {
+		m := btoi(state.Binary[0])
 		d := number.BinaryFraction(m)
 		_, s, r := number.ContinuedFraction(d)
 
-		ar2 := number.Pow(a, r/2)
-		if number.IsOdd(r) || ar2%N == -1 {
-			fmt.Printf("  i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v=%.3f).\n", i, N, a, s, r, m, d)
+		if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
+			fmt.Printf("  i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v=%.3f).\n", state.Index[0], N, a, s, r, m, d)
 			continue
 		}
 
-		p0 := number.GCD(ar2-1, N)
-		p1 := number.GCD(ar2+1, N)
+		p0 := number.GCD(number.Pow(a, r/2)-1, N)
+		p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
 		found := " "
 		for _, p := range []int{p0, p1} {
@@ -103,7 +101,7 @@ func main() {
 			}
 		}
 
-		fmt.Printf("%s i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v=%.3f). p=%v, q=%v.\n", found, i, N, a, s, r, m, d, p0, p1)
+		fmt.Printf("%s i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v=%.3f). p=%v, q=%v.\n", found, state.Index[0], N, a, s, r, m, d, p0, p1)
 	}
 }
 
@@ -117,4 +115,18 @@ func print(desc string, qsim *q.Q, reg ...[]q.Qubit) {
 	}
 
 	fmt.Println()
+}
+
+func btoi(bin string) []int {
+	i := make([]int, 0)
+	for _, r := range bin {
+		if r == '0' {
+			i = append(i, 0)
+			continue
+		}
+
+		i = append(i, 1)
+	}
+
+	return i
 }
