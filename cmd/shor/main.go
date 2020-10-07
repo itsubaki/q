@@ -85,7 +85,7 @@ func main() {
 		d := number.BinaryFraction(m)
 		_, s, r := number.ContinuedFraction(d)
 
-		if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
+		if number.IsOdd(r) || r > N-1 || number.Pow(a, r)%N != 1 {
 			fmt.Printf("  i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v=%.3f).\n", state.Index[0], N, a, s, r, m, d)
 			continue
 		}
