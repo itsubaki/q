@@ -18,7 +18,7 @@ func ExampleContinuedFraction() {
 func ExampleInverseContinuedFraction() {
 	v := 0.41650390625
 	f, n, d := number.ContinuedFraction(v)
-	fmt.Printf("%v %v %v/%v\n", v, f, n, d)
+	fmt.Printf("%v %v %v/%v\n", f, v, n, d)
 
 	for i := 1; i < len(f); i++ {
 		inv := number.InverseContinuedFraction(f, i)
@@ -27,7 +27,7 @@ func ExampleInverseContinuedFraction() {
 	}
 
 	// Output:
-	// 0.41650390625 [0 2 2 2 42 3 1] 853/2048
+	// [0 2 2 2 42 3 1] 0.41650390625 853/2048
 	// [0 2]: 0.5 [0 2] 1/2
 	// [0 2 2]: 0.4 [0 2 2] 2/5
 	// [0 2 2 2]: 0.4166666666666667 [0 2 2 1 1] 5/12
