@@ -81,7 +81,7 @@ func main() {
 	print("measure reg1", qsim, r0, r1)
 
 	for _, state := range qsim.State(r0) {
-		m := btoi(state.Binary[0])
+		m := state.Binary[0]
 		d := number.BinaryFraction(m)
 		_, s, r := number.ContinuedFraction(d)
 
@@ -115,18 +115,4 @@ func print(desc string, qsim *q.Q, reg ...[]q.Qubit) {
 	}
 
 	fmt.Println()
-}
-
-func btoi(bin string) []int {
-	i := make([]int, 0)
-	for _, r := range bin {
-		if r == '0' {
-			i = append(i, 0)
-			continue
-		}
-
-		i = append(i, 1)
-	}
-
-	return i
 }

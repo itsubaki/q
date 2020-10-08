@@ -277,7 +277,7 @@ func ExampleQ_ControlledModExp2_mod15() {
 
 func Example_shorFactoring21() {
 	N := 21
-	a := 5
+	a := 8
 
 	qsim := q.New()
 	qsim.Seed = []int64{1}
@@ -291,11 +291,11 @@ func Example_shorFactoring21() {
 	qsim.CModExp2(a, N, r0, r1)
 	qsim.InvQFT(r0...)
 
-	m := qsim.MeasureAsBinary(r0...)
+	m := qsim.BinaryString(r0...)
 	d := number.BinaryFraction(m)
 	_, s, r := number.ContinuedFraction(d)
 
-	if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
+	if number.IsOdd(r) || r > N-1 || number.Pow(a, r)%N != 1 {
 		return
 	}
 
@@ -311,13 +311,13 @@ func Example_shorFactoring21() {
 	}
 
 	// Output:
-	// N=21, a=5. p=3, q=1. s/r=11/16 ([1 0 1 1]=0.688)
-	// answer: p=3, q=7
+	// N=21, a=8. p=7, q=3. s/r=1/2 (1000=0.500)
+	// answer: p=7, q=3
 }
 
 func Example_shorFactoring85() {
 	N := 85
-	a := 3 // 3, 6, 7, 11, 12, 14, 22, 23, 24, 27, 28, 29, 31, 37, 39, 41, 44, 46, 48, 54, 56, 57, 58, 61, 62, 63, 71, 73, 74, 78, 79, 82
+	a := 14
 
 	qsim := q.New()
 	qsim.Seed = []int64{1}
@@ -351,13 +351,13 @@ func Example_shorFactoring85() {
 	qsim.CR(q3, q0, 4).CR(q2, q0, 3).CR(q1, q0, 2).H(q0)
 
 	// measure
-	m := qsim.MeasureAsBinary(q0, q1, q2, q3)
+	m := qsim.BinaryString(q0, q1, q2, q3)
 
 	// find s/r
 	d := number.BinaryFraction(m)
 	_, s, r := number.ContinuedFraction(d)
 
-	if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
+	if number.IsOdd(r) || r > N-1 || number.Pow(a, r)%N != 1 {
 		return
 	}
 
@@ -374,7 +374,7 @@ func Example_shorFactoring85() {
 	}
 
 	// Output:
-	// N=85, a=3. p=5, q=17. s/r=15/16 ([1 1 1 1]=0.938)
+	// N=85, a=14. p=5, q=17. s/r=15/16 (1111=0.938)
 	// answer: p=5, q=17
 }
 
@@ -420,13 +420,13 @@ func Example_shorFactoring51() {
 	qsim.H(q0)
 
 	// measure
-	m := qsim.MeasureAsBinary(q0, q1, q2, q3)
+	m := qsim.BinaryString(q0, q1, q2, q3)
 
 	// find s/r
 	d := number.BinaryFraction(m)
 	_, s, r := number.ContinuedFraction(d)
 
-	if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
+	if number.IsOdd(r) || r > N-1 || number.Pow(a, r)%N != 1 {
 		return
 	}
 
@@ -443,7 +443,7 @@ func Example_shorFactoring51() {
 	}
 
 	// Output:
-	// N=51, a=5. p=3, q=17. s/r=15/16 ([1 1 1 1]=0.938)
+	// N=51, a=5. p=3, q=17. s/r=15/16 (1111=0.938)
 	// answer: p=3, q=17
 }
 
@@ -481,14 +481,14 @@ func Example_shorFactoring15() {
 	qsim.InvQFT(q0, q1, q2)
 
 	// measure q0, q1, q2
-	m := qsim.MeasureAsBinary(q0, q1, q2)
+	m := qsim.BinaryString(q0, q1, q2)
 
 	// find s/r. 010 -> 0.25 -> 1/4, 110 -> 0.75 -> 3/4, ...
 	d := number.BinaryFraction(m)
 	_, s, r := number.ContinuedFraction(d)
 
 	// if r is odd, algorithm is failed
-	if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
+	if number.IsOdd(r) || r > N-1 || number.Pow(a, r)%N != 1 {
 		return
 	}
 
@@ -506,7 +506,7 @@ func Example_shorFactoring15() {
 	}
 
 	// Output:
-	// N=15, a=7. p=3, q=5. s/r=3/4 ([1 1 0]=0.750)
+	// N=15, a=7. p=3, q=5. s/r=3/4 (110=0.750)
 	// answer: p=3, q=5
 }
 
