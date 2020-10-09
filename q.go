@@ -321,7 +321,7 @@ func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
 
 // MeasureAsInt returns integer representation of qubtis state after measured
 func (q *Q) MeasureAsInt(qb ...Qubit) int {
-	b := q.BinaryString(qb...)
+	b := q.MeasureAsBinaryString(qb...)
 	i, err := strconv.ParseInt(b, 2, 0)
 	if err != nil {
 		panic(err)
@@ -345,8 +345,8 @@ func (q *Q) MeasureAsBinaryInt(qb ...Qubit) []int {
 	return b
 }
 
-// BinaryString returns binary string representation of qubits state after measured
-func (q *Q) BinaryString(qb ...Qubit) string {
+// MeasureAsBinaryString returns binary string representation of qubits state after measured
+func (q *Q) MeasureAsBinaryString(qb ...Qubit) string {
 	var sb strings.Builder
 	for _, i := range qb {
 		if q.Measure(i).IsZero() {

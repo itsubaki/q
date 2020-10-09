@@ -102,7 +102,7 @@ func ExampleQ_Probability() {
 	// 0.5000
 }
 
-func ExampleQ_BinaryString() {
+func ExampleQ_MeasureAsBinaryString() {
 	qsim := q.New()
 	qsim.Seed = []int64{1}
 	qsim.Rand = rand.Math
@@ -110,7 +110,7 @@ func ExampleQ_BinaryString() {
 	r := qsim.ZeroWith(4)
 	qsim.H(r...)
 
-	b := qsim.BinaryString(r...)
+	b := qsim.MeasureAsBinaryString(r...)
 	fmt.Println(b)
 
 	// Output:
