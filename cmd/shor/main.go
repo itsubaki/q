@@ -80,6 +80,7 @@ func main() {
 	qsim.Measure(r1...)
 	print("measure reg1", qsim, r0, r1)
 
+	sum := 0.0
 	for _, state := range qsim.State(r0) {
 		i, m, _ := state.Value()
 		d := number.BinaryFraction(m)
@@ -100,6 +101,7 @@ func main() {
 			for _, p := range []int{p0, p1} {
 				if 1 < p && p < N && N%p == 0 {
 					found = "*"
+					sum = sum + state.Probability
 					break
 				}
 			}
@@ -107,6 +109,8 @@ func main() {
 			fmt.Printf("%s i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v=%.3f). p=%v, q=%v.\n", found, i, N, a, s, r, m, d, p0, p1)
 		}
 	}
+
+	fmt.Printf("success rate: %v\n", sum)
 }
 
 func print(desc string, qsim *q.Q, reg ...[]q.Qubit) {
