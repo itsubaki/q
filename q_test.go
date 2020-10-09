@@ -275,6 +275,69 @@ func ExampleQ_ControlledModExp2_mod15() {
 	// [1 1101][  1  13]( 1.0000 0.0000i): 1.0000
 }
 
+func Example_shorFactoring15() {
+	N := 15
+	a := 7
+
+	qsim := q.New()
+	qsim.Seed = []int64{1}
+	qsim.Rand = rand.Math
+
+	// initial state
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
+
+	q3 := qsim.Zero()
+	q4 := qsim.Zero()
+	q5 := qsim.Zero()
+	q6 := qsim.One()
+
+	// superposition
+	qsim.H(q0, q1, q2)
+
+	// Controlled-U^(2^0)
+	qsim.CNOT(q2, q4)
+	qsim.CNOT(q2, q5)
+
+	// Controlled-U^(2^1)
+	qsim.CNOT(q3, q5).CCNOT(q1, q5, q3).CNOT(q3, q5)
+	qsim.CNOT(q4, q6).CCNOT(q1, q6, q4).CNOT(q4, q6)
+
+	// inverse QFT
+	qsim.Swap(q0, q2)
+	qsim.InvQFT(q0, q1, q2)
+
+	// measure q0, q1, q2
+	m := qsim.MeasureAsBinaryInt(q0, q1, q2)
+
+	// find s/r. 010 -> 0.25 -> 1/4, 110 -> 0.75 -> 3/4, ...
+	d := number.BinaryFraction(m)
+	_, s, r := number.ContinuedFraction(d)
+
+	// if r is odd, algorithm is failed
+	if number.IsOdd(r) || r > N-1 || number.Pow(a, r)%N != 1 {
+		return
+	}
+
+	// gcd(a^(r/2)-1, N), gcd(a^(r/2)+1, N)
+	p0 := number.GCD(number.Pow(a, r/2)-1, N)
+	p1 := number.GCD(number.Pow(a, r/2)+1, N)
+
+	// check non-trivial factor
+	for _, p := range []int{p0, p1} {
+		if 1 < p && p < N && N%p == 0 {
+			fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", N, a, p0, p1, s, r, m, d)
+			fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
+			return
+		}
+	}
+
+	// Output:
+	// N=15, a=7. p=3, q=5. s/r=3/4 ([1 1 0]=0.750)
+	// answer: p=3, q=5
+}
+
 func Example_shorFactoring21() {
 	N := 21
 	a := 8
@@ -313,69 +376,6 @@ func Example_shorFactoring21() {
 	// Output:
 	// N=21, a=8. p=7, q=3. s/r=1/2 ([1 0 0 0]=0.500)
 	// answer: p=7, q=3
-}
-
-func Example_shorFactoring85() {
-	N := 85
-	a := 14
-
-	qsim := q.New()
-	qsim.Seed = []int64{1}
-	qsim.Rand = rand.Math
-
-	// initial state
-	q0 := qsim.Zero()
-	q1 := qsim.Zero()
-	q2 := qsim.Zero()
-	q3 := qsim.Zero()
-
-	q4 := qsim.Zero()
-	q5 := qsim.Zero()
-	q6 := qsim.Zero()
-	q7 := qsim.Zero()
-
-	// superposition
-	qsim.H(q0, q1, q2, q3)
-
-	// Controlled-U
-	qsim.CNOT(q0, q4)
-	qsim.CNOT(q1, q5)
-	qsim.CNOT(q2, q6)
-	qsim.CNOT(q3, q7)
-
-	// inverse QFT
-	qsim.Swap(q0, q1, q2, q3)
-	qsim.H(q3)
-	qsim.CR(q3, q2, 2).H(q2)
-	qsim.CR(q3, q1, 3).CR(q2, q1, 2).H(q1)
-	qsim.CR(q3, q0, 4).CR(q2, q0, 3).CR(q1, q0, 2).H(q0)
-
-	// measure
-	m := qsim.MeasureAsBinaryInt(q0, q1, q2, q3)
-
-	// find s/r
-	d := number.BinaryFraction(m)
-	_, s, r := number.ContinuedFraction(d)
-
-	if number.IsOdd(r) || r > N-1 || number.Pow(a, r)%N != 1 {
-		return
-	}
-
-	p0 := number.GCD(number.Pow(a, r/2)-1, N)
-	p1 := number.GCD(number.Pow(a, r/2)+1, N)
-
-	// check
-	for _, p := range []int{p0, p1} {
-		if 1 < p && p < N && N%p == 0 {
-			fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", N, a, p0, p1, s, r, m, d)
-			fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
-			return
-		}
-	}
-
-	// Output:
-	// N=85, a=14. p=5, q=17. s/r=15/16 ([1 1 1 1]=0.938)
-	// answer: p=5, q=17
 }
 
 func Example_shorFactoring51() {
@@ -447,9 +447,9 @@ func Example_shorFactoring51() {
 	// answer: p=3, q=17
 }
 
-func Example_shorFactoring15() {
-	N := 15
-	a := 7
+func Example_shorFactoring85() {
+	N := 85
+	a := 14
 
 	qsim := q.New()
 	qsim.Seed = []int64{1}
@@ -459,44 +459,44 @@ func Example_shorFactoring15() {
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 	q2 := qsim.Zero()
-
 	q3 := qsim.Zero()
+
 	q4 := qsim.Zero()
 	q5 := qsim.Zero()
-	q6 := qsim.One()
+	q6 := qsim.Zero()
+	q7 := qsim.Zero()
 
 	// superposition
-	qsim.H(q0, q1, q2)
+	qsim.H(q0, q1, q2, q3)
 
-	// Controlled-U^(2^0)
-	qsim.CNOT(q2, q4)
-	qsim.CNOT(q2, q5)
-
-	// Controlled-U^(2^1)
-	qsim.CNOT(q3, q5).CCNOT(q1, q5, q3).CNOT(q3, q5)
-	qsim.CNOT(q4, q6).CCNOT(q1, q6, q4).CNOT(q4, q6)
+	// Controlled-U
+	qsim.CNOT(q0, q4)
+	qsim.CNOT(q1, q5)
+	qsim.CNOT(q2, q6)
+	qsim.CNOT(q3, q7)
 
 	// inverse QFT
-	qsim.Swap(q0, q2)
-	qsim.InvQFT(q0, q1, q2)
+	qsim.Swap(q0, q1, q2, q3)
+	qsim.H(q3)
+	qsim.CR(q3, q2, 2).H(q2)
+	qsim.CR(q3, q1, 3).CR(q2, q1, 2).H(q1)
+	qsim.CR(q3, q0, 4).CR(q2, q0, 3).CR(q1, q0, 2).H(q0)
 
-	// measure q0, q1, q2
-	m := qsim.MeasureAsBinaryInt(q0, q1, q2)
+	// measure
+	m := qsim.MeasureAsBinaryInt(q0, q1, q2, q3)
 
-	// find s/r. 010 -> 0.25 -> 1/4, 110 -> 0.75 -> 3/4, ...
+	// find s/r
 	d := number.BinaryFraction(m)
 	_, s, r := number.ContinuedFraction(d)
 
-	// if r is odd, algorithm is failed
 	if number.IsOdd(r) || r > N-1 || number.Pow(a, r)%N != 1 {
 		return
 	}
 
-	// gcd(a^(r/2)-1, N), gcd(a^(r/2)+1, N)
 	p0 := number.GCD(number.Pow(a, r/2)-1, N)
 	p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
-	// check non-trivial factor
+	// check
 	for _, p := range []int{p0, p1} {
 		if 1 < p && p < N && N%p == 0 {
 			fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", N, a, p0, p1, s, r, m, d)
@@ -506,8 +506,8 @@ func Example_shorFactoring15() {
 	}
 
 	// Output:
-	// N=15, a=7. p=3, q=5. s/r=3/4 ([1 1 0]=0.750)
-	// answer: p=3, q=5
+	// N=85, a=14. p=5, q=17. s/r=15/16 ([1 1 1 1]=0.938)
+	// answer: p=5, q=17
 }
 
 func Example_grover4qubit() {
