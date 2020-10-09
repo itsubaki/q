@@ -247,31 +247,11 @@ func (q *Qubit) State(index ...[]int) []State {
 			a = complex(real(a), 0)
 		}
 
-		s := State{Amplitude: a, Probability: p}
 		bin := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
+		s := State{Amplitude: a, Probability: p}
 		for _, idx := range index {
-			var sb strings.Builder
-			for _, ii := range idx {
-				sb.WriteString(bin[ii : ii+1])
-			}
-
-			bbin := sb.String()
-			bint, err := strconv.ParseInt(bbin, 2, 0)
-			if err != nil {
-				panic(fmt.Sprintf("parse int bin=%s, reg=%s", bin, bbin))
-			}
-
-			binint := make([]int, 0)
-			for _, r := range bbin {
-				if r == '0' {
-					binint = append(binint, 0)
-					continue
-				}
-
-				binint = append(binint, 1)
-			}
-
-			s.Int = append(s.Int, int(bint))
+			bint, binint, bbin := to(bin, idx)
+			s.Int = append(s.Int, bint)
 			s.BinaryInt = append(s.BinaryInt, binint)
 			s.BinaryString = append(s.BinaryString, bbin)
 		}
@@ -280,6 +260,31 @@ func (q *Qubit) State(index ...[]int) []State {
 	}
 
 	return state
+}
+
+func to(bin string, idx []int) (int, []int, string) {
+	var sb strings.Builder
+	for _, i := range idx {
+		sb.WriteString(bin[i : i+1])
+	}
+	bbin := sb.String()
+
+	bint, err := strconv.ParseInt(bbin, 2, 0)
+	if err != nil {
+		panic(fmt.Sprintf("parse int bin=%s, reg=%s", bin, bbin))
+	}
+
+	binint := make([]int, 0)
+	for _, r := range bbin {
+		if r == '0' {
+			binint = append(binint, 0)
+			continue
+		}
+
+		binint = append(binint, 1)
+	}
+
+	return int(bint), binint, bbin
 }
 
 func TensorProduct(qb ...*Qubit) *Qubit {
