@@ -218,6 +218,19 @@ type State struct {
 	BinaryString []string
 }
 
+func (s State) Value(i ...int) (int, []int, string) {
+	idx := 0
+	if len(i) > 0 {
+		idx = i[0]
+	}
+
+	if idx < 0 || idx > len(s.Int)-1 {
+		panic(fmt.Sprintf("invalid parameter. i=%v", i))
+	}
+
+	return s.Int[idx], s.BinaryInt[idx], s.BinaryString[idx]
+}
+
 func (s State) String() string {
 	return fmt.Sprintf("%v%3v(% .4f% .4fi): %.4f", s.BinaryString, s.Int, real(s.Amplitude), imag(s.Amplitude), s.Probability)
 }
