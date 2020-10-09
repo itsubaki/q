@@ -211,14 +211,15 @@ func (q *Qubit) String() string {
 }
 
 type State struct {
-	Amplitude   complex128
-	Probability float64
-	Index       []int
-	Binary      []string
+	Amplitude    complex128
+	Probability  float64
+	Int          []int
+	BinaryInt    [][]int
+	BinaryString []string
 }
 
 func (s State) String() string {
-	return fmt.Sprintf("%v%3v(% .4f% .4fi): %.4f", s.Binary, s.Index, real(s.Amplitude), imag(s.Amplitude), s.Probability)
+	return fmt.Sprintf("%v%3v(% .4f% .4fi): %.4f", s.BinaryString, s.Int, real(s.Amplitude), imag(s.Amplitude), s.Probability)
 }
 
 func (q *Qubit) State(index ...[]int) []State {
@@ -260,7 +261,19 @@ func (q *Qubit) State(index ...[]int) []State {
 				panic(fmt.Sprintf("parse int bin=%s, reg=%s", bin, bbin))
 			}
 
-			s.Index, s.Binary = append(s.Index, int(bint)), append(s.Binary, bbin)
+			binint := make([]int, 0)
+			for _, r := range bbin {
+				if r == '0' {
+					binint = append(binint, 0)
+					continue
+				}
+
+				binint = append(binint, 1)
+			}
+
+			s.Int = append(s.Int, int(bint))
+			s.BinaryInt = append(s.BinaryInt, binint)
+			s.BinaryString = append(s.BinaryString, bbin)
 		}
 
 		state = append(state, s)

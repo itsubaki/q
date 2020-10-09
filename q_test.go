@@ -151,7 +151,7 @@ func ExampleQ_MeasureAsInt() {
 	// 7
 }
 
-func ExampleQ_MeasureAsBinary() {
+func ExampleQ_MeasureAsBinaryInt() {
 	qsim := q.New()
 	qsim.Seed = []int64{1}
 	qsim.Rand = rand.Math
@@ -161,7 +161,7 @@ func ExampleQ_MeasureAsBinary() {
 	q2 := qsim.Zero()
 	qsim.H(q0, q1, q2)
 
-	m := qsim.MeasureAsBinary(q0, q1, q2)
+	m := qsim.MeasureAsBinaryInt(q0, q1, q2)
 	fmt.Println(m)
 
 	// Output:
@@ -291,7 +291,7 @@ func Example_shorFactoring21() {
 	qsim.CModExp2(a, N, r0, r1)
 	qsim.InvQFT(r0...)
 
-	m := qsim.BinaryString(r0...)
+	m := qsim.MeasureAsBinaryInt(r0...)
 	d := number.BinaryFraction(m)
 	_, s, r := number.ContinuedFraction(d)
 
@@ -311,7 +311,7 @@ func Example_shorFactoring21() {
 	}
 
 	// Output:
-	// N=21, a=8. p=7, q=3. s/r=1/2 (1000=0.500)
+	// N=21, a=8. p=7, q=3. s/r=1/2 ([1 0 0 0]=0.500)
 	// answer: p=7, q=3
 }
 
@@ -351,7 +351,7 @@ func Example_shorFactoring85() {
 	qsim.CR(q3, q0, 4).CR(q2, q0, 3).CR(q1, q0, 2).H(q0)
 
 	// measure
-	m := qsim.BinaryString(q0, q1, q2, q3)
+	m := qsim.MeasureAsBinaryInt(q0, q1, q2, q3)
 
 	// find s/r
 	d := number.BinaryFraction(m)
@@ -374,7 +374,7 @@ func Example_shorFactoring85() {
 	}
 
 	// Output:
-	// N=85, a=14. p=5, q=17. s/r=15/16 (1111=0.938)
+	// N=85, a=14. p=5, q=17. s/r=15/16 ([1 1 1 1]=0.938)
 	// answer: p=5, q=17
 }
 
@@ -420,7 +420,7 @@ func Example_shorFactoring51() {
 	qsim.H(q0)
 
 	// measure
-	m := qsim.BinaryString(q0, q1, q2, q3)
+	m := qsim.MeasureAsBinaryInt(q0, q1, q2, q3)
 
 	// find s/r
 	d := number.BinaryFraction(m)
@@ -443,7 +443,7 @@ func Example_shorFactoring51() {
 	}
 
 	// Output:
-	// N=51, a=5. p=3, q=17. s/r=15/16 (1111=0.938)
+	// N=51, a=5. p=3, q=17. s/r=15/16 ([1 1 1 1]=0.938)
 	// answer: p=3, q=17
 }
 
@@ -481,7 +481,7 @@ func Example_shorFactoring15() {
 	qsim.InvQFT(q0, q1, q2)
 
 	// measure q0, q1, q2
-	m := qsim.BinaryString(q0, q1, q2)
+	m := qsim.MeasureAsBinaryInt(q0, q1, q2)
 
 	// find s/r. 010 -> 0.25 -> 1/4, 110 -> 0.75 -> 3/4, ...
 	d := number.BinaryFraction(m)
@@ -506,7 +506,7 @@ func Example_shorFactoring15() {
 	}
 
 	// Output:
-	// N=15, a=7. p=3, q=5. s/r=3/4 (110=0.750)
+	// N=15, a=7. p=3, q=5. s/r=3/4 ([1 1 0]=0.750)
 	// answer: p=3, q=5
 }
 

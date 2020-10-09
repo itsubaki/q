@@ -81,12 +81,12 @@ func main() {
 	print("measure reg1", qsim, r0, r1)
 
 	for _, state := range qsim.State(r0) {
-		m := state.Binary[0]
+		m := state.BinaryInt[0]
 		d := number.BinaryFraction(m)
 		_, s, r := number.ContinuedFraction(d)
 
 		if number.IsOdd(r) || r > N-1 || number.Pow(a, r)%N != 1 {
-			fmt.Printf("  i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v=%.3f).\n", state.Index[0], N, a, s, r, m, d)
+			fmt.Printf("  i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v=%.3f).\n", state.Int[0], N, a, s, r, m, d)
 			continue
 		}
 
@@ -101,7 +101,7 @@ func main() {
 			}
 		}
 
-		fmt.Printf("%s i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v=%.3f). p=%v, q=%v.\n", found, state.Index[0], N, a, s, r, m, d, p0, p1)
+		fmt.Printf("%s i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v=%.3f). p=%v, q=%v.\n", found, state.Int[0], N, a, s, r, m, d, p0, p1)
 	}
 }
 

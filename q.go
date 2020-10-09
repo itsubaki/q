@@ -330,8 +330,8 @@ func (q *Q) MeasureAsInt(qb ...Qubit) int {
 	return int(i)
 }
 
-//MeasureAsBinary returns binary representation of qubits state after measured
-func (q *Q) MeasureAsBinary(qb ...Qubit) []int {
+//MeasureAsBinaryInt returns binary representation of qubits state after measured
+func (q *Q) MeasureAsBinaryInt(qb ...Qubit) []int {
 	b := make([]int, 0)
 	for _, i := range qb {
 		if q.Measure(i).IsZero() {
