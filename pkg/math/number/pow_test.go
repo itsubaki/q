@@ -61,6 +61,7 @@ func TestBaseExp(t *testing.T) {
 	}{
 		{9, 3, 2, true},
 		{25, 5, 2, true},
+		{27, 3, 3, true},
 		{49, 7, 2, true},
 		{125, 5, 3, true},
 		{10, 0, 0, false},
