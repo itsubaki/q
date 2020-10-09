@@ -83,25 +83,29 @@ func main() {
 	for _, state := range qsim.State(r0) {
 		i, m, _ := state.Value()
 		d := number.BinaryFraction(m)
-		_, s, r := number.ContinuedFraction(d)
+		f, s, r := number.ContinuedFraction(d)
 
-		if number.IsOdd(r) || r > N-1 || number.Pow(a, r)%N != 1 {
-			fmt.Printf("  i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v=%.3f).\n", i, N, a, s, r, m, d)
-			continue
-		}
+		for j := 1; j < len(f); j++ {
+			d = number.InverseContinuedFraction(f, j)
+			_, s, r = number.ContinuedFraction(d)
 
-		p0 := number.GCD(number.Pow(a, r/2)-1, N)
-		p1 := number.GCD(number.Pow(a, r/2)+1, N)
-
-		found := " "
-		for _, p := range []int{p0, p1} {
-			if 1 < p && p < N && N%p == 0 {
-				found = "*"
-				break
+			if r > N-1 || number.IsOdd(r) || number.Pow(a, r)%N != 1 {
+				continue
 			}
-		}
 
-		fmt.Printf("%s i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v=%.3f). p=%v, q=%v.\n", found, i, N, a, s, r, m, d, p0, p1)
+			p0 := number.GCD(number.Pow(a, r/2)-1, N)
+			p1 := number.GCD(number.Pow(a, r/2)+1, N)
+
+			found := " "
+			for _, p := range []int{p0, p1} {
+				if 1 < p && p < N && N%p == 0 {
+					found = "*"
+					break
+				}
+			}
+
+			fmt.Printf("%s i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v=%.3f). p=%v, q=%v.\n", found, i, N, a, s, r, m, d, p0, p1)
+		}
 	}
 }
 
