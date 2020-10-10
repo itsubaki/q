@@ -1,7 +1,6 @@
 package number
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -41,17 +40,10 @@ func ContinuedFraction(f float64, eps ...float64) ([]int, int, int) {
 	return list, n, d
 }
 
-func ApproximatedContinuedFraction(c []int, max ...int) float64 {
-	if len(max) < 1 {
-		max[0] = len(c)
-	}
-
-	if max[0] > len(c) {
-		panic(fmt.Sprintf("invalid input. %v %v", c, max))
-	}
-
-	f := 1.0 / float64(c[max[0]])
-	for i := max[0] - 1; i > 0; i-- {
+func ApproximatedContinuedFraction(c []int) float64 {
+	last := len(c) - 1
+	f := 1.0 / float64(c[last])
+	for i := last - 1; i > 0; i-- {
 		f = 1.0 / (float64(c[i]) + f)
 	}
 

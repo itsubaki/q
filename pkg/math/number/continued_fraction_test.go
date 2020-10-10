@@ -21,10 +21,10 @@ func ExampleApproximatedContinuedFraction() {
 	f, n, d := number.ContinuedFraction(v)
 	fmt.Printf("%v %v %v/%v\n", f, v, n, d)
 
-	for i := 1; i < len(f); i++ {
-		inv := number.ApproximatedContinuedFraction(f, i)
+	for i := 2; i < len(f)+1; i++ {
+		inv := number.ApproximatedContinuedFraction(f[:i])
 		ff, nn, dd := number.ContinuedFraction(inv)
-		fmt.Printf("%v: %v %v %v/%v\n", f[:i+1], inv, ff, nn, dd)
+		fmt.Printf("%v: %v %v %v/%v\n", f[:i], inv, ff, nn, dd)
 	}
 
 	// Output:
