@@ -92,7 +92,7 @@ func main() {
 		}
 
 		if number.IsOdd(r) {
-			fmt.Printf("  i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v~%.4f).\n", i, N, a, s, r, m, float64(s)/float64(r))
+			fmt.Printf("  i=%3d: N=%d, a=%d. s/r=%2d/%2d (%v~%.4f).\n", i, N, a, s, r, m, float64(s)/float64(r))
 			continue
 		}
 
@@ -102,7 +102,7 @@ func main() {
 			continue
 		}
 
-		fmt.Printf("* i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v~%.4f). p=%v, q=%v.\n", i, N, a, s, r, m, float64(s)/float64(r), p0, p1)
+		fmt.Printf("* i=%3d: N=%d, a=%d. s/r=%2d/%2d (%v~%.4f). p=%v, q=%v.\n", i, N, a, s, r, m, float64(s)/float64(r), p0, p1)
 		sum = sum + state.Probability
 	}
 
