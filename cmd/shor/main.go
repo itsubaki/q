@@ -98,7 +98,6 @@ func main() {
 
 		p0 := number.GCD(number.Pow(a, r/2)-1, N)
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
-
 		if number.IsTrivial(N, p0, p1) {
 			continue
 		}
