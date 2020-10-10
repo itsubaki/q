@@ -8,11 +8,11 @@ import (
 )
 
 func ExampleFindOrder() {
-	s, r, ok := number.FindOrder(7, 15, 0.75)
-	fmt.Printf("%v/%v %v\n", s, r, ok)
+	s, r, ok := number.FindOrder(2, 21, 0.15625)
+	fmt.Printf("%v/%v %v %v\n", s, r, ok, number.ModExp(2, r, 21))
 
 	// Output:
-	// 3/4 true
+	// 1/6 true 1
 }
 
 func TestFindOrder(t *testing.T) {
