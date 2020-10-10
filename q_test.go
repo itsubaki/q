@@ -323,17 +323,14 @@ func Example_shorFactoring15() {
 	p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
 	// check non-trivial factor
-	for _, p := range []int{p0, p1} {
-		if 1 < p && p < N && N%p == 0 {
-			fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v~%.3f)\n", N, a, p0, p1, s, r, m, f)
-			fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
-			return
-		}
+	if number.IsTrivial(N, p0, p1) {
+		return
 	}
+
+	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v~%.3f)\n", N, a, p0, p1, s, r, m, f)
 
 	// Output:
 	// N=15, a=7. p=3, q=5. s/r=3/4 ([1 1 0]~0.750)
-	// answer: p=3, q=5
 }
 
 func Example_shorFactoring21() {
@@ -361,18 +358,14 @@ func Example_shorFactoring21() {
 
 	p0 := number.GCD(number.Pow(a, r/2)-1, N)
 	p1 := number.GCD(number.Pow(a, r/2)+1, N)
-
-	for _, p := range []int{p0, p1} {
-		if 1 < p && p < N && N%p == 0 {
-			fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v~%.3f)\n", N, a, p0, p1, s, r, m, f)
-			fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
-			return
-		}
+	if number.IsTrivial(N, p0, p1) {
+		return
 	}
+
+	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v~%.3f)\n", N, a, p0, p1, s, r, m, f)
 
 	// Output:
 	// N=21, a=8. p=7, q=3. s/r=1/2 ([1 0 0 0]~0.500)
-	// answer: p=7, q=3
 }
 
 func Example_shorFactoring51() {
@@ -428,19 +421,15 @@ func Example_shorFactoring51() {
 
 	p0 := number.GCD(number.Pow(a, r/2)-1, N)
 	p1 := number.GCD(number.Pow(a, r/2)+1, N)
+	if number.IsTrivial(N, p0, p1) {
+		return
+	}
 
 	// check
-	for _, p := range []int{p0, p1} {
-		if 1 < p && p < N && N%p == 0 {
-			fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v~%.3f)\n", N, a, p0, p1, s, r, m, f)
-			fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
-			return
-		}
-	}
+	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v~%.3f)\n", N, a, p0, p1, s, r, m, f)
 
 	// Output:
 	// N=51, a=5. p=3, q=17. s/r=15/16 ([1 1 1 1]~0.938)
-	// answer: p=3, q=17
 }
 
 func Example_shorFactoring85() {
@@ -490,19 +479,14 @@ func Example_shorFactoring85() {
 
 	p0 := number.GCD(number.Pow(a, r/2)-1, N)
 	p1 := number.GCD(number.Pow(a, r/2)+1, N)
-
-	// check
-	for _, p := range []int{p0, p1} {
-		if 1 < p && p < N && N%p == 0 {
-			fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v~%.3f)\n", N, a, p0, p1, s, r, m, f)
-			fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
-			return
-		}
+	if number.IsTrivial(N, p0, p1) {
+		return
 	}
+
+	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v~%.3f)\n", N, a, p0, p1, s, r, m, f)
 
 	// Output:
 	// N=85, a=14. p=5, q=17. s/r=15/16 ([1 1 1 1]~0.938)
-	// answer: p=5, q=17
 }
 
 func Example_grover4qubit() {
