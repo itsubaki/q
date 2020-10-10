@@ -15,14 +15,14 @@ func ExampleContinuedFraction() {
 	// [0 1 4 3] 13/16
 }
 
-func ExampleInverseContinuedFraction() {
+func ExampleApproximatedContinuedFraction() {
 	m := []int{0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1}
 	v := number.BinaryFraction(m)
 	f, n, d := number.ContinuedFraction(v)
 	fmt.Printf("%v %v %v/%v\n", f, v, n, d)
 
 	for i := 1; i < len(f); i++ {
-		inv := number.InverseContinuedFraction(f, i)
+		inv := number.ApproximatedContinuedFraction(f, i)
 		ff, nn, dd := number.ContinuedFraction(inv)
 		fmt.Printf("%v: %v %v %v/%v\n", f[:i+1], inv, ff, nn, dd)
 	}
