@@ -83,31 +83,31 @@ func main() {
 	sum := 0.0
 	for _, state := range qsim.State(r0) {
 		i, m, _ := state.Value()
-		d := number.BinaryFraction(m)
-		f, s, r := number.ContinuedFraction(d)
 
-		for j := 2; j < len(f)+1; j++ {
-			d = number.ApproximatedContinuedFraction(f[:j])
-			_, s, r = number.ContinuedFraction(d)
-
-			if r > N-1 || number.IsOdd(r) || number.Pow(a, r)%N != 1 {
-				continue
-			}
-
-			p0 := number.GCD(number.Pow(a, r/2)-1, N)
-			p1 := number.GCD(number.Pow(a, r/2)+1, N)
-
-			found := " "
-			for _, p := range []int{p0, p1} {
-				if 1 < p && p < N && N%p == 0 {
-					found = "*"
-					sum = sum + state.Probability
-					break
-				}
-			}
-
-			fmt.Printf("%s i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v=%.4f). p=%v, q=%v.\n", found, i, N, a, s, r, m, d, p0, p1)
+		f := number.BinaryFraction(m)
+		s, r, ok := number.FindOrder(a, N, f)
+		if !ok {
+			continue
 		}
+
+		if number.IsOdd(r) {
+			fmt.Printf("  i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v~%.4f).\n", i, N, a, s, r, m, float64(s)/float64(r))
+			continue
+		}
+
+		p0 := number.GCD(number.Pow(a, r/2)-1, N)
+		p1 := number.GCD(number.Pow(a, r/2)+1, N)
+
+		found := " "
+		for _, p := range []int{p0, p1} {
+			if 1 < p && p < N && N%p == 0 {
+				found = "*"
+				sum = sum + state.Probability
+				break
+			}
+		}
+
+		fmt.Printf("%s i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v~%.4f). p=%v, q=%v.\n", found, i, N, a, s, r, m, float64(s)/float64(r), p0, p1)
 	}
 
 	fmt.Printf("success rate: %v\n", sum)

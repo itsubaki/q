@@ -4,14 +4,14 @@ import (
 	"math"
 )
 
-func ContinuedFraction(f float64, eps ...float64) ([]int, int, int) {
+func ContinuedFraction(f float64, eps ...float64) []int {
 	e := 1e-3
 	if len(eps) > 0 {
 		e = eps[0]
 	}
 
 	if f < e {
-		return []int{0}, 0, 1
+		return []int{0}
 	}
 
 	list := make([]int, 0)
@@ -28,23 +28,27 @@ func ContinuedFraction(f float64, eps ...float64) ([]int, int, int) {
 		r = 1.0 / diff
 	}
 
-	if len(list) == 1 {
-		return list, 1, list[0]
-	}
-
-	n, d := 1, list[len(list)-1]
-	for i := 2; i < len(list); i++ {
-		n, d = d, list[len(list)-i]*d+n
-	}
-
-	return list, n, d
+	return list
 }
 
-func ApproximatedContinuedFraction(c []int) float64 {
-	last := len(c) - 1
-	f := 1.0 / float64(c[last])
+func Fraction(continued []int) (int, int) {
+	if len(continued) == 1 && continued[0] == 0 {
+		return 0, 1
+	}
+
+	s, r := 1, continued[len(continued)-1]
+	for i := 2; i < len(continued); i++ {
+		s, r = r, continued[len(continued)-i]*r+s
+	}
+
+	return s, r
+}
+
+func Approximate(continued []int) float64 {
+	last := len(continued) - 1
+	f := 1.0 / float64(continued[last])
 	for i := last - 1; i > 0; i-- {
-		f = 1.0 / (float64(c[i]) + f)
+		f = 1.0 / (float64(continued[i]) + f)
 	}
 
 	return f

@@ -312,11 +312,9 @@ func Example_shorFactoring15() {
 	m := qsim.MeasureAsBinaryInt(q0, q1, q2)
 
 	// find s/r. 010 -> 0.25 -> 1/4, 110 -> 0.75 -> 3/4, ...
-	d := number.BinaryFraction(m)
-	_, s, r := number.ContinuedFraction(d)
-
-	// if r is odd, algorithm is failed
-	if number.IsOdd(r) || r > N-1 || number.Pow(a, r)%N != 1 {
+	f := number.BinaryFraction(m)
+	s, r, ok := number.FindOrder(a, N, f)
+	if !ok || number.IsOdd(r) {
 		return
 	}
 
@@ -327,14 +325,14 @@ func Example_shorFactoring15() {
 	// check non-trivial factor
 	for _, p := range []int{p0, p1} {
 		if 1 < p && p < N && N%p == 0 {
-			fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", N, a, p0, p1, s, r, m, d)
+			fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v~%.3f)\n", N, a, p0, p1, s, r, m, f)
 			fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
 			return
 		}
 	}
 
 	// Output:
-	// N=15, a=7. p=3, q=5. s/r=3/4 ([1 1 0]=0.750)
+	// N=15, a=7. p=3, q=5. s/r=3/4 ([1 1 0]~0.750)
 	// answer: p=3, q=5
 }
 
@@ -355,10 +353,9 @@ func Example_shorFactoring21() {
 	qsim.InvQFT(r0...)
 
 	m := qsim.MeasureAsBinaryInt(r0...)
-	d := number.BinaryFraction(m)
-	_, s, r := number.ContinuedFraction(d)
-
-	if number.IsOdd(r) || r > N-1 || number.Pow(a, r)%N != 1 {
+	f := number.BinaryFraction(m)
+	s, r, ok := number.FindOrder(a, N, f)
+	if !ok || number.IsOdd(r) {
 		return
 	}
 
@@ -367,14 +364,14 @@ func Example_shorFactoring21() {
 
 	for _, p := range []int{p0, p1} {
 		if 1 < p && p < N && N%p == 0 {
-			fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", N, a, p0, p1, s, r, m, d)
+			fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v~%.3f)\n", N, a, p0, p1, s, r, m, f)
 			fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
 			return
 		}
 	}
 
 	// Output:
-	// N=21, a=8. p=7, q=3. s/r=1/2 ([1 0 0 0]=0.500)
+	// N=21, a=8. p=7, q=3. s/r=1/2 ([1 0 0 0]~0.500)
 	// answer: p=7, q=3
 }
 
@@ -423,10 +420,9 @@ func Example_shorFactoring51() {
 	m := qsim.MeasureAsBinaryInt(q0, q1, q2, q3)
 
 	// find s/r
-	d := number.BinaryFraction(m)
-	_, s, r := number.ContinuedFraction(d)
-
-	if number.IsOdd(r) || r > N-1 || number.Pow(a, r)%N != 1 {
+	f := number.BinaryFraction(m)
+	s, r, ok := number.FindOrder(a, N, f)
+	if !ok || number.IsOdd(r) {
 		return
 	}
 
@@ -436,14 +432,14 @@ func Example_shorFactoring51() {
 	// check
 	for _, p := range []int{p0, p1} {
 		if 1 < p && p < N && N%p == 0 {
-			fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", N, a, p0, p1, s, r, m, d)
+			fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v~%.3f)\n", N, a, p0, p1, s, r, m, f)
 			fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
 			return
 		}
 	}
 
 	// Output:
-	// N=51, a=5. p=3, q=17. s/r=15/16 ([1 1 1 1]=0.938)
+	// N=51, a=5. p=3, q=17. s/r=15/16 ([1 1 1 1]~0.938)
 	// answer: p=3, q=17
 }
 
@@ -486,10 +482,9 @@ func Example_shorFactoring85() {
 	m := qsim.MeasureAsBinaryInt(q0, q1, q2, q3)
 
 	// find s/r
-	d := number.BinaryFraction(m)
-	_, s, r := number.ContinuedFraction(d)
-
-	if number.IsOdd(r) || r > N-1 || number.Pow(a, r)%N != 1 {
+	f := number.BinaryFraction(m)
+	s, r, ok := number.FindOrder(a, N, f)
+	if !ok || number.IsOdd(r) {
 		return
 	}
 
@@ -499,14 +494,14 @@ func Example_shorFactoring85() {
 	// check
 	for _, p := range []int{p0, p1} {
 		if 1 < p && p < N && N%p == 0 {
-			fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", N, a, p0, p1, s, r, m, d)
+			fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v~%.3f)\n", N, a, p0, p1, s, r, m, f)
 			fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
 			return
 		}
 	}
 
 	// Output:
-	// N=85, a=14. p=5, q=17. s/r=15/16 ([1 1 1 1]=0.938)
+	// N=85, a=14. p=5, q=17. s/r=15/16 ([1 1 1 1]~0.938)
 	// answer: p=5, q=17
 }
 

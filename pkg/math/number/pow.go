@@ -23,6 +23,25 @@ func Pow(a, r int) int {
 }
 
 // ModExp2 returns modular exponentiation
+//  a^r mod N
+func ModExp(a, r, N int) int {
+	if a == 0 {
+		return 0
+	}
+
+	if r == 0 {
+		return 1
+	}
+
+	p := a
+	for i := 1; i < r; i++ {
+		p = (p * a) % N
+	}
+
+	return p
+}
+
+// ModExp2 returns modular exponentiation
 //  a^2^j mod N
 func ModExp2(a, j, N int) int {
 	if a == 0 {
