@@ -24,6 +24,16 @@ func IsPrime(N int) bool {
 	return true
 }
 
+func IsTrivial(N int, factor ...int) bool {
+	for _, p := range factor {
+		if 1 < p && p < N && N%p == 0 {
+			return false
+		}
+	}
+
+	return true
+}
+
 func IsOdd(v int) bool {
 	return !IsEven(v)
 }

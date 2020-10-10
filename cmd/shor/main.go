@@ -84,6 +84,7 @@ func main() {
 	for _, state := range qsim.State(r0) {
 		i, m, _ := state.Value()
 
+		// [0 1 0 0] -> 0.25 -> 1/4
 		f := number.BinaryFraction(m)
 		s, r, ok := number.FindOrder(a, N, f)
 		if !ok {
@@ -98,16 +99,12 @@ func main() {
 		p0 := number.GCD(number.Pow(a, r/2)-1, N)
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
 
-		found := " "
-		for _, p := range []int{p0, p1} {
-			if 1 < p && p < N && N%p == 0 {
-				found = "*"
-				sum = sum + state.Probability
-				break
-			}
+		if number.IsTrivial(N, p0, p1) {
+			continue
 		}
 
-		fmt.Printf("%s i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v~%.4f). p=%v, q=%v.\n", found, i, N, a, s, r, m, float64(s)/float64(r), p0, p1)
+		fmt.Printf("* i=%2d: N=%d, a=%d. s/r=%2d/%2d (%v~%.4f). p=%v, q=%v.\n", i, N, a, s, r, m, float64(s)/float64(r), p0, p1)
+		sum = sum + state.Probability
 	}
 
 	fmt.Printf("success rate: %v\n", sum)
