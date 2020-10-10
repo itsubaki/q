@@ -22,7 +22,7 @@ func Pow(a, r int) int {
 	return p
 }
 
-// ModExp2 returns modular exponentiation
+// ModExp returns modular exponentiation
 //  a^r mod N
 func ModExp(a, r, N int) int {
 	if a == 0 {
