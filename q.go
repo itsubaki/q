@@ -308,8 +308,7 @@ func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
 	}
 
 	m := make([]*qubit.Qubit, 0)
-	m = append(m, q.internal.Measure(qb[0].Index()))
-	for i := 1; i < len(qb); i++ {
+	for i := 0; i < len(qb); i++ {
 		m = append(m, q.internal.Measure(qb[i].Index()))
 	}
 
