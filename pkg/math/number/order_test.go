@@ -8,7 +8,7 @@ import (
 )
 
 func ExampleFindOrder() {
-	s, r, ok := number.FindOrder(2, 21, 0.15625)
+	s, r, ok := number.FindOrder(2, 21, []int{0, 0, 1, 0, 1, 0, 1, 0, 1})
 	fmt.Printf("%v/%v %v %v\n", s, r, ok, number.ModExp(2, r, 21))
 
 	// Output:
@@ -18,13 +18,15 @@ func ExampleFindOrder() {
 func TestFindOrder(t *testing.T) {
 	cases := []struct {
 		a, N int
-		m    float64
+		m    []int
 		s, r int
 		ok   bool
 	}{
-		{7, 15, 0.25, 1, 4, true},
-		{7, 15, 0.50, 0, 0, false},
-		{7, 15, 0.75, 3, 4, true},
+		{7, 15, []int{0, 1, 0}, 1, 4, true},
+		{7, 15, []int{1, 0, 0}, 1, 2, false},
+		{7, 15, []int{1, 1, 0}, 3, 4, true},
+		{7, 15, []int{}, 0, 1, false},
+		{7, 15, []int{1}, 1, 2, false},
 	}
 
 	for _, c := range cases {

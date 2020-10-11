@@ -312,8 +312,7 @@ func Example_shorFactoring15() {
 	m := qsim.MeasureAsBinaryInt(q0, q1, q2)
 
 	// find s/r. 010 -> 0.25 -> 1/4, 110 -> 0.75 -> 3/4, ...
-	f := number.BinaryFraction(m)
-	s, r, ok := number.FindOrder(a, N, f)
+	s, r, ok := number.FindOrder(a, N, m)
 	if !ok || number.IsOdd(r) {
 		return
 	}
@@ -327,7 +326,7 @@ func Example_shorFactoring15() {
 		return
 	}
 
-	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v~%.3f)\n", N, a, p0, p1, s, r, m, f)
+	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v~%.3f)\n", N, a, p0, p1, s, r, m, float64(s)/float64(r))
 
 	// Output:
 	// N=15, a=7. p=3, q=5. s/r=3/4 ([1 1 0]~0.750)
@@ -350,8 +349,7 @@ func Example_shorFactoring21() {
 	qsim.InvQFT(r0...)
 
 	m := qsim.MeasureAsBinaryInt(r0...)
-	f := number.BinaryFraction(m)
-	s, r, ok := number.FindOrder(a, N, f)
+	s, r, ok := number.FindOrder(a, N, m)
 	if !ok || number.IsOdd(r) {
 		return
 	}
@@ -362,7 +360,7 @@ func Example_shorFactoring21() {
 		return
 	}
 
-	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v~%.3f)\n", N, a, p0, p1, s, r, m, f)
+	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v~%.3f)\n", N, a, p0, p1, s, r, m, float64(s)/float64(r))
 
 	// Output:
 	// N=21, a=8. p=7, q=3. s/r=1/2 ([1 0 0 0]~0.500)
@@ -413,8 +411,7 @@ func Example_shorFactoring51() {
 	m := qsim.MeasureAsBinaryInt(q0, q1, q2, q3)
 
 	// find s/r
-	f := number.BinaryFraction(m)
-	s, r, ok := number.FindOrder(a, N, f)
+	s, r, ok := number.FindOrder(a, N, m)
 	if !ok || number.IsOdd(r) {
 		return
 	}
@@ -426,7 +423,7 @@ func Example_shorFactoring51() {
 	}
 
 	// check
-	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v~%.3f)\n", N, a, p0, p1, s, r, m, f)
+	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v~%.3f)\n", N, a, p0, p1, s, r, m, float64(s)/float64(r))
 
 	// Output:
 	// N=51, a=5. p=3, q=17. s/r=15/16 ([1 1 1 1]~0.938)
@@ -471,8 +468,7 @@ func Example_shorFactoring85() {
 	m := qsim.MeasureAsBinaryInt(q0, q1, q2, q3)
 
 	// find s/r
-	f := number.BinaryFraction(m)
-	s, r, ok := number.FindOrder(a, N, f)
+	s, r, ok := number.FindOrder(a, N, m)
 	if !ok || number.IsOdd(r) {
 		return
 	}
@@ -483,7 +479,7 @@ func Example_shorFactoring85() {
 		return
 	}
 
-	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v~%.3f)\n", N, a, p0, p1, s, r, m, f)
+	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v~%.3f)\n", N, a, p0, p1, s, r, m, float64(s)/float64(r))
 
 	// Output:
 	// N=85, a=14. p=5, q=17. s/r=15/16 ([1 1 1 1]~0.938)

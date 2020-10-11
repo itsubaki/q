@@ -83,15 +83,8 @@ func main() {
 	sum := 0.0
 	for _, state := range qsim.State(r0) {
 		i, m, _ := state.Value()
-
-		// [0 1 0 0] -> 0.25 -> 1/4
-		f := number.BinaryFraction(m)
-		s, r, ok := number.FindOrder(a, N, f)
-		if !ok {
-			continue
-		}
-
-		if number.IsOdd(r) {
+		s, r, ok := number.FindOrder(a, N, m)
+		if !ok || number.IsOdd(r) {
 			fmt.Printf("  i=%3d: N=%d, a=%d. s/r=%2d/%2d (%v~%.4f).\n", i, N, a, s, r, m, float64(s)/float64(r))
 			continue
 		}
@@ -99,6 +92,7 @@ func main() {
 		p0 := number.GCD(number.Pow(a, r/2)-1, N)
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
 		if number.IsTrivial(N, p0, p1) {
+			fmt.Printf("  i=%3d: N=%d, a=%d. s/r=%2d/%2d (%v~%.4f). p=%v, q=%v.\n", i, N, a, s, r, m, float64(s)/float64(r), p0, p1)
 			continue
 		}
 

@@ -18,7 +18,7 @@ func ExampleContinuedFraction() {
 
 func ExampleFraction() {
 	m := []int{0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1}
-	v := number.BinaryFraction(m)
+	v := number.BinaryToFloat64(m)
 	fmt.Printf("%v\n", v)
 
 	c := number.ContinuedFraction(v)
@@ -70,5 +70,41 @@ func TestContinuedFraction(t *testing.T) {
 			}
 			t.Error(f)
 		}
+	}
+}
+
+func ExampleBinaryToFloat64() {
+	// 0.101 -> 1/2 + 1/8 = 0.5 + 0.125 = 0.625
+	f := number.BinaryToFloat64([]int{1, 0, 1})
+	fmt.Println(f)
+
+	// Output:
+	// 0.625
+}
+
+func TestBinaryToFloat64(t *testing.T) {
+	cases := []struct {
+		binary []int
+		float  float64
+	}{
+		{[]int{0, 0, 0}, 0.0},
+		{[]int{1, 0, 0}, 0.5},
+		{[]int{0, 1, 0}, 0.25},
+		{[]int{1, 1, 0}, 0.75},
+		{[]int{0, 0, 1}, 0.125},
+		{[]int{1, 0, 1}, 0.625},
+		{[]int{0, 1, 1}, 0.375},
+		{[]int{1, 1, 1}, 0.875},
+		{[]int{0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1}, 0.41650390625},
+		{[]int{0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1}, 0.166656494140625},
+	}
+
+	for _, c := range cases {
+		result := number.BinaryToFloat64(c.binary)
+		if result == c.float {
+			continue
+		}
+
+		t.Errorf("expected=%v, actual=%v", c.float, result)
 	}
 }
