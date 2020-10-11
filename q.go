@@ -256,8 +256,8 @@ func (q *Q) Swap(qb ...Qubit) *Q {
 
 	for i := 0; i < l/2; i++ {
 		q0, q1 := qb[i], qb[(l-1)-i]
-		swap := gate.Swap(n, q0.Index(), q1.Index())
-		q.internal.Apply(swap)
+		g := gate.Swap(n, q0.Index(), q1.Index())
+		q.internal.Apply(g)
 	}
 
 	return q
