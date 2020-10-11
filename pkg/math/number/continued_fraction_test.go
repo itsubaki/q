@@ -31,16 +31,14 @@ func ExampleConvergent() {
 	fmt.Printf("%v=%v\n", m, v)
 
 	c := number.ContinuedFraction(v)
-	s, r, d := number.Convergent(c)
-	fmt.Printf("%v %v/%v=%v\n", c, s, r, d)
-	for i := 2; i < len(c)+1; i++ {
-		s, r, d := number.Convergent(c[:i])
-		fmt.Printf("%v: %v/%v=%v\n", c[:i], s, r, d)
+	for i := 0; i < len(c); i++ {
+		s, r, d := number.Convergent(c[:i+1])
+		fmt.Printf("%v: %v/%v=%v\n", c[:i+1], s, r, d)
 	}
 
 	// Output:
 	// [0 0 1 0 1 0 1 0 1 0 1]=0.16650390625
-	// [0 6 170 1 1] 341/2048=0.16650390625
+	// [0]: 0/1=0
 	// [0 6]: 1/6=0.16666666666666666
 	// [0 6 170]: 170/1021=0.1665034280117532
 	// [0 6 170 1]: 171/1027=0.1665043816942551
