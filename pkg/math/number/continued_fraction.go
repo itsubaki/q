@@ -49,24 +49,24 @@ func ContinuedFraction(f float64, eps ...float64) []int {
 	return list
 }
 
-func Fraction(continued []int) (int, int) {
-	if len(continued) == 1 && continued[0] == 0 {
-		return 0, 1
+func Fraction(cf []int) (int, int, float64) {
+	if len(cf) == 1 && cf[0] == 0 {
+		return 0, 1, 0
 	}
 
-	s, r := 1, continued[len(continued)-1]
-	for i := 2; i < len(continued); i++ {
-		s, r = r, continued[len(continued)-i]*r+s
+	s, r := 1, cf[len(cf)-1]
+	for i := 2; i < len(cf); i++ {
+		s, r = r, cf[len(cf)-i]*r+s
 	}
 
-	return s, r
+	return s, r, float64(s) / float64(r)
 }
 
-func Approximate(continued []int) float64 {
-	last := len(continued) - 1
-	f := 1.0 / float64(continued[last])
+func Approximate(cf []int) float64 {
+	last := len(cf) - 1
+	f := 1.0 / float64(cf[last])
 	for i := last - 1; i > 0; i-- {
-		f = 1.0 / (float64(continued[i]) + f)
+		f = 1.0 / (float64(cf[i]) + f)
 	}
 
 	return f
