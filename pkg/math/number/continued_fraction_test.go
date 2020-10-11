@@ -9,29 +9,28 @@ import (
 
 func ExampleContinuedFraction() {
 	c := number.ContinuedFraction(0.8125)
-	s, r, d := number.Fraction(c)
+	s, r, d := number.Convergent(c)
 	fmt.Printf("%v %v/%v=%v\n", c, s, r, d)
 
 	// Output:
 	// [0 1 4 3] 13/16=0.8125
 }
 
-func ExampleFraction() {
+func ExampleConvergent() {
 	m := []int{0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1}
 	v := number.BinaryToFloat64(m)
-	fmt.Printf("%v\n", v)
+	fmt.Printf("%v=%v\n", m, v)
 
 	c := number.ContinuedFraction(v)
-	s, r, d := number.Fraction(c)
+	s, r, d := number.Convergent(c)
 	fmt.Printf("%v %v/%v=%v\n", c, s, r, d)
-
 	for i := 2; i < len(c)+1; i++ {
-		s, r, d := number.Fraction(c[:i])
+		s, r, d := number.Convergent(c[:i])
 		fmt.Printf("%v: %v/%v=%v\n", c[:i], s, r, d)
 	}
 
 	// Output:
-	// 0.16650390625
+	// [0 0 1 0 1 0 1 0 1 0 1]=0.16650390625
 	// [0 6 170 1 1] 341/2048=0.16650390625
 	// [0 6]: 1/6=0.16666666666666666
 	// [0 6 170]: 170/1021=0.1665034280117532
@@ -58,17 +57,16 @@ func TestContinuedFraction(t *testing.T) {
 
 	for _, c := range cases {
 		f := number.ContinuedFraction(c.input)
-		s, r, d := number.Fraction(f)
-
-		if s != c.s || r != c.r || d != c.d {
-			t.Errorf("%v/%v=%v", s, r, d)
-		}
-
 		for i := range c.cf {
 			if f[i] == c.cf[i] {
 				continue
 			}
 			t.Error(f)
+		}
+
+		s, r, d := number.Convergent(f)
+		if s != c.s || r != c.r || d != c.d {
+			t.Errorf("%v/%v=%v", s, r, d)
 		}
 	}
 }

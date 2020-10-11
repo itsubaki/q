@@ -49,7 +49,7 @@ func ContinuedFraction(f float64, eps ...float64) []int {
 	return list
 }
 
-func Fraction(cf []int) (int, int, float64) {
+func Convergent(cf []int) (int, int, float64) {
 	if len(cf) == 1 && cf[0] == 0 {
 		return 0, 1, 0
 	}

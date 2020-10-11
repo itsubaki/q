@@ -8,9 +8,9 @@ func OrderFinding(a, N int, binary []int, eps ...float64) (int, int, float64, bo
 	f := BinaryToFloat64(binary)
 	c := ContinuedFraction(f, eps...)
 
-	s, r, d := Fraction(c[:1])
+	s, r, d := Convergent(c[:1])
 	for i := 2; i < len(c)+1; i++ {
-		s, r, d = Fraction(c[:i])
+		s, r, d = Convergent(c[:i])
 		if r < N && ModExp(a, r, N) == 1 {
 			return s, r, d, true
 		}
