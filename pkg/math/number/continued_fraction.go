@@ -50,14 +50,15 @@ func ContinuedFraction(f float64, eps ...float64) []int {
 }
 
 func Convergent(cf []int) (int, int, float64) {
-	if len(cf) == 1 && cf[0] == 0 {
-		return 0, 1, 0
+	if len(cf) == 1 {
+		return cf[0], 1, float64(cf[0])
 	}
 
 	s, r := 1, cf[len(cf)-1]
 	for i := 2; i < len(cf); i++ {
 		s, r = r, cf[len(cf)-i]*r+s
 	}
+	s = s + cf[0]*r
 
 	return s, r, float64(s) / float64(r)
 }
