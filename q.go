@@ -2,8 +2,6 @@ package q
 
 import (
 	"math"
-	"strconv"
-	"strings"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/math/rand"
@@ -299,7 +297,6 @@ func (q *Q) InvQFT(qb ...Qubit) *Q {
 	return q.InverseQFT(qb...)
 }
 
-// Measure returns qubtis state after measured
 func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
 	if len(qb) < 1 {
 		m := make([]*qubit.Qubit, 0)
@@ -317,47 +314,6 @@ func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
 	}
 
 	return qubit.TensorProduct(m...)
-}
-
-// MeasureAsInt returns integer representation of qubtis state after measured
-func (q *Q) MeasureAsInt(qb ...Qubit) int {
-	b := q.MeasureAsBinaryString(qb...)
-	i, err := strconv.ParseInt(b, 2, 0)
-	if err != nil {
-		panic(err)
-	}
-
-	return int(i)
-}
-
-//MeasureAsBinaryInt returns binary representation of qubits state after measured
-func (q *Q) MeasureAsBinaryInt(qb ...Qubit) []int {
-	b := make([]int, 0)
-	for _, i := range qb {
-		if q.Measure(i).IsZero() {
-			b = append(b, 0)
-			continue
-		}
-
-		b = append(b, 1)
-	}
-
-	return b
-}
-
-// MeasureAsBinaryString returns binary string representation of qubits state after measured
-func (q *Q) MeasureAsBinaryString(qb ...Qubit) string {
-	var sb strings.Builder
-	for _, i := range qb {
-		if q.Measure(i).IsZero() {
-			sb.WriteString("0")
-			continue
-		}
-
-		sb.WriteString("1")
-	}
-
-	return sb.String()
 }
 
 func (q *Q) Clone() *Q {

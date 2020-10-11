@@ -206,6 +206,44 @@ func (q *Qubit) ProbabilityOneAt(index int) ([]int, []float64) {
 	return idx, prob
 }
 
+func (q *Qubit) Int() int {
+	b := q.BinaryString()
+	i, err := strconv.ParseInt(b, 2, 0)
+	if err != nil {
+		panic(err)
+	}
+
+	return int(i)
+}
+
+func (q *Qubit) BinaryInt() []int {
+	b := make([]int, 0)
+	for i := 0; i < q.NumberOfBit(); i++ {
+		if q.Clone().Measure(i).IsZero() {
+			b = append(b, 0)
+			continue
+		}
+
+		b = append(b, 1)
+	}
+
+	return b
+}
+
+func (q *Qubit) BinaryString() string {
+	var sb strings.Builder
+	for i := 0; i < q.NumberOfBit(); i++ {
+		if q.Clone().Measure(i).IsZero() {
+			sb.WriteString("0")
+			continue
+		}
+
+		sb.WriteString("1")
+	}
+
+	return sb.String()
+}
+
 func (q *Qubit) String() string {
 	return fmt.Sprintf("%v", q.vector)
 }
