@@ -61,13 +61,3 @@ func Convergent(cf []int) (int, int, float64) {
 
 	return s, r, float64(s) / float64(r)
 }
-
-func Approximate(cf []int) float64 {
-	last := len(cf) - 1
-	f := 1.0 / float64(cf[last])
-	for i := last - 1; i > 0; i-- {
-		f = 1.0 / (float64(cf[i]) + f)
-	}
-
-	return f
-}
