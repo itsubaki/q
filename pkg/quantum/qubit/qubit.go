@@ -256,17 +256,17 @@ type State struct {
 	BinaryString []string
 }
 
-func (s State) Value(i ...int) (int, []int, string) {
-	idx := 0
-	if len(i) > 0 {
-		idx = i[0]
+func (s State) Value(index ...int) (int, []int, string) {
+	i := 0
+	if len(index) > 0 {
+		i = index[0]
 	}
 
-	if idx < 0 || idx > len(s.Int)-1 {
-		panic(fmt.Sprintf("invalid parameter. i=%v", i))
+	if i < 0 || i > len(s.Int)-1 {
+		panic(fmt.Sprintf("invalid parameter. index=%v", index))
 	}
 
-	return s.Int[idx], s.BinaryInt[idx], s.BinaryString[idx]
+	return s.Int[i], s.BinaryInt[i], s.BinaryString[i]
 }
 
 func (s State) String() string {
@@ -286,20 +286,18 @@ func (q *Qubit) State(index ...[]int) []State {
 	state := make([]State, 0)
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(q.NumberOfBit()), "s")
 	for i, a := range q.Amplitude() {
-		p := math.Pow(cmplx.Abs(a), 2)
-		if a == 0 || math.Abs(p) < 1e-13 {
-			continue
-		}
-
 		if math.Abs(real(a)) < 1e-13 {
 			a = complex(0, imag(a))
 		}
 		if math.Abs(imag(a)) < 1e-13 {
 			a = complex(real(a), 0)
 		}
+		if a == 0 {
+			continue
+		}
 
 		bin := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
-		s := State{Amplitude: a, Probability: p}
+		s := State{Amplitude: a, Probability: math.Pow(cmplx.Abs(a), 2)}
 		for _, idx := range index {
 			bint, binint, bbin := to(bin, idx)
 			s.Int = append(s.Int, bint)
