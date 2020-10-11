@@ -294,7 +294,7 @@ func TestToffoli(t *testing.T) {
 	}
 
 	actual := gate.Toffoli(3, 0, 1, 2)
-	if !actual.Equals(expected, 1e-13) {
+	if !actual.Equals(expected) {
 		t.Error(actual)
 	}
 }
@@ -311,7 +311,7 @@ func TestFredkin(t *testing.T) {
 	m[7] = []complex128{0, 0, 0, 0, 0, 0, 0, 1}
 
 	actual := gate.Fredkin(3, 0, 1, 2)
-	if !actual.Equals(m, 1e-13) {
+	if !actual.Equals(m) {
 		t.Error(actual)
 	}
 }

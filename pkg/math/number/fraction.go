@@ -23,11 +23,7 @@ func BinaryToFloat64(binary []int) float64 {
 }
 
 func ContinuedFraction(f float64, eps ...float64) []int {
-	e := 1e-3
-	if len(eps) > 0 {
-		e = eps[0]
-	}
-
+	e := epsilon(eps...)
 	if f < e {
 		return []int{0}
 	}
@@ -61,4 +57,12 @@ func Convergent(cf []int) (int, int, float64) {
 	s = s + cf[0]*r
 
 	return s, r, float64(s) / float64(r)
+}
+
+func epsilon(eps ...float64) float64 {
+	if len(eps) > 0 {
+		return eps[0]
+	}
+
+	return 1e-3
 }

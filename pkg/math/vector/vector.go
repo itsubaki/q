@@ -142,11 +142,7 @@ func (v Vector) Equals(w Vector, eps ...float64) bool {
 		return false
 	}
 
-	e := 1e-13
-	if len(eps) > 0 {
-		e = eps[0]
-	}
-
+	e := epsilon(eps...)
 	for i := 0; i < len(v); i++ {
 		if cmplx.Abs(v[i]-w[i]) > e {
 			return false
@@ -198,4 +194,12 @@ func TensorProduct(v ...Vector) Vector {
 	}
 
 	return out
+}
+
+func epsilon(eps ...float64) float64 {
+	if len(eps) > 0 {
+		return eps[0]
+	}
+
+	return 1e-13
 }
