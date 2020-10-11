@@ -7,6 +7,15 @@ import (
 	"github.com/itsubaki/q/pkg/math/number"
 )
 
+func ExampleBinaryToFloat64() {
+	// 0.101 -> 1/2 + 1/8 = 0.5 + 0.125 = 0.625
+	f := number.BinaryToFloat64([]int{1, 0, 1})
+	fmt.Println(f)
+
+	// Output:
+	// 0.625
+}
+
 func ExampleContinuedFraction() {
 	c := number.ContinuedFraction(0.8125)
 	s, r, d := number.Convergent(c)
@@ -36,6 +45,33 @@ func ExampleConvergent() {
 	// [0 6 170]: 170/1021=0.1665034280117532
 	// [0 6 170 1]: 171/1027=0.1665043816942551
 	// [0 6 170 1 1]: 341/2048=0.16650390625
+}
+
+func TestBinaryToFloat64(t *testing.T) {
+	cases := []struct {
+		binary []int
+		float  float64
+	}{
+		{[]int{0, 0, 0}, 0.0},
+		{[]int{1, 0, 0}, 0.5},
+		{[]int{0, 1, 0}, 0.25},
+		{[]int{1, 1, 0}, 0.75},
+		{[]int{0, 0, 1}, 0.125},
+		{[]int{1, 0, 1}, 0.625},
+		{[]int{0, 1, 1}, 0.375},
+		{[]int{1, 1, 1}, 0.875},
+		{[]int{0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1}, 0.41650390625},
+		{[]int{0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1}, 0.166656494140625},
+	}
+
+	for _, c := range cases {
+		result := number.BinaryToFloat64(c.binary)
+		if result == c.float {
+			continue
+		}
+
+		t.Errorf("expected=%v, actual=%v", c.float, result)
+	}
 }
 
 func TestContinuedFraction(t *testing.T) {
@@ -68,41 +104,5 @@ func TestContinuedFraction(t *testing.T) {
 		if s != c.s || r != c.r || d != c.d {
 			t.Errorf("%v/%v=%v", s, r, d)
 		}
-	}
-}
-
-func ExampleBinaryToFloat64() {
-	// 0.101 -> 1/2 + 1/8 = 0.5 + 0.125 = 0.625
-	f := number.BinaryToFloat64([]int{1, 0, 1})
-	fmt.Println(f)
-
-	// Output:
-	// 0.625
-}
-
-func TestBinaryToFloat64(t *testing.T) {
-	cases := []struct {
-		binary []int
-		float  float64
-	}{
-		{[]int{0, 0, 0}, 0.0},
-		{[]int{1, 0, 0}, 0.5},
-		{[]int{0, 1, 0}, 0.25},
-		{[]int{1, 1, 0}, 0.75},
-		{[]int{0, 0, 1}, 0.125},
-		{[]int{1, 0, 1}, 0.625},
-		{[]int{0, 1, 1}, 0.375},
-		{[]int{1, 1, 1}, 0.875},
-		{[]int{0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1}, 0.41650390625},
-		{[]int{0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1}, 0.166656494140625},
-	}
-
-	for _, c := range cases {
-		result := number.BinaryToFloat64(c.binary)
-		if result == c.float {
-			continue
-		}
-
-		t.Errorf("expected=%v, actual=%v", c.float, result)
 	}
 }
