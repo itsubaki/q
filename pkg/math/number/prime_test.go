@@ -7,6 +7,15 @@ import (
 	"github.com/itsubaki/q/pkg/math/number"
 )
 
+func ExampleIsTrivial() {
+	fmt.Println(number.IsTrivial(21, 1, 21))
+	fmt.Println(number.IsTrivial(21, 1, 7))
+
+	// Output:
+	// true
+	// false
+}
+
 func TestIsPrime(t *testing.T) {
 	cases := []struct {
 		N       int
