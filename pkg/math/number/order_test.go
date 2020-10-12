@@ -7,7 +7,7 @@ import (
 	"github.com/itsubaki/q/pkg/math/number"
 )
 
-func ExampleOrderFinding() {
+func ExampleFindOrder() {
 	s, r, d, ok := number.FindOrder(2, 21, []int{0, 0, 1, 0, 1, 0, 1, 0, 1})
 	fmt.Printf("%v/%v=%v %v %v\n", s, r, d, ok, number.ModExp(2, r, 21))
 
@@ -15,7 +15,7 @@ func ExampleOrderFinding() {
 	// 1/6=0.16666666666666666 true 1
 }
 
-func TestOrderFinding(t *testing.T) {
+func TestFindOrder(t *testing.T) {
 	cases := []struct {
 		a, N int
 		m    []int
