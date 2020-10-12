@@ -71,8 +71,12 @@ func main() {
 	qsim.H(r0...)
 	print("create superposition", qsim, r0, r1)
 
-	qsim.CModExp2(a, N, r0, r1)
-	print("apply controlled-U", qsim, r0, r1)
+	//	qsim.CModExp2(a, N, r0, r1)
+	//	print("apply controlled-U", qsim, r0, r1)
+	for i := 0; i < len(r0); i++ {
+		qsim.ControlledModExp2(a, i, N, r0[i], r1)
+		print(fmt.Sprintf("apply ControlledExp2[%d]", i), qsim, r0, r1)
+	}
 
 	qsim.InvQFT(r0...)
 	print("apply inverse QFT", qsim, r0, r1)
