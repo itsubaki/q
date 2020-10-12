@@ -243,8 +243,8 @@ func (q *Q) ControlledModExp2(a, j, N int, control Qubit, target []Qubit) *Q {
 }
 
 func (q *Q) CModExp2(a, N int, control []Qubit, target []Qubit) *Q {
-	for j := 0; j < len(control); j++ {
-		q.ControlledModExp2(a, j, N, control[j], target)
+	for i := 0; i < len(control); i++ {
+		q.ControlledModExp2(a, i, N, control[i], target)
 	}
 
 	return q
