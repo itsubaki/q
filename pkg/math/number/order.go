@@ -1,6 +1,6 @@
 package number
 
-func OrderFinding(a, N int, binary []int, eps ...float64) (int, int, float64, bool) {
+func FindOrder(a, N int, binary []int, eps ...float64) (int, int, float64, bool) {
 	if len(binary) < 1 {
 		return 0, 1, 0, false
 	}

@@ -8,7 +8,7 @@ import (
 )
 
 func ExampleOrderFinding() {
-	s, r, d, ok := number.OrderFinding(2, 21, []int{0, 0, 1, 0, 1, 0, 1, 0, 1})
+	s, r, d, ok := number.FindOrder(2, 21, []int{0, 0, 1, 0, 1, 0, 1, 0, 1})
 	fmt.Printf("%v/%v=%v %v %v\n", s, r, d, ok, number.ModExp(2, r, 21))
 
 	// Output:
@@ -31,7 +31,7 @@ func TestOrderFinding(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		s, r, d, ok := number.OrderFinding(c.a, c.N, c.m)
+		s, r, d, ok := number.FindOrder(c.a, c.N, c.m)
 		if s != c.s || r != c.r || ok != c.ok || d != c.d {
 			t.Errorf("%v/%v=%v %v", s, r, d, ok)
 		}

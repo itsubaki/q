@@ -275,7 +275,7 @@ func Example_shorFactoring15() {
 	m := qsim.Measure(q0, q1, q2).BinaryInt()
 
 	// find s/r. 010 -> 0.25 -> 1/4, 110 -> 0.75 -> 3/4, ...
-	s, r, d, ok := number.OrderFinding(a, N, m)
+	s, r, d, ok := number.FindOrder(a, N, m)
 	if !ok || number.IsOdd(r) {
 		return
 	}
@@ -312,7 +312,7 @@ func Example_shorFactoring21() {
 	qsim.InvQFT(r0...)
 
 	m := qsim.Measure(r0...).BinaryInt()
-	s, r, d, ok := number.OrderFinding(a, N, m)
+	s, r, d, ok := number.FindOrder(a, N, m)
 	if !ok || number.IsOdd(r) {
 		return
 	}
@@ -374,7 +374,7 @@ func Example_shorFactoring51() {
 	m := qsim.Measure(q0, q1, q2, q3).BinaryInt()
 
 	// find s/r
-	s, r, d, ok := number.OrderFinding(a, N, m)
+	s, r, d, ok := number.FindOrder(a, N, m)
 	if !ok || number.IsOdd(r) {
 		return
 	}
@@ -431,7 +431,7 @@ func Example_shorFactoring85() {
 	m := qsim.Measure(q0, q1, q2, q3).BinaryInt()
 
 	// find s/r
-	s, r, d, ok := number.OrderFinding(a, N, m)
+	s, r, d, ok := number.FindOrder(a, N, m)
 	if !ok || number.IsOdd(r) {
 		return
 	}
