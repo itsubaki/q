@@ -15,7 +15,7 @@ func main() {
 	var N, t, a int
 	var seed int64
 	flag.IntVar(&N, "N", 15, "positive integer")
-	flag.IntVar(&t, "t", 4, "precision bits")
+	flag.IntVar(&t, "t", 3, "precision bits")
 	flag.IntVar(&a, "a", -1, "coprime number of N")
 	flag.Int64Var(&seed, "seed", -1, "PRNG seed for measurements")
 	flag.Parse()
@@ -71,8 +71,8 @@ func main() {
 	qsim.H(r0...)
 	print("create superposition", qsim, r0, r1)
 
-	//	qsim.CModExp2(a, N, r0, r1)
-	//	print("apply controlled-U", qsim, r0, r1)
+	// qsim.CModExp2(a, N, r0, r1)
+	// print("apply controlled-U", qsim, r0, r1)
 	for i := 0; i < len(r0); i++ {
 		qsim.ControlledModExp2(a, i, N, r0[i], r1)
 		print(fmt.Sprintf("apply controlled-U[%d]", i), qsim, r0, r1)
