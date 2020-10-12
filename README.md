@@ -202,35 +202,26 @@ for i := 0; i < 10; i++{
   qsim.InvQFT(q0, q1, q2)
 
   // measure q0, q1, q2
-  m := qsim.MeasureAsBinary(q0, q1, q2)
+  m := qsim.Measure(q0, q1, q2).BinaryInt()
 
   // find s/r. 010 -> 0.25 -> 1/4, 110 -> 0.75 -> 3/4, ...
-  d := number.BinaryFraction(m)
-  _, s, r := number.ContinuedFraction(d)
-
-  // if r is odd, algorithm is failed
-  if number.IsOdd(r) || number.Pow(a, r/2)%N == -1 {
+  s, r, d, ok := number.FindOrder(a, N, m)
+  if !ok || number.IsOdd(r) || number.ModExp(a, r/2, N) == -1  {
     continue
   }
 
   // gcd(a^(r/2)-1, N), gcd(a^(r/2)+1, N)
   p0 := number.GCD(number.Pow(a, r/2)-1, N)
   p1 := number.GCD(number.Pow(a, r/2)+1, N)
+  if number.IsTrivial(N, p0, p1) {
+    continue
+  }
 
   // result
-  fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v=%.3f)\n", i, N, a, p0, p1, s, r, m, d)
-
-  // check non-trivial factor
-  for _, p := range []int{p0, p1} {
-    if 1 < p && p < N && N%p == 0 {
-      fmt.Printf("answer: p=%v, q=%v\n", p, N/p)
-      return
-    }
-  }
+  fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r~%d/%d (%v=%.3f)\n", i, N, a, p0, p1, s, r, m, d)
 }
 
-// i=2: N=15, a=7. p=3, q=5. s/r=1/4 ([0 1 0]=0.250)
-// answer: p=3, q=5
+// i=2: N=15, a=7. p=3, q=5. s/r=1/4 ([0 1 0]~0.250)
 ```
 
 ## Density Matrix
