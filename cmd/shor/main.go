@@ -75,7 +75,7 @@ func main() {
 	//	print("apply controlled-U", qsim, r0, r1)
 	for i := 0; i < len(r0); i++ {
 		qsim.ControlledModExp2(a, i, N, r0[i], r1)
-		print(fmt.Sprintf("apply ControlledExp2[%d]", i), qsim, r0, r1)
+		print(fmt.Sprintf("apply controlled-U[%d]", i), qsim, r0, r1)
 	}
 
 	qsim.InvQFT(r0...)
