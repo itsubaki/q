@@ -15,6 +15,15 @@ func ExampleBaseExp() {
 	// 5^3 true
 }
 
+func ExampleModExp() {
+	// 4^3 mod 21
+	v := number.ModExp(4, 3, 21)
+	fmt.Println(v)
+
+	// Output:
+	// 1
+}
+
 func ExampleModExp2() {
 	// 7^2^4 mod 15
 	v := number.ModExp2(7, 4, 15)
