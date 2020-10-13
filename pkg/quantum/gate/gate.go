@@ -315,7 +315,7 @@ func QFT(bit int) matrix.Matrix {
 func CModExp2(bit, a, j, N, c int, t []int) matrix.Matrix {
 	min := int(math.Log2(float64(N))) + 1
 	if len(t) < min {
-		panic(fmt.Sprintf("invalid input. len(target)=%v < log2(%d)=%v", len(t), N, min))
+		panic(fmt.Sprintf("invalid parameter. len(target)=%v < log2(%d)=%v", len(t), N, min))
 	}
 
 	mat := I([]int{bit}...)

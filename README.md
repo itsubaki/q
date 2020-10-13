@@ -202,10 +202,10 @@ for i := 0; i < 10; i++{
   qsim.InvQFT(q0, q1, q2)
 
   // measure q0, q1, q2
-  m := qsim.Measure(q0, q1, q2).BinaryInt()
+  m := qsim.Measure(q0, q1, q2).BinaryString()
 
-  // find s/r. 010 -> 0.25 -> 1/4, 110 -> 0.75 -> 3/4, ...
-  s, r, d, ok := number.FindOrder(a, N, m)
+  // find s/r. 0.010 -> 0.25 -> 1/4, 0.110 -> 0.75 -> 3/4, ...
+  s, r, d, ok := number.FindOrder(a, N, fmt.Sprintf("0.%s", m))
   if !ok || number.IsOdd(r) {
     continue
   }

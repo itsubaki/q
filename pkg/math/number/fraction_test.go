@@ -7,13 +7,13 @@ import (
 	"github.com/itsubaki/q/pkg/math/number"
 )
 
-func ExampleBinaryToFloat64() {
+func ExampleParseFloat() {
 	// 0.101 -> 1/2 + 1/8 = 0.5 + 0.125 = 0.625
-	f := number.BinaryToFloat64([]int{1, 0, 1})
-	fmt.Println(f)
+	f, err := number.ParseFloat("0.101")
+	fmt.Println(f, err)
 
 	// Output:
-	// 0.625
+	// 0.625 <nil>
 }
 
 func ExampleContinuedFraction() {
@@ -26,9 +26,9 @@ func ExampleContinuedFraction() {
 }
 
 func ExampleConvergent() {
-	m := []int{0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1}
-	v := number.BinaryToFloat64(m)
-	fmt.Printf("%v=%v\n", m, v)
+	m := "0.00101010101"
+	v, err := number.ParseFloat(m)
+	fmt.Printf("%v=%v %v\n", m, v, err)
 
 	c := number.ContinuedFraction(v)
 	for i := 0; i < len(c); i++ {
@@ -37,7 +37,7 @@ func ExampleConvergent() {
 	}
 
 	// Output:
-	// [0 0 1 0 1 0 1 0 1 0 1]=0.16650390625
+	// 0.00101010101=0.16650390625 <nil>
 	// [0]: 0/1=0
 	// [0 6]: 1/6=0.16666666666666666
 	// [0 6 170]: 170/1021=0.1665034280117532
@@ -45,25 +45,32 @@ func ExampleConvergent() {
 	// [0 6 170 1 1]: 341/2048=0.16650390625
 }
 
-func TestBinaryToFloat64(t *testing.T) {
+func TestParseFloat(t *testing.T) {
 	cases := []struct {
-		binary []int
+		binary string
 		float  float64
 	}{
-		{[]int{0, 0, 0}, 0.0},
-		{[]int{1, 0, 0}, 0.5},
-		{[]int{0, 1, 0}, 0.25},
-		{[]int{1, 1, 0}, 0.75},
-		{[]int{0, 0, 1}, 0.125},
-		{[]int{1, 0, 1}, 0.625},
-		{[]int{0, 1, 1}, 0.375},
-		{[]int{1, 1, 1}, 0.875},
-		{[]int{0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1}, 0.41650390625},
-		{[]int{0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1}, 0.166656494140625},
+		{"0.000", 0.0},
+		{"0.100", 0.5},
+		{"0.010", 0.25},
+		{"0.110", 0.75},
+		{"0.001", 0.125},
+		{"0.101", 0.625},
+		{"0.011", 0.375},
+		{"0.111", 0.875},
+		{"11.000", 3.0},
+		{"11.010", 3.25},
+		{"111", 7.0},
+		{"0.01101010101", 0.41650390625},
+		{"0.001010101010101", 0.166656494140625},
 	}
 
 	for _, c := range cases {
-		result := number.BinaryToFloat64(c.binary)
+		result, err := number.ParseFloat(c.binary)
+		if err != nil {
+			t.Errorf("parse floart64: %v", err)
+		}
+
 		if result == c.float {
 			continue
 		}

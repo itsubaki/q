@@ -8,8 +8,7 @@ import (
 )
 
 func ExampleFindOrder_mod15() {
-	m := []int{1, 1, 0}
-	s, r, d, ok := number.FindOrder(7, 15, m)
+	s, r, d, ok := number.FindOrder(7, 15, "0.110")
 	fmt.Printf("%v/%v=%v %v\n", s, r, d, ok)
 	fmt.Printf("%d^%d mod %d = %v\n", 7, r, 15, number.ModExp(7, r, 15))
 
@@ -19,8 +18,7 @@ func ExampleFindOrder_mod15() {
 }
 
 func ExampleFindOrder_mod21a2() {
-	m := []int{0, 0, 1, 0, 1, 0, 1, 0, 1}
-	s, r, d, ok := number.FindOrder(2, 21, m)
+	s, r, d, ok := number.FindOrder(2, 21, "0.001010101")
 	fmt.Printf("%v/%v=%v %v\n", s, r, d, ok)
 	fmt.Printf("%d^%d mod %d = %v\n", 2, r, 21, number.ModExp(2, r, 21))
 
@@ -30,8 +28,7 @@ func ExampleFindOrder_mod21a2() {
 }
 
 func ExampleFindOrder_mod21a4() {
-	m := []int{0, 1, 0, 1, 0, 1, 0, 1}
-	s, r, d, ok := number.FindOrder(4, 21, m)
+	s, r, d, ok := number.FindOrder(4, 21, "0.01010101")
 	fmt.Printf("%v/%v=%v %v\n", s, r, d, ok)
 	fmt.Printf("%d^%d mod %d = %v\n", 4, r, 21, number.ModExp(4, r, 21))
 
@@ -43,16 +40,16 @@ func ExampleFindOrder_mod21a4() {
 func TestFindOrder(t *testing.T) {
 	cases := []struct {
 		a, N int
-		m    []int
+		m    string
 		s, r int
 		d    float64
 		ok   bool
 	}{
-		{7, 15, []int{0, 1, 0}, 1, 4, 0.25, true},
-		{7, 15, []int{1, 0, 0}, 1, 2, 0.50, false},
-		{7, 15, []int{1, 1, 0}, 3, 4, 0.75, true},
-		{7, 15, []int{}, 0, 1, 0, false},
-		{7, 15, []int{1}, 1, 2, 0.5, false},
+		{7, 15, "0.010", 1, 4, 0.25, true},
+		{7, 15, "0.100", 1, 2, 0.50, false},
+		{7, 15, "0.110", 3, 4, 0.75, true},
+		{7, 15, "0.1", 1, 2, 0.5, false},
+		{7, 15, "", 0, 1, 0, false},
 	}
 
 	for _, c := range cases {

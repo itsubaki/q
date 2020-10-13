@@ -216,20 +216,6 @@ func (q *Qubit) Int() int {
 	return int(i)
 }
 
-func (q *Qubit) BinaryInt() []int {
-	b := make([]int, 0)
-	for i := 0; i < q.NumberOfBit(); i++ {
-		if q.Clone().Measure(i).IsZero() {
-			b = append(b, 0)
-			continue
-		}
-
-		b = append(b, 1)
-	}
-
-	return b
-}
-
 func (q *Qubit) BinaryString() string {
 	var sb strings.Builder
 	for i := 0; i < q.NumberOfBit(); i++ {
@@ -252,11 +238,10 @@ type State struct {
 	Amplitude    complex128
 	Probability  float64
 	Int          []int
-	BinaryInt    [][]int
 	BinaryString []string
 }
 
-func (s State) Value(index ...int) (int, []int, string) {
+func (s State) Value(index ...int) (int, string) {
 	i := 0
 	if len(index) > 0 {
 		i = index[0]
@@ -266,7 +251,7 @@ func (s State) Value(index ...int) (int, []int, string) {
 		panic(fmt.Sprintf("invalid parameter. index=%v", index))
 	}
 
-	return s.Int[i], s.BinaryInt[i], s.BinaryString[i]
+	return s.Int[i], s.BinaryString[i]
 }
 
 func (s State) String() string {
@@ -299,9 +284,8 @@ func (q *Qubit) State(index ...[]int) []State {
 		bin := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
 		s := State{Amplitude: a, Probability: math.Pow(cmplx.Abs(a), 2)}
 		for _, idx := range index {
-			bint, binint, bbin := to(bin, idx)
+			bint, bbin := to(bin, idx)
 			s.Int = append(s.Int, bint)
-			s.BinaryInt = append(s.BinaryInt, binint)
 			s.BinaryString = append(s.BinaryString, bbin)
 		}
 
@@ -311,29 +295,19 @@ func (q *Qubit) State(index ...[]int) []State {
 	return state
 }
 
-func to(bin string, idx []int) (int, []int, string) {
+func to(binary string, idx []int) (int, string) {
 	var sb strings.Builder
 	for _, i := range idx {
-		sb.WriteString(bin[i : i+1])
+		sb.WriteString(binary[i : i+1])
 	}
-	bbin := sb.String()
+	bin := sb.String()
 
-	bint, err := strconv.ParseInt(bbin, 2, 0)
+	bint, err := strconv.ParseInt(bin, 2, 0)
 	if err != nil {
-		panic(fmt.Sprintf("parse int bin=%s, reg=%s", bin, bbin))
+		panic(fmt.Sprintf("parse int binary=%s, reg=%s", binary, bin))
 	}
 
-	binint := make([]int, 0)
-	for _, r := range bbin {
-		if r == '0' {
-			binint = append(binint, 0)
-			continue
-		}
-
-		binint = append(binint, 1)
-	}
-
-	return int(bint), binint, bbin
+	return int(bint), bin
 }
 
 func TensorProduct(qb ...*Qubit) *Qubit {

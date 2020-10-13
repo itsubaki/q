@@ -3,33 +3,49 @@ package number
 import (
 	"fmt"
 	"math"
+	"strconv"
+	"strings"
 )
 
-func BinaryToFloat64(binary []int) float64 {
-	var d float64
-	for i, b := range binary {
-		if b != 0 && b != 1 {
-			panic(fmt.Sprintf("invalid input: %v", binary))
+func ParseFloat(binary string) (float64, error) {
+	bin := strings.Split(binary, ".")
+	if len(bin) > 2 {
+		return 0, fmt.Errorf("invalid parameter. binary=%v", binary)
+	}
+
+	bi, err := strconv.ParseInt(bin[0], 2, 0)
+	if err != nil {
+		return 0, fmt.Errorf("parse int. binary=%v", binary)
+	}
+
+	d := float64(bi)
+	if len(bin) < 2 {
+		return d, nil
+	}
+
+	for i, b := range bin[1] {
+		if b != '0' && b != '1' {
+			return 0, fmt.Errorf("invalid parameter. binary=%v", binary)
 		}
 
-		if b == 0 {
+		if b == '0' {
 			continue
 		}
 
 		d = d + math.Pow(0.5, float64(i+1))
 	}
 
-	return d
+	return d, nil
 }
 
-func ContinuedFraction(f float64, eps ...float64) []int {
+func ContinuedFraction(real float64, eps ...float64) []int {
 	e := epsilon(eps...)
-	if f < e {
+	if real < e {
 		return []int{0}
 	}
 
 	list := make([]int, 0)
-	r := f
+	r := real
 	for {
 		t := math.Trunc(r)
 		list = append(list, int(t))
@@ -45,16 +61,17 @@ func ContinuedFraction(f float64, eps ...float64) []int {
 	return list
 }
 
-func Convergent(cf []int) (int, int, float64) {
-	if len(cf) == 1 {
-		return cf[0], 1, float64(cf[0])
+func Convergent(cfx []int) (int, int, float64) {
+	l := len(cfx)
+	if l == 1 {
+		return cfx[0], 1, float64(cfx[0])
 	}
 
-	s, r := 1, cf[len(cf)-1]
-	for i := 2; i < len(cf); i++ {
-		s, r = r, cf[len(cf)-i]*r+s
+	s, r := 1, cfx[l-1]
+	for i := 2; i < l; i++ {
+		s, r = r, cfx[l-i]*r+s
 	}
-	s = s + cf[0]*r
+	s = s + cfx[0]*r
 
 	return s, r, float64(s) / float64(r)
 }
