@@ -313,7 +313,7 @@ func Example_shorFactoring21() {
 
 	m := qsim.Measure(r0...).BinaryInt()
 	s, r, d, ok := number.FindOrder(a, N, m)
-	if !ok || number.IsOdd(r) || number.ModExp(a, r/2, N) == -1 {
+	if !ok || number.IsOdd(r) {
 		return
 	}
 
@@ -375,7 +375,7 @@ func Example_shorFactoring51() {
 
 	// find s/r
 	s, r, d, ok := number.FindOrder(a, N, m)
-	if !ok || number.IsOdd(r) || number.ModExp(a, r/2, N) == -1 {
+	if !ok || number.IsOdd(r) {
 		return
 	}
 
@@ -432,7 +432,7 @@ func Example_shorFactoring85() {
 
 	// find s/r
 	s, r, d, ok := number.FindOrder(a, N, m)
-	if !ok || number.IsOdd(r) || number.ModExp(a, r/2, N) == -1 {
+	if !ok || number.IsOdd(r) {
 		return
 	}
 

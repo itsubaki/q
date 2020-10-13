@@ -88,7 +88,7 @@ func main() {
 	for _, state := range qsim.State(r0) {
 		i, m, _ := state.Value()
 		s, r, d, ok := number.FindOrder(a, N, m)
-		if !ok || number.IsOdd(r) || number.ModExp(a, r/2, N) == -1 {
+		if !ok || number.IsOdd(r) {
 			fmt.Printf("  i=%3d: N=%d, a=%d. s/r=%2d/%2d (%v~%.4f).\n", i, N, a, s, r, m, d)
 			continue
 		}

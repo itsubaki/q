@@ -11,7 +11,7 @@ func FindOrder(a, N int, binary []int, eps ...float64) (int, int, float64, bool)
 	s, r, d := Convergent(c[:1])
 	for i := 1; i < len(c); i++ {
 		s, r, d = Convergent(c[:i+1])
-		if r < N && ModExp(a, r, N) == 1 {
+		if ModExp(a, r, N) == 1 {
 			return s, r, d, true
 		}
 	}
