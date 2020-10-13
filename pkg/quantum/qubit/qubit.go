@@ -304,7 +304,7 @@ func to(binary string, idx []int) (int, string) {
 
 	bint, err := strconv.ParseInt(bin, 2, 0)
 	if err != nil {
-		panic(fmt.Sprintf("parse int binary=%s, reg=%s", binary, bin))
+		panic(fmt.Sprintf("parse int. binary=%s, bin=%s", binary, bin))
 	}
 
 	return int(bint), bin

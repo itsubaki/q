@@ -82,7 +82,7 @@ func ExampleCModExp2() {
 		// decimal number representation of target qubits
 		k, err := strconv.ParseInt(bin[1:], 2, 64)
 		if err != nil {
-			panic(fmt.Sprintf("parse int bin=%s: %v", bin[1:], err))
+			panic(fmt.Sprintf("parse int. bin=%s: %v", bin[1:], err))
 		}
 
 		if !(int(k) < N) {
@@ -98,7 +98,7 @@ func ExampleCModExp2() {
 			a2jkmodNs := fmt.Sprintf(f, strconv.FormatInt(int64(ii), 2)[1:])
 			a2jkmodN, err := strconv.ParseInt(a2jkmodNs, 2, 64)
 			if err != nil {
-				panic(fmt.Sprintf("parse int a2jkmodNs=%s: %v", a2jkmodNs, err))
+				panic(fmt.Sprintf("parse int. a2jkmodNs=%s: %v", a2jkmodNs, err))
 			}
 
 			expected := (number.ModExp2(a, j, N) * int(k)) % N
