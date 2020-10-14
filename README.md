@@ -218,10 +218,10 @@ for i := 0; i < 10; i++{
   }
 
   // result
-  fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r~%d/%d (%v=%.3f)\n", i, N, a, p0, p1, s, r, m, d)
+  fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d (%v~%.3f)\n", i, N, a, p0, p1, s, r, m, d)
 }
 
-// i=2: N=15, a=7. p=3, q=5. s/r=1/4 ([0 1 0]~0.250)
+// i=2: N=15, a=7. p=3, q=5. s/r=1/4 (010~0.250)
 ```
 
 ## Density Matrix
