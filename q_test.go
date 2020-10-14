@@ -287,10 +287,10 @@ func Example_shorFactoring15() {
 		return
 	}
 
-	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d ([%v]~%.3f)\n", N, a, p0, p1, s, r, m, d)
+	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d ([0.%v]~%.3f)\n", N, a, p0, p1, s, r, m, d)
 
 	// Output:
-	// N=15, a=7. p=3, q=5. s/r=3/4 ([110]~0.750)
+	// N=15, a=7. p=3, q=5. s/r=3/4 ([0.110]~0.750)
 }
 
 func Example_shorFactoring21() {
@@ -321,10 +321,10 @@ func Example_shorFactoring21() {
 		return
 	}
 
-	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d ([%v]~%.3f)\n", N, a, p0, p1, s, r, m, d)
+	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d ([0.%v]~%.3f)\n", N, a, p0, p1, s, r, m, d)
 
 	// Output:
-	// N=21, a=8. p=7, q=3. s/r=1/2 ([1000]~0.500)
+	// N=21, a=8. p=7, q=3. s/r=1/2 ([0.1000]~0.500)
 }
 
 func Example_shorFactoring51() {
@@ -376,10 +376,10 @@ func Example_shorFactoring51() {
 		return
 	}
 
-	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d ([%v]~%.3f)\n", N, a, p0, p1, s, r, m, d)
+	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d ([0.%v]~%.3f)\n", N, a, p0, p1, s, r, m, d)
 
 	// Output:
-	// N=51, a=5. p=3, q=17. s/r=15/16 ([1111]~0.938)
+	// N=51, a=5. p=3, q=17. s/r=15/16 ([0.1111]~0.938)
 }
 
 func Example_shorFactoring85() {
@@ -425,10 +425,10 @@ func Example_shorFactoring85() {
 		return
 	}
 
-	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d ([%v]~%.3f)\n", N, a, p0, p1, s, r, m, d)
+	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d ([0.%v]~%.3f)\n", N, a, p0, p1, s, r, m, d)
 
 	// Output:
-	// N=85, a=14. p=5, q=17. s/r=15/16 ([1111]~0.938)
+	// N=85, a=14. p=5, q=17. s/r=15/16 ([0.1111]~0.938)
 }
 
 func Example_grover4qubit() {

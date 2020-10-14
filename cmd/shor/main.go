@@ -89,18 +89,18 @@ func main() {
 		i, m := state.Value()
 		s, r, d, ok := number.FindOrder(a, N, fmt.Sprintf("0.%s", m))
 		if !ok || number.IsOdd(r) {
-			fmt.Printf("  i=%3d: N=%d, a=%d. s/r=%2d/%2d ([%v]~%.4f).\n", i, N, a, s, r, m, d)
+			fmt.Printf("  i=%3d: N=%d, a=%d. s/r=%2d/%2d ([0.%v]~%.4f).\n", i, N, a, s, r, m, d)
 			continue
 		}
 
 		p0 := number.GCD(number.Pow(a, r/2)-1, N)
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
 		if number.IsTrivial(N, p0, p1) {
-			fmt.Printf("  i=%3d: N=%d, a=%d. s/r=%2d/%2d ([%v]~%.4f). p=%v, q=%v.\n", i, N, a, s, r, m, d, p0, p1)
+			fmt.Printf("  i=%3d: N=%d, a=%d. s/r=%2d/%2d ([0.%v]~%.4f). p=%v, q=%v.\n", i, N, a, s, r, m, d, p0, p1)
 			continue
 		}
 
-		fmt.Printf("* i=%3d: N=%d, a=%d. s/r=%2d/%2d ([%v]~%.4f). p=%v, q=%v.\n", i, N, a, s, r, m, d, p0, p1)
+		fmt.Printf("* i=%3d: N=%d, a=%d. s/r=%2d/%2d ([0.%v]~%.4f). p=%v, q=%v.\n", i, N, a, s, r, m, d, p0, p1)
 		sum = sum + state.Probability
 	}
 
