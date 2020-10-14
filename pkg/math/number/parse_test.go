@@ -20,25 +20,30 @@ func TestParseFloat(t *testing.T) {
 	cases := []struct {
 		binary string
 		float  float64
+		err    error
 	}{
-		{"0.000", 0.0},
-		{"0.100", 0.5},
-		{"0.010", 0.25},
-		{"0.110", 0.75},
-		{"0.001", 0.125},
-		{"0.101", 0.625},
-		{"0.011", 0.375},
-		{"0.111", 0.875},
-		{"11.000", 3.0},
-		{"11.010", 3.25},
-		{"111", 7.0},
-		{"0.01101010101", 0.41650390625},
-		{"0.001010101010101", 0.166656494140625},
+		{"0.000", 0.0, nil},
+		{"0.100", 0.5, nil},
+		{"0.010", 0.25, nil},
+		{"0.110", 0.75, nil},
+		{"0.001", 0.125, nil},
+		{"0.101", 0.625, nil},
+		{"0.011", 0.375, nil},
+		{"0.111", 0.875, nil},
+		{"11.000", 3.0, nil},
+		{"11.010", 3.25, nil},
+		{"111", 7.0, nil},
+		{"0.01101010101", 0.41650390625, nil},
+		{"0.001010101010101", 0.166656494140625, nil},
+		{"a.bbb.ccc", 0, fmt.Errorf("invalid parameter. binary=a.bbb.ccc")},
+		{"a.bbb", 0, fmt.Errorf("invalid parameter. binary=a.bbb")},
+		{"a.001", 0, fmt.Errorf("invalid parameter. binary=a.001")},
+		{"0.bbb", 0, fmt.Errorf("invalid parameter. binary=0.bbb")},
 	}
 
 	for _, c := range cases {
 		result, err := number.ParseFloat(c.binary)
-		if err != nil {
+		if err != nil && err.Error() != c.err.Error() {
 			t.Errorf("parse float: %v", err)
 		}
 
