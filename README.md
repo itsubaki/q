@@ -167,7 +167,7 @@ for _, s := range qsim.State() {
 // [1111][ 15]( 0.0508 0.0000i): 0.0026
 ```
 
-## Factoring 15
+## Shor's factoring algorithm
 
 ```golang
 N := 15
