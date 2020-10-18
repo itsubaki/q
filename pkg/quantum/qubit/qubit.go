@@ -40,9 +40,9 @@ func One(n ...int) *Qubit {
 }
 
 func (q *Qubit) NumberOfBit() int {
-	dim := float64(q.Dimension())
-	log := math.Log2(dim)
-	return int(log)
+	d := float64(q.Dimension())
+	n := math.Log2(d)
+	return int(n)
 }
 
 func (q *Qubit) IsZero(eps ...float64) bool {
