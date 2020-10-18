@@ -125,8 +125,16 @@ func ExampleCModExp2() {
 }
 
 func TestCModExp2(t *testing.T) {
-	g1 := gate.CNOT(7, 3, 5).Apply(gate.CCNOT(7, 1, 5, 3)).Apply(gate.CNOT(7, 3, 5))
-	g2 := gate.CNOT(7, 4, 6).Apply(gate.CCNOT(7, 1, 6, 4)).Apply(gate.CNOT(7, 4, 6))
+	g1 := matrix.Apply(
+		gate.CNOT(7, 3, 5),
+		gate.CCNOT(7, 1, 5, 3),
+		gate.CNOT(7, 3, 5),
+	)
+	g2 := matrix.Apply(
+		gate.CNOT(7, 4, 6),
+		gate.CCNOT(7, 1, 6, 4),
+		gate.CNOT(7, 4, 6),
+	)
 	g3 := gate.I(7)
 
 	cases := []struct {
@@ -135,7 +143,7 @@ func TestCModExp2(t *testing.T) {
 		t          []int
 		m          matrix.Matrix
 	}{
-		{7, 7, 1, 15, 1, []int{4, 5, 6, 7}, g1.Apply(g2)},
+		{7, 7, 1, 15, 1, []int{4, 5, 6, 7}, matrix.Apply(g1, g2)},
 		{7, 7, 2, 15, 0, []int{4, 5, 6, 7}, g3},
 	}
 
@@ -161,9 +169,7 @@ func TestInverse(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		inv := c.m.Inverse()
-		mmi := c.m.Apply(inv)
-		if !mmi.Equals(c.e) {
+		if !c.m.Apply(c.m.Inverse()).Equals(c.e) {
 			t.Fail()
 		}
 	}
