@@ -28,8 +28,11 @@ func Empty(n ...int) []matrix.Matrix {
 }
 
 func U(alpha, beta, gamma, delta float64) matrix.Matrix {
-	g := RZ(beta).Apply(RY(gamma)).Apply(RZ(delta))
-	return g.Mul(cmplx.Exp(complex(0, alpha)))
+	return matrix.Apply(
+		RZ(beta),
+		RY(gamma),
+		RZ(delta),
+	).Mul(cmplx.Exp(complex(0, alpha)))
 }
 
 func RX(theta float64) matrix.Matrix {
@@ -123,14 +126,13 @@ func T(bit ...int) matrix.Matrix {
 }
 
 func ControlledNot(bit int, c []int, t int) matrix.Matrix {
-	mat := I([]int{bit}...)
-	dim, _ := mat.Dimension()
+	m := I([]int{bit}...)
+	d, _ := m.Dimension()
+	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(bit), "s")
 
 	index := make([]int64, 0)
-	f := "%0" + strconv.Itoa(bit) + "s"
-	for i := 0; i < dim; i++ {
-		s := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
-		bits := []rune(s)
+	for i := 0; i < d; i++ {
+		bits := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)))
 
 		// Apply X
 		apply := true
@@ -157,12 +159,12 @@ func ControlledNot(bit int, c []int, t int) matrix.Matrix {
 		index = append(index, v)
 	}
 
-	out := make(matrix.Matrix, dim)
+	g := make(matrix.Matrix, d)
 	for i, ii := range index {
-		out[i] = mat[ii]
+		g[i] = m[ii]
 	}
 
-	return out
+	return g
 }
 
 func CNOT(bit, c, t int) matrix.Matrix {
@@ -178,13 +180,12 @@ func Toffoli(bit, c0, c1, t int) matrix.Matrix {
 }
 
 func ControlledZ(bit int, c []int, t int) matrix.Matrix {
-	out := I([]int{bit}...)
-	dim, _ := out.Dimension()
+	g := I([]int{bit}...)
+	d, _ := g.Dimension()
+	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(bit), "s")
 
-	f := "%0" + strconv.Itoa(bit) + "s"
-	for i := 0; i < dim; i++ {
-		s := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
-		bits := []rune(s)
+	for i := 0; i < d; i++ {
+		bits := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)))
 
 		// Apply Z
 		apply := true
@@ -196,11 +197,11 @@ func ControlledZ(bit int, c []int, t int) matrix.Matrix {
 		}
 
 		if apply && bits[t] == '1' {
-			out[i][i] = complex(-1, 0) * out[i][i]
+			g[i][i] = complex(-1, 0) * g[i][i]
 		}
 	}
 
-	return out
+	return g
 }
 
 func CZ(bit, c, t int) matrix.Matrix {
@@ -208,13 +209,12 @@ func CZ(bit, c, t int) matrix.Matrix {
 }
 
 func ControlledS(bit int, c []int, t int) matrix.Matrix {
-	out := I([]int{bit}...)
-	dim, _ := out.Dimension()
+	g := I([]int{bit}...)
+	d, _ := g.Dimension()
+	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(bit), "s")
 
-	f := "%0" + strconv.Itoa(bit) + "s"
-	for i := 0; i < dim; i++ {
-		s := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
-		bits := []rune(s)
+	for i := 0; i < d; i++ {
+		bits := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)))
 
 		// Apply S
 		apply := true
@@ -226,11 +226,11 @@ func ControlledS(bit int, c []int, t int) matrix.Matrix {
 		}
 
 		if apply && bits[t] == '1' {
-			out[i][i] = 1i * out[i][i]
+			g[i][i] = 1i * g[i][i]
 		}
 	}
 
-	return out
+	return g
 }
 
 func CS(bit, c, t int) matrix.Matrix {
@@ -238,16 +238,15 @@ func CS(bit, c, t int) matrix.Matrix {
 }
 
 func ControlledR(bit int, c []int, t, k int) matrix.Matrix {
-	out := I([]int{bit}...)
-	dim, _ := out.Dimension()
+	g := I([]int{bit}...)
+	d, _ := g.Dimension()
+	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(bit), "s")
 
 	p := 2 * math.Pi / math.Pow(2, float64(k))
 	e := cmplx.Exp(complex(0, p))
 
-	f := "%0" + strconv.Itoa(bit) + "s"
-	for i := 0; i < dim; i++ {
-		s := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
-		bits := []rune(s)
+	for i := 0; i < d; i++ {
+		bits := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)))
 
 		// Apply R(k)
 		apply := true
@@ -259,11 +258,11 @@ func ControlledR(bit int, c []int, t, k int) matrix.Matrix {
 		}
 
 		if apply && bits[t] == '1' {
-			out[i][i] = e * out[i][i]
+			g[i][i] = e * g[i][i]
 		}
 	}
 
-	return out
+	return g
 }
 
 func CR(bit, c, t, k int) matrix.Matrix {
@@ -289,7 +288,7 @@ func Fredkin(bit, c, t0, t1 int) matrix.Matrix {
 
 // QFT returns unitary matrix of Quantum Fourier Transform operation
 func QFT(bit int) matrix.Matrix {
-	out := I(bit)
+	g := I(bit)
 
 	for i := 0; i < bit; i++ {
 		h := make([]matrix.Matrix, 0)
@@ -300,16 +299,16 @@ func QFT(bit int) matrix.Matrix {
 			}
 			h = append(h, I())
 		}
-		out = out.Apply(matrix.TensorProduct(h...))
+		g = g.Apply(matrix.TensorProduct(h...))
 
 		k := 2
 		for j := i + 1; j < bit; j++ {
-			out = out.Apply(CR(bit, j, i, k))
+			g = g.Apply(CR(bit, j, i, k))
 			k++
 		}
 	}
 
-	return out
+	return g
 }
 
 // CModExp2 returns unitary matrix of controlled modular exponentiation operation
@@ -320,17 +319,18 @@ func CModExp2(bit, a, j, N, c int, t []int) matrix.Matrix {
 		panic(fmt.Sprintf("invalid parameter. len(target)=%v < log2(%d)=%v", len(t), N, min))
 	}
 
-	mat := I([]int{bit}...)
-	dim, _ := mat.Dimension()
+	m := I([]int{bit}...)
+	d, _ := m.Dimension()
+
 	r0len := bit - len(t)
 	r1len := len(t)
 	a2jmodN := number.ModExp2(a, j, N)
 
-	bf := "%0" + strconv.Itoa(bit) + "s"
-	tf := "%0" + strconv.Itoa(r1len) + "s"
+	bf := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(bit), "s")
+	tf := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(r1len), "s")
 
 	index := make([]int64, 0)
-	for i := 0; i < dim; i++ {
+	for i := 0; i < d; i++ {
 		s := fmt.Sprintf(bf, strconv.FormatInt(int64(i), 2))
 		bits := []rune(s)
 
@@ -360,10 +360,10 @@ func CModExp2(bit, a, j, N, c int, t []int) matrix.Matrix {
 		index = append(index, v)
 	}
 
-	out := make(matrix.Matrix, dim)
+	g := make(matrix.Matrix, d)
 	for i, ii := range index {
-		out[i] = mat[ii]
+		g[i] = m[ii]
 	}
 
-	return out.Transpose()
+	return g.Transpose()
 }
