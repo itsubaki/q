@@ -11,12 +11,12 @@ import (
 )
 
 func New(v ...[]complex128) matrix.Matrix {
-	m := make(matrix.Matrix, len(v))
+	g := make(matrix.Matrix, len(v))
 	for i := 0; i < len(v); i++ {
-		m[i] = v[i]
+		g[i] = v[i]
 	}
 
-	return m
+	return g
 }
 
 func Empty(n ...int) []matrix.Matrix {
@@ -28,98 +28,98 @@ func Empty(n ...int) []matrix.Matrix {
 }
 
 func U(alpha, beta, gamma, delta float64) matrix.Matrix {
-	u := RZ(beta).Apply(RY(gamma)).Apply(RZ(delta))
-	return u.Mul(cmplx.Exp(complex(0, alpha)))
+	g := RZ(beta).Apply(RY(gamma)).Apply(RZ(delta))
+	return g.Mul(cmplx.Exp(complex(0, alpha)))
 }
 
 func RX(theta float64) matrix.Matrix {
 	v := complex(theta/2, 0)
 
-	m := make(matrix.Matrix, 2)
-	m[0] = []complex128{cmplx.Cos(v), complex(0, -1) * cmplx.Sin(v)}
-	m[1] = []complex128{complex(0, -1) * cmplx.Sin(v), cmplx.Cos(v)}
-	return m
+	g := make(matrix.Matrix, 2)
+	g[0] = []complex128{cmplx.Cos(v), complex(0, -1) * cmplx.Sin(v)}
+	g[1] = []complex128{complex(0, -1) * cmplx.Sin(v), cmplx.Cos(v)}
+	return g
 }
 
 func RY(theta float64) matrix.Matrix {
 	v := complex(theta/2, 0)
 
-	m := make(matrix.Matrix, 2)
-	m[0] = []complex128{cmplx.Cos(v), -1 * cmplx.Sin(v)}
-	m[1] = []complex128{cmplx.Sin(v), cmplx.Cos(v)}
-	return m
+	g := make(matrix.Matrix, 2)
+	g[0] = []complex128{cmplx.Cos(v), -1 * cmplx.Sin(v)}
+	g[1] = []complex128{cmplx.Sin(v), cmplx.Cos(v)}
+	return g
 }
 
 func RZ(theta float64) matrix.Matrix {
 	v := complex(0, 1*theta/2)
 
-	m := make(matrix.Matrix, 2)
-	m[0] = []complex128{cmplx.Exp(cmplx.Conj(v)), 0}
-	m[1] = []complex128{0, cmplx.Exp(v)}
-	return m
+	g := make(matrix.Matrix, 2)
+	g[0] = []complex128{cmplx.Exp(cmplx.Conj(v)), 0}
+	g[1] = []complex128{0, cmplx.Exp(v)}
+	return g
 }
 
 func R(k int) matrix.Matrix {
 	p := 2 * math.Pi / math.Pow(2, float64(k))
 	e := cmplx.Exp(complex(0, p))
 
-	m := make(matrix.Matrix, 2)
-	m[0] = []complex128{1, 0}
-	m[1] = []complex128{0, e}
-	return m
+	g := make(matrix.Matrix, 2)
+	g[0] = []complex128{1, 0}
+	g[1] = []complex128{0, e}
+	return g
 }
 
 func I(bit ...int) matrix.Matrix {
-	m := make(matrix.Matrix, 2)
-	m[0] = []complex128{1, 0}
-	m[1] = []complex128{0, 1}
-	return matrix.TensorProductN(m, bit...)
+	g := make(matrix.Matrix, 2)
+	g[0] = []complex128{1, 0}
+	g[1] = []complex128{0, 1}
+	return matrix.TensorProductN(g, bit...)
 }
 
 func X(bit ...int) matrix.Matrix {
-	m := make(matrix.Matrix, 2)
-	m[0] = []complex128{0, 1}
-	m[1] = []complex128{1, 0}
-	return matrix.TensorProductN(m, bit...)
+	g := make(matrix.Matrix, 2)
+	g[0] = []complex128{0, 1}
+	g[1] = []complex128{1, 0}
+	return matrix.TensorProductN(g, bit...)
 }
 
 func Y(bit ...int) matrix.Matrix {
-	m := make(matrix.Matrix, 2)
-	m[0] = []complex128{0, -1i}
-	m[1] = []complex128{1i, 0}
-	return matrix.TensorProductN(m, bit...)
+	g := make(matrix.Matrix, 2)
+	g[0] = []complex128{0, -1i}
+	g[1] = []complex128{1i, 0}
+	return matrix.TensorProductN(g, bit...)
 }
 
 func Z(bit ...int) matrix.Matrix {
-	m := make(matrix.Matrix, 2)
-	m[0] = []complex128{1, 0}
-	m[1] = []complex128{0, -1}
-	return matrix.TensorProductN(m, bit...)
+	g := make(matrix.Matrix, 2)
+	g[0] = []complex128{1, 0}
+	g[1] = []complex128{0, -1}
+	return matrix.TensorProductN(g, bit...)
 }
 
 func H(bit ...int) matrix.Matrix {
 	v := complex(1/math.Sqrt2, 0)
 
-	m := make(matrix.Matrix, 2)
-	m[0] = []complex128{v, v}
-	m[1] = []complex128{v, -1 * v}
-	return matrix.TensorProductN(m, bit...)
+	g := make(matrix.Matrix, 2)
+	g[0] = []complex128{v, v}
+	g[1] = []complex128{v, -1 * v}
+	return matrix.TensorProductN(g, bit...)
 }
 
 func S(bit ...int) matrix.Matrix {
-	m := make(matrix.Matrix, 2)
-	m[0] = []complex128{1, 0}
-	m[1] = []complex128{0, 1i}
-	return matrix.TensorProductN(m, bit...)
+	g := make(matrix.Matrix, 2)
+	g[0] = []complex128{1, 0}
+	g[1] = []complex128{0, 1i}
+	return matrix.TensorProductN(g, bit...)
 }
 
 func T(bit ...int) matrix.Matrix {
 	v := cmplx.Exp(complex(0, 1) * math.Pi / 4)
 
-	m := make(matrix.Matrix, 2)
-	m[0] = []complex128{1, 0}
-	m[1] = []complex128{0, v}
-	return matrix.TensorProductN(m, bit...)
+	g := make(matrix.Matrix, 2)
+	g[0] = []complex128{1, 0}
+	g[1] = []complex128{0, v}
+	return matrix.TensorProductN(g, bit...)
 }
 
 func ControlledNot(bit int, c []int, t int) matrix.Matrix {
@@ -271,18 +271,20 @@ func CR(bit, c, t, k int) matrix.Matrix {
 }
 
 func Swap(bit, c, t int) matrix.Matrix {
-	g0 := CNOT(bit, c, t)
-	g1 := CNOT(bit, t, c)
-	g2 := CNOT(bit, c, t)
-	return g0.Apply(g1).Apply(g2)
+	return matrix.Apply(
+		CNOT(bit, c, t),
+		CNOT(bit, t, c),
+		CNOT(bit, c, t),
+	)
 }
 
 // Fredkin returns unitary matrix of Controlled-Swap operation
 func Fredkin(bit, c, t0, t1 int) matrix.Matrix {
-	g0 := CNOT(bit, t0, t1)
-	g1 := CCNOT(bit, c, t1, t0)
-	g2 := CNOT(bit, t0, t1)
-	return g0.Apply(g1).Apply(g2)
+	return matrix.Apply(
+		CNOT(bit, t0, t1),
+		CCNOT(bit, c, t1, t0),
+		CNOT(bit, t0, t1),
+	)
 }
 
 // QFT returns unitary matrix of Quantum Fourier Transform operation
