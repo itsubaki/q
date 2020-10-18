@@ -82,10 +82,11 @@ func Example_pOVM() {
 }
 
 func Example_bellState() {
-	g0 := gate.H().TensorProduct(gate.I())
-	g1 := gate.CNOT(2, 0, 1)
+	q := qubit.Zero(2).Apply(
+		gate.H().TensorProduct(gate.I()),
+		gate.CNOT(2, 0, 1),
+	)
 
-	q := qubit.Zero(2).Apply(g0, g1)
 	for _, s := range q.State() {
 		fmt.Println(s)
 	}
@@ -97,12 +98,19 @@ func Example_bellState() {
 
 func Example_grover2qubit() {
 	oracle := gate.CZ(2, 0, 1)
+	amp := matrix.Apply(
+		gate.H(2),
+		gate.X(2),
+		gate.CZ(2, 0, 1),
+		gate.X(2),
+		gate.H(2),
+	)
 
-	h2 := gate.H(2)
-	x2 := gate.X(2)
-	amp := h2.Apply(x2).Apply(gate.CZ(2, 0, 1)).Apply(x2).Apply(h2)
-
-	q := qubit.Zero(2).Apply(h2, oracle, amp)
+	q := qubit.Zero(2).Apply(
+		gate.H(2),
+		oracle,
+		amp,
+	)
 
 	q.Measure(0)
 	q.Measure(1)
@@ -116,17 +124,28 @@ func Example_grover2qubit() {
 }
 
 func Example_grover3qubit() {
-	x := matrix.TensorProduct(gate.X(), gate.I(3))
-	oracle := x.Apply(gate.ControlledNot(4, []int{0, 1, 2}, 3)).Apply(x)
+	oracle := matrix.Apply(
+		matrix.TensorProduct(gate.X(), gate.I(3)),
+		gate.ControlledNot(4, []int{0, 1, 2}, 3),
+		matrix.TensorProduct(gate.X(), gate.I(3)),
+	)
 
-	h4 := matrix.TensorProduct(gate.H(3), gate.H())
-	x3 := matrix.TensorProduct(gate.X(3), gate.I())
-	cz := matrix.TensorProduct(gate.ControlledZ(3, []int{0, 1}, 2), gate.I())
-	h3 := matrix.TensorProduct(gate.H(3), gate.I())
-	amp := h4.Apply(x3).Apply(cz).Apply(x3).Apply(h3)
+	amp := matrix.Apply(
+		matrix.TensorProduct(gate.H(3), gate.H()),
+		matrix.TensorProduct(gate.X(3), gate.I()),
+		matrix.TensorProduct(gate.ControlledZ(3, []int{0, 1}, 2), gate.I()),
+		matrix.TensorProduct(gate.X(3), gate.I()),
+		matrix.TensorProduct(gate.H(3), gate.I()),
+	)
 
-	q := qubit.TensorProduct(qubit.Zero(3), qubit.One())
-	q.Apply(gate.H(4), oracle, amp)
+	q := qubit.TensorProduct(
+		qubit.Zero(3),
+		qubit.One(),
+	).Apply(
+		gate.H(4),
+		oracle,
+		amp,
+	)
 
 	for _, s := range q.State() {
 		fmt.Println(s)
@@ -148,8 +167,10 @@ func Example_errorCorrectionBitFlip() {
 
 	// encoding
 	phi.TensorProduct(qubit.Zero(2))
-	phi.Apply(gate.CNOT(3, 0, 1))
-	phi.Apply(gate.CNOT(3, 0, 2))
+	phi.Apply(
+		gate.CNOT(3, 0, 1),
+		gate.CNOT(3, 0, 2),
+	)
 
 	// error: first qubit is flipped
 	phi.Apply(matrix.TensorProduct(gate.X(), gate.I(2)))
@@ -158,10 +179,16 @@ func Example_errorCorrectionBitFlip() {
 	phi.TensorProduct(qubit.Zero(2))
 
 	// z1z2
-	phi.Apply(gate.CNOT(5, 0, 3), gate.CNOT(5, 1, 3))
+	phi.Apply(
+		gate.CNOT(5, 0, 3),
+		gate.CNOT(5, 1, 3),
+	)
 
 	// z2z3
-	phi.Apply(gate.CNOT(5, 1, 4), gate.CNOT(5, 2, 4))
+	phi.Apply(
+		gate.CNOT(5, 1, 4),
+		gate.CNOT(5, 2, 4),
+	)
 
 	// measure
 	m3 := phi.Measure(3)
@@ -181,8 +208,10 @@ func Example_errorCorrectionBitFlip() {
 	}
 
 	// decoding
-	phi.Apply(gate.CNOT(5, 0, 2))
-	phi.Apply(gate.CNOT(5, 0, 1))
+	phi.Apply(
+		gate.CNOT(5, 0, 2),
+		gate.CNOT(5, 0, 1),
+	)
 
 	for _, s := range phi.State() {
 		fmt.Println(s)
@@ -198,9 +227,11 @@ func Example_errorCorrectionPhaseFlip() {
 
 	// encoding
 	phi.TensorProduct(qubit.Zero(2))
-	phi.Apply(gate.CNOT(3, 0, 1))
-	phi.Apply(gate.CNOT(3, 0, 2))
-	phi.Apply(gate.H(3))
+	phi.Apply(
+		gate.CNOT(3, 0, 1),
+		gate.CNOT(3, 0, 2),
+		gate.H(3),
+	)
 
 	// error: first qubit is flipped
 	phi.Apply(matrix.TensorProduct(gate.Z(), gate.I(2)))
@@ -212,10 +243,16 @@ func Example_errorCorrectionPhaseFlip() {
 	phi.TensorProduct(qubit.Zero(2))
 
 	// x1x2
-	phi.Apply(gate.CNOT(5, 0, 3), gate.CNOT(5, 1, 3))
+	phi.Apply(
+		gate.CNOT(5, 0, 3),
+		gate.CNOT(5, 1, 3),
+	)
 
 	// x2x3
-	phi.Apply(gate.CNOT(5, 1, 4), gate.CNOT(5, 2, 4))
+	phi.Apply(
+		gate.CNOT(5, 1, 4),
+		gate.CNOT(5, 2, 4),
+	)
 
 	// H
 	phi.Apply(matrix.TensorProduct(gate.H(3), gate.I(2)))
@@ -238,9 +275,11 @@ func Example_errorCorrectionPhaseFlip() {
 	}
 
 	// decoding
-	phi.Apply(matrix.TensorProduct(gate.H(3), gate.I(2)))
-	phi.Apply(gate.CNOT(5, 0, 2))
-	phi.Apply(gate.CNOT(5, 0, 1))
+	phi.Apply(
+		matrix.TensorProduct(gate.H(3), gate.I(2)),
+		gate.CNOT(5, 0, 2),
+		gate.CNOT(5, 0, 1),
+	)
 
 	for _, s := range phi.State() {
 		fmt.Println(s)
@@ -261,24 +300,26 @@ func Example_quantumTeleportation() {
 		fmt.Println(s)
 	}
 
-	g0 := matrix.TensorProduct(gate.H(), gate.I())
-	g1 := gate.CNOT(2, 0, 1)
-	bell := qubit.Zero(2).Apply(g0, g1)
+	bell := qubit.Zero(2).Apply(
+		matrix.TensorProduct(gate.H(), gate.I()),
+		gate.CNOT(2, 0, 1),
+	)
 	phi.TensorProduct(bell)
 
-	g2 := gate.CNOT(3, 0, 1)
-	g3 := matrix.TensorProduct(gate.H(), gate.I(2))
-	phi.Apply(g2, g3)
+	phi.Apply(
+		gate.CNOT(3, 0, 1),
+		matrix.TensorProduct(gate.H(), gate.I(2)),
+	)
 
 	mz := phi.Measure(0)
 	mx := phi.Measure(1)
 
-	if mz.IsOne() {
-		phi.Apply(matrix.TensorProduct(gate.I(2), gate.Z()))
-	}
-
 	if mx.IsOne() {
 		phi.Apply(matrix.TensorProduct(gate.I(2), gate.X()))
+	}
+
+	if mz.IsOne() {
+		phi.Apply(matrix.TensorProduct(gate.I(2), gate.Z()))
 	}
 
 	fmt.Println("after:")
@@ -291,8 +332,8 @@ func Example_quantumTeleportation() {
 	// [0][  0]( 0.4472 0.0000i): 0.2000
 	// [1][  1]( 0.8944 0.0000i): 0.8000
 	// after:
-	// [110][  6](-0.4472 0.0000i): 0.2000
-	// [111][  7](-0.8944 0.0000i): 0.8000
+	// [110][  6]( 0.4472 0.0000i): 0.2000
+	// [111][  7]( 0.8944 0.0000i): 0.8000
 }
 
 func Example_quantumTeleportation2() {
@@ -305,17 +346,19 @@ func Example_quantumTeleportation2() {
 		fmt.Println(s)
 	}
 
-	g0 := matrix.TensorProduct(gate.H(), gate.I())
-	g1 := gate.CNOT(2, 0, 1)
-	bell := qubit.Zero(2).Apply(g0, g1)
+	bell := qubit.Zero(2).Apply(
+		matrix.TensorProduct(gate.H(), gate.I()),
+		gate.CNOT(2, 0, 1),
+	)
 	phi.TensorProduct(bell)
 
-	g2 := gate.CNOT(3, 0, 1)
-	g3 := matrix.TensorProduct(gate.H(), gate.I(2))
-	g4 := gate.CNOT(3, 1, 2)
-	g5 := gate.CZ(3, 0, 2)
+	phi.Apply(
+		gate.CNOT(3, 0, 1),
+		matrix.TensorProduct(gate.H(), gate.I(2)),
+		gate.CNOT(3, 1, 2),
+		gate.CZ(3, 0, 2),
+	)
 
-	phi.Apply(g2, g3, g4, g5)
 	phi.Measure(0)
 	phi.Measure(1)
 
