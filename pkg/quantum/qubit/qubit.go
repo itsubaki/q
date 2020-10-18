@@ -267,9 +267,9 @@ func (q *Qubit) State(index ...[]int) []State {
 
 		index = append(index, idx)
 	}
+	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(q.NumberOfBit()), "s")
 
 	state := make([]State, 0)
-	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(q.NumberOfBit()), "s")
 	for i, a := range q.Amplitude() {
 		if math.Abs(real(a)) < 1e-13 {
 			a = complex(0, imag(a))
@@ -280,8 +280,8 @@ func (q *Qubit) State(index ...[]int) []State {
 		if a == 0 {
 			continue
 		}
-
 		bin := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
+
 		s := State{Amplitude: a, Probability: math.Pow(cmplx.Abs(a), 2)}
 		for _, idx := range index {
 			bint, bbin := to(bin, idx)
