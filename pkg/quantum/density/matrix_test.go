@@ -12,7 +12,10 @@ import (
 )
 
 func TestPartialTrace(t *testing.T) {
-	qc := gate.H().TensorProduct(gate.I()).Apply(gate.CNOT(2, 0, 1))
+	qc := matrix.Apply(
+		matrix.TensorProduct(gate.H(), gate.I()),
+		gate.CNOT(2, 0, 1),
+	)
 	q := qubit.Zero(2).Apply(qc)
 	rho := density.New().Add(1.0, q)
 
