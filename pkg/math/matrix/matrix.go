@@ -314,6 +314,15 @@ func (m Matrix) TensorProduct(n Matrix) Matrix {
 	return out
 }
 
+func Apply(m ...Matrix) Matrix {
+	out := m[0]
+	for i := 1; i < len(m); i++ {
+		out = out.Apply(m[i])
+	}
+
+	return out
+}
+
 func TensorProductN(m Matrix, bit ...int) Matrix {
 	if len(bit) < 1 {
 		return m
