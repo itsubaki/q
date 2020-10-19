@@ -11,27 +11,51 @@ import (
 )
 
 func ExampleX() {
-	x := gate.X()
-	fmt.Println("x:")
-	for _, r := range x {
-		fmt.Println(r)
-	}
-
-	xx := gate.X(2)
-	fmt.Println("xx:")
-	for _, r := range xx {
+	g := gate.X()
+	for _, r := range g {
 		fmt.Println(r)
 	}
 
 	// Output:
-	// x:
 	// [(0+0i) (1+0i)]
 	// [(1+0i) (0+0i)]
-	// xx:
+}
+
+func ExampleX_xX() {
+	g := gate.X(2)
+	for _, r := range g {
+		fmt.Println(r)
+	}
+
+	// Output:
 	// [(0+0i) (0+0i) (0+0i) (1+0i)]
 	// [(0+0i) (0+0i) (1+0i) (0+0i)]
 	// [(0+0i) (1+0i) (0+0i) (0+0i)]
 	// [(1+0i) (0+0i) (0+0i) (0+0i)]
+}
+
+func ExampleH() {
+	g := gate.H()
+	for _, r := range g {
+		fmt.Printf("%.4v\n", r)
+	}
+
+	// Output:
+	// [(0.7071+0i) (0.7071+0i)]
+	// [(0.7071+0i) (-0.7071+0i)]
+}
+
+func ExampleH_hH() {
+	g := gate.H(2)
+	for _, r := range g {
+		fmt.Printf("%.4v\n", r)
+	}
+
+	// Output:
+	// [(0.5+0i) (0.5+0i) (0.5+0i) (0.5+0i)]
+	// [(0.5+0i) (-0.5+0i) (0.5+0i) (-0.5+0i)]
+	// [(0.5+0i) (0.5+0i) (-0.5+0i) (-0.5+0i)]
+	// [(0.5+0i) (-0.5+0i) (-0.5+0i) (0.5-0i)]
 }
 
 func ExampleCNOT() {
@@ -141,7 +165,7 @@ func TestCModExp2(t *testing.T) {
 		b, a, j, N int
 		c          int
 		t          []int
-		m          matrix.Matrix
+		e          matrix.Matrix
 	}{
 		{7, 7, 1, 15, 1, []int{4, 5, 6, 7}, matrix.Apply(g1, g2)},
 		{7, 7, 2, 15, 0, []int{4, 5, 6, 7}, g3},
@@ -153,7 +177,7 @@ func TestCModExp2(t *testing.T) {
 			t.Errorf("modexp is not unitary")
 		}
 
-		if c.m != nil && !a.Equals(c.m) {
+		if !a.Equals(c.e) {
 			t.Fail()
 		}
 	}

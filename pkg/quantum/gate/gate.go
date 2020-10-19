@@ -331,8 +331,7 @@ func CModExp2(bit, a, j, N, c int, t []int) matrix.Matrix {
 
 	index := make([]int64, 0)
 	for i := 0; i < d; i++ {
-		s := fmt.Sprintf(bf, strconv.FormatInt(int64(i), 2))
-		bits := []rune(s)
+		bits := []rune(fmt.Sprintf(bf, strconv.FormatInt(int64(i), 2)))
 
 		if bits[c] == '1' {
 			r0bits, r1bits := bits[:r0len], bits[r0len:]
