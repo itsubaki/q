@@ -277,7 +277,7 @@ func Swap(bit, c, t int) matrix.Matrix {
 	)
 }
 
-// Fredkin returns unitary matrix of Controlled-Swap operation
+// Fredkin returns unitary matrix of Controlled-Swap operation.
 func Fredkin(bit, c, t0, t1 int) matrix.Matrix {
 	return matrix.Apply(
 		CNOT(bit, t0, t1),
@@ -286,7 +286,7 @@ func Fredkin(bit, c, t0, t1 int) matrix.Matrix {
 	)
 }
 
-// QFT returns unitary matrix of Quantum Fourier Transform operation
+// QFT returns unitary matrix of Quantum Fourier Transform operation.
 func QFT(bit int) matrix.Matrix {
 	g := I(bit)
 
@@ -311,8 +311,7 @@ func QFT(bit int) matrix.Matrix {
 	return g
 }
 
-// CModExp2 returns unitary matrix of controlled modular exponentiation operation
-//  |k> -> |a^2^j * k mod N>
+// CModExp2 returns unitary matrix of controlled modular exponentiation operation. |j>|k> -> |j>|a**(2**j) * k mod N>
 func CModExp2(bit, a, j, N, c int, t []int) matrix.Matrix {
 	min := int(math.Log2(float64(N))) + 1
 	if len(t) < min {

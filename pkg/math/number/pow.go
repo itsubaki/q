@@ -5,6 +5,7 @@ import (
 	"strconv"
 )
 
+// Pow returns a**r, the base-a exponential of r.
 func Pow(a, r int) int {
 	if a == 0 {
 		return 0
@@ -22,8 +23,7 @@ func Pow(a, r int) int {
 	return p
 }
 
-// ModExp returns modular exponentiation
-//  a^r mod N
+// ModExp returns a**r mod N.
 func ModExp(a, r, N int) int {
 	if a == 0 {
 		return 0
@@ -41,8 +41,7 @@ func ModExp(a, r, N int) int {
 	return p
 }
 
-// ModExp2 returns modular exponentiation
-//  a^2^j mod N
+// ModExp2 returns a**(2**j) mod N.
 func ModExp2(a, j, N int) int {
 	if a == 0 {
 		return 0

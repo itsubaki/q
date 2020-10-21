@@ -2,6 +2,7 @@ package number
 
 import "fmt"
 
+// FindOrder returns convergent s/r and its real number such that a**r mod N = 1.
 func FindOrder(a, N int, binary string, eps ...float64) (int, int, float64, bool) {
 	if len(binary) < 1 {
 		return 0, 1, 0, false
