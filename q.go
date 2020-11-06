@@ -24,6 +24,10 @@ func Index(qb ...Qubit) []int {
 	return index
 }
 
+func Register(qb ...Qubit) []Qubit {
+	return append(make([]Qubit, 0), qb...)
+}
+
 type Q struct {
 	internal *qubit.Qubit
 	Seed     []int64

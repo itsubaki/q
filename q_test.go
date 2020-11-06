@@ -501,7 +501,8 @@ func Example_grover3qubit() {
 	qsim.X(q0, q1, q2).CCZ(q0, q1, q2).X(q0, q1, q2)
 	qsim.H(q0, q1, q2)
 
-	for _, s := range qsim.State([]q.Qubit{q0, q1, q2}, []q.Qubit{q3}) {
+	r0, r1 := q.Register(q0, q1, q2), q.Register(q3)
+	for _, s := range qsim.State(r0, r1) {
 		if s.Probability == 0 {
 			continue
 		}
@@ -575,7 +576,8 @@ func Example_quantumTeleportation() {
 	q1 := qsim.Zero()
 
 	fmt.Println("phi:")
-	for _, s := range qsim.State([]q.Qubit{phi}) {
+	r0 := q.Register(phi)
+	for _, s := range qsim.State(r0) {
 		fmt.Println(s)
 	}
 
@@ -588,7 +590,8 @@ func Example_quantumTeleportation() {
 	qsim.Measure(phi, q0)
 
 	fmt.Println("q1:")
-	for _, s := range qsim.State([]q.Qubit{q1}) {
+	r1 := q.Register(q1)
+	for _, s := range qsim.State(r1) {
 		fmt.Println(s)
 	}
 
@@ -628,7 +631,8 @@ func ExampleQ_ConditionZ_quantumTeleportation() {
 	q1 := qsim.Zero()
 
 	fmt.Println("phi:")
-	for _, s := range qsim.State([]q.Qubit{phi}) {
+	r0 := q.Register(phi)
+	for _, s := range qsim.State(r0) {
 		fmt.Println(s)
 	}
 
@@ -642,7 +646,8 @@ func ExampleQ_ConditionZ_quantumTeleportation() {
 	qsim.ConditionZ(mz.IsOne(), q1)
 
 	fmt.Println("q1:")
-	for _, s := range qsim.State([]q.Qubit{q1}) {
+	r1 := q.Register(q1)
+	for _, s := range qsim.State(r1) {
 		fmt.Println(s)
 	}
 
@@ -661,7 +666,8 @@ func ExampleQ_ConditionX_errorCorrection() {
 	q0 := qsim.New(1, 2)
 
 	fmt.Println("q0:")
-	for _, s := range qsim.State([]q.Qubit{q0}) {
+	r0 := q.Register(q0)
+	for _, s := range qsim.State(r0) {
 		fmt.Println(s)
 	}
 
@@ -674,7 +680,7 @@ func ExampleQ_ConditionX_errorCorrection() {
 	qsim.X(q0)
 
 	fmt.Println("q0(flipped):")
-	for _, s := range qsim.State([]q.Qubit{q0}) {
+	for _, s := range qsim.State(r0) {
 		fmt.Println(s)
 	}
 
@@ -697,7 +703,7 @@ func ExampleQ_ConditionX_errorCorrection() {
 	qsim.CNOT(q0, q2).CNOT(q0, q1)
 
 	fmt.Println("q0(corrected):")
-	for _, s := range qsim.State([]q.Qubit{q0}) {
+	for _, s := range qsim.State(r0) {
 		fmt.Println(s)
 	}
 
