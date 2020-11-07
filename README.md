@@ -52,8 +52,7 @@ q0 := qsim.Zero()
 q1 := qsim.Zero()
 
 // |phi> is normalized. |phi> = a|0> + b|1>, |a|^2 = 0.2, |b|^2 = 0.8
-r0 := q.Register(phi)
-for _, s := range qsim.State(r0) {
+for _, s := range qsim.State(q.Register(phi)) {
   fmt.Println(s)
 }
 // [0][  0]( 0.4472 0.0000i): 0.2000
@@ -71,8 +70,7 @@ qsim.ConditionX(mx.IsOne(), q1)
 qsim.ConditionZ(mz.IsOne(), q1)
 
 // Bob got |phi> state with q1
-r1 := q.Register(q1)
-for _, s := range qsim.State(r1) {
+for _, s := range qsim.State(q.Register(q1)) {
   fmt.Println(s)
 }
 // [0][  0]( 0.4472 0.0000i): 0.2000
@@ -112,8 +110,7 @@ qsim.ConditionX(m3.IsZero() && m4.IsOne(), q2)
 // decoding
 qsim.CNOT(q0, q2).CNOT(q0, q1)
 
-r0 := q.Register(q0)
-for _, s := range qsim.State(r0) {
+for _, s := range qsim.State(q.Register(q0)) {
   fmt.Println(s)
 }
 // [0][  0]( 0.4472 0.0000i): 0.2000
