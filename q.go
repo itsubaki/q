@@ -15,6 +15,10 @@ func (q Qubit) Index() int {
 	return int(q)
 }
 
+func (q Qubit) Reg() []Qubit {
+	return []Qubit{q}
+}
+
 func Index(qb ...Qubit) []int {
 	index := make([]int, 0)
 	for i := range qb {
@@ -22,10 +26,6 @@ func Index(qb ...Qubit) []int {
 	}
 
 	return index
-}
-
-func Register(qb ...Qubit) []Qubit {
-	return append(make([]Qubit, 0), qb...)
 }
 
 type Q struct {
