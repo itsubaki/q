@@ -485,23 +485,21 @@ func Example_grover3qubit() {
 	qsim := q.New()
 
 	// initial state
-	q0 := qsim.Zero()
-	q1 := qsim.Zero()
-	q2 := qsim.Zero()
-	q3 := qsim.One()
+	r := qsim.ZeroWith(3)
+	a := qsim.OneWith(1)
 
 	// superposition
-	qsim.H(q0, q1, q2, q3)
+	qsim.H(r...).H(a...)
 
 	// oracle for |011>|1>
-	qsim.X(q0).CCCNOT(q0, q1, q2, q3).X(q0)
+	qsim.X(r[0]).CCCNOT(r[0], r[1], r[2], a[0]).X(r[0])
 
 	// amplification
-	qsim.H(q0, q1, q2, q3)
-	qsim.X(q0, q1, q2).CCZ(q0, q1, q2).X(q0, q1, q2)
-	qsim.H(q0, q1, q2)
+	qsim.H(r...).H(a...)
+	qsim.X(r...).CCZ(r[0], r[1], r[2]).X(r...)
+	qsim.H(r...)
 
-	for _, s := range qsim.State() {
+	for _, s := range qsim.State(r, a) {
 		if s.Probability == 0 {
 			continue
 		}
@@ -510,14 +508,14 @@ func Example_grover3qubit() {
 	}
 
 	// Output:
-	// [0001][  1](-0.1768 0.0000i): 0.0313
-	// [0011][  3](-0.1768 0.0000i): 0.0313
-	// [0101][  5](-0.1768 0.0000i): 0.0313
-	// [0111][  7](-0.8839 0.0000i): 0.7813
-	// [1001][  9](-0.1768 0.0000i): 0.0313
-	// [1011][ 11](-0.1768 0.0000i): 0.0313
-	// [1101][ 13](-0.1768 0.0000i): 0.0313
-	// [1111][ 15](-0.1768 0.0000i): 0.0313
+	// [000 1][  0   1](-0.1768 0.0000i): 0.0313
+	// [001 1][  1   1](-0.1768 0.0000i): 0.0313
+	// [010 1][  2   1](-0.1768 0.0000i): 0.0313
+	// [011 1][  3   1](-0.8839 0.0000i): 0.7813
+	// [100 1][  4   1](-0.1768 0.0000i): 0.0313
+	// [101 1][  5   1](-0.1768 0.0000i): 0.0313
+	// [110 1][  6   1](-0.1768 0.0000i): 0.0313
+	// [111 1][  7   1](-0.1768 0.0000i): 0.0313
 }
 
 func Example_qFT3qubit() {
