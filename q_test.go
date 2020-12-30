@@ -500,10 +500,6 @@ func Example_grover3qubit() {
 	qsim.H(r...)
 
 	for _, s := range qsim.State(r, a) {
-		if s.Probability == 0 {
-			continue
-		}
-
 		fmt.Println(s)
 	}
 
