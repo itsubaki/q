@@ -1,6 +1,7 @@
 package q
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
@@ -13,10 +14,6 @@ type Qubit int
 
 func (q Qubit) Index() int {
 	return int(q)
-}
-
-func (q Qubit) Reg() []Qubit {
-	return []Qubit{q}
 }
 
 func Index(qb ...Qubit) []int {
@@ -339,10 +336,17 @@ func (q *Q) String() string {
 	return q.internal.String()
 }
 
-func (q *Q) State(reg ...[]Qubit) []qubit.State {
+func (q *Q) State(reg ...interface{}) []qubit.State {
 	index := make([][]int, 0)
 	for _, r := range reg {
-		index = append(index, Index(r...))
+		switch r := r.(type) {
+		case Qubit:
+			index = append(index, []int{r.Index()})
+		case []Qubit:
+			index = append(index, Index(r...))
+		default:
+			panic(fmt.Sprintf("invalid type %T", r))
+		}
 	}
 
 	return q.internal.State(index...)
