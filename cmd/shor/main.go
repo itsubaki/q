@@ -107,11 +107,11 @@ func main() {
 	fmt.Printf("success rate: %v\n", sum)
 }
 
-func print(desc string, qsim *q.Q, r0, r1 []q.Qubit) {
+func print(desc string, qsim *q.Q, reg ...interface{}) {
 	fmt.Println(desc)
 
 	max := number.Max(qsim.Probability())
-	for _, s := range qsim.State(r0, r1) {
+	for _, s := range qsim.State(reg...) {
 		p := strings.Repeat("*", int(s.Probability/max*32))
 		fmt.Printf("%s: %s\n", s, p)
 	}
