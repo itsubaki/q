@@ -10,6 +10,10 @@ type State struct {
 }
 
 func (s State) Value(index ...int) (int, string) {
+	if len(index) > 1 {
+		panic(fmt.Sprintf("invalid parameter. len(index)=%v", len(index)))
+	}
+
 	i := 0
 	if len(index) > 0 {
 		i = index[0]
