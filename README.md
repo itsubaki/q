@@ -30,8 +30,8 @@ for _, s := range qsim.State() {
 
 m0 := qsim.Measure(q0)
 m1 := qsim.Measure(q1)
-// -> m0 = |0> then m1 = |0>
-// -> m0 = |1> then m1 = |1>
+// if m0.IsZero() is true, m1.IsZero() is also true
+// if m0.IsOne()  is true, m1.IsOne()  is also true
 
 for _, s := range qsim.State() {
   fmt.Println(s)
