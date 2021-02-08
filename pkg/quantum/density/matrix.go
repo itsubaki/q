@@ -3,6 +3,7 @@ package density
 import (
 	"fmt"
 	"math"
+	"strconv"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/quantum/gate"
@@ -17,14 +18,23 @@ func New(v ...[]complex128) *Matrix {
 	return &Matrix{matrix.New(v...)}
 }
 
+func (m *Matrix) Internal() matrix.Matrix {
+	return m.internal
+}
+
+func (m *Matrix) Dimension() int {
+	return len(m.internal)
+}
+
 func (m *Matrix) Add(p float64, q *qubit.Qubit) *Matrix {
 	n := q.Dimension()
-	if len(m.internal) < 1 {
+	if m.Dimension() < 1 {
 		m.internal = matrix.Zero(n)
 	}
 
-	if len(m.internal) != n {
-		panic(fmt.Sprintf("invalid dimension. m=%d n=%d", len(m.internal), n))
+	d := m.Dimension()
+	if d != n {
+		panic(fmt.Sprintf("invalid dimension. d=%d n=%d", d, n))
 	}
 
 	op := q.OuterProduct(q).Mul(complex(p, 0))
@@ -54,14 +64,35 @@ func (m *Matrix) Trace() complex128 {
 	return m.internal.Trace()
 }
 
-func (m *Matrix) PartialTrace(i int) *Matrix {
-	n := m.NumberOfBit()
-	s := math.Pow(2, float64(n-1))
-	t := matrix.Zero(int(s))
+func (m *Matrix) PartialTrace(index int) *Matrix {
+	n, d := m.NumberOfBit(), m.Dimension()
+	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 
-	// TODO
+	t := matrix.Zero(int(math.Pow(2, float64(n-1))))
+	for i := 0; i < d; i++ {
+		ibits := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
 
-	return &Matrix{t}
+		for j := 0; j < d; j++ {
+			jbits := fmt.Sprintf(f, strconv.FormatInt(int64(j), 2))
+
+			if ibits[index] != jbits[index] {
+				continue
+			}
+
+			v0, err := strconv.ParseInt(string(ibits[index:index+1]), 2, 0)
+			if err != nil {
+				panic(fmt.Sprintf("parse int: %v", err))
+			}
+			v1, err := strconv.ParseInt(string(jbits[index:index+1]), 2, 0)
+			if err != nil {
+				panic(fmt.Sprintf("parse int: %v", err))
+			}
+
+			t[v0][v1] = t[v0][v1] + m.internal[i][j]
+		}
+	}
+
+	return &Matrix{internal: t}
 }
 
 func (m *Matrix) Squared() *Matrix {

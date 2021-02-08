@@ -11,16 +11,46 @@ import (
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
 
-func TestPartialTrace(t *testing.T) {
+func ExampleMatrix_PartialTrace_bell() {
 	qc := matrix.Apply(
 		matrix.TensorProduct(gate.H(), gate.I()),
 		gate.CNOT(2, 0, 1),
 	)
 	q := qubit.Zero(2).Apply(qc)
 	rho := density.New().Add(1.0, q)
+	for _, p := range rho.Internal() {
+		fmt.Printf("%.1f\n", p)
+	}
+	fmt.Println()
 
 	pt := rho.PartialTrace(0)
-	fmt.Println(pt)
+	for _, p := range pt.Internal() {
+		fmt.Printf("%.1f\n", p)
+	}
+
+	// Output:
+	// [(0.5+0.0i) (0.0+0.0i) (0.0+0.0i) (0.5+0.0i)]
+	// [(0.0+0.0i) (0.0+0.0i) (0.0+0.0i) (0.0+0.0i)]
+	// [(0.0+0.0i) (0.0+0.0i) (0.0+0.0i) (0.0+0.0i)]
+	// [(0.5+0.0i) (0.0+0.0i) (0.0+0.0i) (0.5+0.0i)]
+
+	// [(0.5+0.0i) (0.0+0.0i)]
+	// [(0.0+0.0i) (0.5+0.0i)]
+}
+
+func ExampleMatrix_PartialTrace() {
+	q := qubit.Zero(2).Apply(gate.H(2))
+	rho := density.New().Add(1.0, q)
+	for _, p := range rho.Internal() {
+		fmt.Printf("%.2f\n", p)
+	}
+	fmt.Println()
+
+	pt := rho.PartialTrace(1)
+	for _, p := range pt.Internal() {
+		fmt.Printf("%.2f\n", p)
+	}
+	// Output:
 }
 
 func TestDensityMatrix(t *testing.T) {
