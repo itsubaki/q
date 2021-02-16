@@ -1,0 +1,27 @@
+name: tests
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        go: ['1.15']
+        platform: [ubuntu-latest, macos-latest]
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Setup Go @ ${{ matrix.go }}
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go }}
+      
+      - name: Checkout
+        uses: actions/checkout@v2
+        
+      - name: Tests
+        run: go test -cover $(go list ./... | grep -v /vendor/ | grep -v /build/) -v
