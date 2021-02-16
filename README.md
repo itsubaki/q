@@ -1,8 +1,8 @@
 # q
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/itsubaki/q?style=flat-square)](https://goreportcard.com/report/github.com/itsubaki/q)
-[![Build Status](https://travis-ci.com/itsubaki/q.svg?branch=master)](https://travis-ci.com/itsubaki/q)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/itsubaki/q)](https://pkg.go.dev/github.com/itsubaki/q)
+[![tests](https://github.com/itsubaki/q/workflows/tests/badge.svg?branch=master)](https://github.com/itsubaki/q/actions)
 
 - quantum computation simulator
 - pure golang implementation
