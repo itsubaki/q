@@ -323,13 +323,13 @@ func Apply(m ...Matrix) Matrix {
 	return out
 }
 
-func TensorProductN(m Matrix, bit ...int) Matrix {
-	if len(bit) < 1 {
+func TensorProductN(m Matrix, n ...int) Matrix {
+	if len(n) < 1 {
 		return m
 	}
 
 	list := make([]Matrix, 0)
-	for i := 0; i < bit[0]; i++ {
+	for i := 0; i < n[0]; i++ {
 		list = append(list, m)
 	}
 

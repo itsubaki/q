@@ -49,10 +49,10 @@ func (v Vector) Dual() Vector {
 	return out
 }
 
-func (v Vector) Add(v1 Vector) Vector {
+func (v Vector) Add(w Vector) Vector {
 	out := Vector{}
 	for i := 0; i < len(v); i++ {
-		out = append(out, v[i]+v1[i])
+		out = append(out, v[i]+w[i])
 	}
 
 	return out
