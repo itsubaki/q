@@ -158,35 +158,35 @@ func ExampleQ_CModExp2() {
 func ExampleQ_ControlledModExp2_mod21() {
 	qsim := q.New()
 
-	c := qsim.ZeroWith(1)
+	c := qsim.Zero()
 	t := qsim.ZeroLog2(21)
 
-	qsim.X(c...)
+	qsim.X(c)
 	qsim.X(t[len(t)-1])
 	for _, s := range qsim.State(c, t) {
 		fmt.Println(s)
 	}
 
 	// 2^2^0 * 1 mod 21 = 2
-	qsim.ControlledModExp2(2, 0, 21, c[0], t)
+	qsim.ControlledModExp2(2, 0, 21, c, t)
 	for _, s := range qsim.State(c, t) {
 		fmt.Println(s)
 	}
 
 	// 2^2^1 * 2 mod 21 = 8
-	qsim.ControlledModExp2(2, 1, 21, c[0], t)
+	qsim.ControlledModExp2(2, 1, 21, c, t)
 	for _, s := range qsim.State(c, t) {
 		fmt.Println(s)
 	}
 
 	// 2^2^2 * 8 mod 21 = 2
-	qsim.ControlledModExp2(2, 2, 21, c[0], t)
+	qsim.ControlledModExp2(2, 2, 21, c, t)
 	for _, s := range qsim.State(c, t) {
 		fmt.Println(s)
 	}
 
 	// 2^2^3 * 2 mod 21 = 8
-	qsim.ControlledModExp2(2, 3, 21, c[0], t)
+	qsim.ControlledModExp2(2, 3, 21, c, t)
 	for _, s := range qsim.State(c, t) {
 		fmt.Println(s)
 	}
@@ -202,29 +202,29 @@ func ExampleQ_ControlledModExp2_mod21() {
 func ExampleQ_ControlledModExp2_mod15() {
 	qsim := q.New()
 
-	c := qsim.ZeroWith(1)
+	c := qsim.Zero()
 	t := qsim.ZeroLog2(15)
 
-	qsim.X(c...)
+	qsim.X(c)
 	qsim.X(t[len(t)-1])
 	for _, s := range qsim.State(c, t) {
 		fmt.Println(s)
 	}
 
 	// 7^2^0 * 1 mod 15 = 7
-	qsim.ControlledModExp2(7, 0, 15, c[0], t)
+	qsim.ControlledModExp2(7, 0, 15, c, t)
 	for _, s := range qsim.State(c, t) {
 		fmt.Println(s)
 	}
 
 	// 7^2^1 * 7 mod 15 = 13
-	qsim.ControlledModExp2(7, 1, 15, c[0], t)
+	qsim.ControlledModExp2(7, 1, 15, c, t)
 	for _, s := range qsim.State(c, t) {
 		fmt.Println(s)
 	}
 
 	// 7^2^2 * 13 mod 15 = 13
-	qsim.ControlledModExp2(7, 2, 15, c[0], t)
+	qsim.ControlledModExp2(7, 2, 15, c, t)
 	for _, s := range qsim.State(c, t) {
 		fmt.Println(s)
 	}
@@ -486,16 +486,16 @@ func Example_grover3qubit() {
 
 	// initial state
 	r := qsim.ZeroWith(3)
-	a := qsim.OneWith(1)
+	a := qsim.One()
 
 	// superposition
-	qsim.H(r...).H(a...)
+	qsim.H(r...).H(a)
 
 	// oracle for |011>|1>
-	qsim.X(r[0]).CCCNOT(r[0], r[1], r[2], a[0]).X(r[0])
+	qsim.X(r[0]).CCCNOT(r[0], r[1], r[2], a).X(r[0])
 
 	// amplification
-	qsim.H(r...).H(a...)
+	qsim.H(r...).H(a)
 	qsim.X(r...).CCZ(r[0], r[1], r[2]).X(r...)
 	qsim.H(r...)
 
