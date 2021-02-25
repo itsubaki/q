@@ -4,6 +4,7 @@ test:
 	go test -cover $(shell go list ./... | grep -v /vendor/ | grep -v /build/) -v
 
 bench:
+	cd pkg/math/vector; go test --bench . --benchmem
 	cd pkg/math/matrix; go test --bench . --benchmem
 
 doc:

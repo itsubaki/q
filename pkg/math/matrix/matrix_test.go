@@ -8,11 +8,12 @@ import (
 	"github.com/itsubaki/q/pkg/math/matrix"
 )
 
-func BenchmarkApply(b *testing.B) {
-	x := matrix.New(
+func BenchmarkApplyN8(b *testing.B) {
+	n := 8
+	x := matrix.TensorProductN(matrix.New(
 		[]complex128{0, 1},
 		[]complex128{1, 0},
-	)
+	), n)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -20,7 +21,7 @@ func BenchmarkApply(b *testing.B) {
 	}
 }
 
-func BenchmarkApplyConcurrency(b *testing.B) {
+func BenchmarkApplyConcurrencyN8(b *testing.B) {
 	apply := func(n, m matrix.Matrix) matrix.Matrix {
 		p, _ := m.Dimension()
 		a, b := n.Dimension()
@@ -32,7 +33,7 @@ func BenchmarkApplyConcurrency(b *testing.B) {
 			go func(i int, out *matrix.Matrix) {
 				defer wg.Done()
 
-				v := make([]complex128, 0)
+				v := make([]complex128, b)
 				for j := 0; j < b; j++ {
 					c := complex(0, 0)
 					for k := 0; k < p; k++ {
@@ -50,10 +51,11 @@ func BenchmarkApplyConcurrency(b *testing.B) {
 		return out
 	}
 
-	x := matrix.New(
+	n := 8
+	x := matrix.TensorProductN(matrix.New(
 		[]complex128{0, 1},
 		[]complex128{1, 0},
-	)
+	), n)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -61,11 +63,12 @@ func BenchmarkApplyConcurrency(b *testing.B) {
 	}
 }
 
-func BenchmarkTensorProduct(b *testing.B) {
-	x := matrix.New(
+func BenchmarkTensorProductN6(b *testing.B) {
+	n := 6
+	x := matrix.TensorProductN(matrix.New(
 		[]complex128{0, 1},
 		[]complex128{1, 0},
-	)
+	), n)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -73,7 +76,7 @@ func BenchmarkTensorProduct(b *testing.B) {
 	}
 }
 
-func BenchmarkTensorProductConcurrency(b *testing.B) {
+func BenchmarkTensorProductConcurrencyN6(b *testing.B) {
 	tensorproduct := func(n, m matrix.Matrix) matrix.Matrix {
 		p, q := m.Dimension()
 		a, b := n.Dimension()
@@ -102,10 +105,11 @@ func BenchmarkTensorProductConcurrency(b *testing.B) {
 		return out
 	}
 
-	x := matrix.New(
+	n := 6
+	x := matrix.TensorProductN(matrix.New(
 		[]complex128{0, 1},
 		[]complex128{1, 0},
-	)
+	), n)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {

@@ -24,4 +24,13 @@ jobs:
         uses: actions/checkout@v2
         
       - name: Tests
-        run: go test -cover $(go list ./... | grep -v /vendor/ | grep -v /build/) -v
+        run: |
+          make test
+
+      - name: Benchmark
+        run: |
+          make bench
+
+      - name: Shor
+        run: |
+          make shor

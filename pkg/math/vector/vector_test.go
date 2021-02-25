@@ -2,11 +2,66 @@ package vector_test
 
 import (
 	"fmt"
+	"sync"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/math/vector"
 )
+
+func BenchmarkApplyN12(b *testing.B) {
+	n := 12
+	v := vector.TensorProductN(vector.New(1, 2), n)
+	x := matrix.TensorProductN(
+		matrix.New(
+			[]complex128{0, 1},
+			[]complex128{1, 0},
+		), n)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		v.Apply(x)
+	}
+}
+
+func BenchmarkApplyConcurrencyN12(b *testing.B) {
+	apply := func(v vector.Vector, m matrix.Matrix) vector.Vector {
+		p, q := m.Dimension()
+
+		wg := sync.WaitGroup{}
+		out := make(vector.Vector, p)
+		for i := 0; i < p; i++ {
+			wg.Add(1)
+
+			go func(i int, out *vector.Vector) {
+				defer wg.Done()
+
+				tmp := complex(0, 0)
+				for j := 0; j < q; j++ {
+					tmp = tmp + m[i][j]*v[j]
+				}
+
+				(*out)[i] = tmp
+			}(i, &out)
+		}
+
+		wg.Wait()
+		return out
+	}
+
+	n := 12
+	v := vector.TensorProductN(vector.New(1, 2), n)
+	x := matrix.TensorProductN(
+		matrix.New(
+			[]complex128{0, 1},
+			[]complex128{1, 0},
+		), n)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		apply(v, x)
+	}
+}
 
 func ExampleZero() {
 	v := vector.Zero(3)
