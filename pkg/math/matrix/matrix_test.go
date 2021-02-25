@@ -2,10 +2,116 @@ package matrix_test
 
 import (
 	"fmt"
+	"sync"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
 )
+
+func BenchmarkApply(b *testing.B) {
+	x := matrix.New(
+		[]complex128{0, 1},
+		[]complex128{1, 0},
+	)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		x.Apply(x)
+	}
+}
+
+func BenchmarkApplyConcurrency(b *testing.B) {
+	apply := func(n, m matrix.Matrix) matrix.Matrix {
+		p, _ := m.Dimension()
+		a, b := n.Dimension()
+
+		wg := sync.WaitGroup{}
+		out := make(matrix.Matrix, a)
+		for i := 0; i < a; i++ {
+			wg.Add(1)
+			go func(i int, out *matrix.Matrix) {
+				defer wg.Done()
+
+				v := make([]complex128, 0)
+				for j := 0; j < b; j++ {
+					c := complex(0, 0)
+					for k := 0; k < p; k++ {
+						c = c + n[i][k]*m[k][j]
+					}
+
+					v = append(v, c)
+				}
+
+				(*out)[i] = v
+			}(i, &out)
+		}
+
+		wg.Wait()
+		return out
+	}
+
+	x := matrix.New(
+		[]complex128{0, 1},
+		[]complex128{1, 0},
+	)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		apply(x, x)
+	}
+}
+
+func BenchmarkTensorProduct(b *testing.B) {
+	x := matrix.New(
+		[]complex128{0, 1},
+		[]complex128{1, 0},
+	)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		matrix.TensorProduct(x, x)
+	}
+}
+
+func BenchmarkTensorProductConcurrency(b *testing.B) {
+	tensorproduct := func(n, m matrix.Matrix) matrix.Matrix {
+		p, q := m.Dimension()
+		a, b := n.Dimension()
+
+		wg := sync.WaitGroup{}
+		out := make(matrix.Matrix, a)
+		for i := 0; i < p; i++ {
+			wg.Add(1)
+			go func(i int, out *matrix.Matrix) {
+				defer wg.Done()
+
+				for k := 0; k < a; k++ {
+					r := make([]complex128, 0)
+					for j := 0; j < q; j++ {
+						for l := 0; l < b; l++ {
+							r = append(r, m[i][j]*n[k][l])
+						}
+					}
+
+					(*out)[i] = r
+				}
+			}(i, &out)
+		}
+
+		wg.Wait()
+		return out
+	}
+
+	x := matrix.New(
+		[]complex128{0, 1},
+		[]complex128{1, 0},
+	)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		tensorproduct(x, x)
+	}
+}
 
 func ExampleMatrix_Real() {
 	m := matrix.New(
