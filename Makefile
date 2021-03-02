@@ -3,9 +3,11 @@ SHELL := /bin/bash
 test:
 	go test -cover $(shell go list ./... | grep -v /vendor/ | grep -v /build/) -v
 
+vet:
+	go vet ./...
+
 bench:
-	cd pkg/math/vector; go test --bench . --benchmem
-	cd pkg/math/matrix; go test --bench . --benchmem
+	go test -bench . ./... --benchmem
 
 doc:
 	godoc -http=:6060
