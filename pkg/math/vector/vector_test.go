@@ -194,30 +194,42 @@ func TestVector(t *testing.T) {
 	}
 }
 
+func TestAdd(t *testing.T) {
+	cases := []struct {
+		v0, v1 vector.Vector
+		a      vector.Vector
+	}{
+		{vector.New(1, 2, 3, 4, 5), vector.New(6, 7, 8, 9, 10), vector.New(7, 9, 11, 13, 15)},
+	}
+
+	for _, c := range cases {
+		if !c.v0.Add(c.v1).Equals(c.a) {
+			t.Fail()
+		}
+	}
+}
+
+func TestMul(t *testing.T) {
+	cases := []struct {
+		v vector.Vector
+		c complex128
+		m vector.Vector
+	}{
+		{vector.New(1, 2, 3, 4, 5), complex(3, 0), vector.New(3, 6, 9, 12, 15)},
+	}
+
+	for _, c := range cases {
+		if !c.v.Mul(c.c).Equals(c.m) {
+			t.Fail()
+		}
+	}
+}
+
 func TestClone(t *testing.T) {
 	v := vector.New(1, 2, 3, 4, 5, 6)
 	c := v.Clone()
 
 	if !v.Equals(c) {
-		t.Fail()
-	}
-}
-
-func TestAdd(t *testing.T) {
-	v0 := vector.New(1, 2, 3, 4, 5)
-	v1 := vector.New(6, 7, 8, 9, 10)
-	e := vector.New(7, 9, 11, 13, 15)
-
-	if !v0.Add(v1).Equals(e) {
-		t.Fail()
-	}
-}
-
-func TestMul(t *testing.T) {
-	v0 := vector.New(1, 2, 3, 4, 5)
-	e := vector.New(3, 6, 9, 12, 15)
-
-	if !v0.Mul(complex(3, 0)).Equals(e) {
 		t.Fail()
 	}
 }

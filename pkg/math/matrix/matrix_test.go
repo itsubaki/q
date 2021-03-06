@@ -328,12 +328,20 @@ func TestTrace(t *testing.T) {
 }
 
 func TestDagger(t *testing.T) {
-	m := matrix.New(
-		[]complex128{complex(1, 1), complex(2, 3)},
-		[]complex128{complex(4, 5), complex(6, 7)},
-	)
+	cases := []struct {
+		m matrix.Matrix
+	}{
+		{
+			matrix.New(
+				[]complex128{complex(1, 1), complex(2, 3)},
+				[]complex128{complex(4, 5), complex(6, 7)},
+			),
+		},
+	}
 
-	if !m.Transpose().Conjugate().Equals(m.Dagger()) {
-		t.Fail()
+	for _, c := range cases {
+		if !c.m.Transpose().Conjugate().Equals(c.m.Dagger()) {
+			t.Fail()
+		}
 	}
 }
