@@ -45,8 +45,9 @@ func TestIsPrime(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if number.IsPrime(c.N) != c.isPrime {
-			fmt.Println(number.IsPrime(c.N))
+		p := number.IsPrime(c.N)
+		if p != c.isPrime {
+			t.Errorf("actual=%v, expected=%v", p, c.isPrime)
 		}
 	}
 }

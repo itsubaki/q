@@ -85,10 +85,14 @@ func ExampleSwap() {
 }
 
 func ExampleEmpty() {
-	g := gate.Empty(3)
-	fmt.Println(g)
+	g0 := gate.Empty()
+	fmt.Println(g0)
+
+	g1 := gate.Empty(3)
+	fmt.Println(g1)
 
 	// Output:
+	// []
 	// [[] [] []]
 }
 
@@ -226,6 +230,13 @@ func TestIsUnitary(t *testing.T) {
 		{gate.Y()},
 		{gate.Z()},
 		{gate.U(1, 2, 3, 4)},
+		{gate.R(4)},
+		{gate.RX(1.23)},
+		{gate.RY(1.23)},
+		{gate.RZ(1.23)},
+		{gate.ControlledS(2, []int{0}, 1)},
+		{gate.ControlledR(2, []int{0}, 1, 10)},
+		{gate.QFT(2)},
 	}
 
 	for _, c := range cases {

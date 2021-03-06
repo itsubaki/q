@@ -577,3 +577,59 @@ func TestMeasure(t *testing.T) {
 		}
 	}
 }
+
+func TestClone(t *testing.T) {
+	q := qubit.Zero(2).Apply(gate.H(2))
+	c := q.Clone()
+
+	if !q.Equals(c) {
+		t.Fail()
+	}
+}
+
+func TestInt(t *testing.T) {
+	cases := []struct {
+		q *qubit.Qubit
+		i int
+	}{
+		{qubit.Zero(), 0},
+		{qubit.One(), 1},
+	}
+
+	for _, c := range cases {
+		if c.q.Int() != c.i {
+			t.Fail()
+		}
+	}
+}
+func TestBinaryString(t *testing.T) {
+	cases := []struct {
+		q *qubit.Qubit
+		s string
+	}{
+		{qubit.Zero(3), "000"},
+		{qubit.One(3), "111"},
+	}
+
+	for _, c := range cases {
+		if c.q.BinaryString() != c.s {
+			t.Fail()
+		}
+	}
+}
+
+func TestString(t *testing.T) {
+	cases := []struct {
+		q *qubit.Qubit
+		s string
+	}{
+		{qubit.Zero(2), "[(1+0i) (0+0i) (0+0i) (0+0i)]"},
+		{qubit.One(2), "[(0+0i) (0+0i) (0+0i) (1+0i)]"},
+	}
+
+	for _, c := range cases {
+		if c.q.String() != c.s {
+			t.Fail()
+		}
+	}
+}

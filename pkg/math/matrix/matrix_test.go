@@ -291,3 +291,49 @@ func TestAntiCommutator(t *testing.T) {
 		}
 	}
 }
+
+func TestTrace(t *testing.T) {
+	cases := []struct {
+		m matrix.Matrix
+		t complex128
+	}{
+		{
+			matrix.New(
+				[]complex128{0, 1},
+				[]complex128{1, 0},
+			),
+			0,
+		},
+		{
+			matrix.New(
+				[]complex128{2, 1},
+				[]complex128{1, 4},
+			),
+			6,
+		},
+		{
+			matrix.New(
+				[]complex128{complex(1, 1), complex(2, 3)},
+				[]complex128{complex(4, 5), complex(6, 7)},
+			),
+			complex(7, 8),
+		},
+	}
+
+	for _, c := range cases {
+		if c.m.Trace() != c.t {
+			t.Fail()
+		}
+	}
+}
+
+func TestDagger(t *testing.T) {
+	m := matrix.New(
+		[]complex128{complex(1, 1), complex(2, 3)},
+		[]complex128{complex(4, 5), complex(6, 7)},
+	)
+
+	if !m.Transpose().Conjugate().Equals(m.Dagger()) {
+		t.Fail()
+	}
+}

@@ -193,3 +193,31 @@ func TestVector(t *testing.T) {
 		}
 	}
 }
+
+func TestClone(t *testing.T) {
+	v := vector.New(1, 2, 3, 4, 5, 6)
+	c := v.Clone()
+
+	if !v.Equals(c) {
+		t.Fail()
+	}
+}
+
+func TestAdd(t *testing.T) {
+	v0 := vector.New(1, 2, 3, 4, 5)
+	v1 := vector.New(6, 7, 8, 9, 10)
+	e := vector.New(7, 9, 11, 13, 15)
+
+	if !v0.Add(v1).Equals(e) {
+		t.Fail()
+	}
+}
+
+func TestMul(t *testing.T) {
+	v0 := vector.New(1, 2, 3, 4, 5)
+	e := vector.New(3, 6, 9, 12, 15)
+
+	if !v0.Mul(complex(3, 0)).Equals(e) {
+		t.Fail()
+	}
+}
