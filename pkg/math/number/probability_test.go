@@ -16,9 +16,9 @@ func TestMax(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		actual := number.Max(c.input)
-		if actual != c.max {
-			t.Errorf("actual=%v, expected=%v", actual, c.max)
+		m := number.Max(c.input)
+		if m != c.max {
+			t.Errorf("actual=%v, expected=%v", m, c.max)
 		}
 	}
 }
@@ -33,9 +33,9 @@ func TestMin(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		actual := number.Min(c.input)
-		if actual != c.min {
-			t.Errorf("actual=%v, expected=%v", actual, c.min)
+		m := number.Min(c.input)
+		if m != c.min {
+			t.Errorf("actual=%v, expected=%v", m, c.min)
 		}
 	}
 }
@@ -50,9 +50,9 @@ func TestSum(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		actual := number.Sum(c.input)
-		if actual != c.sum {
-			t.Errorf("actual=%v, expected=%v", actual, c.sum)
+		s := number.Sum(c.input)
+		if s != c.sum {
+			t.Errorf("actual=%v, expected=%v", s, c.sum)
 		}
 	}
 }
