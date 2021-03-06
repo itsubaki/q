@@ -23,13 +23,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Vet
-        run: |
-          make vet
-
       - name: Tests
         run: |
-          make test
+          ./test.sh
 
       - name: Benchmark
         run: |
