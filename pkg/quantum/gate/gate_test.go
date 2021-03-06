@@ -109,7 +109,7 @@ func ExampleCModExp2() {
 			panic(fmt.Sprintf("parse int. bin=%s: %v", bin[1:], err))
 		}
 
-		if !(int(k) < N) {
+		if int(k) >= N {
 			continue
 		}
 
