@@ -26,6 +26,7 @@ jobs:
       - name: Tests
         run: |
           bash test.sh
+          bash <(curl -s https://codecov.io/bash)
 
       - name: Benchmark
         run: |
