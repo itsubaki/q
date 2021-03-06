@@ -59,7 +59,7 @@ func (m *Matrix) PartialTrace(i int) *Matrix {
 	s := math.Pow(2, float64(n-1))
 	t := matrix.Zero(int(s))
 
-	// TODO implementation
+	// TODO Implement PartialTrace
 
 	return &Matrix{t}
 }
