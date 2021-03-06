@@ -20,4 +20,6 @@ secret
 .DS_Store
 
 # test
+cover.html
+cover.out
 coverage.txt
