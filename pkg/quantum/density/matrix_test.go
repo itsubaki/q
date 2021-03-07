@@ -34,13 +34,13 @@ func TestDensityMatrix(t *testing.T) {
 		{
 			[]float64{0.1, 0.9},
 			[]*qubit.Qubit{qubit.Zero(), qubit.One()},
-			complex(1, 0), complex(0.82, 0),
+			1, 0.82,
 			gate.X(), 0.0,
 		},
 		{
 			[]float64{0.1, 0.9},
 			[]*qubit.Qubit{qubit.Zero(), qubit.Zero().Apply(gate.H())},
-			complex(1, 0), complex(0.91, 0),
+			1, 0.91,
 			gate.X(), 0.9,
 		},
 	}

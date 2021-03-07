@@ -142,7 +142,7 @@ func ExampleVector_Norm() {
 }
 
 func ExampleVector_Real() {
-	v := vector.New(complex(1, 2), complex(3, 4))
+	v := vector.New(1+2i, 3+4i)
 	for _, r := range v.Real() {
 		fmt.Println(r)
 	}
@@ -152,7 +152,7 @@ func ExampleVector_Real() {
 	// 3
 }
 func ExampleVector_Imag() {
-	v := vector.New(complex(1, 2), complex(3, 4))
+	v := vector.New(1+2i, 3+4i)
 	for _, r := range v.Imag() {
 		fmt.Println(r)
 	}
@@ -170,9 +170,9 @@ func TestVector(t *testing.T) {
 		isUnit       bool
 		norm         complex128
 	}{
-		{vector.New(1, 0), vector.New(1, 0), complex(1, 0), false, true, complex(1, 0)},
-		{vector.New(0, 1), vector.New(0, 1), complex(1, 0), false, true, complex(1, 0)},
-		{vector.New(1, 0), vector.New(0, 1), complex(0, 0), true, true, complex(1, 0)},
+		{vector.New(1, 0), vector.New(1, 0), 1, false, true, 1},
+		{vector.New(0, 1), vector.New(0, 1), 1, false, true, 1},
+		{vector.New(1, 0), vector.New(0, 1), 0, true, true, 1},
 	}
 
 	for _, c := range cases {
@@ -215,7 +215,7 @@ func TestMul(t *testing.T) {
 		c complex128
 		m vector.Vector
 	}{
-		{vector.New(1, 2, 3, 4, 5), complex(3, 0), vector.New(3, 6, 9, 12, 15)},
+		{vector.New(1, 2, 3, 4, 5), 3, vector.New(3, 6, 9, 12, 15)},
 	}
 
 	for _, c := range cases {

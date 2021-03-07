@@ -117,10 +117,21 @@ func BenchmarkTensorProductConcurrencyN6(b *testing.B) {
 	}
 }
 
+func ExampleZero() {
+	fmt.Println(matrix.Zero(0))
+	fmt.Println(matrix.Zero(1))
+	fmt.Println(matrix.Zero(2))
+
+	// Output:
+	// []
+	// [[(0+0i)]]
+	// [[(0+0i) (0+0i)] [(0+0i) (0+0i)]]
+}
+
 func ExampleMatrix_Real() {
 	m := matrix.New(
-		[]complex128{complex(1, 1), complex(2, 3)},
-		[]complex128{complex(4, 5), complex(6, 7)},
+		[]complex128{1 + 1i, 2 + 3i},
+		[]complex128{4 + 5i, 6 + 7i},
 	)
 
 	for _, r := range m.Real() {
@@ -134,8 +145,8 @@ func ExampleMatrix_Real() {
 
 func ExampleMatrix_Imag() {
 	m := matrix.New(
-		[]complex128{complex(1, 1), complex(2, 3)},
-		[]complex128{complex(4, 5), complex(6, 7)},
+		[]complex128{1 + 1i, 2 + 3i},
+		[]complex128{4 + 5i, 6 + 7i},
 	)
 
 	for _, r := range m.Imag() {
@@ -248,12 +259,12 @@ func TestCommutator(t *testing.T) {
 				[]complex128{1, 0},
 			),
 			matrix.New(
-				[]complex128{0, complex(0, -1)},
-				[]complex128{complex(0, 1), 0},
+				[]complex128{0, -1i},
+				[]complex128{1i, 0},
 			),
 			matrix.New(
-				[]complex128{complex(0, 2), 0},
-				[]complex128{0, complex(0, -2)},
+				[]complex128{2i, 0},
+				[]complex128{0, -2i},
 			),
 		},
 	}
@@ -275,8 +286,8 @@ func TestAntiCommutator(t *testing.T) {
 				[]complex128{1, 0},
 			),
 			matrix.New(
-				[]complex128{0, complex(0, -1)},
-				[]complex128{complex(0, 1), 0},
+				[]complex128{0, -1i},
+				[]complex128{1i, 0},
 			),
 			matrix.New(
 				[]complex128{0, 0},
@@ -313,10 +324,10 @@ func TestTrace(t *testing.T) {
 		},
 		{
 			matrix.New(
-				[]complex128{complex(1, 1), complex(2, 3)},
-				[]complex128{complex(4, 5), complex(6, 7)},
+				[]complex128{1 + 1i, 2 + 3i},
+				[]complex128{4 + 5i, 6 + 7i},
 			),
-			complex(7, 8),
+			7 + 8i,
 		},
 	}
 
@@ -333,8 +344,8 @@ func TestDagger(t *testing.T) {
 	}{
 		{
 			matrix.New(
-				[]complex128{complex(1, 1), complex(2, 3)},
-				[]complex128{complex(4, 5), complex(6, 7)},
+				[]complex128{1 + 1i, 2 + 3i},
+				[]complex128{4 + 5i, 6 + 7i},
 			),
 		},
 	}
@@ -342,6 +353,125 @@ func TestDagger(t *testing.T) {
 	for _, c := range cases {
 		if !c.m.Transpose().Conjugate().Equals(c.m.Dagger()) {
 			t.Fail()
+		}
+	}
+}
+
+func TestEquals(t *testing.T) {
+	cases := []struct {
+		m0, m1 matrix.Matrix
+		yes    bool
+	}{
+		{
+			matrix.New(
+				[]complex128{1 + 1i, 2 + 3i},
+				[]complex128{4 + 5i, 6 + 7i},
+			),
+			matrix.New(
+				[]complex128{1 + 1i, 2 + 3i},
+				[]complex128{4 + 5i, 6 + 7i},
+			),
+			true,
+		},
+		{
+			matrix.New(
+				[]complex128{1 + 1i, 2 + 3i},
+				[]complex128{4 + 5i, 6 + 7i},
+			),
+			matrix.New(
+				[]complex128{10 + 10i, 20 + 30i},
+				[]complex128{40 + 50i, 60 + 70i},
+			),
+			false,
+		},
+		{
+			matrix.New(
+				[]complex128{1 + 1i, 2 + 3i},
+			),
+			matrix.New(
+				[]complex128{1 + 1i, 2 + 3i},
+				[]complex128{4 + 5i, 6 + 7i},
+			),
+			false,
+		},
+		{
+			matrix.New(
+				[]complex128{1 + 1i},
+				[]complex128{4 + 5i},
+			),
+			matrix.New(
+				[]complex128{1 + 1i, 2 + 3i},
+				[]complex128{4 + 5i, 6 + 7i},
+			),
+			false,
+		},
+	}
+
+	for _, c := range cases {
+		if c.m0.Equals(c.m1) != c.yes {
+			t.Fail()
+		}
+	}
+}
+
+func TestIsHermite(t *testing.T) {
+	cases := []struct {
+		m matrix.Matrix
+	}{
+		{
+			matrix.New(
+				[]complex128{0, 1},
+				[]complex128{1, 0},
+			),
+		},
+		{
+			matrix.New(
+				[]complex128{0, -1i},
+				[]complex128{1i, 0},
+			),
+		},
+		{
+			matrix.New(
+				[]complex128{1, 0},
+				[]complex128{0, -1},
+			),
+		},
+	}
+
+	for _, c := range cases {
+		if !c.m.IsHermite() {
+			t.Error(c.m)
+		}
+	}
+}
+
+func TestIsUnitary(t *testing.T) {
+	cases := []struct {
+		m matrix.Matrix
+	}{
+		{
+			matrix.New(
+				[]complex128{0, 1},
+				[]complex128{1, 0},
+			),
+		},
+		{
+			matrix.New(
+				[]complex128{0, -1i},
+				[]complex128{1i, 0},
+			),
+		},
+		{
+			matrix.New(
+				[]complex128{1, 0},
+				[]complex128{0, -1},
+			),
+		},
+	}
+
+	for _, c := range cases {
+		if !c.m.IsUnitary() {
+			t.Error(c.m)
 		}
 	}
 }

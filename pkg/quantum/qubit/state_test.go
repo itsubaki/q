@@ -8,7 +8,7 @@ import (
 
 func ExampleState() {
 	s := qubit.State{
-		Amplitude:    complex(1, 0),
+		Amplitude:    1,
 		Probability:  1,
 		Int:          []int{4, 10, 8},
 		BinaryString: []string{"0100", "1010", "1000"},
