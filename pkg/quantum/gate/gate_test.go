@@ -187,6 +187,17 @@ func TestCModExp2(t *testing.T) {
 	}
 }
 
+func TestCModExp2Panic(t *testing.T) {
+	defer func() {
+		if err := recover(); err != "invalid parameter. len(target)=3 < log2(15)=4" {
+			t.Fail()
+		}
+	}()
+
+	gate.CModExp2(7, 7, 1, 15, 1, []int{4, 5, 6})
+	t.Fail()
+}
+
 func TestInverse(t *testing.T) {
 	cases := []struct {
 		m, e matrix.Matrix

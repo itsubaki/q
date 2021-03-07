@@ -38,14 +38,13 @@ func TestStatePanicInvalidLength(t *testing.T) {
 	}
 
 	defer func() {
-		if err := recover(); err != nil {
-			if err != "invalid parameter. len(index)=3" {
-				t.Fail()
-			}
+		if err := recover(); err != "invalid parameter. len(index)=3" {
+			t.Fail()
 		}
 	}()
 
 	s.Value(1, 2, 3)
+	t.Fail()
 }
 
 func TestStatePanicInvalidParameter(t *testing.T) {
@@ -57,12 +56,11 @@ func TestStatePanicInvalidParameter(t *testing.T) {
 	}
 
 	defer func() {
-		if err := recover(); err != nil {
-			if err != "invalid parameter. index=[-1]" {
-				t.Fail()
-			}
+		if err := recover(); err != "invalid parameter. index=[-1]" {
+			t.Fail()
 		}
 	}()
 
 	s.Value(-1)
+	t.Fail()
 }

@@ -308,12 +308,11 @@ func TestApplyPanic(t *testing.T) {
 	)
 
 	defer func() {
-		if err := recover(); err != nil {
-			if err != "invalid dimension. p=2 q=1 len(v)=2" {
-				t.Fail()
-			}
+		if err := recover(); err != "invalid dimension. p=2 q=1 len(v)=2" {
+			t.Fail()
 		}
 	}()
 
 	v.Apply(m)
+	t.Fail()
 }

@@ -325,14 +325,13 @@ func TestInversePanic(t *testing.T) {
 	)
 
 	defer func() {
-		if err := recover(); err != nil {
-			if err != "invalid dimension. p=3 q=4" {
-				t.Fail()
-			}
+		if err := recover(); err != "invalid dimension. p=3 q=4" {
+			t.Fail()
 		}
 	}()
 
 	m.Inverse()
+	t.Fail()
 }
 
 func TestCommutator(t *testing.T) {

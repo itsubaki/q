@@ -124,12 +124,11 @@ func TestAddPanic(t *testing.T) {
 	p1, q1 := 0.9, qubit.New(1, 0, 0, 0)
 
 	defer func() {
-		if err := recover(); err != nil {
-			if err != "invalid dimension. m=2 n=4" {
-				t.Fail()
-			}
+		if err := recover(); err != "invalid dimension. m=2 n=4" {
+			t.Fail()
 		}
 	}()
 
 	density.New().Add(p0, q0).Add(p1, q1)
+	t.Fail()
 }
