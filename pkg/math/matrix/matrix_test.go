@@ -317,6 +317,24 @@ func TestInverse(t *testing.T) {
 	}
 }
 
+func TestInversePanic(t *testing.T) {
+	m := matrix.New(
+		[]complex128{1, 2, 0, -1},
+		[]complex128{-1, 1, 2, 0},
+		[]complex128{2, 0, 1, 1},
+	)
+
+	defer func() {
+		if err := recover(); err != nil {
+			if err != "invalid dimension. p=3 q=4" {
+				t.Fail()
+			}
+		}
+	}()
+
+	m.Inverse()
+}
+
 func TestCommutator(t *testing.T) {
 	cases := []struct {
 		x, y, e matrix.Matrix

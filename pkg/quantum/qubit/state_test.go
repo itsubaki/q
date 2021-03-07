@@ -2,6 +2,7 @@ package qubit_test
 
 import (
 	"fmt"
+	"testing"
 
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
@@ -26,4 +27,42 @@ func ExampleState() {
 	// 10 1010
 	// 8 1000
 	// [0100 1010 1000][  4  10   8]( 1.0000 0.0000i): 1.0000
+}
+
+func TestStatePanicInvalidLength(t *testing.T) {
+	s := qubit.State{
+		Amplitude:    1,
+		Probability:  1,
+		Int:          []int{4, 10, 8},
+		BinaryString: []string{"0100", "1010", "1000"},
+	}
+
+	defer func() {
+		if err := recover(); err != nil {
+			if err != "invalid parameter. len(index)=3" {
+				t.Fail()
+			}
+		}
+	}()
+
+	s.Value(1, 2, 3)
+}
+
+func TestStatePanicInvalidParameter(t *testing.T) {
+	s := qubit.State{
+		Amplitude:    1,
+		Probability:  1,
+		Int:          []int{4, 10, 8},
+		BinaryString: []string{"0100", "1010", "1000"},
+	}
+
+	defer func() {
+		if err := recover(); err != nil {
+			if err != "invalid parameter. index=[-1]" {
+				t.Fail()
+			}
+		}
+	}()
+
+	s.Value(-1)
 }

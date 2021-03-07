@@ -299,3 +299,21 @@ func TestEquals(t *testing.T) {
 		}
 	}
 }
+
+func TestApplyPanic(t *testing.T) {
+	v := vector.New(1, 2)
+	m := matrix.New(
+		[]complex128{1},
+		[]complex128{1},
+	)
+
+	defer func() {
+		if err := recover(); err != nil {
+			if err != "invalid dimension. p=2 q=1 len(v)=2" {
+				t.Fail()
+			}
+		}
+	}()
+
+	v.Apply(m)
+}

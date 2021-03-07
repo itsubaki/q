@@ -59,3 +59,15 @@ func TestFindOrder(t *testing.T) {
 		}
 	}
 }
+
+func TestFindOrderPanic(t *testing.T) {
+	defer func() {
+		if err := recover(); err != nil {
+			if err != "parse float: invalid parameter. binary=abc" {
+				t.Fail()
+			}
+		}
+	}()
+
+	number.FindOrder(7, 15, "abc")
+}
