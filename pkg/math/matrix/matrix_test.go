@@ -543,3 +543,22 @@ func TestIsUnitary(t *testing.T) {
 		}
 	}
 }
+
+func TestTensorProductN(t *testing.T) {
+	cases := []struct {
+		m matrix.Matrix
+	}{
+		{
+			matrix.New(
+				[]complex128{0, 1},
+				[]complex128{1, 0},
+			),
+		},
+	}
+
+	for _, c := range cases {
+		if !matrix.TensorProductN(c.m).Equals(c.m) {
+			t.Fail()
+		}
+	}
+}
