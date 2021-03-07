@@ -175,6 +175,106 @@ func ExampleQ_Apply() {
 	// [11][  3]( 0.7071 0.0000i): 0.5000
 }
 
+func ExampleQ_I() {
+	qsim := q.New()
+
+	q0 := qsim.Zero()
+	qsim.I(q0)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [0][  0]( 1.0000 0.0000i): 1.0000
+}
+
+func ExampleQ_X() {
+	qsim := q.New()
+
+	q0 := qsim.Zero()
+	qsim.X(q0)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [1][  1]( 1.0000 0.0000i): 1.0000
+}
+
+func ExampleQ_Y() {
+	qsim := q.New()
+
+	q0 := qsim.One()
+	qsim.Y(q0)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [0][  0]( 0.0000-1.0000i): 1.0000
+}
+
+func ExampleQ_Z() {
+	qsim := q.New()
+
+	q0 := qsim.One()
+	qsim.Z(q0)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [1][  1](-1.0000 0.0000i): 1.0000
+}
+
+func ExampleQ_S() {
+	qsim := q.New()
+
+	q0 := qsim.One()
+	qsim.S(q0)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [1][  1]( 0.0000 1.0000i): 1.0000
+}
+
+func ExampleQ_T() {
+	qsim := q.New()
+
+	q0 := qsim.One()
+	qsim.T(q0)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [1][  1]( 0.7071 0.7071i): 1.0000
+}
+
+func ExampleQ_Toffoli() {
+	qsim := q.New()
+
+	q0 := qsim.One()
+	q1 := qsim.One()
+	q2 := qsim.Zero()
+	qsim.Toffoli(q0, q1, q2)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [111][  7]( 1.0000 0.0000i): 1.0000
+}
+
 func ExampleQ_QFT() {
 	qsim := q.New()
 
@@ -295,6 +395,20 @@ func ExampleQ_ConditionX_errorCorrection() {
 	// q0(corrected):
 	// [0][  0]( 0.4472 0.0000i): 0.2000
 	// [1][  1]( 0.8944 0.0000i): 0.8000
+}
+
+func ExampleQ_ConditionZ() {
+	qsim := q.New()
+
+	q0 := qsim.One()
+	qsim.ConditionZ(true, q0)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [1][  1](-1.0000 0.0000i): 1.0000
 }
 
 func ExampleQ_ConditionZ_quantumTeleportation() {
