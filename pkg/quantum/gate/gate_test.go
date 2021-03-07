@@ -236,6 +236,8 @@ func TestIsUnitary(t *testing.T) {
 		{gate.RZ(1.23)},
 		{gate.ControlledS(2, []int{0}, 1)},
 		{gate.ControlledR(2, []int{0}, 1, 10)},
+		{gate.CS(2, 0, 1)},
+		{gate.CR(2, 0, 1, 10)},
 		{gate.QFT(2)},
 	}
 
