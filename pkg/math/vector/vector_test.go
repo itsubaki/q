@@ -79,6 +79,24 @@ func ExampleNew() {
 	// [(1+0i) (0+0i)]
 }
 
+func ExampleTensorProduct() {
+	v := vector.New(1, 0)
+	vv := vector.TensorProduct(v, v)
+	fmt.Println(vv)
+
+	// Output:
+	// [(1+0i) (0+0i) (0+0i) (0+0i)]
+}
+
+func ExampleTensorProductN() {
+	v := vector.New(1, 0)
+	vv := vector.TensorProductN(v, 2)
+	fmt.Println(vv)
+
+	// Output:
+	// [(1+0i) (0+0i) (0+0i) (0+0i)]
+}
+
 func ExampleVector_Apply() {
 	v := vector.New(1, 2)
 	fmt.Println(v)
@@ -160,6 +178,22 @@ func ExampleVector_Imag() {
 	// Output:
 	// 2
 	// 4
+}
+
+func ExampleVector_Complex() {
+	v := vector.New(1+2i, 3+4i)
+	fmt.Println(v.Complex())
+
+	// Output:
+	// [(1+2i) (3+4i)]
+}
+
+func ExampleVector_Dimension() {
+	v := vector.New(1+2i, 3+4i)
+	fmt.Println(v.Dimension())
+
+	// Output:
+	// 2
 }
 
 func TestVector(t *testing.T) {
