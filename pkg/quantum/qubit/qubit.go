@@ -167,10 +167,6 @@ func (q *Qubit) ProbabilityZeroAt(index int) ([]int, []float64) {
 	for i := 0; i < dim; i++ {
 		idx, prob = append(idx, i), append(prob, p[i])
 
-		if len(p) == dim/2 {
-			break
-		}
-
 		if (i+1)%div == 0 {
 			i = i + div
 		}
