@@ -11,6 +11,60 @@ import (
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
 
+func ExampleBitFlip() {
+	m0, m1 := density.BitFlip(0.5)
+
+	for _, r := range m0 {
+		fmt.Println(r)
+	}
+
+	for _, r := range m1 {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [(0.7071067811865476+0i) (0+0i)]
+	// [(0+0i) (0.7071067811865476+0i)]
+	// [(0+0i) (0.7071067811865476+0i)]
+	// [(0.7071067811865476+0i) (0+0i)]
+}
+
+func ExamplePhaseFlip() {
+	m0, m1 := density.PhaseFlip(0.5)
+
+	for _, r := range m0 {
+		fmt.Println(r)
+	}
+
+	for _, r := range m1 {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [(0.7071067811865476+0i) (0+0i)]
+	// [(0+0i) (0.7071067811865476+0i)]
+	// [(0.7071067811865476+0i) (0+0i)]
+	// [(0+0i) (-0.7071067811865476+0i)]
+}
+
+func ExampleBitPhaseFlip() {
+	m0, m1 := density.BitPhaseFlip(0.5)
+
+	for _, r := range m0 {
+		fmt.Println(r)
+	}
+
+	for _, r := range m1 {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [(0.7071067811865476+0i) (0+0i)]
+	// [(0+0i) (0.7071067811865476+0i)]
+	// [(0+0i) (0-0.7071067811865476i)]
+	// [(0+0.7071067811865476i) (0+0i)]
+}
+
 func TestPartialTrace(t *testing.T) {
 	qc := matrix.Apply(
 		matrix.TensorProduct(gate.H(), gate.I()),
