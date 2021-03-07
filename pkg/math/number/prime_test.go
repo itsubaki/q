@@ -51,3 +51,21 @@ func TestIsPrime(t *testing.T) {
 		}
 	}
 }
+
+func TestIsOdd(t *testing.T) {
+	cases := []struct {
+		N   int
+		yes bool
+	}{
+		{1, true},
+		{2, false},
+		{3, true},
+		{4, false},
+	}
+
+	for _, c := range cases {
+		if number.IsOdd(c.N) != c.yes {
+			t.Fail()
+		}
+	}
+}
