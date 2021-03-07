@@ -39,7 +39,7 @@ func TestParseFloat(t *testing.T) {
 		{"a.bbb", 0, fmt.Errorf("invalid parameter. binary=a.bbb")},
 		{"a.001", 0, fmt.Errorf("invalid parameter. binary=a.001")},
 		{"0.bbb", 0, fmt.Errorf("invalid parameter. binary=0.bbb")},
-		{"0.1.2", 0, fmt.Errorf("invalid parameter. binary=0.1.2")},
+		{"0.1.0", 0, fmt.Errorf("invalid parameter. binary=0.1.0")},
 	}
 
 	for _, c := range cases {
