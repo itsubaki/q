@@ -484,30 +484,41 @@ func TestEquals(t *testing.T) {
 
 func TestIsHermite(t *testing.T) {
 	cases := []struct {
-		m matrix.Matrix
+		m   matrix.Matrix
+		yes bool
 	}{
 		{
 			matrix.New(
 				[]complex128{0, 1},
 				[]complex128{1, 0},
 			),
+			true,
 		},
 		{
 			matrix.New(
 				[]complex128{0, -1i},
 				[]complex128{1i, 0},
 			),
+			true,
 		},
 		{
 			matrix.New(
 				[]complex128{1, 0},
 				[]complex128{0, -1},
 			),
+			true,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 2},
+				[]complex128{3, 4},
+			),
+			false,
 		},
 	}
 
 	for _, c := range cases {
-		if !c.m.IsHermite() {
+		if c.m.IsHermite() != c.yes {
 			t.Error(c.m)
 		}
 	}
@@ -515,30 +526,41 @@ func TestIsHermite(t *testing.T) {
 
 func TestIsUnitary(t *testing.T) {
 	cases := []struct {
-		m matrix.Matrix
+		m   matrix.Matrix
+		yes bool
 	}{
 		{
 			matrix.New(
 				[]complex128{0, 1},
 				[]complex128{1, 0},
 			),
+			true,
 		},
 		{
 			matrix.New(
 				[]complex128{0, -1i},
 				[]complex128{1i, 0},
 			),
+			true,
 		},
 		{
 			matrix.New(
 				[]complex128{1, 0},
 				[]complex128{0, -1},
 			),
+			true,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 2},
+				[]complex128{3, 4},
+			),
+			false,
 		},
 	}
 
 	for _, c := range cases {
-		if !c.m.IsUnitary() {
+		if c.m.IsUnitary() != c.yes {
 			t.Error(c.m)
 		}
 	}
@@ -546,18 +568,20 @@ func TestIsUnitary(t *testing.T) {
 
 func TestTensorProductN(t *testing.T) {
 	cases := []struct {
-		m matrix.Matrix
+		m   matrix.Matrix
+		eps float64
 	}{
 		{
 			matrix.New(
 				[]complex128{0, 1},
 				[]complex128{1, 0},
 			),
+			1e-13,
 		},
 	}
 
 	for _, c := range cases {
-		if !matrix.TensorProductN(c.m).Equals(c.m) {
+		if !matrix.TensorProductN(c.m).Equals(c.m, c.eps) {
 			t.Fail()
 		}
 	}
