@@ -106,7 +106,7 @@ func (v Vector) OuterProduct(w Vector) matrix.Matrix {
 }
 
 func (v Vector) IsOrthogonal(w Vector) bool {
-	return v.InnerProduct(w) == complex(0, 0)
+	return v.InnerProduct(w) == 0
 }
 
 func (v Vector) Norm() complex128 {
@@ -114,7 +114,7 @@ func (v Vector) Norm() complex128 {
 }
 
 func (v Vector) IsUnit() bool {
-	return v.Norm() == complex(1, 0)
+	return v.Norm() == 1
 }
 
 func (v Vector) Apply(m matrix.Matrix) Vector {

@@ -21,7 +21,7 @@ func Zero(n int) Matrix {
 	for i := 0; i < n; i++ {
 		out[i] = make([]complex128, 0)
 		for j := 0; j < n; j++ {
-			out[i] = append(out[i], complex(0, 0))
+			out[i] = append(out[i], 0)
 		}
 	}
 
@@ -116,13 +116,13 @@ func (m Matrix) IsUnitary(eps ...float64) bool {
 	for i := 0; i < p; i++ {
 		for j := 0; j < q; j++ {
 			if i == j {
-				if cmplx.Abs(d[i][j]-complex(1, 0)) > e {
+				if cmplx.Abs(d[i][j]-1) > e {
 					return false
 				}
 				continue
 			}
 
-			if cmplx.Abs(d[i][j]-complex(0, 0)) > e {
+			if cmplx.Abs(d[i][j]) > e {
 				return false
 			}
 		}
@@ -263,10 +263,10 @@ func (m Matrix) Inverse() Matrix {
 		v := make([]complex128, 0)
 		for j := 0; j < q; j++ {
 			if i == j {
-				v = append(v, complex(1, 0))
+				v = append(v, 1)
 				continue
 			}
-			v = append(v, complex(0, 0))
+			v = append(v, 0)
 		}
 		out = append(out, v)
 	}

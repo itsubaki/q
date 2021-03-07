@@ -39,8 +39,8 @@ func RX(theta float64) matrix.Matrix {
 	v := complex(theta/2, 0)
 
 	g := make(matrix.Matrix, 2)
-	g[0] = []complex128{cmplx.Cos(v), complex(0, -1) * cmplx.Sin(v)}
-	g[1] = []complex128{complex(0, -1) * cmplx.Sin(v), cmplx.Cos(v)}
+	g[0] = []complex128{cmplx.Cos(v), -1i * cmplx.Sin(v)}
+	g[1] = []complex128{-1i * cmplx.Sin(v), cmplx.Cos(v)}
 	return g
 }
 
@@ -117,7 +117,7 @@ func S(n ...int) matrix.Matrix {
 }
 
 func T(n ...int) matrix.Matrix {
-	v := cmplx.Exp(complex(0, 1) * math.Pi / 4)
+	v := cmplx.Exp(1i * math.Pi / 4)
 
 	g := make(matrix.Matrix, 2)
 	g[0] = []complex128{1, 0}
@@ -197,7 +197,7 @@ func ControlledZ(n int, c []int, t int) matrix.Matrix {
 		}
 
 		if apply && bits[t] == '1' {
-			g[i][i] = complex(-1, 0) * g[i][i]
+			g[i][i] = -1 * g[i][i]
 		}
 	}
 
