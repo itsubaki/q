@@ -267,3 +267,35 @@ func TestClone(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestTensorProductN(t *testing.T) {
+	cases := []struct {
+		v vector.Vector
+	}{
+		{vector.New(1, 2, 3, 4, 5, 6)},
+	}
+
+	for _, c := range cases {
+		if !vector.TensorProductN(c.v).Equals(c.v) {
+			t.Fail()
+		}
+	}
+}
+
+func TestEquals(t *testing.T) {
+	cases := []struct {
+		v0, v1 vector.Vector
+		eps    float64
+		yes    bool
+	}{
+		{vector.New(1, 2), vector.New(1, 2), 1e-13, true},
+		{vector.New(1, 2), vector.New(3, 4), 1e-13, false},
+		{vector.New(1, 2, 3, 4, 5, 6), vector.New(1, 2), 1e-13, false},
+	}
+
+	for _, c := range cases {
+		if c.v0.Equals(c.v1, c.eps) != c.yes {
+			t.Fail()
+		}
+	}
+}
