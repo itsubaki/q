@@ -3,6 +3,7 @@ package q_test
 import (
 	"fmt"
 	"math"
+	"testing"
 
 	"github.com/itsubaki/q"
 	"github.com/itsubaki/q/pkg/math/number"
@@ -303,6 +304,14 @@ func ExampleQ_QFT() {
 func ExampleQ_Clone() {
 	qsim := q.New()
 
+	clone := qsim.Clone()
+	clone.Zero()
+	clone.Zero()
+
+	for _, s := range clone.State() {
+		fmt.Println(s)
+	}
+
 	q0 := qsim.Zero()
 	q1 := qsim.One()
 	qsim.H(q0, q1)
@@ -316,6 +325,7 @@ func ExampleQ_Clone() {
 	}
 
 	// Output:
+	// [00][  0]( 1.0000 0.0000i): 1.0000
 	// [00][  0]( 0.5000 0.0000i): 0.2500
 	// [01][  1](-0.5000 0.0000i): 0.2500
 	// [10][  2]( 0.5000 0.0000i): 0.2500
@@ -916,4 +926,17 @@ func Example_shorFactoring85() {
 
 	// Output:
 	// N=85, a=14. p=5, q=17. s/r=15/16 ([0.1111]~0.938)
+}
+
+func TestStatePanic(t *testing.T) {
+	qsim := q.New()
+
+	defer func() {
+		if err := recover(); err != "invalid type string" {
+			t.Fail()
+		}
+	}()
+
+	qsim.State("123")
+	t.Fail()
 }
