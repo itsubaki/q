@@ -401,13 +401,19 @@ func ExampleQ_ConditionZ() {
 	qsim := q.New()
 
 	q0 := qsim.One()
-	qsim.ConditionZ(true, q0)
 
+	qsim.ConditionZ(false, q0)
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	qsim.ConditionZ(true, q0)
 	for _, s := range qsim.State() {
 		fmt.Println(s)
 	}
 
 	// Output:
+	// [1][  1]( 1.0000 0.0000i): 1.0000
 	// [1][  1](-1.0000 0.0000i): 1.0000
 }
 
