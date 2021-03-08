@@ -29,6 +29,17 @@ func TestCryptoInt(t *testing.T) {
 	}
 }
 
+func TestCryptoIntPanic(t *testing.T) {
+	defer func() {
+		if err := recover(); err != "crypto/rand: argument to Int is <= 0" {
+			t.Fail()
+		}
+	}()
+
+	rand.CryptoInt(0, 0)
+	t.Fail()
+}
+
 func TestCoprime(t *testing.T) {
 	p := rand.Coprime(15)
 
