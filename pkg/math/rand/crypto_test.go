@@ -33,7 +33,7 @@ func TestCoprime(t *testing.T) {
 	p := rand.Coprime(15)
 
 	found := false
-	for _, e := range []int{4, 7, 8, 11, 13, 14} {
+	for _, e := range []int{2, 4, 7, 8, 11, 13, 14} {
 		if p == e {
 			found = true
 			break
