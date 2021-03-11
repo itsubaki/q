@@ -260,6 +260,62 @@ func ExampleQ_T() {
 	// [1][  1]( 0.7071 0.7071i): 1.0000
 }
 
+func ExampleQ_U() {
+	qsim := q.New()
+
+	q0 := qsim.Zero()
+	qsim.U(0, math.Pi, math.Pi, math.Pi, q0)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [1][  1]( 1.0000 0.0000i): 1.0000
+}
+
+func ExampleQ_RX() {
+	qsim := q.New()
+
+	q0 := qsim.Zero()
+	qsim.RX(math.Pi, q0)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [1][  1]( 0.0000-1.0000i): 1.0000
+}
+
+func ExampleQ_RY() {
+	qsim := q.New()
+
+	q0 := qsim.Zero()
+	qsim.RY(math.Pi, q0)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [1][  1]( 1.0000 0.0000i): 1.0000
+}
+
+func ExampleQ_RZ() {
+	qsim := q.New()
+
+	q0 := qsim.Zero()
+	qsim.RZ(math.Pi, q0)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [0][  0]( 0.0000-1.0000i): 1.0000
+}
+
 func ExampleQ_Toffoli() {
 	qsim := q.New()
 
@@ -304,36 +360,16 @@ func ExampleQ_QFT() {
 func ExampleQ_Clone() {
 	qsim := q.New()
 
-	clone := qsim.Clone()
-	clone.Zero()
-	clone.Zero()
-
-	for _, s := range clone.State() {
-		fmt.Println(s)
-	}
-
 	q0 := qsim.Zero()
-	q1 := qsim.One()
-	qsim.H(q0, q1)
+	q1 := qsim.Zero()
+	qsim.X(q0, q1)
 
-	for _, s := range qsim.State() {
-		fmt.Println(s)
-	}
-
-	for _, s := range qsim.Clone().State() {
-		fmt.Println(s)
-	}
+	fmt.Println(qsim)
+	fmt.Println(qsim.Clone())
 
 	// Output:
-	// [00][  0]( 1.0000 0.0000i): 1.0000
-	// [00][  0]( 0.5000 0.0000i): 0.2500
-	// [01][  1](-0.5000 0.0000i): 0.2500
-	// [10][  2]( 0.5000 0.0000i): 0.2500
-	// [11][  3](-0.5000 0.0000i): 0.2500
-	// [00][  0]( 0.5000 0.0000i): 0.2500
-	// [01][  1](-0.5000 0.0000i): 0.2500
-	// [10][  2]( 0.5000 0.0000i): 0.2500
-	// [11][  3](-0.5000 0.0000i): 0.2500
+	// [(0+0i) (0+0i) (0+0i) (1+0i)]
+	// [(0+0i) (0+0i) (0+0i) (1+0i)]
 }
 
 func ExampleQ_String() {
@@ -347,6 +383,26 @@ func ExampleQ_String() {
 
 	// Output:
 	// [(0+0i) (0+0i) (1+0i) (0+0i)]
+}
+
+func ExampleQ_ConditionX() {
+	qsim := q.New()
+
+	q0 := qsim.Zero()
+
+	qsim.ConditionX(false, q0)
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	qsim.ConditionX(true, q0)
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [0][  0]( 1.0000 0.0000i): 1.0000
+	// [1][  1]( 1.0000 0.0000i): 1.0000
 }
 
 func ExampleQ_ConditionX_errorCorrection() {
