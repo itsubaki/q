@@ -360,14 +360,20 @@ func ExampleQ_QFT() {
 func ExampleQ_Clone() {
 	qsim := q.New()
 
+	clone := qsim.Clone()
+	clone.Zero()
+	clone.Zero()
+
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 	qsim.X(q0, q1)
 
+	fmt.Println(clone)
 	fmt.Println(qsim)
 	fmt.Println(qsim.Clone())
 
 	// Output:
+	// [(1+0i) (0+0i) (0+0i) (0+0i)]
 	// [(0+0i) (0+0i) (0+0i) (1+0i)]
 	// [(0+0i) (0+0i) (0+0i) (1+0i)]
 }
