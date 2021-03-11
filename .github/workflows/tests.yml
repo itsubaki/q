@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         go: ['1.15']
-        platform: [ubuntu-latest, macos-latest]
+        platform: [ubuntu-latest]
 
     runs-on: ${{ matrix.platform }}
 
