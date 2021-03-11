@@ -44,7 +44,7 @@ func main() {
 		a = rand.Coprime(N)
 	}
 
-	if N-1 < a || a < 2 {
+	if a < 2 || a > N-1 {
 		fmt.Printf("N=%d, a=%d. a must be 1 < a < N.\n", N, a)
 		return
 	}
