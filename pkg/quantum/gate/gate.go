@@ -54,10 +54,10 @@ func RY(theta float64) matrix.Matrix {
 }
 
 func RZ(theta float64) matrix.Matrix {
-	v := complex(0, 1*theta/2)
+	v := complex(0, theta/2)
 
 	g := make(matrix.Matrix, 2)
-	g[0] = []complex128{cmplx.Exp(cmplx.Conj(v)), 0}
+	g[0] = []complex128{cmplx.Exp(-1 * v), 0}
 	g[1] = []complex128{0, cmplx.Exp(v)}
 	return g
 }
