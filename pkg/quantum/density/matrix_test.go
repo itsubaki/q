@@ -11,6 +11,22 @@ import (
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
 
+func ExampleMatrix_Depolarizing() {
+	rho := density.New().Add(1, qubit.Zero())
+	fmt.Println(rho.Measure(qubit.Zero()))
+	fmt.Println(rho.Measure(qubit.One()))
+
+	rho.Depolarizing(1)
+	fmt.Println(rho.Measure(qubit.Zero()))
+	fmt.Println(rho.Measure(qubit.One()))
+
+	// Output:
+	// (1+0i)
+	// (0+0i)
+	// (0.5+0i)
+	// (0.5+0i)
+}
+
 func ExampleBitFlip() {
 	m0, m1 := density.BitFlip(0.5)
 
@@ -79,11 +95,11 @@ func TestPartialTrace(t *testing.T) {
 
 func TestExpectedValue(t *testing.T) {
 	cases := []struct {
-		p         []float64
-		q         []*qubit.Qubit
-		tr, str   complex128
-		expectedM matrix.Matrix
-		expectedV complex128
+		p       []float64
+		q       []*qubit.Qubit
+		tr, str complex128
+		m       matrix.Matrix
+		v       complex128
 	}{
 		{
 			[]float64{0.1, 0.9},
@@ -113,19 +129,18 @@ func TestExpectedValue(t *testing.T) {
 			t.Errorf("strace%v", rho.Squared().Trace())
 		}
 
-		if cmplx.Abs(rho.ExpectedValue(c.expectedM)-c.expectedV) > 1e-13 {
-			t.Errorf("expected value=%v", rho.ExpectedValue(c.expectedM))
+		if cmplx.Abs(rho.ExpectedValue(c.m)-c.v) > 1e-13 {
+			t.Errorf("expected value=%v", rho.ExpectedValue(c.m))
 		}
 	}
 }
-
 
 func TestMeasure(t *testing.T) {
 	cases := []struct {
 		p []float64
 		q []*qubit.Qubit
 		m *qubit.Qubit
-		e complex128
+		v complex128
 	}{
 		{
 			[]float64{1},
@@ -147,7 +162,7 @@ func TestMeasure(t *testing.T) {
 			rho.Add(c.p[i], c.q[i])
 		}
 
-		if rho.Measure(c.m) != c.e {
+		if rho.Measure(c.m) != c.v {
 			t.Fail()
 		}
 	}
@@ -189,8 +204,7 @@ func TestApply(t *testing.T) {
 	}
 }
 
-
-func TestAddPanic(t *testing.T) {
+func TestAddPanicDimenstion(t *testing.T) {
 	p0, q0 := 0.1, qubit.Zero()
 	p1, q1 := 0.9, qubit.New(1, 0, 0, 0)
 
@@ -202,4 +216,68 @@ func TestAddPanic(t *testing.T) {
 
 	density.New().Add(p0, q0).Add(p1, q1)
 	t.Fail()
+}
+
+func TestAddPanicProbability(t *testing.T) {
+	cases := []struct {
+		p float64
+	}{
+		{-1},
+		{1},
+	}
+
+	for _, c := range cases {
+		defer func() {
+			msg := fmt.Sprintf("p must be 0 <= p =< 1. p=%v", c.p)
+			if err := recover(); err != msg {
+				t.Fail()
+			}
+		}()
+
+		density.New().Add(c.p, qubit.Zero())
+		t.Fail()
+	}
+}
+
+func TestDepolarizingPanic(t *testing.T) {
+	cases := []struct {
+		p float64
+	}{
+		{-1},
+		{1},
+	}
+
+	for _, c := range cases {
+		defer func() {
+			msg := fmt.Sprintf("p must be 0 <= p =< 1. p=%v", c.p)
+			if err := recover(); err != msg {
+				t.Fail()
+			}
+		}()
+
+		rho := density.New().Add(1, qubit.Zero())
+		rho.Depolarizing(c.p)
+		t.Fail()
+	}
+}
+
+func TestBitFlipPanic(t *testing.T) {
+	cases := []struct {
+		p float64
+	}{
+		{-1},
+		{1},
+	}
+
+	for _, c := range cases {
+		defer func() {
+			msg := fmt.Sprintf("p must be 0 <= p =< 1. p=%v", c.p)
+			if err := recover(); err != msg {
+				t.Fail()
+			}
+		}()
+
+		density.BitFlip(c.p)
+		t.Fail()
+	}
 }

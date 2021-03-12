@@ -18,6 +18,10 @@ func New(v ...[]complex128) *Matrix {
 }
 
 func (m *Matrix) Add(p float64, q *qubit.Qubit) *Matrix {
+	if p < 0 || p > 1 {
+		panic(fmt.Sprintf("p must be 0 <= p =< 1. p=%v", p))
+	}
+
 	n := q.Dimension()
 	if len(m.internal) < 1 {
 		m.internal = matrix.Zero(n)
@@ -76,6 +80,10 @@ func (m *Matrix) NumberOfBit() int {
 }
 
 func (m *Matrix) Depolarizing(p float64) {
+	if p < 0 || p > 1 {
+		panic(fmt.Sprintf("p must be 0 <= p =< 1. p=%v", p))
+	}
+
 	n := m.NumberOfBit()
 	i := gate.I(n).Mul(complex(p/2, 0))
 	r := m.internal.Mul(complex(1-p, 0))
@@ -84,6 +92,10 @@ func (m *Matrix) Depolarizing(p float64) {
 }
 
 func Flip(p float64, m matrix.Matrix) (matrix.Matrix, matrix.Matrix) {
+	if p < 0 || p > 1 {
+		panic(fmt.Sprintf("p must be 0 <= p =< 1. p=%v", p))
+	}
+
 	d, _ := m.Dimension()
 	n := int(math.Log2(float64(d)))
 
