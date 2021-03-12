@@ -77,7 +77,7 @@ func TestPartialTrace(t *testing.T) {
 	fmt.Println(pt)
 }
 
-func TestDensityMatrix(t *testing.T) {
+func TestExpectedValue(t *testing.T) {
 	cases := []struct {
 		p         []float64
 		q         []*qubit.Qubit
@@ -118,6 +118,77 @@ func TestDensityMatrix(t *testing.T) {
 		}
 	}
 }
+
+
+func TestMeasure(t *testing.T) {
+	cases := []struct {
+		p []float64
+		q []*qubit.Qubit
+		m *qubit.Qubit
+		e complex128
+	}{
+		{
+			[]float64{1},
+			[]*qubit.Qubit{qubit.Zero()},
+			qubit.Zero(),
+			1,
+		},
+		{
+			[]float64{1},
+			[]*qubit.Qubit{qubit.Zero()},
+			qubit.One(),
+			0,
+		},
+	}
+
+	for _, c := range cases {
+		rho := density.New()
+		for i := range c.p {
+			rho.Add(c.p[i], c.q[i])
+		}
+
+		if rho.Measure(c.m) != c.e {
+			t.Fail()
+		}
+	}
+}
+
+func TestApply(t *testing.T) {
+	cases := []struct {
+		p []float64
+		q []*qubit.Qubit
+		g matrix.Matrix
+		m *qubit.Qubit
+		e complex128
+	}{
+		{
+			[]float64{1},
+			[]*qubit.Qubit{qubit.Zero()},
+			gate.X(),
+			qubit.Zero(),
+			0,
+		},
+		{
+			[]float64{1},
+			[]*qubit.Qubit{qubit.Zero()},
+			gate.X(),
+			qubit.One(),
+			1,
+		},
+	}
+
+	for _, c := range cases {
+		rho := density.New()
+		for i := range c.p {
+			rho.Add(c.p[i], c.q[i])
+		}
+
+		if rho.Apply(c.g).Measure(c.m) != c.e {
+			t.Fail()
+		}
+	}
+}
+
 
 func TestAddPanic(t *testing.T) {
 	p0, q0 := 0.1, qubit.Zero()
