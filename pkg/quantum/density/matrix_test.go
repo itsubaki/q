@@ -218,12 +218,11 @@ func TestAddPanicDimenstion(t *testing.T) {
 	t.Fail()
 }
 
-func TestAddPanicProbability(t *testing.T) {
+func TestAddPanicProbabilityLess(t *testing.T) {
 	cases := []struct {
 		p float64
 	}{
 		{-1},
-		{1},
 	}
 
 	for _, c := range cases {
@@ -239,12 +238,31 @@ func TestAddPanicProbability(t *testing.T) {
 	}
 }
 
-func TestDepolarizingPanic(t *testing.T) {
+func TestAddPanicProbabilityLarge(t *testing.T) {
+	cases := []struct {
+		p float64
+	}{
+		{1.1},
+	}
+
+	for _, c := range cases {
+		defer func() {
+			msg := fmt.Sprintf("p must be 0 <= p =< 1. p=%v", c.p)
+			if err := recover(); err != msg {
+				t.Fail()
+			}
+		}()
+
+		density.New().Add(c.p, qubit.Zero())
+		t.Fail()
+	}
+}
+
+func TestDepolarizingPanicLess(t *testing.T) {
 	cases := []struct {
 		p float64
 	}{
 		{-1},
-		{1},
 	}
 
 	for _, c := range cases {
@@ -261,12 +279,52 @@ func TestDepolarizingPanic(t *testing.T) {
 	}
 }
 
-func TestBitFlipPanic(t *testing.T) {
+func TestDepolarizingPanicLarge(t *testing.T) {
+	cases := []struct {
+		p float64
+	}{
+		{1.1},
+	}
+
+	for _, c := range cases {
+		defer func() {
+			msg := fmt.Sprintf("p must be 0 <= p =< 1. p=%v", c.p)
+			if err := recover(); err != msg {
+				t.Fail()
+			}
+		}()
+
+		rho := density.New().Add(1, qubit.Zero())
+		rho.Depolarizing(c.p)
+		t.Fail()
+	}
+}
+
+func TestBitFlipPanicLess(t *testing.T) {
 	cases := []struct {
 		p float64
 	}{
 		{-1},
-		{1},
+	}
+
+	for _, c := range cases {
+		defer func() {
+			msg := fmt.Sprintf("p must be 0 <= p =< 1. p=%v", c.p)
+			if err := recover(); err != msg {
+				t.Fail()
+			}
+		}()
+
+		density.BitFlip(c.p)
+		t.Fail()
+	}
+}
+
+func TestBitFlipPanicLarge(t *testing.T) {
+	cases := []struct {
+		p float64
+	}{
+		{1.1},
 	}
 
 	for _, c := range cases {
