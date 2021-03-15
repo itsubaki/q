@@ -11,6 +11,23 @@ import (
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
 
+func ExampleMatrix_ExpectedValue(){
+	p0, q0 := 0.1, qubit.Zero()
+	p1, q1 := 0.9, qubit.Zero().Apply(gate.H())
+	rho := density.New().Add(p0, q0).Add(p1, q1)
+	
+	fmt.Printf("%.2v\n",rho.Trace())
+	fmt.Printf("%.2v\n",rho.ExpectedValue(gate.X()))
+	fmt.Printf("%.2v\n",rho.ExpectedValue(gate.Y()))
+	fmt.Printf("%.2v\n",rho.ExpectedValue(gate.Z()))
+
+	// Output:
+	// (1+0i)
+	// (0.9+0i)
+	// (0+0i)
+	// (0.1+0i)
+}
+
 func ExampleMatrix_Measure(){
 	p0, q0 := 0.1, qubit.Zero()
 	p1, q1 := 0.9, qubit.One()
