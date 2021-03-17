@@ -11,36 +11,44 @@ import (
 	"github.com/itsubaki/q/pkg/quantum/qubit"
 )
 
-func ExampleMatrix_ExpectedValue(){
+func ExampleMatrix_ExpectedValue() {
 	p0, q0 := 0.1, qubit.Zero()
 	p1, q1 := 0.9, qubit.Zero().Apply(gate.H())
 	rho := density.New().Add(p0, q0).Add(p1, q1)
-	
-	fmt.Printf("%.2v\n",rho.Trace())
-	fmt.Printf("%.2v\n",rho.ExpectedValue(gate.X()))
-	fmt.Printf("%.2v\n",rho.ExpectedValue(gate.Y()))
-	fmt.Printf("%.2v\n",rho.ExpectedValue(gate.Z()))
+
+	fmt.Printf("%.2v\n", rho.ExpectedValue(gate.X()))
+	fmt.Printf("%.2v\n", rho.ExpectedValue(gate.Y()))
+	fmt.Printf("%.2v\n", rho.ExpectedValue(gate.Z()))
 
 	// Output:
-	// (1+0i)
 	// (0.9+0i)
 	// (0+0i)
 	// (0.1+0i)
 }
 
-func ExampleMatrix_Measure(){
+func ExampleMatrix_Measure() {
 	p0, q0 := 0.1, qubit.Zero()
 	p1, q1 := 0.9, qubit.One()
 	rho := density.New().Add(p0, q0).Add(p1, q1)
-	
-	fmt.Println(rho.Trace())
+
 	fmt.Println(rho.Measure(qubit.Zero()))
 	fmt.Println(rho.Measure(qubit.One()))
 
 	// Output:
-	// (1+0i)
 	// (0.1+0i)
 	// (0.9+0i)
+}
+
+func ExampleMatrix_Trace() {
+	pure := density.New().Add(1.0, qubit.Zero())
+	mix := density.New().Add(0.1, qubit.Zero()).Add(0.9, qubit.One())
+
+	fmt.Printf("%.2f\n", pure.Squared().Trace())
+	fmt.Printf("%.2f\n", mix.Squared().Trace())
+
+	// Output:
+	// (1.00+0.00i)
+	// (0.82+0.00i)
 }
 
 func ExampleMatrix_Depolarizing() {

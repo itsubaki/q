@@ -232,7 +232,7 @@ p0, q0 := 0.1, qubit.Zero()
 p1, q1 := 0.9, qubit.Zero().Apply(gate.H())
 rho := density.New().Add(p0, q0).Add(p1, q1)
 
-rho.Trace() // -> 1
+rho.Squared().Trace()       // -> (0.82+0.00i)
 rho.ExpectedValue(gate.X()) // -> 0.9
 ```
 
