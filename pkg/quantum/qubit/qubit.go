@@ -213,9 +213,11 @@ func (q *Qubit) Int() int {
 }
 
 func (q *Qubit) BinaryString() string {
+	c := q.Clone()
+
 	var sb strings.Builder
 	for i := 0; i < q.NumberOfBit(); i++ {
-		if q.Clone().Measure(i).IsZero() {
+		if c.Measure(i).IsZero() {
 			sb.WriteString("0")
 			continue
 		}
