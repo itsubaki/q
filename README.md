@@ -118,7 +118,7 @@ for _, s := range qsim.State(q0) {
 // [1][  1]( 0.8944 0.0000i): 0.8000
 ```
 
-### Grover's search algorithm
+## Grover's search algorithm
 
 ```golang
 qsim := q.New()
