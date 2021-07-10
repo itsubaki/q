@@ -9,16 +9,13 @@ jobs:
   test:
     strategy:
       matrix:
-        go: ['1.15']
         platform: [ubuntu-latest]
 
     runs-on: ${{ matrix.platform }}
 
     steps:
-      - name: Setup Go @ ${{ matrix.go }}
+      - name: Setup Go
         uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.go }}
       
       - name: Checkout
         uses: actions/checkout@v2
