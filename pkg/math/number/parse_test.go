@@ -18,9 +18,9 @@ func ExampleParseFloat() {
 
 func TestParseFloat(t *testing.T) {
 	cases := []struct {
-		binary string
-		float  float64
-		err    error
+		in   string
+		want float64
+		err  error
 	}{
 		{"0.000", 0.0, nil},
 		{"0.100", 0.5, nil},
@@ -43,15 +43,15 @@ func TestParseFloat(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		result, err := number.ParseFloat(c.binary)
+		got, err := number.ParseFloat(c.in)
 		if err != nil && err.Error() != c.err.Error() {
 			t.Errorf("parse float: %v", err)
 		}
 
-		if result == c.float {
+		if got == c.want {
 			continue
 		}
 
-		t.Errorf("expected=%v, actual=%v", c.float, result)
+		t.Errorf("got=%v, want=%v", got, c.want)
 	}
 }

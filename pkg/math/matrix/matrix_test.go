@@ -280,7 +280,8 @@ func ExampleMatrix_TensorProduct() {
 
 func TestInverse(t *testing.T) {
 	cases := []struct {
-		m, e matrix.Matrix
+		in   matrix.Matrix
+		want matrix.Matrix
 	}{
 		{
 			matrix.New(
@@ -309,16 +310,15 @@ func TestInverse(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		inv := c.m.Inverse()
-		mmi := c.m.Apply(inv)
-		if !mmi.Equals(c.e) {
+		got := c.in.Apply(c.in.Inverse())
+		if !got.Equals(c.want) {
 			t.Fail()
 		}
 	}
 }
 
 func TestInversePanic(t *testing.T) {
-	m := matrix.New(
+	in := matrix.New(
 		[]complex128{1, 2, 0, -1},
 		[]complex128{-1, 1, 2, 0},
 		[]complex128{2, 0, 1, 1},
@@ -330,13 +330,13 @@ func TestInversePanic(t *testing.T) {
 		}
 	}()
 
-	m.Inverse()
+	in.Inverse()
 	t.Fail()
 }
 
 func TestCommutator(t *testing.T) {
 	cases := []struct {
-		x, y, e matrix.Matrix
+		x, y, want matrix.Matrix
 	}{
 		{
 			matrix.New(
@@ -355,7 +355,7 @@ func TestCommutator(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if !matrix.Commutator(c.x, c.y).Equals(c.e) {
+		if !matrix.Commutator(c.x, c.y).Equals(c.want) {
 			t.Fail()
 		}
 	}
@@ -363,7 +363,7 @@ func TestCommutator(t *testing.T) {
 
 func TestAntiCommutator(t *testing.T) {
 	cases := []struct {
-		x, y, e matrix.Matrix
+		x, y, want matrix.Matrix
 	}{
 		{
 			matrix.New(
@@ -382,7 +382,7 @@ func TestAntiCommutator(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if !matrix.AntiCommutator(c.x, c.y).Equals(c.e) {
+		if !matrix.AntiCommutator(c.x, c.y).Equals(c.want) {
 			t.Fail()
 		}
 	}
@@ -390,8 +390,8 @@ func TestAntiCommutator(t *testing.T) {
 
 func TestTrace(t *testing.T) {
 	cases := []struct {
-		m matrix.Matrix
-		t complex128
+		in   matrix.Matrix
+		want complex128
 	}{
 		{
 			matrix.New(
@@ -417,7 +417,7 @@ func TestTrace(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if c.m.Trace() != c.t {
+		if c.in.Trace() != c.want {
 			t.Fail()
 		}
 	}
@@ -425,7 +425,7 @@ func TestTrace(t *testing.T) {
 
 func TestDagger(t *testing.T) {
 	cases := []struct {
-		m matrix.Matrix
+		in matrix.Matrix
 	}{
 		{
 			matrix.New(
@@ -436,7 +436,7 @@ func TestDagger(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if !c.m.Transpose().Conjugate().Equals(c.m.Dagger()) {
+		if !c.in.Transpose().Conjugate().Equals(c.in.Dagger()) {
 			t.Fail()
 		}
 	}
@@ -445,7 +445,7 @@ func TestDagger(t *testing.T) {
 func TestEquals(t *testing.T) {
 	cases := []struct {
 		m0, m1 matrix.Matrix
-		yes    bool
+		want   bool
 	}{
 		{
 			matrix.New(
@@ -493,7 +493,7 @@ func TestEquals(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if c.m0.Equals(c.m1) != c.yes {
+		if c.m0.Equals(c.m1) != c.want {
 			t.Fail()
 		}
 	}
@@ -501,8 +501,8 @@ func TestEquals(t *testing.T) {
 
 func TestIsHermite(t *testing.T) {
 	cases := []struct {
-		m   matrix.Matrix
-		yes bool
+		in   matrix.Matrix
+		want bool
 	}{
 		{
 			matrix.New(
@@ -535,16 +535,16 @@ func TestIsHermite(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if c.m.IsHermite() != c.yes {
-			t.Error(c.m)
+		if c.in.IsHermite() != c.want {
+			t.Fail()
 		}
 	}
 }
 
 func TestIsUnitary(t *testing.T) {
 	cases := []struct {
-		m   matrix.Matrix
-		yes bool
+		in   matrix.Matrix
+		want bool
 	}{
 		{
 			matrix.New(
@@ -577,15 +577,15 @@ func TestIsUnitary(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if c.m.IsUnitary() != c.yes {
-			t.Error(c.m)
+		if c.in.IsUnitary() != c.want {
+			t.Fail()
 		}
 	}
 }
 
 func TestTensorProductN(t *testing.T) {
 	cases := []struct {
-		m   matrix.Matrix
+		in  matrix.Matrix
 		eps float64
 	}{
 		{
@@ -598,7 +598,7 @@ func TestTensorProductN(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if !matrix.TensorProductN(c.m).Equals(c.m, c.eps) {
+		if !matrix.TensorProductN(c.in).Equals(c.in, c.eps) {
 			t.Fail()
 		}
 	}

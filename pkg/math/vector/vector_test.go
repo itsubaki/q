@@ -231,13 +231,13 @@ func TestVector(t *testing.T) {
 func TestAdd(t *testing.T) {
 	cases := []struct {
 		v0, v1 vector.Vector
-		a      vector.Vector
+		want   vector.Vector
 	}{
 		{vector.New(1, 2, 3, 4, 5), vector.New(6, 7, 8, 9, 10), vector.New(7, 9, 11, 13, 15)},
 	}
 
 	for _, c := range cases {
-		if !c.v0.Add(c.v1).Equals(c.a) {
+		if !c.v0.Add(c.v1).Equals(c.want) {
 			t.Fail()
 		}
 	}
@@ -245,38 +245,38 @@ func TestAdd(t *testing.T) {
 
 func TestMul(t *testing.T) {
 	cases := []struct {
-		v vector.Vector
-		c complex128
-		m vector.Vector
+		v    vector.Vector
+		c    complex128
+		want vector.Vector
 	}{
 		{vector.New(1, 2, 3, 4, 5), 3, vector.New(3, 6, 9, 12, 15)},
 	}
 
 	for _, c := range cases {
-		if !c.v.Mul(c.c).Equals(c.m) {
+		if !c.v.Mul(c.c).Equals(c.want) {
 			t.Fail()
 		}
 	}
 }
 
 func TestClone(t *testing.T) {
-	v := vector.New(1, 2, 3, 4, 5, 6)
-	c := v.Clone()
+	in := vector.New(1, 2, 3, 4, 5, 6)
+	got := in.Clone()
 
-	if !v.Equals(c) {
+	if !in.Equals(got) {
 		t.Fail()
 	}
 }
 
 func TestTensorProductN(t *testing.T) {
 	cases := []struct {
-		v vector.Vector
+		in vector.Vector
 	}{
 		{vector.New(1, 2, 3, 4, 5, 6)},
 	}
 
 	for _, c := range cases {
-		if !vector.TensorProductN(c.v).Equals(c.v) {
+		if !vector.TensorProductN(c.in).Equals(c.in) {
 			t.Fail()
 		}
 	}
@@ -286,7 +286,7 @@ func TestEquals(t *testing.T) {
 	cases := []struct {
 		v0, v1 vector.Vector
 		eps    float64
-		yes    bool
+		want   bool
 	}{
 		{vector.New(1, 2), vector.New(1, 2), 1e-13, true},
 		{vector.New(1, 2), vector.New(3, 4), 1e-13, false},
@@ -294,7 +294,7 @@ func TestEquals(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if c.v0.Equals(c.v1, c.eps) != c.yes {
+		if c.v0.Equals(c.v1, c.eps) != c.want {
 			t.Fail()
 		}
 	}

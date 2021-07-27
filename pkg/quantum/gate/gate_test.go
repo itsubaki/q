@@ -129,8 +129,8 @@ func ExampleCModExp2() {
 				panic(fmt.Sprintf("parse int. a2jkmodNs=%s: %v", a2jkmodNs, err))
 			}
 
-			expected := (number.ModExp2(a, j, N) * int(k)) % N
-			fmt.Printf("%s:%s=%2d %s:%s=%2d %2d\n", bin[:1], bin[1:], k, bin[:1], a2jkmodNs[1:], a2jkmodN, expected)
+			got := (number.ModExp2(a, j, N) * int(k)) % N
+			fmt.Printf("%s:%s=%2d %s:%s=%2d %2d\n", bin[:1], bin[1:], k, bin[:1], a2jkmodNs[1:], a2jkmodN, got)
 		}
 	}
 
@@ -169,19 +169,19 @@ func TestCModExp2(t *testing.T) {
 		b, a, j, N int
 		c          int
 		t          []int
-		e          matrix.Matrix
+		want       matrix.Matrix
 	}{
 		{7, 7, 1, 15, 1, []int{4, 5, 6, 7}, matrix.Apply(g1, g2)},
 		{7, 7, 2, 15, 0, []int{4, 5, 6, 7}, g3},
 	}
 
 	for _, c := range cases {
-		a := gate.CModExp2(c.b, c.a, c.j, c.N, c.c, c.t)
-		if !a.IsUnitary() {
+		got := gate.CModExp2(c.b, c.a, c.j, c.N, c.c, c.t)
+		if !got.IsUnitary() {
 			t.Errorf("modexp is not unitary")
 		}
 
-		if !a.Equals(c.e) {
+		if !got.Equals(c.want) {
 			t.Fail()
 		}
 	}
@@ -200,7 +200,7 @@ func TestCModExp2Panic(t *testing.T) {
 
 func TestInverse(t *testing.T) {
 	cases := []struct {
-		m, e matrix.Matrix
+		in, want matrix.Matrix
 	}{
 		{gate.U(1, 2, 3, 4), gate.I()},
 		{gate.X(2), gate.I(2)},
@@ -208,7 +208,7 @@ func TestInverse(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if !c.m.Apply(c.m.Inverse()).Equals(c.e) {
+		if !c.in.Apply(c.in.Inverse()).Equals(c.want) {
 			t.Fail()
 		}
 	}
@@ -216,7 +216,7 @@ func TestInverse(t *testing.T) {
 
 func TestIsHermite(t *testing.T) {
 	cases := []struct {
-		m matrix.Matrix
+		in matrix.Matrix
 	}{
 		{gate.H()},
 		{gate.X()},
@@ -225,15 +225,15 @@ func TestIsHermite(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if !c.m.IsHermite() {
-			t.Error(c.m)
+		if !c.in.IsHermite() {
+			t.Fail()
 		}
 	}
 }
 
 func TestIsUnitary(t *testing.T) {
 	cases := []struct {
-		m matrix.Matrix
+		in matrix.Matrix
 	}{
 		{gate.I()},
 		{gate.H()},
@@ -253,16 +253,16 @@ func TestIsUnitary(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if !c.m.IsUnitary() {
-			t.Error(c.m)
+		if !c.in.IsUnitary() {
+			t.Fail()
 		}
 	}
 }
 
 func TestTrace(t *testing.T) {
 	cases := []struct {
-		m matrix.Matrix
-		t complex128
+		in   matrix.Matrix
+		want complex128
 	}{
 		{gate.I(), complex(2, 0)},
 		{gate.H(), complex(0, 0)},
@@ -272,15 +272,15 @@ func TestTrace(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		tr := c.m.Trace()
-		if tr != c.t {
-			t.Error(tr)
+		got := c.in.Trace()
+		if got != c.want {
+			t.Errorf("got=%v, want=%v", got, c.want)
 		}
 	}
 }
 
 func TestCZ(t *testing.T) {
-	expected := gate.New(
+	want := gate.New(
 		[]complex128{1, 0, 0, 0, 0, 0, 0, 0},
 		[]complex128{0, 1, 0, 0, 0, 0, 0, 0},
 		[]complex128{0, 0, 1, 0, 0, 0, 0, 0},
@@ -291,14 +291,14 @@ func TestCZ(t *testing.T) {
 		[]complex128{0, 0, 0, 0, 0, 0, 0, -1},
 	)
 
-	actual := gate.CZ(3, 0, 2)
-	if !actual.Equals(expected) {
-		t.Error(actual)
+	got := gate.CZ(3, 0, 2)
+	if !got.Equals(want) {
+		t.Fail()
 	}
 }
 
 func TestCNOT(t *testing.T) {
-	expected := gate.New(
+	want := gate.New(
 		[]complex128{1, 0, 0, 0, 0, 0, 0, 0},
 		[]complex128{0, 1, 0, 0, 0, 0, 0, 0},
 		[]complex128{0, 0, 1, 0, 0, 0, 0, 0},
@@ -309,20 +309,20 @@ func TestCNOT(t *testing.T) {
 		[]complex128{0, 0, 0, 0, 0, 0, 1, 0},
 	)
 
-	actual := gate.CNOT(3, 0, 2)
-	if !actual.Equals(expected) {
-		t.Error(actual)
+	got := gate.CNOT(3, 0, 2)
+	if !got.Equals(want) {
+		t.Fail()
 	}
 }
 
 func TestControlledNot(t *testing.T) {
 	g0 := gate.I().Add(gate.Z()).TensorProduct(gate.I())
 	g1 := gate.I().Sub(gate.Z()).TensorProduct(gate.X())
-	expected := g0.Add(g1).Mul(0.5)
+	want := g0.Add(g1).Mul(0.5)
 
-	actual := gate.ControlledNot(2, []int{0}, 1)
-	if !actual.Equals(expected) {
-		t.Error(actual)
+	got := gate.ControlledNot(2, []int{0}, 1)
+	if !got.Equals(want) {
+		t.Fail()
 	}
 }
 
@@ -342,30 +342,30 @@ func TestToffoli(t *testing.T) {
 	g[11] = gate.CNOT(2, 0, 1).TensorProduct(gate.I())
 	g[12] = gate.T().TensorProduct(gate.S()).TensorProduct(gate.I())
 
-	expected := gate.I(3)
+	want := gate.I(3)
 	for _, gate := range g {
-		expected = expected.Apply(gate)
+		want = want.Apply(gate)
 	}
 
-	actual := gate.Toffoli(3, 0, 1, 2)
-	if !actual.Equals(expected) {
-		t.Error(actual)
+	got := gate.Toffoli(3, 0, 1, 2)
+	if !got.Equals(want) {
+		t.Fail()
 	}
 }
 
 func TestFredkin(t *testing.T) {
-	m := make(matrix.Matrix, 8)
-	m[0] = []complex128{1, 0, 0, 0, 0, 0, 0, 0}
-	m[1] = []complex128{0, 1, 0, 0, 0, 0, 0, 0}
-	m[2] = []complex128{0, 0, 1, 0, 0, 0, 0, 0}
-	m[3] = []complex128{0, 0, 0, 1, 0, 0, 0, 0}
-	m[4] = []complex128{0, 0, 0, 0, 1, 0, 0, 0}
-	m[5] = []complex128{0, 0, 0, 0, 0, 0, 1, 0}
-	m[6] = []complex128{0, 0, 0, 0, 0, 1, 0, 0}
-	m[7] = []complex128{0, 0, 0, 0, 0, 0, 0, 1}
+	want := make(matrix.Matrix, 8)
+	want[0] = []complex128{1, 0, 0, 0, 0, 0, 0, 0}
+	want[1] = []complex128{0, 1, 0, 0, 0, 0, 0, 0}
+	want[2] = []complex128{0, 0, 1, 0, 0, 0, 0, 0}
+	want[3] = []complex128{0, 0, 0, 1, 0, 0, 0, 0}
+	want[4] = []complex128{0, 0, 0, 0, 1, 0, 0, 0}
+	want[5] = []complex128{0, 0, 0, 0, 0, 0, 1, 0}
+	want[6] = []complex128{0, 0, 0, 0, 0, 1, 0, 0}
+	want[7] = []complex128{0, 0, 0, 0, 0, 0, 0, 1}
 
-	actual := gate.Fredkin(3, 0, 1, 2)
-	if !actual.Equals(m) {
-		t.Error(actual)
+	got := gate.Fredkin(3, 0, 1, 2)
+	if !got.Equals(want) {
+		t.Fail()
 	}
 }

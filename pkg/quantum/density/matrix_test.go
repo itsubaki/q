@@ -177,10 +177,10 @@ func TestExpectedValue(t *testing.T) {
 
 func TestMeasure(t *testing.T) {
 	cases := []struct {
-		p []float64
-		q []*qubit.Qubit
-		m *qubit.Qubit
-		v complex128
+		p    []float64
+		q    []*qubit.Qubit
+		m    *qubit.Qubit
+		want complex128
 	}{
 		{
 			[]float64{1},
@@ -197,12 +197,12 @@ func TestMeasure(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho := density.New()
+		got := density.New()
 		for i := range c.p {
-			rho.Add(c.p[i], c.q[i])
+			got.Add(c.p[i], c.q[i])
 		}
 
-		if rho.Measure(c.m) != c.v {
+		if got.Measure(c.m) != c.want {
 			t.Fail()
 		}
 	}
@@ -210,11 +210,11 @@ func TestMeasure(t *testing.T) {
 
 func TestApply(t *testing.T) {
 	cases := []struct {
-		p []float64
-		q []*qubit.Qubit
-		g matrix.Matrix
-		m *qubit.Qubit
-		e complex128
+		p    []float64
+		q    []*qubit.Qubit
+		g    matrix.Matrix
+		m    *qubit.Qubit
+		want complex128
 	}{
 		{
 			[]float64{1},
@@ -233,12 +233,12 @@ func TestApply(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho := density.New()
+		got := density.New()
 		for i := range c.p {
-			rho.Add(c.p[i], c.q[i])
+			got.Add(c.p[i], c.q[i])
 		}
 
-		if rho.Apply(c.g).Measure(c.m) != c.e {
+		if got.Apply(c.g).Measure(c.m) != c.want {
 			t.Fail()
 		}
 	}

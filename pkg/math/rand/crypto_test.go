@@ -25,7 +25,7 @@ func TestCryptoInt(t *testing.T) {
 	}
 
 	if !found {
-		t.Fatalf("coprime=%v", r)
+		t.Errorf("coprime=%v", r)
 	}
 }
 
@@ -52,6 +52,6 @@ func TestCoprime(t *testing.T) {
 	}
 
 	if !found {
-		t.Fatalf("coprime=%v", p)
+		t.Errorf("coprime=%v", p)
 	}
 }

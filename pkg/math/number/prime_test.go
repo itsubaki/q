@@ -18,8 +18,8 @@ func ExampleIsTrivial() {
 
 func TestIsPrime(t *testing.T) {
 	cases := []struct {
-		N       int
-		isPrime bool
+		in   int
+		want bool
 	}{
 		{1, false},
 		{2, true},
@@ -45,17 +45,17 @@ func TestIsPrime(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		p := number.IsPrime(c.N)
-		if p != c.isPrime {
-			t.Errorf("actual=%v, expected=%v", p, c.isPrime)
+		got := number.IsPrime(c.in)
+		if got != c.want {
+			t.Errorf("got=%v, want=%v", got, c.want)
 		}
 	}
 }
 
 func TestIsOdd(t *testing.T) {
 	cases := []struct {
-		N   int
-		yes bool
+		in   int
+		want bool
 	}{
 		{1, true},
 		{2, false},
@@ -64,7 +64,7 @@ func TestIsOdd(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if number.IsOdd(c.N) != c.yes {
+		if number.IsOdd(c.in) != c.want {
 			t.Fail()
 		}
 	}

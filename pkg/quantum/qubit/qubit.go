@@ -245,22 +245,19 @@ func (q *Qubit) State(index ...[]int) []State {
 
 	state := make([]State, 0)
 	for i, a := range q.Amplitude() {
-		if math.Abs(real(a)) < 1e-13 {
-			a = complex(0, imag(a))
-		}
-		if math.Abs(imag(a)) < 1e-13 {
-			a = complex(real(a), 0)
-		}
-		if a == 0 {
+		amp := round(a)
+		if amp == 0 {
 			continue
 		}
-		bin := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
 
-		s := State{Amplitude: a, Probability: math.Pow(cmplx.Abs(a), 2)}
+		s := State{Amplitude: amp, Probability: math.Pow(cmplx.Abs(amp), 2)}
+		b := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
+
 		for _, idx := range index {
-			bint, bbin := to(bin, idx)
-			s.Int = append(s.Int, bint)
-			s.BinaryString = append(s.BinaryString, bbin)
+			binstr := pickup(b, idx)
+
+			s.Int = append(s.Int, parseInt(binstr))
+			s.BinaryString = append(s.BinaryString, binstr)
 		}
 
 		state = append(state, s)
@@ -269,19 +266,34 @@ func (q *Qubit) State(index ...[]int) []State {
 	return state
 }
 
-func to(binary string, idx []int) (int, string) {
+func round(a complex128) complex128 {
+	if math.Abs(real(a)) < 1e-13 {
+		a = complex(0, imag(a))
+	}
+
+	if math.Abs(imag(a)) < 1e-13 {
+		a = complex(real(a), 0)
+	}
+
+	return a
+}
+
+func pickup(binary string, idx []int) string {
 	var sb strings.Builder
 	for _, i := range idx {
 		sb.WriteString(binary[i : i+1])
 	}
-	bin := sb.String()
 
-	bint, err := strconv.ParseInt(bin, 2, 0)
+	return sb.String()
+}
+
+func parseInt(binary string) int {
+	p, err := strconv.ParseInt(binary, 2, 0)
 	if err != nil {
-		panic(fmt.Sprintf("parse int. binary=%s, bin=%s", binary, bin))
+		panic(fmt.Sprintf("parse int. binary=%s", binary))
 	}
 
-	return int(bint), bin
+	return int(p)
 }
 
 func TensorProduct(qb ...*Qubit) *Qubit {
