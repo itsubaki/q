@@ -80,6 +80,21 @@ func ExampleQ_OneWith() {
 	// [11][  3]( 0.5000 0.0000i): 0.2500
 }
 
+func ExampleQ_Reset() {
+	qsim := q.New()
+
+	r := qsim.ZeroWith(2)
+	qsim.X(r...)
+	qsim.Reset(r...)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00][  0]( 1.0000 0.0000i): 1.0000
+}
+
 func ExampleQ_Amplitude() {
 	qsim := q.New()
 
@@ -553,6 +568,26 @@ func Example_bellState() {
 	// Output:
 	// [00][  0]( 0.7071 0.0000i): 0.5000
 	// [11][  3]( 0.7071 0.0000i): 0.5000
+}
+
+func Example_bellState2() {
+	qsim := q.New()
+	qsim.Seed = []int64{1}
+	qsim.Rand = rand.Math
+
+	r := qsim.ZeroWith(2)
+	qsim.Reset(r...)
+
+	qsim.H(r[0])
+	qsim.CNOT(r[0], r[1])
+
+	c0 := qsim.Measure(r[0]).Int()
+	c1 := qsim.Measure(r[1]).Int()
+
+	fmt.Printf("%v%v\n", c0, c1)
+
+	// Output:
+	// 11
 }
 
 func Example_quantumTeleportation() {

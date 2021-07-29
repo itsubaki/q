@@ -82,6 +82,14 @@ func (q *Q) ZeroLog2(N int) []Qubit {
 	return q.ZeroWith(n)
 }
 
+func (q *Q) Reset(qb ...Qubit) {
+	for i := range qb {
+		if q.Measure(qb[i]).IsOne() {
+			q.X(qb[i])
+		}
+	}
+}
+
 func (q *Q) NumberOfBit() int {
 	return q.internal.NumberOfBit()
 }
