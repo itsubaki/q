@@ -38,11 +38,11 @@ func ExampleConvergent() {
 
 func TestContinuedFraction(t *testing.T) {
 	cases := []struct {
-		input float64
-		cf    []int
-		s, r  int
-		d     float64
-		eps   float64
+		in   float64
+		cf   []int
+		s, r int
+		d    float64
+		eps  float64
 	}{
 		{1.0 / 16.0, []int{0, 16}, 1, 16, 0.0625, 1e-3},
 		{4.0 / 16.0, []int{0, 4}, 1, 4, 0.25, 1e-3},
@@ -58,7 +58,7 @@ func TestContinuedFraction(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		f := number.ContinuedFraction(c.input, c.eps)
+		f := number.ContinuedFraction(c.in, c.eps)
 		for i := range c.cf {
 			if f[i] == c.cf[i] {
 				continue

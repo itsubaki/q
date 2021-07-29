@@ -17,7 +17,8 @@ func ExampleGCD() {
 
 func TestGCD(t *testing.T) {
 	cases := []struct {
-		a, b, c int
+		a, b int
+		want int
 	}{
 		{15, 2, 1},
 		{15, 4, 1},
@@ -28,9 +29,9 @@ func TestGCD(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		gcd := number.GCD(c.a, c.b)
-		if gcd != c.c {
-			t.Errorf("gcd=%d", gcd)
+		got := number.GCD(c.a, c.b)
+		if got != c.want {
+			t.Errorf("got=%v want=%d", got, c.want)
 		}
 	}
 }
