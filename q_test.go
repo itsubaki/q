@@ -82,6 +82,8 @@ func ExampleQ_OneWith() {
 
 func ExampleQ_Reset() {
 	qsim := q.New()
+	qsim.Seed = []int64{1}
+	qsim.Rand = rand.Math
 
 	r := qsim.ZeroWith(2)
 	qsim.X(r...)
