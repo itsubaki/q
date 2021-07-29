@@ -536,7 +536,7 @@ func TestIsHermite(t *testing.T) {
 
 	for _, c := range cases {
 		if c.m.IsHermite() != c.yes {
-			t.Error(c.m)
+			t.Errorf("matrix=%v", c.m)
 		}
 	}
 }
@@ -578,7 +578,7 @@ func TestIsUnitary(t *testing.T) {
 
 	for _, c := range cases {
 		if c.m.IsUnitary() != c.yes {
-			t.Error(c.m)
+			t.Errorf("matrix=%v", c.m)
 		}
 	}
 }

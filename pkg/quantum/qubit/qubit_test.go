@@ -508,7 +508,7 @@ func TestFidelity(t *testing.T) {
 	for _, c := range cases {
 		f := c.q0.Fidelity(c.q1)
 		if f != c.f {
-			t.Error(f)
+			t.Errorf("fidelity=%v", f)
 		}
 	}
 }
@@ -525,7 +525,7 @@ func TestTraceDistance(t *testing.T) {
 	for _, c := range cases {
 		d := c.q0.TraceDistance(c.q1)
 		if d != c.d {
-			t.Error(d)
+			t.Errorf("trace distance=%v", d)
 		}
 	}
 }
@@ -543,7 +543,7 @@ func TestNormalize(t *testing.T) {
 	for _, c := range cases {
 		sum := number.Sum(c.q.Probability())
 		if math.Abs(sum-1.0) > 1e-13 {
-			t.Error(sum)
+			t.Errorf("probability=%v", sum)
 		}
 	}
 }
@@ -552,21 +552,21 @@ func TestMeasure(t *testing.T) {
 	q := qubit.Zero(3).Apply(gate.H(3))
 	for _, p := range q.Probability() {
 		if p != 0 && math.Abs(p-0.125) > 1e-13 {
-			t.Error(q.Probability())
+			t.Errorf("probability=%v", q.Probability())
 		}
 	}
 
 	q.Measure(0)
 	for _, p := range q.Probability() {
 		if p != 0 && math.Abs(p-0.25) > 1e-13 {
-			t.Error(q.Probability())
+			t.Errorf("probability=%v", q.Probability())
 		}
 	}
 
 	q.Measure(1)
 	for _, p := range q.Probability() {
 		if p != 0 && math.Abs(p-0.5) > 1e-13 {
-			t.Error(q.Probability())
+			t.Errorf("probability=%v", q.Probability())
 		}
 	}
 

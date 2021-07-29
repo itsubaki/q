@@ -226,7 +226,7 @@ func TestIsHermite(t *testing.T) {
 
 	for _, c := range cases {
 		if !c.m.IsHermite() {
-			t.Error(c.m)
+			t.Errorf("matrix=%v", c.m)
 		}
 	}
 }
@@ -254,7 +254,7 @@ func TestIsUnitary(t *testing.T) {
 
 	for _, c := range cases {
 		if !c.m.IsUnitary() {
-			t.Error(c.m)
+			t.Errorf("matrix=%v", c.m)
 		}
 	}
 }
@@ -274,7 +274,7 @@ func TestTrace(t *testing.T) {
 	for _, c := range cases {
 		tr := c.m.Trace()
 		if tr != c.t {
-			t.Error(tr)
+			t.Errorf("trace=%v", tr)
 		}
 	}
 }
@@ -293,7 +293,7 @@ func TestCZ(t *testing.T) {
 
 	actual := gate.CZ(3, 0, 2)
 	if !actual.Equals(expected) {
-		t.Error(actual)
+		t.Errorf("cz=%v", actual)
 	}
 }
 
@@ -322,7 +322,7 @@ func TestControlledNot(t *testing.T) {
 
 	actual := gate.ControlledNot(2, []int{0}, 1)
 	if !actual.Equals(expected) {
-		t.Error(actual)
+		t.Errorf("cnot=%v", actual)
 	}
 }
 
@@ -349,7 +349,7 @@ func TestToffoli(t *testing.T) {
 
 	actual := gate.Toffoli(3, 0, 1, 2)
 	if !actual.Equals(expected) {
-		t.Error(actual)
+		t.Errorf("toffoli=%v", actual)
 	}
 }
 
