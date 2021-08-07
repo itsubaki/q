@@ -186,6 +186,13 @@ func (q *Q) CR(control, target Qubit, k int) *Q {
 	return q.ControlledR([]Qubit{control}, target, k)
 }
 
+func (q *Q) CRdg(control, target Qubit, k int) *Q {
+	n := q.NumberOfBit()
+	g := gate.ControlledR(n, []int{control.Index()}, target.Index(), k).Dagger()
+	q.internal.Apply(g)
+	return q
+}
+
 func (q *Q) ControlledZ(control []Qubit, target Qubit) *Q {
 	n := q.NumberOfBit()
 	g := gate.ControlledZ(n, Index(control...), target.Index())
@@ -288,7 +295,7 @@ func (q *Q) InverseQFT(qb ...Qubit) *Q {
 	for i := l - 1; i > -1; i-- {
 		k := l - i
 		for j := l - 1; j > i; j-- {
-			q.CR(qb[j], qb[i], k)
+			q.CRdg(qb[j], qb[i], k)
 			k--
 		}
 

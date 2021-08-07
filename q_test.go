@@ -372,6 +372,23 @@ func ExampleQ_QFT() {
 	// [111][  7]( 0.0000-0.3536i): 0.1250
 }
 
+func ExampleQ_InvQFT() {
+	qsim := q.New()
+
+	q0 := qsim.Zero()
+	q1 := qsim.One()
+	q2 := qsim.Zero()
+
+	qsim.QFT(q0, q1, q2)
+	qsim.InvQFT(q0, q1, q2)
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [010][  2]( 1.0000 0.0000i): 1.0000
+}
+
 func ExampleQ_Clone() {
 	qsim := q.New()
 
