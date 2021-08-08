@@ -84,7 +84,13 @@ func ExampleQ_Reset() {
 	qsim := q.New()
 
 	r := qsim.ZeroWith(2)
-	qsim.H(r...)
+	qsim.Reset(r...)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	qsim.X(r...)
 	qsim.Reset(r...)
 
 	for _, s := range qsim.State() {
@@ -92,6 +98,7 @@ func ExampleQ_Reset() {
 	}
 
 	// Output:
+	// [00][  0]( 1.0000 0.0000i): 1.0000
 	// [00][  0]( 1.0000 0.0000i): 1.0000
 }
 
@@ -593,7 +600,6 @@ func Example_bellState2() {
 	qsim.Rand = rand.Math
 
 	r := qsim.ZeroWith(2)
-	qsim.Reset(r...)
 
 	qsim.H(r[0])
 	qsim.CNOT(r[0], r[1])
