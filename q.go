@@ -343,6 +343,10 @@ func (q *Q) Clone() *Q {
 	}
 }
 
+func (q *Q) Raw() *qubit.Qubit {
+	return q.internal
+}
+
 func (q *Q) String() string {
 	return q.internal.String()
 }

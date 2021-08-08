@@ -1048,6 +1048,23 @@ func Example_shorFactoring85() {
 	// N=85, a=14. p=5, q=17. s/r=15/16 ([0.1111]~0.938)
 }
 
+func ExampleQ_Raw() {
+	qsim := q.New()
+	qsim.Zero()
+
+	qb := qsim.Raw()
+
+	d := qb.TraceDistance(qb)
+	fmt.Println(d)
+
+	f := qb.Fidelity(qb)
+	fmt.Println(f)
+
+	// Output:
+	// 0
+	// 1
+}
+
 func TestStatePanic(t *testing.T) {
 	qsim := q.New()
 
