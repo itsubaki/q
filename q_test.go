@@ -430,6 +430,18 @@ func ExampleQ_String() {
 	// [(0+0i) (0+0i) (1+0i) (0+0i)]
 }
 
+func ExampleQ_Controlled() {
+	qsim := q.New()
+
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+
+	qsim.X(q0)
+	qsim.C(gate.X(), q0, q1) // qsim.CNOT(q0, q1)
+
+	// Output:
+}
+
 func ExampleQ_ConditionX() {
 	qsim := q.New()
 

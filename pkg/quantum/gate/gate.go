@@ -126,6 +126,44 @@ func T(n ...int) matrix.Matrix {
 	return matrix.TensorProductN(g, n...)
 }
 
+func Controlled(o matrix.Matrix, n int, c []int, t int) matrix.Matrix {
+	m := I([]int{n}...)
+	d, _ := m.Dimension()
+	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
+
+	index := make([]int64, 0)
+	for i := 0; i < d; i++ {
+		bits := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)))
+
+		// Apply X
+		apply := true
+		for i := range c {
+			if bits[c[i]] == '0' {
+				apply = false
+				break
+			}
+		}
+
+		if apply {
+			// TODO apply U to q[t]
+		}
+
+		v, err := strconv.ParseInt(string(bits), 2, 0)
+		if err != nil {
+			panic(fmt.Sprintf("parse int: %v", err))
+		}
+
+		index = append(index, v)
+	}
+
+	g := make(matrix.Matrix, d)
+	for i, ii := range index {
+		g[i] = m[ii]
+	}
+
+	return g
+}
+
 func ControlledNot(n int, c []int, t int) matrix.Matrix {
 	m := I([]int{n}...)
 	d, _ := m.Dimension()
