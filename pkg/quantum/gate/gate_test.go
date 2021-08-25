@@ -205,7 +205,10 @@ func TestU(t *testing.T) {
 	}{
 		{gate.U(0, 0, 0), gate.I()},
 		{gate.U(math.Pi, 0, math.Pi), gate.X()},
+		{gate.U(math.Pi, math.Pi/2, math.Pi/2), gate.Y()},
 		{gate.U(math.Pi/2, 0, math.Pi), gate.H()},
+		{gate.U(math.Pi/4, -1*math.Pi/2, math.Pi/2), gate.RX(math.Pi / 4)},
+		{gate.U(math.Pi/4, 0, 0), gate.RY(math.Pi / 4)},
 	}
 
 	for _, c := range cases {
