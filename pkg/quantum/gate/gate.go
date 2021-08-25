@@ -126,16 +126,16 @@ func T(n ...int) matrix.Matrix {
 	return matrix.TensorProductN(g, n...)
 }
 
-func Controlled(o matrix.Matrix, n int, c []int, t int) matrix.Matrix {
-	m := I([]int{n}...)
-	d, _ := m.Dimension()
+func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
+	g := I([]int{n}...)
+	d, _ := g.Dimension()
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 
 	index := make([]int64, 0)
 	for i := 0; i < d; i++ {
 		bits := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)))
 
-		// Apply X
+		// Apply U
 		apply := true
 		for i := range c {
 			if bits[c[i]] == '0' {
@@ -154,11 +154,6 @@ func Controlled(o matrix.Matrix, n int, c []int, t int) matrix.Matrix {
 		}
 
 		index = append(index, v)
-	}
-
-	g := make(matrix.Matrix, d)
-	for i, ii := range index {
-		g[i] = m[ii]
 	}
 
 	return g
