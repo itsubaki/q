@@ -130,8 +130,8 @@ func (q *Q) T(qb ...Qubit) *Q {
 	return q.Apply(gate.T(), qb...)
 }
 
-func (q *Q) U(alpha, beta, gamma, delta float64, qb ...Qubit) *Q {
-	return q.Apply(gate.U(alpha, beta, gamma, delta), qb...)
+func (q *Q) U(theta, phi, lambda float64, qb ...Qubit) *Q {
+	return q.Apply(gate.U(theta, phi, lambda), qb...)
 }
 
 func (q *Q) RX(theta float64, qb ...Qubit) *Q {

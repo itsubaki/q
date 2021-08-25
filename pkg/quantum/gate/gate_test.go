@@ -2,6 +2,7 @@ package gate_test
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"testing"
 
@@ -198,11 +199,27 @@ func TestCModExp2Panic(t *testing.T) {
 	t.Fail()
 }
 
+func TestU(t *testing.T) {
+	cases := []struct {
+		in, want matrix.Matrix
+	}{
+		{gate.U(0, 0, 0), gate.I()},
+		{gate.U(math.Pi, 0, math.Pi), gate.X()},
+		{gate.U(math.Pi/2, 0, math.Pi), gate.H()},
+	}
+
+	for _, c := range cases {
+		if !c.in.Equals(c.want) {
+			t.Fail()
+		}
+	}
+}
+
 func TestInverse(t *testing.T) {
 	cases := []struct {
 		in, want matrix.Matrix
 	}{
-		{gate.U(1, 2, 3, 4), gate.I()},
+		{gate.U(1, 2, 3), gate.I()},
 		{gate.X(2), gate.I(2)},
 		{gate.CNOT(2, 0, 1), gate.I(2)},
 	}
@@ -240,7 +257,7 @@ func TestIsUnitary(t *testing.T) {
 		{gate.X()},
 		{gate.Y()},
 		{gate.Z()},
-		{gate.U(1, 2, 3, 4)},
+		{gate.U(1, 2, 3)},
 		{gate.R(4)},
 		{gate.RX(1.23)},
 		{gate.RY(1.23)},

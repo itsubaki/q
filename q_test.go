@@ -286,7 +286,7 @@ func ExampleQ_U() {
 	qsim := q.New()
 
 	q0 := qsim.Zero()
-	qsim.U(0, math.Pi, math.Pi, math.Pi, q0)
+	qsim.U(math.Pi, 0, math.Pi, q0)
 
 	for _, s := range qsim.State() {
 		fmt.Println(s)

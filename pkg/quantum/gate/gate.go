@@ -27,12 +27,13 @@ func Empty(n ...int) []matrix.Matrix {
 	return make([]matrix.Matrix, n[0])
 }
 
-func U(alpha, beta, gamma, delta float64) matrix.Matrix {
-	return matrix.Apply(
-		RZ(beta),
-		RY(gamma),
-		RZ(delta),
-	).Mul(cmplx.Exp(complex(0, alpha)))
+func U(theta, phi, lambda float64) matrix.Matrix {
+	v := complex(theta/2, 0)
+
+	g := make(matrix.Matrix, 2)
+	g[0] = []complex128{cmplx.Cos(v), -1 * cmplx.Exp(complex(0, lambda)) * cmplx.Sin(v)}
+	g[1] = []complex128{cmplx.Exp(complex(0, phi)) * cmplx.Sin(v), cmplx.Exp(complex(0, (phi+lambda))) * cmplx.Cos(v)}
+	return g
 }
 
 func RX(theta float64) matrix.Matrix {
