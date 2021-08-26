@@ -230,6 +230,7 @@ func TestC(t *testing.T) {
 		{gate.C(gate.X(), 3, 0, 2), gate.CNOT(3, 0, 2)},
 		{gate.C(gate.X(), 3, 0, 1), gate.CNOT(3, 0, 1)},
 		{gate.C(gate.X(), 3, 1, 0), gate.CNOT(3, 1, 0)},
+		{gate.C(gate.U(math.Pi, 0, math.Pi), 3, 1, 0), gate.CNOT(3, 1, 0)},
 	}
 
 	for _, c := range cases {
