@@ -142,14 +142,26 @@ func C(u matrix.Matrix, n int, c int, t int) matrix.Matrix {
 				continue
 			}
 
+			diff := false
+			for i := range row {
+				if i == t {
+					continue
+				}
+
+				if row[i] != col[i] {
+					diff = true
+					break
+				}
+			}
+
+			if diff {
+				continue
+			}
+
 			r, _ := strconv.Atoi(string(row[t]))
 			c, _ := strconv.Atoi(string(col[t]))
 			g[i][j] = u[c][r]
 		}
-	}
-
-	for _, r := range g.Transpose() {
-		fmt.Printf("%v\n", r)
 	}
 
 	return g.Transpose()

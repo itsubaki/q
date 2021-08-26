@@ -227,8 +227,9 @@ func TestC(t *testing.T) {
 		{gate.C(gate.Z(), 2, 0, 1), gate.CZ(2, 0, 1)},
 		{gate.C(gate.S(), 2, 0, 1), gate.CS(2, 0, 1)},
 		{gate.C(gate.R(100), 2, 0, 1), gate.CR(2, 0, 1, 100)},
-		//	{gate.C(gate.X(), 3, 0, 2), gate.CNOT(3, 0, 2)},
-		// {gate.C(gate.X(), 3, 0, 1), gate.CNOT(3, 0, 1)},
+		{gate.C(gate.X(), 3, 0, 2), gate.CNOT(3, 0, 2)},
+		{gate.C(gate.X(), 3, 0, 1), gate.CNOT(3, 0, 1)},
+		{gate.C(gate.X(), 3, 1, 0), gate.CNOT(3, 1, 0)},
 	}
 
 	for _, c := range cases {
