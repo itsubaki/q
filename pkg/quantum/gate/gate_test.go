@@ -226,7 +226,7 @@ func TestC(t *testing.T) {
 		{gate.C(gate.X(), 2, 0, 1), gate.CNOT(2, 0, 1)},
 		{gate.C(gate.Z(), 2, 0, 1), gate.CZ(2, 0, 1)},
 		{gate.C(gate.S(), 2, 0, 1), gate.CS(2, 0, 1)},
-		{gate.C(gate.R(100), 2, 0, 1), gate.CR(2, 0, 1, 100)},
+		{gate.C(gate.R(100), 2, 0, 1), gate.CR(100, 2, 0, 1)},
 		{gate.C(gate.X(), 3, 0, 2), gate.CNOT(3, 0, 2)},
 		{gate.C(gate.X(), 3, 0, 1), gate.CNOT(3, 0, 1)},
 		{gate.C(gate.X(), 3, 1, 0), gate.CNOT(3, 1, 0)},
@@ -288,9 +288,9 @@ func TestIsUnitary(t *testing.T) {
 		{gate.RY(1.23)},
 		{gate.RZ(1.23)},
 		{gate.ControlledS(2, []int{0}, 1)},
-		{gate.ControlledR(2, []int{0}, 1, 10)},
+		{gate.ControlledR(10, 2, []int{0}, 1)},
 		{gate.CS(2, 0, 1)},
-		{gate.CR(2, 0, 1, 10)},
+		{gate.CR(10, 2, 0, 1)},
 		{gate.QFT(2)},
 	}
 

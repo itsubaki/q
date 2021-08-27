@@ -279,7 +279,7 @@ func CS(n, c, t int) matrix.Matrix {
 	return ControlledS(n, []int{c}, t)
 }
 
-func ControlledR(n int, c []int, t, k int) matrix.Matrix {
+func ControlledR(k, n int, c []int, t int) matrix.Matrix {
 	g := I([]int{n}...)
 	d, _ := g.Dimension()
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
@@ -307,8 +307,8 @@ func ControlledR(n int, c []int, t, k int) matrix.Matrix {
 	return g.Transpose()
 }
 
-func CR(n, c, t, k int) matrix.Matrix {
-	return ControlledR(n, []int{c}, t, k)
+func CR(k, n, c, t int) matrix.Matrix {
+	return ControlledR(k, n, []int{c}, t)
 }
 
 func Swap(n, c, t int) matrix.Matrix {
@@ -345,7 +345,7 @@ func QFT(n int) matrix.Matrix {
 
 		k := 2
 		for j := i + 1; j < n; j++ {
-			g = g.Apply(CR(n, j, i, k))
+			g = g.Apply(CR(k, n, j, i))
 			k++
 		}
 	}

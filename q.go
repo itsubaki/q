@@ -182,20 +182,20 @@ func (q *Q) C(m matrix.Matrix, control, target Qubit) *Q {
 	return q
 }
 
-func (q *Q) ControlledR(control []Qubit, target Qubit, k int) *Q {
+func (q *Q) ControlledR(k int, control []Qubit, target Qubit) *Q {
 	n := q.NumberOfBit()
-	g := gate.ControlledR(n, Index(control...), target.Index(), k)
+	g := gate.ControlledR(k, n, Index(control...), target.Index())
 	q.internal.Apply(g)
 	return q
 }
 
-func (q *Q) CR(control, target Qubit, k int) *Q {
-	return q.ControlledR([]Qubit{control}, target, k)
+func (q *Q) CR(k int, control, target Qubit) *Q {
+	return q.ControlledR(k, []Qubit{control}, target)
 }
 
-func (q *Q) InvCR(control, target Qubit, k int) *Q {
+func (q *Q) InvCR(k int, control, target Qubit) *Q {
 	n := q.NumberOfBit()
-	g := gate.ControlledR(n, []int{control.Index()}, target.Index(), k).Dagger()
+	g := gate.ControlledR(k, n, []int{control.Index()}, target.Index()).Dagger()
 	q.internal.Apply(g)
 	return q
 }
@@ -289,7 +289,7 @@ func (q *Q) QFT(qb ...Qubit) *Q {
 
 		k := 2
 		for j := i + 1; j < l; j++ {
-			q.CR(qb[j], qb[i], k)
+			q.CR(k, qb[j], qb[i])
 			k++
 		}
 	}
@@ -302,7 +302,7 @@ func (q *Q) InverseQFT(qb ...Qubit) *Q {
 	for i := l - 1; i > -1; i-- {
 		k := l - i
 		for j := l - 1; j > i; j-- {
-			q.InvCR(qb[j], qb[i], k)
+			q.InvCR(k, qb[j], qb[i])
 			k--
 		}
 

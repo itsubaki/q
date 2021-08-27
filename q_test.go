@@ -849,10 +849,10 @@ func Example_qFT() {
 	q2 := qsim.Zero()
 
 	qsim.H(q0)
-	qsim.CR(q1, q0, 2)
-	qsim.CR(q2, q0, 3)
+	qsim.CR(2, q1, q0)
+	qsim.CR(3, q2, q0)
 	qsim.H(q1)
-	qsim.CR(q2, q1, 2)
+	qsim.CR(2, q2, q1)
 	qsim.H(q2)
 	qsim.Swap(q0, q2)
 
@@ -989,14 +989,14 @@ func Example_shorFactoring51() {
 
 	qsim.Swap(q0, q1, q2, q3)
 	qsim.H(q3)
-	qsim.CR(q3, q2, 2)
+	qsim.CR(2, q3, q2)
 	qsim.H(q2)
-	qsim.CR(q3, q1, 3)
-	qsim.CR(q2, q1, 2)
+	qsim.CR(3, q3, q1)
+	qsim.CR(2, q2, q1)
 	qsim.H(q1)
-	qsim.CR(q3, q0, 4)
-	qsim.CR(q2, q0, 3)
-	qsim.CR(q1, q0, 2)
+	qsim.CR(4, q3, q0)
+	qsim.CR(3, q2, q0)
+	qsim.CR(2, q1, q0)
 	qsim.H(q0)
 
 	m := qsim.Measure(q0, q1, q2, q3).BinaryString()
@@ -1044,9 +1044,9 @@ func Example_shorFactoring85() {
 
 	qsim.Swap(q0, q1, q2, q3)
 	qsim.H(q3)
-	qsim.CR(q3, q2, 2).H(q2)
-	qsim.CR(q3, q1, 3).CR(q2, q1, 2).H(q1)
-	qsim.CR(q3, q0, 4).CR(q2, q0, 3).CR(q1, q0, 2).H(q0)
+	qsim.CR(2, q3, q2).H(q2)
+	qsim.CR(3, q3, q1).CR(2, q2, q1).H(q1)
+	qsim.CR(4, q3, q0).CR(3, q2, q0).CR(2, q1, q0).H(q0)
 
 	m := qsim.Measure(q0, q1, q2, q3).BinaryString()
 	s, r, d, ok := number.FindOrder(a, N, fmt.Sprintf("0.%s", m))
