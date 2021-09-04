@@ -240,6 +240,26 @@ func TestC(t *testing.T) {
 	}
 }
 
+func TestControlled(t *testing.T) {
+	cases := []struct {
+		in, want matrix.Matrix
+	}{
+		{gate.Controlled(gate.I(), 2, []int{0}, 1), gate.I(2)},
+		{gate.Controlled(gate.X(), 3, []int{1, 2}, 0), gate.CCNOT(3, 1, 2, 0)},
+		{gate.Controlled(gate.X(), 3, []int{2, 1}, 0), gate.CCNOT(3, 2, 1, 0)},
+		{gate.Controlled(gate.X(), 3, []int{0, 2}, 1), gate.CCNOT(3, 0, 2, 1)},
+		{gate.Controlled(gate.X(), 3, []int{2, 0}, 1), gate.CCNOT(3, 2, 0, 1)},
+		{gate.Controlled(gate.X(), 3, []int{0, 1}, 2), gate.CCNOT(3, 0, 1, 2)},
+		{gate.Controlled(gate.X(), 3, []int{1, 0}, 2), gate.CCNOT(3, 1, 0, 2)},
+	}
+
+	for _, c := range cases {
+		if !c.in.Equals(c.want) {
+			t.Fail()
+		}
+	}
+}
+
 func TestInverse(t *testing.T) {
 	cases := []struct {
 		in, want matrix.Matrix

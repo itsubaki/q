@@ -126,19 +126,35 @@ func T(n ...int) matrix.Matrix {
 	return matrix.TensorProductN(g, n...)
 }
 
-func C(u matrix.Matrix, n int, c int, t int) matrix.Matrix {
+func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
 	g := I([]int{n}...)
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 
 	for i := range g {
 		row := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)))
-		if row[c] == '0' {
+
+		found := false
+		for _, ci := range c {
+			if row[ci] == '0' {
+				found = true
+				break
+			}
+		}
+		if found {
 			continue
 		}
 
 		for j := range g[i] {
 			col := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(j), 2)))
-			if col[c] == '0' {
+
+			found := false
+			for _, ci := range c {
+				if col[ci] == '0' {
+					found = true
+					break
+				}
+			}
+			if found {
 				continue
 			}
 
@@ -165,6 +181,10 @@ func C(u matrix.Matrix, n int, c int, t int) matrix.Matrix {
 	}
 
 	return g.Transpose()
+}
+
+func C(u matrix.Matrix, n int, c int, t int) matrix.Matrix {
+	return Controlled(u, n, []int{c}, t)
 }
 
 func ControlledNot(n int, c []int, t int) matrix.Matrix {

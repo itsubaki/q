@@ -175,11 +175,15 @@ func (q *Q) Apply(m matrix.Matrix, qb ...Qubit) *Q {
 	return q
 }
 
-func (q *Q) C(m matrix.Matrix, control, target Qubit) *Q {
+func (q *Q) Controlled(m matrix.Matrix, control []Qubit, target Qubit) *Q {
 	n := q.NumberOfBit()
-	g := gate.C(m, n, control.Index(), target.Index())
+	g := gate.Controlled(m, n, Index(control...), target.Index())
 	q.internal.Apply(g)
 	return q
+}
+
+func (q *Q) C(m matrix.Matrix, control, target Qubit) *Q {
+	return q.Controlled(m, []Qubit{control}, target)
 }
 
 func (q *Q) ControlledR(k int, control []Qubit, target Qubit) *Q {
