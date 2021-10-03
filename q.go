@@ -26,27 +26,27 @@ func Index(qb ...Qubit) []int {
 }
 
 type Q struct {
-	internal *qubit.Qubit
-	Seed     []int64
-	Rand     func(seed ...int64) float64
+	qb   *qubit.Qubit
+	Seed []int64
+	Rand func(seed ...int64) float64
 }
 
 func New() *Q {
 	return &Q{
-		internal: nil,
-		Rand:     rand.Crypto,
+		qb:   nil,
+		Rand: rand.Crypto,
 	}
 }
 
 func (q *Q) New(v ...complex128) Qubit {
-	if q.internal == nil {
-		q.internal = qubit.New(v...)
-		q.internal.Seed = q.Seed
-		q.internal.Rand = q.Rand
+	if q.qb == nil {
+		q.qb = qubit.New(v...)
+		q.qb.Seed = q.Seed
+		q.qb.Rand = q.Rand
 		return Qubit(0)
 	}
 
-	q.internal.TensorProduct(qubit.New(v...))
+	q.qb.TensorProduct(qubit.New(v...))
 	index := q.NumberOfBit() - 1
 	return Qubit(index)
 }
@@ -83,15 +83,15 @@ func (q *Q) ZeroLog2(N int) []Qubit {
 }
 
 func (q *Q) NumberOfBit() int {
-	return q.internal.NumberOfBit()
+	return q.qb.NumberOfBit()
 }
 
 func (q *Q) Amplitude() []complex128 {
-	return q.internal.Amplitude()
+	return q.qb.Amplitude()
 }
 
 func (q *Q) Probability() []float64 {
-	return q.internal.Probability()
+	return q.qb.Probability()
 }
 
 func (q *Q) Reset(qb ...Qubit) {
@@ -148,7 +148,7 @@ func (q *Q) RZ(theta float64, qb ...Qubit) *Q {
 
 func (q *Q) Apply(m matrix.Matrix, qb ...Qubit) *Q {
 	if len(qb) < 1 {
-		q.internal.Apply(m)
+		q.qb.Apply(m)
 		return q
 	}
 
@@ -171,14 +171,14 @@ func (q *Q) Apply(m matrix.Matrix, qb ...Qubit) *Q {
 		g = g.TensorProduct(gate.I())
 	}
 
-	q.internal.Apply(g)
+	q.qb.Apply(g)
 	return q
 }
 
 func (q *Q) Controlled(m matrix.Matrix, control []Qubit, target Qubit) *Q {
 	n := q.NumberOfBit()
 	g := gate.Controlled(m, n, Index(control...), target.Index())
-	q.internal.Apply(g)
+	q.qb.Apply(g)
 	return q
 }
 
@@ -189,7 +189,7 @@ func (q *Q) C(m matrix.Matrix, control, target Qubit) *Q {
 func (q *Q) ControlledR(k int, control []Qubit, target Qubit) *Q {
 	n := q.NumberOfBit()
 	g := gate.ControlledR(k, n, Index(control...), target.Index())
-	q.internal.Apply(g)
+	q.qb.Apply(g)
 	return q
 }
 
@@ -200,14 +200,14 @@ func (q *Q) CR(k int, control, target Qubit) *Q {
 func (q *Q) InvCR(k int, control, target Qubit) *Q {
 	n := q.NumberOfBit()
 	g := gate.ControlledR(k, n, []int{control.Index()}, target.Index()).Dagger()
-	q.internal.Apply(g)
+	q.qb.Apply(g)
 	return q
 }
 
 func (q *Q) ControlledZ(control []Qubit, target Qubit) *Q {
 	n := q.NumberOfBit()
 	g := gate.ControlledZ(n, Index(control...), target.Index())
-	q.internal.Apply(g)
+	q.qb.Apply(g)
 	return q
 }
 
@@ -222,7 +222,7 @@ func (q *Q) CCZ(control0, control1, target Qubit) *Q {
 func (q *Q) ControlledNot(control []Qubit, target Qubit) *Q {
 	n := q.NumberOfBit()
 	g := gate.ControlledNot(n, Index(control...), target.Index())
-	q.internal.Apply(g)
+	q.qb.Apply(g)
 	return q
 }
 
@@ -261,7 +261,7 @@ func (q *Q) ConditionZ(condition bool, qb ...Qubit) *Q {
 func (q *Q) ControlledModExp2(a, j, N int, control Qubit, target []Qubit) *Q {
 	n := q.NumberOfBit()
 	g := gate.CModExp2(n, a, j, N, control.Index(), Index(target...))
-	q.internal.Apply(g)
+	q.qb.Apply(g)
 	return q
 }
 
@@ -280,7 +280,7 @@ func (q *Q) Swap(qb ...Qubit) *Q {
 	for i := 0; i < l/2; i++ {
 		q0, q1 := qb[i], qb[(l-1)-i]
 		g := gate.Swap(n, q0.Index(), q1.Index())
-		q.internal.Apply(g)
+		q.qb.Apply(g)
 	}
 
 	return q
@@ -324,7 +324,7 @@ func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
 	if len(qb) < 1 {
 		m := make([]*qubit.Qubit, 0)
 		for i := 0; i < q.NumberOfBit(); i++ {
-			m = append(m, q.internal.Measure(i))
+			m = append(m, q.qb.Measure(i))
 		}
 
 		return qubit.TensorProduct(m...)
@@ -332,34 +332,34 @@ func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
 
 	m := make([]*qubit.Qubit, 0)
 	for i := 0; i < len(qb); i++ {
-		m = append(m, q.internal.Measure(qb[i].Index()))
+		m = append(m, q.qb.Measure(qb[i].Index()))
 	}
 
 	return qubit.TensorProduct(m...)
 }
 
 func (q *Q) Clone() *Q {
-	if q.internal == nil {
+	if q.qb == nil {
 		return &Q{
-			internal: nil,
-			Seed:     q.Seed,
-			Rand:     q.Rand,
+			qb:   nil,
+			Seed: q.Seed,
+			Rand: q.Rand,
 		}
 	}
 
 	return &Q{
-		internal: q.internal.Clone(),
-		Seed:     q.internal.Seed,
-		Rand:     q.internal.Rand,
+		qb:   q.qb.Clone(),
+		Seed: q.qb.Seed,
+		Rand: q.qb.Rand,
 	}
 }
 
 func (q *Q) Raw() *qubit.Qubit {
-	return q.internal
+	return q.qb
 }
 
 func (q *Q) String() string {
-	return q.internal.String()
+	return q.qb.String()
 }
 
 func (q *Q) State(reg ...interface{}) []qubit.State {
@@ -375,5 +375,5 @@ func (q *Q) State(reg ...interface{}) []qubit.State {
 		}
 	}
 
-	return q.internal.State(index...)
+	return q.qb.State(index...)
 }
