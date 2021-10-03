@@ -10,7 +10,7 @@ import (
 )
 
 type Matrix struct {
-	m matrix.Matrix
+	internal matrix.Matrix
 }
 
 func New(v ...[]complex128) *Matrix {
