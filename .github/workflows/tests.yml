@@ -21,7 +21,7 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.16
-      
+
       - name: Checkout
         uses: actions/checkout@v2
 
@@ -30,10 +30,10 @@ jobs:
           bash test.sh
 
       - name: Codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          
+
       - name: Benchmark
         run: |
           make bench
