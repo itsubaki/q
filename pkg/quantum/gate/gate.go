@@ -140,6 +140,7 @@ func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
 				break
 			}
 		}
+
 		if found {
 			continue
 		}
@@ -148,12 +149,13 @@ func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
 			col := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(j), 2)))
 
 			found := false
-			for _, ci := range c {
-				if col[ci] == '0' {
+			for _, k := range c {
+				if col[k] == '0' {
 					found = true
 					break
 				}
 			}
+
 			if found {
 				continue
 			}
@@ -174,8 +176,16 @@ func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
 				continue
 			}
 
-			r, _ := strconv.Atoi(string(row[t]))
-			c, _ := strconv.Atoi(string(col[t]))
+			r, err := strconv.Atoi(string(row[t]))
+			if err != nil {
+				panic(fmt.Sprintf("atoi: %v", err))
+			}
+
+			c, err := strconv.Atoi(string(col[t]))
+			if err != nil {
+				panic(fmt.Sprintf("atoi: %v", err))
+			}
+
 			g[i][j] = u[c][r]
 		}
 	}
@@ -383,8 +393,7 @@ func CModExp2(n, a, j, N, c int, t []int) matrix.Matrix {
 	m := I([]int{n}...)
 	d, _ := m.Dimension()
 
-	r0len := n - len(t)
-	r1len := len(t)
+	r0len, r1len := n-len(t), len(t)
 	a2jmodN := number.ModExp2(a, j, N)
 
 	bf := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
@@ -393,24 +402,26 @@ func CModExp2(n, a, j, N, c int, t []int) matrix.Matrix {
 	index := make([]int64, 0)
 	for i := 0; i < d; i++ {
 		bits := []rune(fmt.Sprintf(bf, strconv.FormatInt(int64(i), 2)))
-
-		if bits[c] == '1' {
-			r0bits, r1bits := bits[:r0len], bits[r0len:]
-
-			k, err := strconv.ParseInt(string(r1bits), 2, 0)
-			if err != nil {
-				panic(fmt.Sprintf("parse int: %v", err))
-			}
-
-			if int(k) < N {
-				a2jkmodN := (a2jmodN * int(k)) % N
-				a2jkmodNs := fmt.Sprintf(tf, strconv.FormatInt(int64(a2jkmodN), 2))
-
-				bits = append(r0bits, []rune(a2jkmodNs)...)
-			}
+		if bits[c] == '0' {
+			index = append(index, int64(i))
+			continue
 		}
 
-		v, err := strconv.ParseInt(string(bits), 2, 0)
+		k, err := strconv.ParseInt(string(bits[r0len:]), 2, 0)
+		if err != nil {
+			panic(fmt.Sprintf("parse int: %v", err))
+		}
+
+		if int(k) > N-1 {
+			index = append(index, int64(i))
+			continue
+		}
+
+		a2jkmodN := (a2jmodN * int(k)) % N
+		a2jkmodNs := fmt.Sprintf(tf, strconv.FormatInt(int64(a2jkmodN), 2))
+		newbits := append(bits[:r0len], []rune(a2jkmodNs)...)
+
+		v, err := strconv.ParseInt(string(newbits), 2, 0)
 		if err != nil {
 			panic(fmt.Sprintf("parse int: %v", err))
 		}
