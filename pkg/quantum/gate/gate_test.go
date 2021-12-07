@@ -278,16 +278,21 @@ func TestInverse(t *testing.T) {
 
 func TestIsHermite(t *testing.T) {
 	cases := []struct {
-		in matrix.Matrix
+		in   matrix.Matrix
+		want bool
 	}{
-		{gate.H()},
-		{gate.X()},
-		{gate.Y()},
-		{gate.Z()},
+		{gate.H(), true},
+		{gate.X(), true},
+		{gate.Y(), true},
+		{gate.Z(), true},
+		{gate.New(
+			[]complex128{1, 2},
+			[]complex128{3, 4},
+		), false},
 	}
 
 	for _, c := range cases {
-		if !c.in.IsHermite() {
+		if c.in.IsHermite() != c.want {
 			t.Fail()
 		}
 	}
@@ -295,27 +300,32 @@ func TestIsHermite(t *testing.T) {
 
 func TestIsUnitary(t *testing.T) {
 	cases := []struct {
-		in matrix.Matrix
+		in   matrix.Matrix
+		want bool
 	}{
-		{gate.I()},
-		{gate.H()},
-		{gate.X()},
-		{gate.Y()},
-		{gate.Z()},
-		{gate.U(1, 2, 3)},
-		{gate.R(4)},
-		{gate.RX(1.23)},
-		{gate.RY(1.23)},
-		{gate.RZ(1.23)},
-		{gate.ControlledS(2, []int{0}, 1)},
-		{gate.ControlledR(10, 2, []int{0}, 1)},
-		{gate.CS(2, 0, 1)},
-		{gate.CR(10, 2, 0, 1)},
-		{gate.QFT(2)},
+		{gate.I(), true},
+		{gate.H(), true},
+		{gate.X(), true},
+		{gate.Y(), true},
+		{gate.Z(), true},
+		{gate.U(1, 2, 3), true},
+		{gate.R(4), true},
+		{gate.RX(1.23), true},
+		{gate.RY(1.23), true},
+		{gate.RZ(1.23), true},
+		{gate.ControlledS(2, []int{0}, 1), true},
+		{gate.ControlledR(10, 2, []int{0}, 1), true},
+		{gate.CS(2, 0, 1), true},
+		{gate.CR(10, 2, 0, 1), true},
+		{gate.QFT(2), true},
+		{gate.New(
+			[]complex128{1, 2},
+			[]complex128{3, 4},
+		), false},
 	}
 
 	for _, c := range cases {
-		if !c.in.IsUnitary() {
+		if c.in.IsUnitary() != c.want {
 			t.Fail()
 		}
 	}
