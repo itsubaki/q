@@ -51,6 +51,20 @@ func (q *Q) New(v ...complex128) Qubit {
 	return Qubit(index)
 }
 
+func (q *Q) NewOf(binary string) []Qubit {
+	qb := make([]Qubit, 0)
+	for _, b := range binary {
+		if b == '0' {
+			qb = append(qb, q.Zero())
+			continue
+		}
+
+		qb = append(qb, q.One())
+	}
+
+	return qb
+}
+
 func (q *Q) Zero() Qubit {
 	return q.New(1, 0)
 }
@@ -60,21 +74,21 @@ func (q *Q) One() Qubit {
 }
 
 func (q *Q) ZeroWith(n int) []Qubit {
-	r := make([]Qubit, 0)
+	qb := make([]Qubit, 0)
 	for i := 0; i < n; i++ {
-		r = append(r, q.Zero())
+		qb = append(qb, q.Zero())
 	}
 
-	return r
+	return qb
 }
 
 func (q *Q) OneWith(n int) []Qubit {
-	r := make([]Qubit, 0)
+	qb := make([]Qubit, 0)
 	for i := 0; i < n; i++ {
-		r = append(r, q.One())
+		qb = append(qb, q.One())
 	}
 
-	return r
+	return qb
 }
 
 func (q *Q) ZeroLog2(N int) []Qubit {
