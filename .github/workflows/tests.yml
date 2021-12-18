@@ -27,7 +27,7 @@ jobs:
 
       - name: Tests
         run: |
-          bash test.sh
+          make test
 
       - name: Codecov
         uses: codecov/codecov-action@v2
