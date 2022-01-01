@@ -139,7 +139,7 @@ for i := 0; i < int(r); i++ {
   qsim.X(q2, q3)
   qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)
   qsim.X(q2, q3)
-  
+
   qsim.H(q0, q1, q2, q3)
   qsim.X(q0, q1, q2, q3)
   qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)
@@ -225,16 +225,7 @@ for i := 0; i < 10; i++{
 // i=2: N=15, a=7. p=3, q=5. s/r=1/4 ([0.010]~0.250)
 ```
 
-## Density Matrix
-
-```golang
-p0, q0 := 0.1, qubit.Zero()
-p1, q1 := 0.9, qubit.Zero().Apply(gate.H())
-rho := density.New().Add(p0, q0).Add(p1, q1)
-
-rho.Squared().Trace()       // -> (0.82+0.00i)
-rho.ExpectedValue(gate.X()) // -> 0.9
-```
+- In general, See [`cmd/shor`](./cmd/shor)
 
 # Reference
 
