@@ -1106,46 +1106,47 @@ func ExampleQ_Raw() {
 }
 
 func TestEigenVector(t *testing.T) {
-	N, a := 15, 7
-
-	qsim := q.New()
-	r0 := qsim.ZeroWith(3)
-	r1 := qsim.ZeroLog2(N)
-
-	qsim.X(r1[len(r1)-1])
-	qsim.H(r0...)
-	qsim.CModExp2(a, N, r0, r1)
-	qsim.InvQFT(r0...)
-
-	us := make(map[string]complex128)
-	for _, s := range qsim.State(r1) {
-		_, m := s.Value()
-
-		if v, ok := us[m]; ok {
-			us[m] = v + s.Amplitude
-			continue
-		}
-
-		us[m] = s.Amplitude
-	}
-
 	cases := []struct {
-		bin string
-		amp complex128
+		N, a, t int
+		bin     []string
+		amp     []complex128
 	}{
-		{"0001", complex(1, 0)},
-		{"0100", complex(0, 0)},
-		{"0111", complex(0, 0)},
-		{"1101", complex(0, 0)},
-	}
-
-	if len(us) != len(cases) {
-		t.Fail()
+		{
+			15, 7, 3,
+			[]string{"0001", "0100", "0111", "1101"},
+			[]complex128{1, 0, 0, 0},
+		},
 	}
 
 	for _, c := range cases {
-		if cmplx.Abs(us[c.bin]-c.amp) > 1e-13 {
+		qsim := q.New()
+		r0 := qsim.ZeroWith(c.t)
+		r1 := qsim.ZeroLog2(c.N)
+
+		qsim.X(r1[len(r1)-1])
+		qsim.H(r0...)
+		qsim.CModExp2(c.a, c.N, r0, r1)
+		qsim.InvQFT(r0...)
+
+		us := make(map[string]complex128)
+		for _, s := range qsim.State(r1) {
+			_, m := s.Value()
+			if v, ok := us[m]; ok {
+				us[m] = v + s.Amplitude
+				continue
+			}
+
+			us[m] = s.Amplitude
+		}
+
+		if len(us) != len(c.bin) {
 			t.Fail()
+		}
+
+		for i := range c.bin {
+			if cmplx.Abs(us[c.bin[i]]-c.amp[i]) > 1e-13 {
+				t.Fail()
+			}
 		}
 	}
 }
