@@ -31,6 +31,7 @@ for _, s := range qsim.State() {
 
 m0 := qsim.Measure(q0)
 m1 := qsim.Measure(q1)
+fmt.Printf("%v %v\n", m0.IsZero(), m1.IsZero())
 // if m0.IsZero() is true, m1.IsZero() is also true
 // if m0.IsOne()  is true, m1.IsOne()  is also true
 
