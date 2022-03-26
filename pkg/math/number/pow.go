@@ -60,15 +60,19 @@ func ModExp2(a, j, N int) int {
 }
 
 func BaseExp(N int) (int, int, bool) {
-	if N == 27 {
-		return 3, 3, true
-	}
-
 	l := len(strconv.FormatInt(int64(N), 2))
 	for i := l; 1 < i; i-- {
 		a := math.Pow(float64(N), 1.0/float64(i))
-		if Pow(int(a), i) == N {
-			return int(a), i, true
+		if a-math.Trunc(a) < 1e-13 {
+			if Pow(int(a), i) == N {
+				return int(a), i, true
+			}
+		}
+
+		if 1-(a-math.Trunc(a)) < 1e-13 {
+			if Pow(int(a)+1, i) == N {
+				return int(a) + 1, i, true
+			}
 		}
 	}
 
