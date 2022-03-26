@@ -2,17 +2,23 @@ package rand
 
 import (
 	"crypto/rand"
+	"fmt"
+	"math"
 	"math/big"
 
 	"github.com/itsubaki/q/pkg/math/number"
 )
 
 func Crypto(_ ...int) float64 {
-	v := CryptoInt64(0, 1000)
-	return float64(v) / 1000
+	v := CryptoInt64(0, math.MaxInt64)
+	return float64(v) / math.MaxInt64
 }
 
 func CryptoInt64(min, max int64) int64 {
+	if min < 0 {
+		panic(fmt.Sprintf("invalid parameter. min=%v", min))
+	}
+
 	n, err := rand.Int(rand.Reader, big.NewInt(max-min))
 	if err != nil {
 		panic(err)

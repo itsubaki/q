@@ -13,7 +13,7 @@ func TestCrypto(t *testing.T) {
 	}
 }
 
-func TestCryptoInt(t *testing.T) {
+func TestCryptoInt64(t *testing.T) {
 	r := rand.CryptoInt64(2, 14)
 
 	found := false
@@ -29,7 +29,7 @@ func TestCryptoInt(t *testing.T) {
 	}
 }
 
-func TestCryptoIntPanic(t *testing.T) {
+func TestCryptoInt64Panic(t *testing.T) {
 	defer func() {
 		if err := recover(); err != "crypto/rand: argument to Int is <= 0" {
 			t.Fail()
@@ -37,6 +37,17 @@ func TestCryptoIntPanic(t *testing.T) {
 	}()
 
 	rand.CryptoInt64(0, 0)
+	t.Fail()
+}
+
+func TestCryptoInt64PanicMin(t *testing.T) {
+	defer func() {
+		if err := recover(); err != "invalid parameter. min=-1" {
+			t.Fail()
+		}
+	}()
+
+	rand.CryptoInt64(-1, 0)
 	t.Fail()
 }
 
