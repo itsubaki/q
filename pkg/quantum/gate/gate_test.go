@@ -114,7 +114,7 @@ func ExampleCModExp2() {
 			panic(fmt.Sprintf("parse int. bin=%s: %v", bin[1:], err))
 		}
 
-		if int(k) >= N {
+		if k >= int64(N) {
 			continue
 		}
 
@@ -130,7 +130,7 @@ func ExampleCModExp2() {
 				panic(fmt.Sprintf("parse int. a2jkmodNs=%s: %v", a2jkmodNs, err))
 			}
 
-			got := (number.ModExp2(a, j, N) * int(k)) % N
+			got := (int64(number.ModExp2(a, j, N)) * k) % int64(N)
 			fmt.Printf("%s:%s=%2d %s:%s=%2d %2d\n", bin[:1], bin[1:], k, bin[:1], a2jkmodNs[1:], a2jkmodN, got)
 		}
 	}

@@ -11,10 +11,9 @@ func ContinuedFraction(real float64, eps ...float64) []int {
 	list := make([]int, 0)
 	r := real
 	for {
-		t := math.Trunc(r)
-		list = append(list, int(t))
+		list = append(list, int(r))
 
-		diff := r - t
+		diff := r - math.Trunc(r)
 		if diff < e {
 			break
 		}
