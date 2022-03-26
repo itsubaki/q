@@ -166,7 +166,7 @@ func ExampleQ_Probability() {
 
 func ExampleQ_Measure() {
 	qsim := q.New()
-	qsim.Seed = []int64{1}
+	qsim.Seed = []int{1}
 	qsim.Rand = rand.Math
 
 	q0 := qsim.Zero()
@@ -181,12 +181,12 @@ func ExampleQ_Measure() {
 
 	m := qsim.Measure(q0, q1, q2)
 	fmt.Println(m)
-	fmt.Println(m.Int())
+	fmt.Println(m.Int64())
 	fmt.Println(m.BinaryString())
 
 	mm := qsim.Measure()
 	fmt.Println(mm)
-	fmt.Println(mm.Int())
+	fmt.Println(mm.Int64())
 	fmt.Println(mm.BinaryString())
 
 	// Output:
@@ -636,7 +636,7 @@ func Example_bellState() {
 
 func Example_bellState2() {
 	qsim := q.New()
-	qsim.Seed = []int64{1}
+	qsim.Seed = []int{1}
 	qsim.Rand = rand.Math
 
 	r := qsim.ZeroWith(2)
@@ -644,8 +644,8 @@ func Example_bellState2() {
 	qsim.H(r[0])
 	qsim.CNOT(r[0], r[1])
 
-	c0 := qsim.Measure(r[0]).Int()
-	c1 := qsim.Measure(r[1]).Int()
+	c0 := qsim.Measure(r[0]).Int64()
+	c1 := qsim.Measure(r[1]).Int64()
 
 	fmt.Printf("%v%v\n", c0, c1)
 
@@ -898,7 +898,7 @@ func Example_shorFactoring15() {
 	a := 7
 
 	qsim := q.New()
-	qsim.Seed = []int64{1}
+	qsim.Seed = []int{1}
 	qsim.Rand = rand.Math
 
 	// initial state
@@ -955,7 +955,7 @@ func Example_shorFactoring21() {
 	a := 8
 
 	qsim := q.New()
-	qsim.Seed = []int64{1}
+	qsim.Seed = []int{1}
 	qsim.Rand = rand.Math
 
 	r0 := qsim.ZeroWith(4)
@@ -989,7 +989,7 @@ func Example_shorFactoring51() {
 	a := 5 // 5, 7, 10, 11, 14, 20, 22, 23, 28, 29, 31, 37, 40, 41, 44, 46
 
 	qsim := q.New()
-	qsim.Seed = []int64{1}
+	qsim.Seed = []int{1}
 	qsim.Rand = rand.Math
 
 	q0 := qsim.Zero()
@@ -1044,7 +1044,7 @@ func Example_shorFactoring85() {
 	a := 14
 
 	qsim := q.New()
-	qsim.Seed = []int64{1}
+	qsim.Seed = []int{1}
 	qsim.Rand = rand.Math
 
 	q0 := qsim.Zero()
