@@ -55,3 +55,14 @@ func TestParseFloat(t *testing.T) {
 		t.Errorf("got=%v, want=%v", got, c.want)
 	}
 }
+
+func FuzzParseFloat(f *testing.F) {
+	seed := []string{"123", "101", "1.0101", "abc", "a.bc"}
+	for i := range seed {
+		f.Add(seed[i])
+	}
+
+	f.Fuzz(func(f *testing.T, v string) {
+		number.ParseFloat(v)
+	})
+}
