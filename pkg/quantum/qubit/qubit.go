@@ -15,8 +15,8 @@ import (
 
 type Qubit struct {
 	vector vector.Vector
-	Seed   []int64
-	Rand   func(seed ...int64) float64
+	Seed   []int
+	Rand   func(seed ...int) float64
 }
 
 func New(z ...complex128) *Qubit {
@@ -202,14 +202,8 @@ func (q *Qubit) ProbabilityOneAt(index int) ([]int, []float64) {
 	return idx, prob
 }
 
-func (q *Qubit) Int() int {
-	b := q.BinaryString()
-	i, err := strconv.ParseInt(b, 2, 0)
-	if err != nil {
-		panic(err)
-	}
-
-	return int(i)
+func (q *Qubit) Int() int64 {
+	return parseInt(q.BinaryString())
 }
 
 func (q *Qubit) BinaryString() string {
@@ -287,13 +281,13 @@ func pickup(binary string, idx []int) string {
 	return sb.String()
 }
 
-func parseInt(binary string) int {
+func parseInt(binary string) int64 {
 	p, err := strconv.ParseInt(binary, 2, 0)
 	if err != nil {
 		panic(fmt.Sprintf("parse int. binary=%s", binary))
 	}
 
-	return int(p)
+	return p
 }
 
 func TensorProduct(qb ...*Qubit) *Qubit {

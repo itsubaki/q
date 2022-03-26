@@ -2,30 +2,36 @@ package rand
 
 import (
 	"crypto/rand"
+	"fmt"
+	"math"
 	"math/big"
 
 	"github.com/itsubaki/q/pkg/math/number"
 )
 
-func Crypto(_ ...int64) float64 {
-	v := CryptoInt(0, 1000)
-	return float64(v) / 1000
+func Crypto(_ ...int) float64 {
+	v := CryptoInt64(0, math.MaxInt64)
+	return float64(v) / math.MaxInt64
 }
 
-func CryptoInt(min, max int) int {
-	n, err := rand.Int(rand.Reader, big.NewInt(int64(max-min)))
+func CryptoInt64(min, max int64) int64 {
+	if min < 0 {
+		panic(fmt.Sprintf("invalid parameter. min=%v", min))
+	}
+
+	n, err := rand.Int(rand.Reader, big.NewInt(max-min))
 	if err != nil {
 		panic(err)
 	}
 
-	return int(n.Int64()) + min
+	return n.Int64() + min
 }
 
 func Coprime(N int) int {
 	for {
-		a := CryptoInt(2, N-1)
-		if number.GCD(N, a) == 1 {
-			return a
+		a := CryptoInt64(2, int64(N-1))
+		if number.GCD(N, int(a)) == 1 {
+			return int(a)
 		}
 	}
 }

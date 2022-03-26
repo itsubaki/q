@@ -11,7 +11,7 @@ func ExampleState() {
 	s := qubit.State{
 		Amplitude:    1,
 		Probability:  1,
-		Int:          []int{4, 10, 8},
+		Int:          []int64{4, 10, 8},
 		BinaryString: []string{"0100", "1010", "1000"},
 	}
 
@@ -33,7 +33,7 @@ func TestStatePanicInvalidLength(t *testing.T) {
 	s := qubit.State{
 		Amplitude:    1,
 		Probability:  1,
-		Int:          []int{4, 10, 8},
+		Int:          []int64{4, 10, 8},
 		BinaryString: []string{"0100", "1010", "1000"},
 	}
 
@@ -51,7 +51,7 @@ func TestStatePanicInvalidParameter(t *testing.T) {
 	s := qubit.State{
 		Amplitude:    1,
 		Probability:  1,
-		Int:          []int{4, 10, 8},
+		Int:          []int64{4, 10, 8},
 		BinaryString: []string{"0100", "1010", "1000"},
 	}
 

@@ -5,11 +5,11 @@ import "fmt"
 type State struct {
 	Amplitude    complex128
 	Probability  float64
-	Int          []int
+	Int          []int64
 	BinaryString []string
 }
 
-func (s State) Value(index ...int) (int, string) {
+func (s State) Value(index ...int) (int64, string) {
 	if len(index) > 1 {
 		panic(fmt.Sprintf("invalid parameter. len(index)=%v", len(index)))
 	}

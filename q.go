@@ -27,8 +27,8 @@ func Index(qb ...Qubit) []int {
 
 type Q struct {
 	qb   *qubit.Qubit
-	Seed []int64
-	Rand func(seed ...int64) float64
+	Seed []int
+	Rand func(seed ...int) float64
 }
 
 func New() *Q {
@@ -211,11 +211,15 @@ func (q *Q) CR(k int, control, target Qubit) *Q {
 	return q.ControlledR(k, []Qubit{control}, target)
 }
 
-func (q *Q) InvCR(k int, control, target Qubit) *Q {
+func (q *Q) InverseCR(k int, control, target Qubit) *Q {
 	n := q.NumberOfBit()
 	g := gate.ControlledR(k, n, []int{control.Index()}, target.Index()).Dagger()
 	q.qb.Apply(g)
 	return q
+}
+
+func (q *Q) InvCR(k int, control, target Qubit) *Q {
+	return q.InverseCR(k, control, target)
 }
 
 func (q *Q) ControlledZ(control []Qubit, target Qubit) *Q {

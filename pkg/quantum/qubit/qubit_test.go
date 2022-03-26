@@ -292,7 +292,7 @@ func Example_errorCorrectionPhaseFlip() {
 
 func Example_quantumTeleportation() {
 	phi := qubit.New(1, 2)
-	phi.Seed = []int64{1}
+	phi.Seed = []int{1}
 	phi.Rand = rand.Math
 
 	fmt.Println("before:")
@@ -338,7 +338,7 @@ func Example_quantumTeleportation() {
 
 func Example_quantumTeleportation2() {
 	phi := qubit.New(1, 2)
-	phi.Seed = []int64{1}
+	phi.Seed = []int{1}
 	phi.Rand = rand.Math
 
 	fmt.Println("before:")
@@ -603,7 +603,7 @@ func TestClone(t *testing.T) {
 func TestInt(t *testing.T) {
 	cases := []struct {
 		in   *qubit.Qubit
-		want int
+		want int64
 	}{
 		{qubit.Zero(), 0},
 		{qubit.One(), 1},
