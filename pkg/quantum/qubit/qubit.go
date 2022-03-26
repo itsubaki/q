@@ -202,13 +202,8 @@ func (q *Qubit) ProbabilityOneAt(index int) ([]int, []float64) {
 	return idx, prob
 }
 
-func (q *Qubit) Int64() int64 {
-	p, err := strconv.ParseInt(q.BinaryString(), 2, 0)
-	if err != nil {
-		panic(err)
-	}
-
-	return p
+func (q *Qubit) Int() int64 {
+	return parseInt(q.BinaryString())
 }
 
 func (q *Qubit) BinaryString() string {

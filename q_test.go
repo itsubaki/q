@@ -181,12 +181,12 @@ func ExampleQ_Measure() {
 
 	m := qsim.Measure(q0, q1, q2)
 	fmt.Println(m)
-	fmt.Println(m.Int64())
+	fmt.Println(m.Int())
 	fmt.Println(m.BinaryString())
 
 	mm := qsim.Measure()
 	fmt.Println(mm)
-	fmt.Println(mm.Int64())
+	fmt.Println(mm.Int())
 	fmt.Println(mm.BinaryString())
 
 	// Output:
@@ -644,8 +644,8 @@ func Example_bellState2() {
 	qsim.H(r[0])
 	qsim.CNOT(r[0], r[1])
 
-	c0 := qsim.Measure(r[0]).Int64()
-	c1 := qsim.Measure(r[1]).Int64()
+	c0 := qsim.Measure(r[0]).Int()
+	c1 := qsim.Measure(r[1]).Int()
 
 	fmt.Printf("%v%v\n", c0, c1)
 

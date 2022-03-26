@@ -610,7 +610,7 @@ func TestInt(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if c.in.Int64() != c.want {
+		if c.in.Int() != c.want {
 			t.Fail()
 		}
 	}
