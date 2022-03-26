@@ -62,7 +62,7 @@ func FuzzParseFloat(f *testing.F) {
 		f.Add(seed[i])
 	}
 
-	f.Fuzz(func(f *testing.T, v string) {
+	f.Fuzz(func(t *testing.T, v string) {
 		number.ParseFloat(v)
 	})
 }
