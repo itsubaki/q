@@ -15,8 +15,8 @@ func Crypto(_ ...int) float64 {
 }
 
 func CryptoInt64(min, max int64) int64 {
-	if min < 0 {
-		panic(fmt.Sprintf("invalid parameter. min=%v", min))
+	if min < 0 || max < 0 {
+		panic(fmt.Sprintf("invalid parameter. min=%v, max=%v", min, max))
 	}
 
 	n, err := rand.Int(rand.Reader, big.NewInt(max-min))

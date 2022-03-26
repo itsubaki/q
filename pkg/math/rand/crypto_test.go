@@ -40,14 +40,36 @@ func TestCryptoInt64Panic(t *testing.T) {
 	t.Fail()
 }
 
+func TestCryptoInt64Panic2(t *testing.T) {
+	defer func() {
+		if err := recover(); err != "crypto/rand: argument to Int is <= 0" {
+			t.Fail()
+		}
+	}()
+
+	rand.CryptoInt64(5, 2)
+	t.Fail()
+}
+
 func TestCryptoInt64PanicMin(t *testing.T) {
 	defer func() {
-		if err := recover(); err != "invalid parameter. min=-1" {
+		if err := recover(); err != "invalid parameter. min=-1, max=0" {
 			t.Fail()
 		}
 	}()
 
 	rand.CryptoInt64(-1, 0)
+	t.Fail()
+}
+
+func TestCryptoInt64PanicMax(t *testing.T) {
+	defer func() {
+		if err := recover(); err != "invalid parameter. min=0, max=-1" {
+			t.Fail()
+		}
+	}()
+
+	rand.CryptoInt64(0, -1)
 	t.Fail()
 }
 
@@ -65,4 +87,15 @@ func TestCoprime(t *testing.T) {
 	if !found {
 		t.Errorf("coprime=%v", p)
 	}
+}
+
+func FuzzCryptoInt64(f *testing.F) {
+	f.Add(int64(0), int64(3))
+	f.Fuzz(func(t *testing.T, min, max int64) {
+		if min >= max || max < 0 || min < 0 {
+			return
+		}
+
+		rand.CryptoInt64(min, max)
+	})
 }
