@@ -230,8 +230,8 @@ for i := 0; i < 10; i++{
 
 # Reference
 
-1. Michael A. Nielsen, Issac L. Chuang, Quantum Computation and Quantum Information
-2. C. Figgatt, D. Maslov, K. A. Landsman, N. M. Linke, S. Debnath, and C. Monroe, Complete 3-Qubit Grover Search on a Programmable Quantum Computer
-3. Zhengjun Cao, Zhenfu Cao, Lihua Liu, Remarks on Quantum Modular Exponentiation and Some Experimental Demonstrations of Shor’s Algorithm
-4. Michael R. Geller, Zhongyuan Zhou, Factoring 51 and 85 with 8 qubits
-5. Programming Quantum Computers by Eric R. Johnson, Nic Harrigan, and Merecedes Gimeno-Segovia (O'Reilly)
+- Michael A. Nielsen, Issac L. Chuang. Quantum Computation and Quantum Information.
+- C. Figgatt, D. Maslov, K. A. Landsman, N. M. Linke, S. Debnath, and C. Monroe. Complete 3-Qubit Grover Search on a Programmable Quantum Computer.
+- Zhengjun Cao, Zhenfu Cao, Lihua Liu. Remarks on Quantum Modular Exponentiation and Some Experimental Demonstrations of Shor’s Algorithm.
+- Michael R. Geller, Zhongyuan Zhou. Factoring 51 and 85 with 8 qubits.
+- Eric R. Johnson, Nic Harrigan, and Merecedes Gimeno-Segovia. Programming Quantum Computers. O'Reilly.
