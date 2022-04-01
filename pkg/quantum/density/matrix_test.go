@@ -5,6 +5,7 @@ import (
 	"math/cmplx"
 	"testing"
 
+	"github.com/itsubaki/q/pkg/math/epsilon"
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/quantum/density"
 	"github.com/itsubaki/q/pkg/quantum/gate"
@@ -140,18 +141,21 @@ func TestExpectedValue(t *testing.T) {
 		tr, str complex128
 		m       matrix.Matrix
 		v       complex128
+		eps     float64
 	}{
 		{
 			[]float64{0.1, 0.9},
 			[]*qubit.Qubit{qubit.Zero(), qubit.One()},
 			1, 0.82,
 			gate.X(), 0.0,
+			epsilon.E13(),
 		},
 		{
 			[]float64{0.1, 0.9},
 			[]*qubit.Qubit{qubit.Zero(), qubit.Zero().Apply(gate.H())},
 			1, 0.91,
 			gate.X(), 0.9,
+			epsilon.E13(),
 		},
 	}
 
@@ -161,15 +165,15 @@ func TestExpectedValue(t *testing.T) {
 			rho.Add(c.p[i], c.q[i])
 		}
 
-		if cmplx.Abs(rho.Trace()-c.tr) > 1e-13 {
+		if cmplx.Abs(rho.Trace()-c.tr) > c.eps {
 			t.Errorf("trace=%v", rho.Trace())
 		}
 
-		if cmplx.Abs(rho.Squared().Trace()-c.str) > 1e-13 {
+		if cmplx.Abs(rho.Squared().Trace()-c.str) > c.eps {
 			t.Errorf("strace%v", rho.Squared().Trace())
 		}
 
-		if cmplx.Abs(rho.ExpectedValue(c.m)-c.v) > 1e-13 {
+		if cmplx.Abs(rho.ExpectedValue(c.m)-c.v) > c.eps {
 			t.Errorf("expected value=%v", rho.ExpectedValue(c.m))
 		}
 	}

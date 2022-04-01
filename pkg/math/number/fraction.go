@@ -1,9 +1,13 @@
 package number
 
-import "math"
+import (
+	"math"
+
+	"github.com/itsubaki/q/pkg/math/epsilon"
+)
 
 func ContinuedFraction(real float64, eps ...float64) []int {
-	e := epsilon(eps...)
+	e := epsilon.E3(eps...)
 	if real < e {
 		return []int{0}
 	}
@@ -37,12 +41,4 @@ func Convergent(cfx []int) (int, int, float64) {
 	s = s + cfx[0]*r
 
 	return s, r, float64(s) / float64(r)
-}
-
-func epsilon(eps ...float64) float64 {
-	if len(eps) > 0 {
-		return eps[0]
-	}
-
-	return 1e-3
 }

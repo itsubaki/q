@@ -5,6 +5,7 @@ import (
 	"math"
 	"testing"
 
+	"github.com/itsubaki/q/pkg/math/epsilon"
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/math/number"
 	"github.com/itsubaki/q/pkg/math/rand"
@@ -546,39 +547,42 @@ func TestNormalize(t *testing.T) {
 	cases := []struct {
 		in   *qubit.Qubit
 		want float64
+		eps  float64
 	}{
-		{qubit.New(1, 0), 1.0},
-		{qubit.New(0, 1), 1.0},
-		{qubit.New(4, 5), 1.0},
-		{qubit.New(10, 5), 1.0},
+		{qubit.New(1, 0), 1.0, epsilon.E13()},
+		{qubit.New(0, 1), 1.0, epsilon.E13()},
+		{qubit.New(4, 5), 1.0, epsilon.E13()},
+		{qubit.New(10, 5), 1.0, epsilon.E13()},
 	}
 
 	for _, c := range cases {
 		got := number.Sum(c.in.Probability())
-		if math.Abs(got-c.want) > 1e-13 {
+		if math.Abs(got-c.want) > c.eps {
 			t.Errorf("got=%v, want=%v", got, c.want)
 		}
 	}
 }
 
 func TestMeasure(t *testing.T) {
+	eps := epsilon.E13()
+
 	q := qubit.Zero(3).Apply(gate.H(3))
 	for _, p := range q.Probability() {
-		if p != 0 && math.Abs(p-0.125) > 1e-13 {
+		if p != 0 && math.Abs(p-0.125) > eps {
 			t.Errorf("probability=%v", q.Probability())
 		}
 	}
 
 	q.Measure(0)
 	for _, p := range q.Probability() {
-		if p != 0 && math.Abs(p-0.25) > 1e-13 {
+		if p != 0 && math.Abs(p-0.25) > eps {
 			t.Errorf("probability=%v", q.Probability())
 		}
 	}
 
 	q.Measure(1)
 	for _, p := range q.Probability() {
-		if p != 0 && math.Abs(p-0.5) > 1e-13 {
+		if p != 0 && math.Abs(p-0.5) > eps {
 			t.Errorf("probability=%v", q.Probability())
 		}
 	}

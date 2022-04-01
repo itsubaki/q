@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/itsubaki/q"
+	"github.com/itsubaki/q/pkg/math/epsilon"
 	"github.com/itsubaki/q/pkg/math/number"
 	"github.com/itsubaki/q/pkg/math/rand"
 	"github.com/itsubaki/q/pkg/quantum/gate"
@@ -1110,11 +1111,13 @@ func TestEigenVector(t *testing.T) {
 		N, a, t int
 		bin     []string
 		amp     []complex128
+		eps     float64
 	}{
 		{
 			15, 7, 3,
 			[]string{"0001", "0100", "0111", "1101"},
 			[]complex128{1, 0, 0, 0},
+			epsilon.E13(),
 		},
 	}
 
@@ -1144,7 +1147,7 @@ func TestEigenVector(t *testing.T) {
 		}
 
 		for i := range c.bin {
-			if cmplx.Abs(us[c.bin[i]]-c.amp[i]) > 1e-13 {
+			if cmplx.Abs(us[c.bin[i]]-c.amp[i]) > c.eps {
 				t.Fail()
 			}
 		}

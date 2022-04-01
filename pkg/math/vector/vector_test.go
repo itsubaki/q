@@ -285,16 +285,15 @@ func TestTensorProductN(t *testing.T) {
 func TestEquals(t *testing.T) {
 	cases := []struct {
 		v0, v1 vector.Vector
-		eps    float64
 		want   bool
 	}{
-		{vector.New(1, 2), vector.New(1, 2), 1e-13, true},
-		{vector.New(1, 2), vector.New(3, 4), 1e-13, false},
-		{vector.New(1, 2, 3, 4, 5, 6), vector.New(1, 2), 1e-13, false},
+		{vector.New(1, 2), vector.New(1, 2), true},
+		{vector.New(1, 2), vector.New(3, 4), false},
+		{vector.New(1, 2, 3, 4, 5, 6), vector.New(1, 2), false},
 	}
 
 	for _, c := range cases {
-		if c.v0.Equals(c.v1, c.eps) != c.want {
+		if c.v0.Equals(c.v1) != c.want {
 			t.Fail()
 		}
 	}

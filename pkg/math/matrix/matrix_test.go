@@ -585,20 +585,18 @@ func TestIsUnitary(t *testing.T) {
 
 func TestTensorProductN(t *testing.T) {
 	cases := []struct {
-		in  matrix.Matrix
-		eps float64
+		in matrix.Matrix
 	}{
 		{
 			matrix.New(
 				[]complex128{0, 1},
 				[]complex128{1, 0},
 			),
-			1e-13,
 		},
 	}
 
 	for _, c := range cases {
-		if !matrix.TensorProductN(c.in).Equals(c.in, c.eps) {
+		if !matrix.TensorProductN(c.in).Equals(c.in) {
 			t.Fail()
 		}
 	}

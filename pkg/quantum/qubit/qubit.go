@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/itsubaki/q/pkg/math/epsilon"
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/math/number"
 	"github.com/itsubaki/q/pkg/math/rand"
@@ -260,12 +261,14 @@ func (q *Qubit) State(index ...[]int) []State {
 	return state
 }
 
-func round(a complex128) complex128 {
-	if math.Abs(real(a)) < 1e-13 {
+func round(a complex128, eps ...float64) complex128 {
+	e := epsilon.E13(eps...)
+
+	if math.Abs(real(a)) < e {
 		a = complex(0, imag(a))
 	}
 
-	if math.Abs(imag(a)) < 1e-13 {
+	if math.Abs(imag(a)) < e {
 		a = complex(real(a), 0)
 	}
 
