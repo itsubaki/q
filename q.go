@@ -260,20 +260,20 @@ func (q *Q) Toffoli(control0, control1, target Qubit) *Q {
 	return q.CCNOT(control0, control1, target)
 }
 
-func (q *Q) ConditionX(condition bool, qb ...Qubit) *Q {
+func (q *Q) Condition(m matrix.Matrix, condition bool, qb ...Qubit) *Q {
 	if condition {
-		return q.X(qb...)
+		return q.Apply(m, qb...)
 	}
 
 	return q
 }
 
-func (q *Q) ConditionZ(condition bool, qb ...Qubit) *Q {
-	if condition {
-		return q.Z(qb...)
-	}
+func (q *Q) ConditionX(condition bool, qb ...Qubit) *Q {
+	return q.Condition(gate.X(), condition, qb...)
+}
 
-	return q
+func (q *Q) ConditionZ(condition bool, qb ...Qubit) *Q {
+	return q.Condition(gate.Z(), condition, qb...)
 }
 
 func (q *Q) ControlledModExp2(a, j, N int, control Qubit, target []Qubit) *Q {
