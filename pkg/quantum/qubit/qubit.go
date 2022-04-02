@@ -204,7 +204,7 @@ func (q *Qubit) ProbabilityOneAt(index int) ([]int, []float64) {
 }
 
 func (q *Qubit) Int() int64 {
-	return parseInt(q.BinaryString())
+	return number.Must(strconv.ParseInt(q.BinaryString(), 2, 0))
 }
 
 func (q *Qubit) BinaryString() string {
@@ -249,10 +249,9 @@ func (q *Qubit) State(index ...[]int) []State {
 		b := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
 
 		for _, idx := range index {
-			binstr := pickup(b, idx)
-
-			s.Int = append(s.Int, parseInt(binstr))
-			s.BinaryString = append(s.BinaryString, binstr)
+			binary := pickup(b, idx)
+			s.Int = append(s.Int, number.Must(strconv.ParseInt(binary, 2, 0)))
+			s.BinaryString = append(s.BinaryString, binary)
 		}
 
 		state = append(state, s)
@@ -282,15 +281,6 @@ func pickup(binary string, idx []int) string {
 	}
 
 	return sb.String()
-}
-
-func parseInt(binary string) int64 {
-	p, err := strconv.ParseInt(binary, 2, 0)
-	if err != nil {
-		panic(fmt.Sprintf("parse int. binary=%s", binary))
-	}
-
-	return p
 }
 
 func TensorProduct(qb ...*Qubit) *Qubit {

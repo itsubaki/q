@@ -106,7 +106,7 @@ func main() {
 	fmt.Printf("success rate: %v\n", sum)
 }
 
-func print(desc string, qsim *q.Q, reg ...interface{}) {
+func print(desc string, qsim *q.Q, reg ...any) {
 	fmt.Println(desc)
 
 	max := number.Max(qsim.Probability())
