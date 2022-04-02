@@ -120,7 +120,6 @@ func (v Vector) IsUnit() bool {
 
 func (v Vector) Apply(m matrix.Matrix) Vector {
 	p, q := m.Dimension()
-
 	if q != len(v) {
 		panic(fmt.Sprintf("invalid dimension. p=%d q=%d len(v)=%d", p, q, len(v)))
 	}

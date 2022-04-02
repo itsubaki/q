@@ -380,7 +380,7 @@ func (q *Q) String() string {
 	return q.qb.String()
 }
 
-func (q *Q) State(reg ...interface{}) []qubit.State {
+func (q *Q) State(reg ...any) []qubit.State {
 	index := make([][]int, 0)
 	for _, r := range reg {
 		switch r := r.(type) {

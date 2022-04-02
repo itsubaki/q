@@ -57,9 +57,9 @@ func ExampleMatrix_Depolarizing() {
 	fmt.Println(rho.Measure(qubit.Zero()))
 	fmt.Println(rho.Measure(qubit.One()))
 
-	rho.Depolarizing(1)
-	fmt.Println(rho.Measure(qubit.Zero()))
-	fmt.Println(rho.Measure(qubit.One()))
+	dep := rho.Depolarizing(1)
+	fmt.Println(dep.Measure(qubit.Zero()))
+	fmt.Println(dep.Measure(qubit.One()))
 
 	// Output:
 	// (1+0i)
@@ -130,8 +130,8 @@ func TestPartialTrace(t *testing.T) {
 	q := qubit.Zero(2).Apply(qc)
 	rho := density.New().Add(1.0, q)
 
-	pt := rho.PartialTrace(0)
-	fmt.Println(pt)
+	_, err := rho.PartialTrace(0)
+	fmt.Println(err)
 }
 
 func TestExpectedValue(t *testing.T) {

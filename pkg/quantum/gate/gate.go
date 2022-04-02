@@ -169,15 +169,8 @@ func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
 				continue
 			}
 
-			r, err := strconv.Atoi(string(row[t]))
-			if err != nil {
-				panic(fmt.Sprintf("atoi: %v", err))
-			}
-
-			c, err := strconv.Atoi(string(col[t]))
-			if err != nil {
-				panic(fmt.Sprintf("atoi: %v", err))
-			}
+			r := number.Must(strconv.Atoi(string(row[t])))
+			c := number.Must(strconv.Atoi(string(col[t])))
 
 			g[i][j] = u[c][r]
 		}
@@ -215,11 +208,7 @@ func ControlledNot(n int, c []int, t int) matrix.Matrix {
 			}
 		}
 
-		v, err := strconv.ParseInt(string(bits), 2, 0)
-		if err != nil {
-			panic(fmt.Sprintf("parse int: %v", err))
-		}
-
+		v := number.Must(strconv.ParseInt(string(bits), 2, 0))
 		index = append(index, v)
 	}
 
@@ -398,11 +387,7 @@ func CModExp2(n, a, j, N, c int, t []int) matrix.Matrix {
 			continue
 		}
 
-		k, err := strconv.ParseInt(string(bits[r0len:]), 2, 0)
-		if err != nil {
-			panic(fmt.Sprintf("parse int: %v", err))
-		}
-
+		k := number.Must(strconv.ParseInt(string(bits[r0len:]), 2, 0))
 		if k > int64(N-1) {
 			index = append(index, int64(i))
 			continue
@@ -412,11 +397,7 @@ func CModExp2(n, a, j, N, c int, t []int) matrix.Matrix {
 		a2jkmodNs := fmt.Sprintf(tf, strconv.FormatInt(a2jkmodN, 2))
 		newbits := append(bits[:r0len], []rune(a2jkmodNs)...)
 
-		v, err := strconv.ParseInt(string(newbits), 2, 0)
-		if err != nil {
-			panic(fmt.Sprintf("parse int: %v", err))
-		}
-
+		v := number.Must(strconv.ParseInt(string(newbits), 2, 0))
 		index = append(index, v)
 	}
 

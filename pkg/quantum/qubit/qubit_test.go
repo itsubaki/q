@@ -650,14 +650,3 @@ func TestString(t *testing.T) {
 		}
 	}
 }
-
-func TestParseIntPanic(t *testing.T) {
-	defer func() {
-		if err := recover(); err != "parse int. binary=not_binary_string" {
-			t.Fail()
-		}
-	}()
-
-	qubit.ParseInt("not_binary_string")
-	t.Fail()
-}
