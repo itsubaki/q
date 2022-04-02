@@ -19,8 +19,8 @@ func CryptoInt64(min, max int64) int64 {
 		panic(fmt.Sprintf("invalid parameter. min=%v, max=%v", min, max))
 	}
 
-	v := Must(rand.Int(rand.Reader, big.NewInt(max-min)))
-	return v + min
+	v := number.Must(rand.Int(rand.Reader, big.NewInt(max-min)))
+	return v.Int64() + min
 }
 
 func Coprime(N int) int {
@@ -30,12 +30,4 @@ func Coprime(N int) int {
 			return int(a)
 		}
 	}
-}
-
-func Must(n *big.Int, err error) int64 {
-	if err != nil {
-		panic(err)
-	}
-
-	return n.Int64()
 }

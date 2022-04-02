@@ -1,7 +1,6 @@
 package rand_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/rand"
@@ -88,24 +87,6 @@ func TestCoprime(t *testing.T) {
 	if !found {
 		t.Errorf("coprime=%v", p)
 	}
-}
-
-func TestMustPanic(t *testing.T) {
-	defer func() {
-		if rec := recover(); rec != nil {
-			err, ok := rec.(error)
-			if !ok {
-				t.Fail()
-			}
-
-			if err.Error() != "something went wrong" {
-				t.Fail()
-			}
-		}
-	}()
-
-	rand.Must(nil, fmt.Errorf("something went wrong"))
-	t.Fail()
 }
 
 func FuzzCryptoInt64(f *testing.F) {

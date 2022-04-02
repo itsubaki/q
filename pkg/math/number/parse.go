@@ -39,7 +39,7 @@ func ParseFloat(binary string) (float64, error) {
 	return v, nil
 }
 
-func Must[T int | int64 | float64](v T, err error) T {
+func Must[T any](v T, err error) T {
 	if err != nil {
 		panic(err)
 	}
