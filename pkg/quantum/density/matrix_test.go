@@ -122,21 +122,28 @@ func ExampleBitPhaseFlip() {
 	// [(0+0.7071067811865476i) (0+0i)]
 }
 
-func TestPartialTrace(t *testing.T) {
-	qc := matrix.Apply(
+func ExampleMatrix_PartialTrace() {
+	bell := matrix.Apply(
 		matrix.TensorProduct(gate.H(), gate.I()),
 		gate.CNOT(2, 0, 1),
 	)
-	q := qubit.Zero(2).Apply(qc)
+
+	q := qubit.Zero(2).Apply(bell)
 	rho := density.New().Add(1.0, q)
-	for _, p := range rho.Raw() {
-		fmt.Printf("%.1f\n", p)
+	for _, r := range rho.Raw() {
+		fmt.Printf("%.1f\n", r)
 	}
 	fmt.Println()
 
-	pt := rho.PartialTrace(0)
-	for _, p := range pt.Raw() {
-		fmt.Printf("%.1f\n", p)
+	p0 := rho.PartialTrace(0)
+	for _, r := range p0.Raw() {
+		fmt.Printf("%.1f\n", r)
+	}
+	fmt.Println()
+
+	p1 := rho.PartialTrace(1)
+	for _, r := range p1.Raw() {
+		fmt.Printf("%.1f\n", r)
 	}
 
 	// Output:
@@ -144,9 +151,54 @@ func TestPartialTrace(t *testing.T) {
 	// [(0.0+0.0i) (0.0+0.0i) (0.0+0.0i) (0.0+0.0i)]
 	// [(0.0+0.0i) (0.0+0.0i) (0.0+0.0i) (0.0+0.0i)]
 	// [(0.5+0.0i) (0.0+0.0i) (0.0+0.0i) (0.5+0.0i)]
-
+	//
 	// [(0.5+0.0i) (0.0+0.0i)]
 	// [(0.0+0.0i) (0.5+0.0i)]
+	//
+	// [(0.5+0.0i) (0.0+0.0i)]
+	// [(0.0+0.0i) (0.5+0.0i)]
+}
+
+func TestPartialTrace(t *testing.T) {
+	cases := []struct {
+		rho   *density.Matrix
+		index int
+		want  [][]complex128
+		eps   float64
+	}{
+		{
+			density.New().Add(1.0, qubit.Zero(2)), 0,
+			[][]complex128{{1, 0}, {0, 0}}, epsilon.E13(),
+		},
+		{
+			density.New().Add(1.0, qubit.Zero(2)), 1,
+			[][]complex128{{1, 0}, {0, 0}}, epsilon.E13(),
+		},
+		{
+			density.New().Add(1.0, qubit.One(2)), 0,
+			[][]complex128{{0, 0}, {0, 1}}, epsilon.E13(),
+		},
+		{
+			density.New().Add(1.0, qubit.One(2)), 1,
+			[][]complex128{{0, 0}, {0, 1}}, epsilon.E13(),
+		},
+	}
+
+	for _, c := range cases {
+		got := c.rho.PartialTrace(c.index).Raw()
+
+		if len(got) != len(c.want) {
+			t.Errorf("got=%v want=%v", got, c.want)
+		}
+
+		for i := 0; i < len(c.want); i++ {
+			for j := 0; j < len(c.want[0]); j++ {
+				if cmplx.Abs(got[i][j]-c.want[i][j]) > c.eps {
+					t.Errorf("%v:%v, got=%v want=%v", i, j, got[i][j], c.want[i][j])
+				}
+			}
+		}
+	}
 }
 
 func TestExpectedValue(t *testing.T) {

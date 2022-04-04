@@ -69,10 +69,11 @@ func (m *Matrix) Trace() complex128 {
 }
 
 func (m *Matrix) PartialTrace(index int) *Matrix {
-	n, d := m.NumberOfBit(), m.Dimension()
+	n := m.NumberOfBit()
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
-
 	out := matrix.Zero(number.Pow(2, n-1))
+
+	d := m.Dimension()
 	for i := 0; i < d; i++ {
 		ibits := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
 
@@ -82,10 +83,10 @@ func (m *Matrix) PartialTrace(index int) *Matrix {
 				continue
 			}
 
-			v0 := number.Must(strconv.ParseInt(string(ibits[index:index+1]), 2, 0))
-			v1 := number.Must(strconv.ParseInt(string(jbits[index:index+1]), 2, 0))
+			r := number.Must(strconv.ParseInt(string(ibits[index:index+1]), 2, 0))
+			c := number.Must(strconv.ParseInt(string(jbits[index:index+1]), 2, 0))
 
-			out[v0][v1] = out[v0][v1] + m.m[i][j]
+			out[r][c] = out[r][c] + m.m[i][j]
 		}
 	}
 
