@@ -12,12 +12,11 @@ import (
 
 // go run main.go --N 15
 func main() {
-	var N, t, a int
-	var seed int64
+	var N, t, a, seed int
 	flag.IntVar(&N, "N", 15, "positive integer")
 	flag.IntVar(&t, "t", 3, "precision bits")
 	flag.IntVar(&a, "a", -1, "coprime number of N")
-	flag.Int64Var(&seed, "seed", -1, "PRNG seed for measurements")
+	flag.IntVar(&seed, "seed", -1, "PRNG seed for measurements")
 	flag.Parse()
 
 	if N < 2 {
@@ -44,7 +43,7 @@ func main() {
 		a = rand.Coprime(N)
 	}
 
-	if N-1 < a || a < 2 {
+	if a < 2 || a > N-1 {
 		fmt.Printf("N=%d, a=%d. a must be 1 < a < N.\n", N, a)
 		return
 	}
@@ -58,7 +57,7 @@ func main() {
 
 	qsim := q.New()
 	if seed > 0 {
-		qsim.Seed = []int64{seed}
+		qsim.Seed = []int{seed}
 		qsim.Rand = rand.Math
 	}
 
@@ -107,7 +106,7 @@ func main() {
 	fmt.Printf("success rate: %v\n", sum)
 }
 
-func print(desc string, qsim *q.Q, reg ...interface{}) {
+func print(desc string, qsim *q.Q, reg ...any) {
 	fmt.Println(desc)
 
 	max := number.Max(qsim.Probability())

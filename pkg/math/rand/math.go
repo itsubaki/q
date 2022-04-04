@@ -5,9 +5,9 @@ import (
 	"time"
 )
 
-func Math(seed ...int64) float64 {
+func Math(seed ...int) float64 {
 	if len(seed) > 0 {
-		rand.Seed(seed[0])
+		rand.Seed(int64(seed[0]))
 		return rand.Float64()
 	}
 

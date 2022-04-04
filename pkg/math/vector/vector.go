@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/cmplx"
 
+	"github.com/itsubaki/q/pkg/math/epsilon"
 	"github.com/itsubaki/q/pkg/math/matrix"
 )
 
@@ -49,10 +50,10 @@ func (v Vector) Dual() Vector {
 	return out
 }
 
-func (v Vector) Add(v1 Vector) Vector {
+func (v Vector) Add(w Vector) Vector {
 	out := Vector{}
 	for i := 0; i < len(v); i++ {
-		out = append(out, v[i]+v1[i])
+		out = append(out, v[i]+w[i])
 	}
 
 	return out
@@ -106,7 +107,7 @@ func (v Vector) OuterProduct(w Vector) matrix.Matrix {
 }
 
 func (v Vector) IsOrthogonal(w Vector) bool {
-	return v.InnerProduct(w) == complex(0, 0)
+	return v.InnerProduct(w) == 0
 }
 
 func (v Vector) Norm() complex128 {
@@ -114,12 +115,11 @@ func (v Vector) Norm() complex128 {
 }
 
 func (v Vector) IsUnit() bool {
-	return v.Norm() == complex(1, 0)
+	return v.Norm() == 1
 }
 
 func (v Vector) Apply(m matrix.Matrix) Vector {
 	p, q := m.Dimension()
-
 	if q != len(v) {
 		panic(fmt.Sprintf("invalid dimension. p=%d q=%d len(v)=%d", p, q, len(v)))
 	}
@@ -142,7 +142,7 @@ func (v Vector) Equals(w Vector, eps ...float64) bool {
 		return false
 	}
 
-	e := epsilon(eps...)
+	e := epsilon.E13(eps...)
 	for i := 0; i < len(v); i++ {
 		if cmplx.Abs(v[i]-w[i]) > e {
 			return false
@@ -194,12 +194,4 @@ func TensorProduct(v ...Vector) Vector {
 	}
 
 	return out
-}
-
-func epsilon(eps ...float64) float64 {
-	if len(eps) > 0 {
-		return eps[0]
-	}
-
-	return 1e-13
 }

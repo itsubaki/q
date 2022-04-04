@@ -18,3 +18,9 @@ secret
 # goland
 .idea/
 .DS_Store
+
+# test
+cover.html
+cover.out
+coverage.txt
+coverage.html

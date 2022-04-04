@@ -33,10 +33,27 @@ func ExampleModExp2() {
 	// 1
 }
 
+func TestModExp(t *testing.T) {
+	cases := []struct {
+		a, r, N int
+		want    int
+	}{
+		{0, 15, 1, 0},
+		{15, 0, 1, 1},
+	}
+
+	for _, c := range cases {
+		got := number.ModExp(c.a, c.r, c.N)
+		if got != c.want {
+			t.Errorf("got=%d, %d^%d) mod %d = %d\n", got, c.a, c.r, c.N, c.want)
+		}
+	}
+}
+
 func TestModExp2(t *testing.T) {
 	cases := []struct {
 		a, j, N int
-		out     int
+		want    int
 	}{
 		{7, 0, 15, 7},
 		{7, 1, 15, 4},
@@ -53,20 +70,22 @@ func TestModExp2(t *testing.T) {
 		{7, 12, 15, 1},
 		{7, 13, 15, 1},
 		{7, 14, 15, 1},
+		{0, 15, 15, 0},
 	}
 
 	for _, c := range cases {
-		v := number.ModExp2(c.a, c.j, c.N)
-		if v != c.out {
-			t.Errorf("%d^(2^%d) mod %d = %d. actual=%d\n", c.a, c.j, c.N, c.out, v)
+		got := number.ModExp2(c.a, c.j, c.N)
+		if got != c.want {
+			t.Errorf("got=%d, %d^(2^%d) mod %d = %d\n", got, c.a, c.j, c.N, c.want)
 		}
 	}
 }
 
 func TestBaseExp(t *testing.T) {
 	cases := []struct {
-		N, a, b int
-		ok      bool
+		in   int
+		a, b int
+		ok   bool
 	}{
 		{9, 3, 2, true},
 		{25, 5, 2, true},
@@ -77,9 +96,26 @@ func TestBaseExp(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		a, b, ok := number.BaseExp(c.N)
+		a, b, ok := number.BaseExp(c.in)
 		if a != c.a || b != c.b || ok != c.ok {
-			t.Errorf("N=%v, a=%v, b=%v, ok=%v", c.N, a, b, ok)
+			t.Errorf("N=%v, a=%v, b=%v, ok=%v", c.in, a, b, ok)
+		}
+	}
+}
+
+func TestPow(t *testing.T) {
+	cases := []struct {
+		a, r int
+		want int
+	}{
+		{0, 4, 0},
+		{2, 0, 1},
+	}
+
+	for _, c := range cases {
+		got := number.Pow(c.a, c.r)
+		if got != c.want {
+			t.Errorf("got=%v, want=%v", got, c.want)
 		}
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"math"
 	"testing"
 
+	"github.com/itsubaki/q/pkg/math/epsilon"
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/math/number"
 	"github.com/itsubaki/q/pkg/math/rand"
@@ -292,7 +293,7 @@ func Example_errorCorrectionPhaseFlip() {
 
 func Example_quantumTeleportation() {
 	phi := qubit.New(1, 2)
-	phi.Seed = []int64{1}
+	phi.Seed = []int{1}
 	phi.Rand = rand.Math
 
 	fmt.Println("before:")
@@ -338,7 +339,7 @@ func Example_quantumTeleportation() {
 
 func Example_quantumTeleportation2() {
 	phi := qubit.New(1, 2)
-	phi.Seed = []int64{1}
+	phi.Seed = []int{1}
 	phi.Rand = rand.Math
 
 	fmt.Println("before:")
@@ -478,19 +479,31 @@ func TestNumberOfBit(t *testing.T) {
 
 func TestIsZero(t *testing.T) {
 	cases := []struct {
-		qb     *qubit.Qubit
-		isZero bool
-		isOne  bool
+		in   *qubit.Qubit
+		want bool
 	}{
-		{qubit.Zero(), true, false},
-		{qubit.One(), false, true},
+		{qubit.Zero(), true},
+		{qubit.One(), false},
 	}
 
 	for _, c := range cases {
-		if c.qb.IsZero() != c.isZero {
+		if c.in.IsZero() != c.want {
 			t.Fail()
 		}
-		if c.qb.IsOne() != c.isOne {
+	}
+}
+
+func TestIsOne(t *testing.T) {
+	cases := []struct {
+		in   *qubit.Qubit
+		want bool
+	}{
+		{qubit.Zero(), false},
+		{qubit.One(), true},
+	}
+
+	for _, c := range cases {
+		if c.in.IsOne() != c.want {
 			t.Fail()
 		}
 	}
@@ -499,16 +512,16 @@ func TestIsZero(t *testing.T) {
 func TestFidelity(t *testing.T) {
 	cases := []struct {
 		q0, q1 *qubit.Qubit
-		f      float64
+		want   float64
 	}{
 		{qubit.Zero(), qubit.Zero(), 1.0},
 		{qubit.Zero(), qubit.One(), 0.0},
 	}
 
 	for _, c := range cases {
-		f := c.q0.Fidelity(c.q1)
-		if f != c.f {
-			t.Error(f)
+		got := c.q0.Fidelity(c.q1)
+		if got != c.want {
+			t.Errorf("got=%v, want=%v", got, c.want)
 		}
 	}
 }
@@ -516,57 +529,61 @@ func TestFidelity(t *testing.T) {
 func TestTraceDistance(t *testing.T) {
 	cases := []struct {
 		q0, q1 *qubit.Qubit
-		d      float64
+		want   float64
 	}{
 		{qubit.Zero(), qubit.Zero(), 0.0},
 		{qubit.Zero(), qubit.One(), 1.0},
 	}
 
 	for _, c := range cases {
-		d := c.q0.TraceDistance(c.q1)
-		if d != c.d {
-			t.Error(d)
+		got := c.q0.TraceDistance(c.q1)
+		if got != c.want {
+			t.Errorf("got=%v, want=%v", got, c.want)
 		}
 	}
 }
 
 func TestNormalize(t *testing.T) {
 	cases := []struct {
-		q *qubit.Qubit
+		in   *qubit.Qubit
+		want float64
+		eps  float64
 	}{
-		{qubit.New(1, 0)},
-		{qubit.New(0, 1)},
-		{qubit.New(4, 5)},
-		{qubit.New(10, 5)},
+		{qubit.New(1, 0), 1.0, epsilon.E13()},
+		{qubit.New(0, 1), 1.0, epsilon.E13()},
+		{qubit.New(4, 5), 1.0, epsilon.E13()},
+		{qubit.New(10, 5), 1.0, epsilon.E13()},
 	}
 
 	for _, c := range cases {
-		sum := number.Sum(c.q.Probability())
-		if math.Abs(sum-1.0) > 1e-13 {
-			t.Error(sum)
+		got := number.Sum(c.in.Probability())
+		if math.Abs(got-c.want) > c.eps {
+			t.Errorf("got=%v, want=%v", got, c.want)
 		}
 	}
 }
 
 func TestMeasure(t *testing.T) {
+	eps := epsilon.E13()
+
 	q := qubit.Zero(3).Apply(gate.H(3))
 	for _, p := range q.Probability() {
-		if p != 0 && math.Abs(p-0.125) > 1e-13 {
-			t.Error(q.Probability())
+		if p != 0 && math.Abs(p-0.125) > eps {
+			t.Errorf("probability=%v", q.Probability())
 		}
 	}
 
 	q.Measure(0)
 	for _, p := range q.Probability() {
-		if p != 0 && math.Abs(p-0.25) > 1e-13 {
-			t.Error(q.Probability())
+		if p != 0 && math.Abs(p-0.25) > eps {
+			t.Errorf("probability=%v", q.Probability())
 		}
 	}
 
 	q.Measure(1)
 	for _, p := range q.Probability() {
-		if p != 0 && math.Abs(p-0.5) > 1e-13 {
-			t.Error(q.Probability())
+		if p != 0 && math.Abs(p-0.5) > eps {
+			t.Errorf("probability=%v", q.Probability())
 		}
 	}
 
@@ -574,6 +591,62 @@ func TestMeasure(t *testing.T) {
 	for _, p := range q.Probability() {
 		if p != 0 && p != 1 {
 			t.Error(q.Probability())
+		}
+	}
+}
+
+func TestClone(t *testing.T) {
+	in := qubit.Zero(2).Apply(gate.H(2))
+	got := in.Clone()
+
+	if !in.Equals(got) {
+		t.Fail()
+	}
+}
+
+func TestInt(t *testing.T) {
+	cases := []struct {
+		in   *qubit.Qubit
+		want int64
+	}{
+		{qubit.Zero(), 0},
+		{qubit.One(), 1},
+	}
+
+	for _, c := range cases {
+		if c.in.Int() != c.want {
+			t.Fail()
+		}
+	}
+}
+func TestBinaryString(t *testing.T) {
+	cases := []struct {
+		in   *qubit.Qubit
+		want string
+	}{
+		{qubit.Zero(3), "000"},
+		{qubit.One(3), "111"},
+	}
+
+	for _, c := range cases {
+		if c.in.BinaryString() != c.want {
+			t.Fail()
+		}
+	}
+}
+
+func TestString(t *testing.T) {
+	cases := []struct {
+		in   *qubit.Qubit
+		want string
+	}{
+		{qubit.Zero(2), "[(1+0i) (0+0i) (0+0i) (0+0i)]"},
+		{qubit.One(2), "[(0+0i) (0+0i) (0+0i) (1+0i)]"},
+	}
+
+	for _, c := range cases {
+		if c.in.String() != c.want {
+			t.Fail()
 		}
 	}
 }

@@ -1,8 +1,9 @@
 # q
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/itsubaki/q?style=flat-square)](https://goreportcard.com/report/github.com/itsubaki/q)
-[![Build Status](https://travis-ci.org/itsubaki/q.svg?branch=master)](https://travis-ci.org/itsubaki/q)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/itsubaki/q)](https://pkg.go.dev/github.com/itsubaki/q)
+[![Go Report Card](https://goreportcard.com/badge/github.com/itsubaki/q?style=flat-square)](https://goreportcard.com/report/github.com/itsubaki/q)
+[![tests](https://github.com/itsubaki/q/workflows/tests/badge.svg?branch=main)](https://github.com/itsubaki/q/actions)
+[![codecov](https://codecov.io/gh/itsubaki/q/branch/main/graph/badge.svg?token=iNccCs1Tez)](https://codecov.io/gh/itsubaki/q)
 
 - quantum computation simulator
 - pure golang implementation
@@ -30,6 +31,7 @@ for _, s := range qsim.State() {
 
 m0 := qsim.Measure(q0)
 m1 := qsim.Measure(q1)
+fmt.Printf("%v %v\n", m0.IsZero(), m1.IsZero())
 // if m0.IsZero() is true, m1.IsZero() is also true
 // if m0.IsOne()  is true, m1.IsOne()  is also true
 
@@ -117,7 +119,7 @@ for _, s := range qsim.State(q0) {
 // [1][  1]( 0.8944 0.0000i): 0.8000
 ```
 
-### Grover's search algorithm
+## Grover's search algorithm
 
 ```golang
 qsim := q.New()
@@ -138,7 +140,7 @@ for i := 0; i < int(r); i++ {
   qsim.X(q2, q3)
   qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)
   qsim.X(q2, q3)
-  
+
   qsim.H(q0, q1, q2, q3)
   qsim.X(q0, q1, q2, q3)
   qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)
@@ -224,21 +226,12 @@ for i := 0; i < 10; i++{
 // i=2: N=15, a=7. p=3, q=5. s/r=1/4 ([0.010]~0.250)
 ```
 
-## Density Matrix
-
-```golang
-p0, q0 := 0.1, qubit.Zero()
-p1, q1 := 0.9, qubit.Zero().Apply(gate.H())
-rho := density.New().Add(p0, q0).Add(p1, q1)
-
-rho.Trace() // -> 1
-rho.ExpectedValue(gate.X()) // -> 0.9
-```
+- In general, See [`cmd/shor`](./cmd/shor/main.go)
 
 # Reference
 
-1. Michael A. Nielsen, Issac L. Chuang, Quantum Computation and Quantum Information
-2. C. Figgatt, D. Maslov, K. A. Landsman, N. M. Linke, S. Debnath, and C. Monroe, Complete 3-Qubit Grover Search on a Programmable Quantum Computer
-3. Zhengjun Cao, Zhenfu Cao, Lihua Liu, Remarks on Quantum Modular Exponentiation and Some Experimental Demonstrations of Shor’s Algorithm
-4. Michael R. Geller, Zhongyuan Zhou, Factoring 51 and 85 with 8 qubits
-5. Programming Quantum Computers by Eric R. Johnson, Nic Harrigan, and Merecedes Gimeno-Segovia (O'Reilly)
+- Michael A. Nielsen, Issac L. Chuang. Quantum Computation and Quantum Information.
+- C. Figgatt, D. Maslov, K. A. Landsman, N. M. Linke, S. Debnath, and C. Monroe. Complete 3-Qubit Grover Search on a Programmable Quantum Computer.
+- Zhengjun Cao, Zhenfu Cao, Lihua Liu. Remarks on Quantum Modular Exponentiation and Some Experimental Demonstrations of Shor’s Algorithm.
+- Michael R. Geller, Zhongyuan Zhou. Factoring 51 and 85 with 8 qubits.
+- Eric R. Johnson, Nic Harrigan, and Merecedes Gimeno-Segovia. Programming Quantum Computers. O'Reilly.

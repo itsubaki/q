@@ -2,11 +2,66 @@ package vector_test
 
 import (
 	"fmt"
+	"sync"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/math/vector"
 )
+
+func BenchmarkApplyN12(b *testing.B) {
+	n := 12
+	v := vector.TensorProductN(vector.New(1, 2), n)
+	x := matrix.TensorProductN(
+		matrix.New(
+			[]complex128{0, 1},
+			[]complex128{1, 0},
+		), n)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		v.Apply(x)
+	}
+}
+
+func BenchmarkApplyConcurrencyN12(b *testing.B) {
+	apply := func(v vector.Vector, m matrix.Matrix) vector.Vector {
+		p, q := m.Dimension()
+
+		wg := sync.WaitGroup{}
+		out := make(vector.Vector, p)
+		for i := 0; i < p; i++ {
+			wg.Add(1)
+
+			go func(i int, out *vector.Vector) {
+				defer wg.Done()
+
+				tmp := complex(0, 0)
+				for j := 0; j < q; j++ {
+					tmp = tmp + m[i][j]*v[j]
+				}
+
+				(*out)[i] = tmp
+			}(i, &out)
+		}
+
+		wg.Wait()
+		return out
+	}
+
+	n := 12
+	v := vector.TensorProductN(vector.New(1, 2), n)
+	x := matrix.TensorProductN(
+		matrix.New(
+			[]complex128{0, 1},
+			[]complex128{1, 0},
+		), n)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		apply(v, x)
+	}
+}
 
 func ExampleZero() {
 	v := vector.Zero(3)
@@ -22,6 +77,24 @@ func ExampleNew() {
 
 	// Output:
 	// [(1+0i) (0+0i)]
+}
+
+func ExampleTensorProduct() {
+	v := vector.New(1, 0)
+	vv := vector.TensorProduct(v, v)
+	fmt.Println(vv)
+
+	// Output:
+	// [(1+0i) (0+0i) (0+0i) (0+0i)]
+}
+
+func ExampleTensorProductN() {
+	v := vector.New(1, 0)
+	vv := vector.TensorProductN(v, 2)
+	fmt.Println(vv)
+
+	// Output:
+	// [(1+0i) (0+0i) (0+0i) (0+0i)]
 }
 
 func ExampleVector_Apply() {
@@ -87,7 +160,7 @@ func ExampleVector_Norm() {
 }
 
 func ExampleVector_Real() {
-	v := vector.New(complex(1, 2), complex(3, 4))
+	v := vector.New(1+2i, 3+4i)
 	for _, r := range v.Real() {
 		fmt.Println(r)
 	}
@@ -97,7 +170,7 @@ func ExampleVector_Real() {
 	// 3
 }
 func ExampleVector_Imag() {
-	v := vector.New(complex(1, 2), complex(3, 4))
+	v := vector.New(1+2i, 3+4i)
 	for _, r := range v.Imag() {
 		fmt.Println(r)
 	}
@@ -105,6 +178,22 @@ func ExampleVector_Imag() {
 	// Output:
 	// 2
 	// 4
+}
+
+func ExampleVector_Complex() {
+	v := vector.New(1+2i, 3+4i)
+	fmt.Println(v.Complex())
+
+	// Output:
+	// [(1+2i) (3+4i)]
+}
+
+func ExampleVector_Dimension() {
+	v := vector.New(1+2i, 3+4i)
+	fmt.Println(v.Dimension())
+
+	// Output:
+	// 2
 }
 
 func TestVector(t *testing.T) {
@@ -115,9 +204,9 @@ func TestVector(t *testing.T) {
 		isUnit       bool
 		norm         complex128
 	}{
-		{vector.New(1, 0), vector.New(1, 0), complex(1, 0), false, true, complex(1, 0)},
-		{vector.New(0, 1), vector.New(0, 1), complex(1, 0), false, true, complex(1, 0)},
-		{vector.New(1, 0), vector.New(0, 1), complex(0, 0), true, true, complex(1, 0)},
+		{vector.New(1, 0), vector.New(1, 0), 1, false, true, 1},
+		{vector.New(0, 1), vector.New(0, 1), 1, false, true, 1},
+		{vector.New(1, 0), vector.New(0, 1), 0, true, true, 1},
 	}
 
 	for _, c := range cases {
@@ -137,4 +226,92 @@ func TestVector(t *testing.T) {
 			t.Errorf("%v", c.v0.Norm())
 		}
 	}
+}
+
+func TestAdd(t *testing.T) {
+	cases := []struct {
+		v0, v1 vector.Vector
+		want   vector.Vector
+	}{
+		{vector.New(1, 2, 3, 4, 5), vector.New(6, 7, 8, 9, 10), vector.New(7, 9, 11, 13, 15)},
+	}
+
+	for _, c := range cases {
+		if !c.v0.Add(c.v1).Equals(c.want) {
+			t.Fail()
+		}
+	}
+}
+
+func TestMul(t *testing.T) {
+	cases := []struct {
+		v    vector.Vector
+		c    complex128
+		want vector.Vector
+	}{
+		{vector.New(1, 2, 3, 4, 5), 3, vector.New(3, 6, 9, 12, 15)},
+	}
+
+	for _, c := range cases {
+		if !c.v.Mul(c.c).Equals(c.want) {
+			t.Fail()
+		}
+	}
+}
+
+func TestClone(t *testing.T) {
+	in := vector.New(1, 2, 3, 4, 5, 6)
+	got := in.Clone()
+
+	if !in.Equals(got) {
+		t.Fail()
+	}
+}
+
+func TestTensorProductN(t *testing.T) {
+	cases := []struct {
+		in vector.Vector
+	}{
+		{vector.New(1, 2, 3, 4, 5, 6)},
+	}
+
+	for _, c := range cases {
+		if !vector.TensorProductN(c.in).Equals(c.in) {
+			t.Fail()
+		}
+	}
+}
+
+func TestEquals(t *testing.T) {
+	cases := []struct {
+		v0, v1 vector.Vector
+		want   bool
+	}{
+		{vector.New(1, 2), vector.New(1, 2), true},
+		{vector.New(1, 2), vector.New(3, 4), false},
+		{vector.New(1, 2, 3, 4, 5, 6), vector.New(1, 2), false},
+	}
+
+	for _, c := range cases {
+		if c.v0.Equals(c.v1) != c.want {
+			t.Fail()
+		}
+	}
+}
+
+func TestApplyPanic(t *testing.T) {
+	v := vector.New(1, 2)
+	m := matrix.New(
+		[]complex128{1},
+		[]complex128{1},
+	)
+
+	defer func() {
+		if err := recover(); err != "invalid dimension. p=2 q=1 len(v)=2" {
+			t.Fail()
+		}
+	}()
+
+	v.Apply(m)
+	t.Fail()
 }

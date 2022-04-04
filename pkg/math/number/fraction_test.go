@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/itsubaki/q/pkg/math/epsilon"
 	"github.com/itsubaki/q/pkg/math/number"
 )
 
@@ -38,26 +39,27 @@ func ExampleConvergent() {
 
 func TestContinuedFraction(t *testing.T) {
 	cases := []struct {
-		input float64
-		cf    []int
-		s, r  int
-		d     float64
+		in   float64
+		cf   []int
+		s, r int
+		d    float64
+		eps  float64
 	}{
-		{1.0 / 16.0, []int{0, 16}, 1, 16, 0.0625},
-		{4.0 / 16.0, []int{0, 4}, 1, 4, 0.25},
-		{7.0 / 16.0, []int{0, 2, 3, 1, 1}, 7, 16, 0.4375},
-		{13.0 / 16.0, []int{0, 1, 4, 3}, 13, 16, 0.8125},
-		{0.42857, []int{0, 2, 2, 1}, 3, 7, 0.42857142857142855},
-		{0.166656494140625, []int{0, 6}, 1, 6, 0.16666666666666666},
-		{2.38461538462, []int{2, 2, 1, 1, 2}, 31, 13, 2.3846153846153846},
-		{0.0, []int{0}, 0, 1, 0},
-		{1.0, []int{1}, 1, 1, 1},
-		{1.5, []int{1, 2}, 3, 2, 1.5},
-		{2.0, []int{2}, 2, 1, 2.0},
+		{1.0 / 16.0, []int{0, 16}, 1, 16, 0.0625, epsilon.E3()},
+		{4.0 / 16.0, []int{0, 4}, 1, 4, 0.25, epsilon.E3()},
+		{7.0 / 16.0, []int{0, 2, 3, 1, 1}, 7, 16, 0.4375, epsilon.E3()},
+		{13.0 / 16.0, []int{0, 1, 4, 3}, 13, 16, 0.8125, epsilon.E3()},
+		{0.42857, []int{0, 2, 2, 1}, 3, 7, 0.42857142857142855, epsilon.E3()},
+		{0.166656494140625, []int{0, 6}, 1, 6, 0.16666666666666666, epsilon.E3()},
+		{2.38461538462, []int{2, 2, 1, 1, 2}, 31, 13, 2.3846153846153846, epsilon.E3()},
+		{0.0, []int{0}, 0, 1, 0, epsilon.E3()},
+		{1.0, []int{1}, 1, 1, 1, epsilon.E3()},
+		{1.5, []int{1, 2}, 3, 2, 1.5, epsilon.E3()},
+		{2.0, []int{2}, 2, 1, 2.0, epsilon.E3()},
 	}
 
 	for _, c := range cases {
-		f := number.ContinuedFraction(c.input)
+		f := number.ContinuedFraction(c.in, c.eps)
 		for i := range c.cf {
 			if f[i] == c.cf[i] {
 				continue

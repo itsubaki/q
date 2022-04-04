@@ -18,9 +18,9 @@ func ExampleParseFloat() {
 
 func TestParseFloat(t *testing.T) {
 	cases := []struct {
-		binary string
-		float  float64
-		err    error
+		in   string
+		want float64
+		err  error
 	}{
 		{"0.000", 0.0, nil},
 		{"0.100", 0.5, nil},
@@ -39,18 +39,48 @@ func TestParseFloat(t *testing.T) {
 		{"a.bbb", 0, fmt.Errorf("invalid parameter. binary=a.bbb")},
 		{"a.001", 0, fmt.Errorf("invalid parameter. binary=a.001")},
 		{"0.bbb", 0, fmt.Errorf("invalid parameter. binary=0.bbb")},
+		{"0.1.0", 0, fmt.Errorf("invalid parameter. binary=0.1.0")},
 	}
 
 	for _, c := range cases {
-		result, err := number.ParseFloat(c.binary)
+		got, err := number.ParseFloat(c.in)
 		if err != nil && err.Error() != c.err.Error() {
 			t.Errorf("parse float: %v", err)
 		}
 
-		if result == c.float {
+		if got == c.want {
 			continue
 		}
 
-		t.Errorf("expected=%v, actual=%v", c.float, result)
+		t.Errorf("got=%v, want=%v", got, c.want)
 	}
+}
+
+func TestMustPanic(t *testing.T) {
+	defer func() {
+		if rec := recover(); rec != nil {
+			err, ok := rec.(error)
+			if !ok {
+				t.Fail()
+			}
+
+			if err.Error() != "something went wrong" {
+				t.Fail()
+			}
+		}
+	}()
+
+	number.Must(-1, fmt.Errorf("something went wrong"))
+	t.Fail()
+}
+
+func FuzzParseFloat(f *testing.F) {
+	seed := []string{"123", "101", "1.0101", "abc", "a.bc"}
+	for i := range seed {
+		f.Add(seed[i])
+	}
+
+	f.Fuzz(func(t *testing.T, v string) {
+		number.ParseFloat(v)
+	})
 }

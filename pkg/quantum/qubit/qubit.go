@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/itsubaki/q/pkg/math/epsilon"
 	"github.com/itsubaki/q/pkg/math/matrix"
 	"github.com/itsubaki/q/pkg/math/number"
 	"github.com/itsubaki/q/pkg/math/rand"
@@ -15,8 +16,8 @@ import (
 
 type Qubit struct {
 	vector vector.Vector
-	Seed   []int64
-	Rand   func(seed ...int64) float64
+	Seed   []int
+	Rand   func(seed ...int) float64
 }
 
 func New(z ...complex128) *Qubit {
@@ -167,10 +168,6 @@ func (q *Qubit) ProbabilityZeroAt(index int) ([]int, []float64) {
 	for i := 0; i < dim; i++ {
 		idx, prob = append(idx, i), append(prob, p[i])
 
-		if len(p) == dim/2 {
-			break
-		}
-
 		if (i+1)%div == 0 {
 			i = i + div
 		}
@@ -206,20 +203,16 @@ func (q *Qubit) ProbabilityOneAt(index int) ([]int, []float64) {
 	return idx, prob
 }
 
-func (q *Qubit) Int() int {
-	b := q.BinaryString()
-	i, err := strconv.ParseInt(b, 2, 0)
-	if err != nil {
-		panic(err)
-	}
-
-	return int(i)
+func (q *Qubit) Int() int64 {
+	return number.Must(strconv.ParseInt(q.BinaryString(), 2, 0))
 }
 
 func (q *Qubit) BinaryString() string {
+	c := q.Clone()
+
 	var sb strings.Builder
 	for i := 0; i < q.NumberOfBit(); i++ {
-		if q.Clone().Measure(i).IsZero() {
+		if c.Measure(i).IsZero() {
 			sb.WriteString("0")
 			continue
 		}
@@ -247,22 +240,18 @@ func (q *Qubit) State(index ...[]int) []State {
 
 	state := make([]State, 0)
 	for i, a := range q.Amplitude() {
-		if math.Abs(real(a)) < 1e-13 {
-			a = complex(0, imag(a))
-		}
-		if math.Abs(imag(a)) < 1e-13 {
-			a = complex(real(a), 0)
-		}
-		if a == 0 {
+		amp := round(a)
+		if amp == 0 {
 			continue
 		}
-		bin := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
 
-		s := State{Amplitude: a, Probability: math.Pow(cmplx.Abs(a), 2)}
+		s := State{Amplitude: amp, Probability: math.Pow(cmplx.Abs(amp), 2)}
+		b := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
+
 		for _, idx := range index {
-			bint, bbin := to(bin, idx)
-			s.Int = append(s.Int, bint)
-			s.BinaryString = append(s.BinaryString, bbin)
+			binary := pickup(b, idx)
+			s.Int = append(s.Int, number.Must(strconv.ParseInt(binary, 2, 0)))
+			s.BinaryString = append(s.BinaryString, binary)
 		}
 
 		state = append(state, s)
@@ -271,19 +260,27 @@ func (q *Qubit) State(index ...[]int) []State {
 	return state
 }
 
-func to(binary string, idx []int) (int, string) {
+func round(a complex128, eps ...float64) complex128 {
+	e := epsilon.E13(eps...)
+
+	if math.Abs(real(a)) < e {
+		a = complex(0, imag(a))
+	}
+
+	if math.Abs(imag(a)) < e {
+		a = complex(real(a), 0)
+	}
+
+	return a
+}
+
+func pickup(binary string, idx []int) string {
 	var sb strings.Builder
 	for _, i := range idx {
 		sb.WriteString(binary[i : i+1])
 	}
-	bin := sb.String()
 
-	bint, err := strconv.ParseInt(bin, 2, 0)
-	if err != nil {
-		panic(fmt.Sprintf("parse int. binary=%s, bin=%s", binary, bin))
-	}
-
-	return int(bint), bin
+	return sb.String()
 }
 
 func TensorProduct(qb ...*Qubit) *Qubit {

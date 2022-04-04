@@ -3,6 +3,8 @@ package matrix
 import (
 	"fmt"
 	"math/cmplx"
+
+	"github.com/itsubaki/q/pkg/math/epsilon"
 )
 
 type Matrix [][]complex128
@@ -21,7 +23,7 @@ func Zero(n int) Matrix {
 	for i := 0; i < n; i++ {
 		out[i] = make([]complex128, 0)
 		for j := 0; j < n; j++ {
-			out[i] = append(out[i], complex(0, 0))
+			out[i] = append(out[i], 0)
 		}
 	}
 
@@ -40,7 +42,7 @@ func (m Matrix) Equals(n Matrix, eps ...float64) bool {
 		return false
 	}
 
-	e := epsilon(eps...)
+	e := epsilon.E13(eps...)
 	for i := 0; i < p; i++ {
 		for j := 0; j < q; j++ {
 			if cmplx.Abs(m[i][j]-n[i][j]) > e {
@@ -95,8 +97,8 @@ func (m Matrix) Dagger() Matrix {
 func (m Matrix) IsHermite(eps ...float64) bool {
 	p, q := m.Dimension()
 	d := m.Dagger()
+	e := epsilon.E13(eps...)
 
-	e := epsilon(eps...)
 	for i := 0; i < p; i++ {
 		for j := 0; j < q; j++ {
 			if cmplx.Abs(m[i][j]-d[i][j]) > e {
@@ -111,18 +113,18 @@ func (m Matrix) IsHermite(eps ...float64) bool {
 func (m Matrix) IsUnitary(eps ...float64) bool {
 	p, q := m.Dimension()
 	d := m.Apply(m.Dagger())
+	e := epsilon.E13(eps...)
 
-	e := epsilon(eps...)
 	for i := 0; i < p; i++ {
 		for j := 0; j < q; j++ {
 			if i == j {
-				if cmplx.Abs(d[i][j]-complex(1, 0)) > e {
+				if cmplx.Abs(d[i][j]-1) > e {
 					return false
 				}
 				continue
 			}
 
-			if cmplx.Abs(d[i][j]-complex(0, 0)) > e {
+			if cmplx.Abs(d[i][j]) > e {
 				return false
 			}
 		}
@@ -263,10 +265,10 @@ func (m Matrix) Inverse() Matrix {
 		v := make([]complex128, 0)
 		for j := 0; j < q; j++ {
 			if i == j {
-				v = append(v, complex(1, 0))
+				v = append(v, 1)
 				continue
 			}
-			v = append(v, complex(0, 0))
+			v = append(v, 0)
 		}
 		out = append(out, v)
 	}
@@ -323,13 +325,13 @@ func Apply(m ...Matrix) Matrix {
 	return out
 }
 
-func TensorProductN(m Matrix, bit ...int) Matrix {
-	if len(bit) < 1 {
+func TensorProductN(m Matrix, n ...int) Matrix {
+	if len(n) < 1 {
 		return m
 	}
 
 	list := make([]Matrix, 0)
-	for i := 0; i < bit[0]; i++ {
+	for i := 0; i < n[0]; i++ {
 		list = append(list, m)
 	}
 
@@ -355,12 +357,4 @@ func AntiCommutator(m, n Matrix) Matrix {
 	mn := n.Apply(m)
 	nm := m.Apply(n)
 	return mn.Add(nm)
-}
-
-func epsilon(eps ...float64) float64 {
-	if len(eps) > 0 {
-		return eps[0]
-	}
-
-	return 1e-13
 }
