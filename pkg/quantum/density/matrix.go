@@ -63,7 +63,7 @@ func (m *Matrix) PartialTrace(i int) (*Matrix, error) {
 	n := number.Pow(2, m.NumberOfBit()-1)
 	out := matrix.Zero(n)
 
-	// TODO Implement PartialTrace
+	// TODO: Not Implemented
 	return &Matrix{out}, fmt.Errorf("Not Implemented")
 }
 
