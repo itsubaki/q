@@ -160,41 +160,101 @@ func ExampleMatrix_PartialTrace() {
 }
 
 func TestPartialTrace(t *testing.T) {
-	cases := []struct {
-		rho   *density.Matrix
+	type Case struct {
 		index int
 		want  [][]complex128
-		eps   float64
+	}
+
+	cases := []struct {
+		rho *density.Matrix
+		cs  []Case
+		eps float64
 	}{
 		{
-			density.New().Add(1.0, qubit.Zero(2)), 0,
-			[][]complex128{{1, 0}, {0, 0}}, epsilon.E13(),
+			density.New().Add(1.0, qubit.Zero(2)),
+			[]Case{
+				{0, [][]complex128{{1, 0}, {0, 0}}},
+				{1, [][]complex128{{1, 0}, {0, 0}}},
+			},
+			epsilon.E13(),
 		},
 		{
-			density.New().Add(1.0, qubit.Zero(2)), 1,
-			[][]complex128{{1, 0}, {0, 0}}, epsilon.E13(),
+			density.New().Add(1.0, qubit.One(2)),
+			[]Case{
+				{0, [][]complex128{{0, 0}, {0, 1}}},
+				{1, [][]complex128{{0, 0}, {0, 1}}},
+			},
+			epsilon.E13(),
 		},
 		{
-			density.New().Add(1.0, qubit.One(2)), 0,
-			[][]complex128{{0, 0}, {0, 1}}, epsilon.E13(),
+			density.New().
+				Add(0.5, qubit.Zero(2)).
+				Add(0.5, qubit.One(2)),
+			[]Case{
+				{0, [][]complex128{{0.5, 0}, {0, 0.5}}},
+				{1, [][]complex128{{0.5, 0}, {0, 0.5}}},
+			}, epsilon.E13(),
 		},
 		{
-			density.New().Add(1.0, qubit.One(2)), 1,
-			[][]complex128{{0, 0}, {0, 1}}, epsilon.E13(),
+			density.New().
+				Add(0.5, qubit.Zero(2).Apply(gate.H(2))).
+				Add(0.5, qubit.One(2)),
+			[]Case{
+				{0, [][]complex128{{0.25, 0.25}, {0.25, 0.75}}},
+				{1, [][]complex128{{0.25, 0.25}, {0.25, 0.75}}},
+			},
+			epsilon.E13(),
+		},
+		{
+			density.New().
+				Add(0.5, qubit.Zero(2).Apply(gate.H(2))).
+				Add(0.5, qubit.One(2).Apply(gate.H(2))),
+			[]Case{
+				{0, [][]complex128{{0.5, 0}, {0, 0.5}}},
+				{1, [][]complex128{{0.5, 0}, {0, 0.5}}},
+			},
+			epsilon.E13(),
+		},
+		{
+			density.New().
+				Add(0.25, qubit.Zero(2).Apply(gate.H(2))).
+				Add(0.75, qubit.One(2).Apply(gate.H(2))),
+			[]Case{
+				{0, [][]complex128{{0.5, -0.25}, {-0.25, 0.5}}},
+				{1, [][]complex128{{0.5, -0.25}, {-0.25, 0.5}}},
+			},
+			epsilon.E13(),
+		},
+		{
+			density.New().
+				Add(0.25, qubit.Zero(2).Apply(matrix.TensorProductN(gate.U(0, 1, 2), 2))).
+				Add(0.75, qubit.Zero(2).Apply(matrix.TensorProductN(gate.U(3, 2, 1), 2))),
+			[]Case{
+				{0, [][]complex128{
+					{0.25375281377483294 + 0i, -0.022022491847857862 - 0.04812002257592126i},
+					{-0.022022491847857862 + 0.04812002257592126i, 0.7462471862251671 + 0i}},
+				},
+				{1, [][]complex128{
+					{0.25375281377483294 + 0i, -0.022022491847857862 - 0.04812002257592126i},
+					{-0.022022491847857862 + 0.04812002257592126i, 0.7462471862251671 + 0i}},
+				},
+			},
+			epsilon.E13(),
 		},
 	}
 
 	for _, c := range cases {
-		got := c.rho.PartialTrace(c.index).Raw()
+		for _, cs := range c.cs {
+			got := c.rho.PartialTrace(cs.index).Raw()
+			if len(got) != len(cs.want) {
+				t.Errorf("got=%v want=%v", got, cs.want)
+			}
 
-		if len(got) != len(c.want) {
-			t.Errorf("got=%v want=%v", got, c.want)
-		}
-
-		for i := 0; i < len(c.want); i++ {
-			for j := 0; j < len(c.want[0]); j++ {
-				if cmplx.Abs(got[i][j]-c.want[i][j]) > c.eps {
-					t.Errorf("%v:%v, got=%v want=%v", i, j, got[i][j], c.want[i][j])
+			for i := 0; i < len(cs.want); i++ {
+				for j := 0; j < len(cs.want[0]); j++ {
+					if cmplx.Abs(got[i][j]-cs.want[i][j]) > c.eps {
+						t.Errorf("%v:%v, got=%v want=%v", i, j, got[i][j], cs.want[i][j])
+					}
 				}
 			}
 		}
