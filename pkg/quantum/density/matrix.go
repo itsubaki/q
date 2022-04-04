@@ -60,12 +60,11 @@ func (m *Matrix) Trace() complex128 {
 }
 
 func (m *Matrix) PartialTrace(i int) (*Matrix, error) {
-	n := m.NumberOfBit()
-	s := number.Pow(2, n-1)
-	t := matrix.Zero(int(s))
+	n := number.Pow(2, m.NumberOfBit()-1)
+	out := matrix.Zero(n)
 
 	// TODO Implement PartialTrace
-	return &Matrix{t}, fmt.Errorf("Not Implemented")
+	return &Matrix{out}, fmt.Errorf("Not Implemented")
 }
 
 func (m *Matrix) Squared() *Matrix {
