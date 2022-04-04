@@ -187,6 +187,14 @@ func TestPartialTrace(t *testing.T) {
 			epsilon.E13(),
 		},
 		{
+			density.New().Add(1, qubit.Zero(2).Apply(gate.H(2))),
+			[]Case{
+				{0, [][]complex128{{0.5, 0.5}, {0.5, 0.5}}},
+				{1, [][]complex128{{0.5, 0.5}, {0.5, 0.5}}},
+			},
+			epsilon.E13(),
+		},
+		{
 			density.New().
 				Add(0.5, qubit.Zero(2)).
 				Add(0.5, qubit.One(2)),
@@ -207,11 +215,11 @@ func TestPartialTrace(t *testing.T) {
 		},
 		{
 			density.New().
-				Add(0.5, qubit.Zero(2).Apply(gate.H(2))).
-				Add(0.5, qubit.One(2).Apply(gate.H(2))),
+				Add(0.75, qubit.Zero(2).Apply(gate.H(2))).
+				Add(0.25, qubit.One(2).Apply(gate.H(2))),
 			[]Case{
-				{0, [][]complex128{{0.5, 0}, {0, 0.5}}},
-				{1, [][]complex128{{0.5, 0}, {0, 0.5}}},
+				{0, [][]complex128{{0.5, 0.25}, {0.25, 0.5}}},
+				{1, [][]complex128{{0.5, 0.25}, {0.25, 0.5}}},
 			},
 			epsilon.E13(),
 		},
@@ -222,22 +230,6 @@ func TestPartialTrace(t *testing.T) {
 			[]Case{
 				{0, [][]complex128{{0.5, -0.25}, {-0.25, 0.5}}},
 				{1, [][]complex128{{0.5, -0.25}, {-0.25, 0.5}}},
-			},
-			epsilon.E13(),
-		},
-		{
-			density.New().
-				Add(0.25, qubit.Zero(2).Apply(matrix.TensorProductN(gate.U(0, 1, 2), 2))).
-				Add(0.75, qubit.Zero(2).Apply(matrix.TensorProductN(gate.U(3, 2, 1), 2))),
-			[]Case{
-				{0, [][]complex128{
-					{0.25375281377483294 + 0i, -0.022022491847857862 - 0.04812002257592126i},
-					{-0.022022491847857862 + 0.04812002257592126i, 0.7462471862251671 + 0i}},
-				},
-				{1, [][]complex128{
-					{0.25375281377483294 + 0i, -0.022022491847857862 - 0.04812002257592126i},
-					{-0.022022491847857862 + 0.04812002257592126i, 0.7462471862251671 + 0i}},
-				},
 			},
 			epsilon.E13(),
 		},
