@@ -75,16 +75,19 @@ func (m *Matrix) PartialTrace(index int) *Matrix {
 
 	d := m.Dimension()
 	for i := 0; i < d; i++ {
-		ibits := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
+		ibin := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
+		k, kk := fmt.Sprintf("%s%s", ibin[:index], ibin[index+1:]), string(ibin[index])
 
 		for j := 0; j < d; j++ {
-			jbits := fmt.Sprintf(f, strconv.FormatInt(int64(j), 2))
-			if ibits[index] != jbits[index] {
+			jbin := fmt.Sprintf(f, strconv.FormatInt(int64(j), 2))
+			l, ll := fmt.Sprintf("%s%s", jbin[:index], jbin[index+1:]), string(jbin[index])
+
+			if kk != ll {
 				continue
 			}
 
-			r := number.Must(strconv.ParseInt(string(ibits[index:index+1]), 2, 0))
-			c := number.Must(strconv.ParseInt(string(jbits[index:index+1]), 2, 0))
+			r := number.Must(strconv.ParseInt(k, 2, 0))
+			c := number.Must(strconv.ParseInt(l, 2, 0))
 
 			out[r][c] = out[r][c] + m.m[i][j]
 		}
