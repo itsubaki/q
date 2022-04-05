@@ -160,8 +160,7 @@ func (q *Qubit) Measure(index int) *Qubit {
 
 func (q *Qubit) ProbabilityZeroAt(index int) ([]int, []float64) {
 	dim := q.Dimension()
-	den := int(math.Pow(2, float64(index+1)))
-	div := dim / den
+	div := dim / number.Pow(2, index+1)
 
 	p := q.Probability()
 	idx, prob := make([]int, 0), make([]float64, 0)
@@ -182,8 +181,8 @@ func (q *Qubit) ProbabilityOneAt(index int) ([]int, []float64) {
 	one := make([]int, 0)
 	for i := range q.vector {
 		found := false
-		for _, zi := range z {
-			if i == zi {
+		for _, j := range z {
+			if i == j {
 				found = true
 				break
 			}
