@@ -90,6 +90,7 @@ func (m *Matrix) PartialTrace(index int) *Matrix {
 			c := number.Must(strconv.ParseInt(l, 2, 0))
 
 			out[r][c] = out[r][c] + m.m[i][j]
+			// fmt.Printf("[%v][%v] = [%v][%v] + [%v][%v]\n", r, c, r, c, i, j)
 		}
 	}
 
