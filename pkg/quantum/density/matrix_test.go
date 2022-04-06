@@ -45,8 +45,8 @@ func ExampleMatrix_Trace() {
 	pure := density.New().Add(1.0, qubit.Zero())
 	mix := density.New().Add(0.1, qubit.Zero()).Add(0.9, qubit.One())
 
-	fmt.Printf("%.2f\n", pure.Squared().Trace())
-	fmt.Printf("%.2f\n", mix.Squared().Trace())
+	fmt.Printf("%.2f\n", pure.SquaredTrace())
+	fmt.Printf("%.2f\n", mix.SquaredTrace())
 
 	// Output:
 	// 1.00
@@ -131,34 +131,34 @@ func ExampleMatrix_PartialTrace() {
 	for _, r := range rho.Raw() {
 		fmt.Printf("%.4f\n", r)
 	}
-	fmt.Printf("trace: %.2v, sqrt_trace: %.2v\n\n", rho.Trace(), rho.Squared().Trace())
+	fmt.Printf("trace: %.2v, squared_trace: %.2v\n\n", rho.Trace(), rho.SquaredTrace())
 
 	p0 := rho.PartialTrace(0)
 	for _, r := range p0.Raw() {
 		fmt.Printf("%.4f\n", r)
 	}
-	fmt.Printf("trace: %.2v, sqrt_trace: %.2v\n\n", p0.Trace(), p0.Squared().Trace())
+	fmt.Printf("trace: %.2v, squared_trace: %.2v\n\n", p0.Trace(), p0.SquaredTrace())
 
 	p1 := rho.PartialTrace(1)
 	for _, r := range p1.Raw() {
 		fmt.Printf("%.4f\n", r)
 	}
-	fmt.Printf("trace: %.2v, sqrt_trace: %.2v\n\n", p1.Trace(), p1.Squared().Trace())
+	fmt.Printf("trace: %.2v, squared_trace: %.2v\n\n", p1.Trace(), p1.SquaredTrace())
 
 	// Output:
 	// [(0.2500+0.0000i) (0.0000+0.0000i) (0.1250+0.1250i) (0.1250-0.1250i)]
 	// [(0.0000+0.0000i) (0.2500+0.0000i) (0.1250-0.1250i) (0.1250+0.1250i)]
 	// [(0.1250-0.1250i) (0.1250+0.1250i) (0.2500+0.0000i) (0.0000+0.0000i)]
 	// [(0.1250+0.1250i) (0.1250-0.1250i) (0.0000+0.0000i) (0.2500+0.0000i)]
-	// trace: 1, sqrt_trace: 0.5
+	// trace: 1, squared_trace: 0.5
 	//
 	// [(0.5000+0.0000i) (0.0000+0.0000i)]
 	// [(0.0000+0.0000i) (0.5000+0.0000i)]
-	// trace: 1, sqrt_trace: 0.5
+	// trace: 1, squared_trace: 0.5
 	//
 	// [(0.5000+0.0000i) (0.2500+0.2500i)]
 	// [(0.2500-0.2500i) (0.5000+0.0000i)]
-	// trace: 1, sqrt_trace: 0.75
+	// trace: 1, squared_trace: 0.75
 }
 
 func ExampleMatrix_PartialTrace_x8() {
@@ -169,25 +169,25 @@ func ExampleMatrix_PartialTrace_x8() {
 	for _, r := range rho.Raw() {
 		fmt.Printf("%.4f\n", r)
 	}
-	fmt.Printf("trace: %.2v, sqrt_trace: %.2v\n\n", rho.Trace(), rho.Squared().Trace())
+	fmt.Printf("trace: %.2v, squared_trace: %.2v\n\n", rho.Trace(), rho.SquaredTrace())
 
 	p0 := rho.PartialTrace(0)
 	for _, r := range p0.Raw() {
 		fmt.Printf("%.4f\n", r)
 	}
-	fmt.Printf("trace: %.2v, sqrt_trace: %.2v\n\n", p0.Trace(), p0.Squared().Trace())
+	fmt.Printf("trace: %.2v, squared_trace: %.2v\n\n", p0.Trace(), p0.SquaredTrace())
 
 	p1 := rho.PartialTrace(1)
 	for _, r := range p1.Raw() {
 		fmt.Printf("%.4f\n", r)
 	}
-	fmt.Printf("trace: %.2v, sqrt_trace: %.2v\n\n", p1.Trace(), p1.Squared().Trace())
+	fmt.Printf("trace: %.2v, squared_trace: %.2v\n\n", p1.Trace(), p1.SquaredTrace())
 
 	p2 := rho.PartialTrace(2)
 	for _, r := range p2.Raw() {
 		fmt.Printf("%.4f\n", r)
 	}
-	fmt.Printf("trace: %.2v, sqrt_trace: %.2v\n\n", p2.Trace(), p2.Squared().Trace())
+	fmt.Printf("trace: %.2v, squared_trace: %.2v\n\n", p2.Trace(), p2.SquaredTrace())
 
 	// Output:
 	// [(0.1250+0.0000i) (0.0000+0.0000i) (0.0625+0.0625i) (0.0625-0.0625i) (0.1067+0.0442i) (0.0183-0.0442i) (0.0183+0.0442i) (0.1067-0.0442i)]
@@ -198,25 +198,25 @@ func ExampleMatrix_PartialTrace_x8() {
 	// [(0.0183+0.0442i) (0.1067-0.0442i) (0.0183-0.0442i) (0.1067+0.0442i) (0.0000+0.0000i) (0.1250+0.0000i) (0.0625-0.0625i) (0.0625+0.0625i)]
 	// [(0.0183-0.0442i) (0.1067+0.0442i) (0.1067-0.0442i) (0.0183+0.0442i) (0.0625-0.0625i) (0.0625+0.0625i) (0.1250+0.0000i) (0.0000+0.0000i)]
 	// [(0.1067+0.0442i) (0.0183-0.0442i) (0.0183+0.0442i) (0.1067-0.0442i) (0.0625+0.0625i) (0.0625-0.0625i) (0.0000+0.0000i) (0.1250+0.0000i)]
-	// trace: 1, sqrt_trace: 0.5
+	// trace: 1, squared_trace: 0.5
 	//
 	// [(0.2500+0.0000i) (0.0000+0.0000i) (0.1250+0.1250i) (0.1250-0.1250i)]
 	// [(0.0000+0.0000i) (0.2500+0.0000i) (0.1250-0.1250i) (0.1250+0.1250i)]
 	// [(0.1250-0.1250i) (0.1250+0.1250i) (0.2500+0.0000i) (0.0000+0.0000i)]
 	// [(0.1250+0.1250i) (0.1250-0.1250i) (0.0000+0.0000i) (0.2500+0.0000i)]
-	// trace: 1, sqrt_trace: 0.5
+	// trace: 1, squared_trace: 0.5
 	//
 	// [(0.2500+0.0000i) (0.0000+0.0000i) (0.2134+0.0884i) (0.0366-0.0884i)]
 	// [(0.0000+0.0000i) (0.2500+0.0000i) (0.0366-0.0884i) (0.2134+0.0884i)]
 	// [(0.2134-0.0884i) (0.0366+0.0884i) (0.2500+0.0000i) (0.0000+0.0000i)]
 	// [(0.0366+0.0884i) (0.2134-0.0884i) (0.0000+0.0000i) (0.2500+0.0000i)]
-	// trace: 1, sqrt_trace: 0.5
+	// trace: 1, squared_trace: 0.5
 	//
 	// [(0.2500+0.0000i) (0.1250+0.1250i) (0.2134+0.0884i) (0.0366+0.0884i)]
 	// [(0.1250-0.1250i) (0.2500+0.0000i) (0.2134-0.0884i) (0.2134+0.0884i)]
 	// [(0.2134-0.0884i) (0.2134+0.0884i) (0.2500+0.0000i) (0.1250+0.1250i)]
 	// [(0.0366-0.0884i) (0.2134-0.0884i) (0.1250-0.1250i) (0.2500+0.0000i)]
-	// trace: 1, sqrt_trace: 0.71
+	// trace: 1, squared_trace: 0.71
 }
 
 func TestPartialTrace(t *testing.T) {
@@ -306,19 +306,19 @@ func TestPartialTrace(t *testing.T) {
 			for i := 0; i < len(cs.want); i++ {
 				for j := 0; j < len(cs.want[0]); j++ {
 					if cmplx.Abs(got.Raw()[i][j]-cs.want[i][j]) > c.eps {
-						t.Errorf("%v:%v, got=%v want=%v", i, j, got.Raw()[i][j], cs.want[i][j])
+						t.Errorf("%v:%v, got=%v, want=%v", i, j, got.Raw()[i][j], cs.want[i][j])
 					}
 				}
 			}
 
 			tr := got.Trace()
 			if math.Abs(tr-1) > c.eps {
-				t.Errorf("trace: got=%v want=%v", tr, 1)
+				t.Errorf("trace: got=%v, want=%v", tr, 1)
 			}
 
-			sqtr := got.Squared().Trace()
+			sqtr := got.SquaredTrace()
 			if sqtr > 1+c.eps {
-				t.Errorf("sqrt_trace: got=%v > 1", sqtr)
+				t.Errorf("squared_trace: got=%v > 1", sqtr)
 			}
 		}
 	}
@@ -359,8 +359,8 @@ func TestExpectedValue(t *testing.T) {
 			t.Errorf("trace=%v", rho.Trace())
 		}
 
-		if math.Abs(rho.Squared().Trace()-c.sqtr) > c.eps {
-			t.Errorf("strace%v", rho.Squared().Trace())
+		if math.Abs(rho.SquaredTrace()-c.sqtr) > c.eps {
+			t.Errorf("squared_trace=%v", rho.SquaredTrace())
 		}
 
 		if cmplx.Abs(rho.ExpectedValue(c.m)-c.v) > c.eps {

@@ -19,6 +19,20 @@ func New(v ...[]complex128) *Matrix {
 	return &Matrix{matrix.New(v...)}
 }
 
+func (m *Matrix) Raw() matrix.Matrix {
+	return m.m
+}
+
+func (m *Matrix) Dimension() (int, int) {
+	return len(m.m), len(m.m[0])
+}
+
+func (m *Matrix) NumberOfBit() int {
+	mm, _ := m.m.Dimension()
+	log := math.Log2(float64(mm))
+	return int(log)
+}
+
 func (m *Matrix) Add(p float64, q *qubit.Qubit) *Matrix {
 	if p < 0 || p > 1 {
 		panic(fmt.Sprintf("p must be 0 <= p =< 1. p=%v", p))
@@ -56,16 +70,12 @@ func (m *Matrix) ExpectedValue(u matrix.Matrix) complex128 {
 	return m.m.Apply(u).Trace()
 }
 
-func (m *Matrix) Raw() matrix.Matrix {
-	return m.m
-}
-
-func (m *Matrix) Dimension() (int, int) {
-	return len(m.m), len(m.m[0])
-}
-
 func (m *Matrix) Trace() float64 {
 	return real(m.m.Trace())
+}
+
+func (m *Matrix) SquaredTrace() float64 {
+	return real(m.m.Apply(m.m).Trace())
 }
 
 func (m *Matrix) PartialTrace(index int) *Matrix {
@@ -109,17 +119,6 @@ func (m *Matrix) PartialTrace(index int) *Matrix {
 	}
 
 	return &Matrix{m: out}
-}
-
-func (m *Matrix) Squared() *Matrix {
-	c := m.m.Clone()
-	return &Matrix{c.Apply(c)}
-}
-
-func (m *Matrix) NumberOfBit() int {
-	mm, _ := m.m.Dimension()
-	log := math.Log2(float64(mm))
-	return int(log)
 }
 
 func (m *Matrix) Depolarizing(p float64) *Matrix {
