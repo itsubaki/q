@@ -311,14 +311,12 @@ func TestPartialTrace(t *testing.T) {
 				}
 			}
 
-			tr := got.Trace()
-			if math.Abs(tr-1) > c.eps {
-				t.Errorf("trace: got=%v, want=%v", tr, 1)
+			if math.Abs(got.Trace()-1) > c.eps {
+				t.Errorf("trace: got=%v, want=%v", got.Trace(), 1)
 			}
 
-			sqtr := got.SquaredTrace()
-			if sqtr > 1+c.eps {
-				t.Errorf("squared_trace: got=%v > 1", sqtr)
+			if got.SquaredTrace() > 1+c.eps {
+				t.Errorf("squared trace: got=%v > 1", got.SquaredTrace())
 			}
 		}
 	}
@@ -360,7 +358,7 @@ func TestExpectedValue(t *testing.T) {
 		}
 
 		if math.Abs(rho.SquaredTrace()-c.sqtr) > c.eps {
-			t.Errorf("squared_trace=%v", rho.SquaredTrace())
+			t.Errorf("squared trace=%v", rho.SquaredTrace())
 		}
 
 		if cmplx.Abs(rho.ExpectedValue(c.m)-c.v) > c.eps {
