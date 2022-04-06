@@ -43,10 +43,10 @@ func ExampleMatrix_Measure() {
 
 func ExampleMatrix_Trace() {
 	pure := density.New().Add(1.0, qubit.Zero())
-	mix := density.New().Add(0.1, qubit.Zero()).Add(0.9, qubit.One())
+	mixed := density.New().Add(0.1, qubit.Zero()).Add(0.9, qubit.One())
 
 	fmt.Printf("%.2f\n", pure.SquaredTrace())
-	fmt.Printf("%.2f\n", mix.SquaredTrace())
+	fmt.Printf("%.2f\n", mixed.SquaredTrace())
 
 	// Output:
 	// 1.00
