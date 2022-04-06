@@ -223,7 +223,6 @@ func TestPartialTrace(t *testing.T) {
 	type Case struct {
 		index int
 		want  [][]complex128
-		sqtr  float64
 	}
 
 	cases := []struct {
@@ -234,24 +233,24 @@ func TestPartialTrace(t *testing.T) {
 		{
 			density.New().Add(1.0, qubit.Zero(2)),
 			[]Case{
-				{0, [][]complex128{{1, 0}, {0, 0}}, 1},
-				{1, [][]complex128{{1, 0}, {0, 0}}, 1},
+				{0, [][]complex128{{1, 0}, {0, 0}}},
+				{1, [][]complex128{{1, 0}, {0, 0}}},
 			},
 			epsilon.E13(),
 		},
 		{
 			density.New().Add(1.0, qubit.One(2)),
 			[]Case{
-				{0, [][]complex128{{0, 0}, {0, 1}}, 1},
-				{1, [][]complex128{{0, 0}, {0, 1}}, 1},
+				{0, [][]complex128{{0, 0}, {0, 1}}},
+				{1, [][]complex128{{0, 0}, {0, 1}}},
 			},
 			epsilon.E13(),
 		},
 		{
 			density.New().Add(1, qubit.Zero(2).Apply(gate.H(2))),
 			[]Case{
-				{0, [][]complex128{{0.5, 0.5}, {0.5, 0.5}}, 1},
-				{1, [][]complex128{{0.5, 0.5}, {0.5, 0.5}}, 1},
+				{0, [][]complex128{{0.5, 0.5}, {0.5, 0.5}}},
+				{1, [][]complex128{{0.5, 0.5}, {0.5, 0.5}}},
 			},
 			epsilon.E13(),
 		},
@@ -260,8 +259,8 @@ func TestPartialTrace(t *testing.T) {
 				Add(0.5, qubit.Zero(2)).
 				Add(0.5, qubit.One(2)),
 			[]Case{
-				{0, [][]complex128{{0.5, 0}, {0, 0.5}}, 0.5},
-				{1, [][]complex128{{0.5, 0}, {0, 0.5}}, 0.5},
+				{0, [][]complex128{{0.5, 0}, {0, 0.5}}},
+				{1, [][]complex128{{0.5, 0}, {0, 0.5}}},
 			}, epsilon.E13(),
 		},
 		{
@@ -269,8 +268,8 @@ func TestPartialTrace(t *testing.T) {
 				Add(0.5, qubit.Zero(2).Apply(gate.H(2))).
 				Add(0.5, qubit.One(2)),
 			[]Case{
-				{0, [][]complex128{{0.25, 0.25}, {0.25, 0.75}}, 0.75},
-				{1, [][]complex128{{0.25, 0.25}, {0.25, 0.75}}, 0.75},
+				{0, [][]complex128{{0.25, 0.25}, {0.25, 0.75}}},
+				{1, [][]complex128{{0.25, 0.25}, {0.25, 0.75}}},
 			},
 			epsilon.E13(),
 		},
@@ -279,8 +278,8 @@ func TestPartialTrace(t *testing.T) {
 				Add(0.75, qubit.Zero(2).Apply(gate.H(2))).
 				Add(0.25, qubit.One(2).Apply(gate.H(2))),
 			[]Case{
-				{0, [][]complex128{{0.5, 0.25}, {0.25, 0.5}}, 0.625},
-				{1, [][]complex128{{0.5, 0.25}, {0.25, 0.5}}, 0.625},
+				{0, [][]complex128{{0.5, 0.25}, {0.25, 0.5}}},
+				{1, [][]complex128{{0.5, 0.25}, {0.25, 0.5}}},
 			},
 			epsilon.E13(),
 		},
@@ -289,8 +288,8 @@ func TestPartialTrace(t *testing.T) {
 				Add(0.25, qubit.Zero(2).Apply(gate.H(2))).
 				Add(0.75, qubit.One(2).Apply(gate.H(2))),
 			[]Case{
-				{0, [][]complex128{{0.5, -0.25}, {-0.25, 0.5}}, 0.625},
-				{1, [][]complex128{{0.5, -0.25}, {-0.25, 0.5}}, 0.625},
+				{0, [][]complex128{{0.5, -0.25}, {-0.25, 0.5}}},
+				{1, [][]complex128{{0.5, -0.25}, {-0.25, 0.5}}},
 			},
 			epsilon.E13(),
 		},
@@ -318,8 +317,8 @@ func TestPartialTrace(t *testing.T) {
 			}
 
 			sqtr := got.Squared().Trace()
-			if math.Abs(sqtr-cs.sqtr) > c.eps {
-				t.Errorf("sqrt_trace: got=%v want=%v", sqtr, cs.sqtr)
+			if sqtr > 1+c.eps {
+				t.Errorf("sqrt_trace: got=%v > 1", sqtr)
 			}
 		}
 	}
