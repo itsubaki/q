@@ -19,14 +19,6 @@ func New(v ...[]complex128) *Matrix {
 	return &Matrix{matrix.New(v...)}
 }
 
-func (m *Matrix) Raw() matrix.Matrix {
-	return m.m
-}
-
-func (m *Matrix) Dimension() int {
-	return len(m.m)
-}
-
 func (m *Matrix) Add(p float64, q *qubit.Qubit) *Matrix {
 	if p < 0 || p > 1 {
 		panic(fmt.Sprintf("p must be 0 <= p =< 1. p=%v", p))
@@ -64,8 +56,16 @@ func (m *Matrix) ExpectedValue(u matrix.Matrix) complex128 {
 	return m.m.Apply(u).Trace()
 }
 
-func (m *Matrix) Trace() complex128 {
-	return m.m.Trace()
+func (m *Matrix) Raw() matrix.Matrix {
+	return m.m
+}
+
+func (m *Matrix) Dimension() (int, int) {
+	return len(m.m), len(m.m[0])
+}
+
+func (m *Matrix) Trace() float64 {
+	return real(m.m.Trace())
 }
 
 func (m *Matrix) PartialTrace(index int) *Matrix {
@@ -73,12 +73,12 @@ func (m *Matrix) PartialTrace(index int) *Matrix {
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 	out := matrix.Zero(number.Pow(2, n-1))
 
-	d := m.Dimension()
-	for i := 0; i < d; i++ {
+	p, q := m.Dimension()
+	for i := 0; i < p; i++ {
 		ibin := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
 		k, kk := fmt.Sprintf("%s%s", ibin[:index], ibin[index+1:]), string(ibin[index])
 
-		for j := 0; j < d; j++ {
+		for j := 0; j < q; j++ {
 			jbin := fmt.Sprintf(f, strconv.FormatInt(int64(j), 2))
 			l, ll := fmt.Sprintf("%s%s", jbin[:index], jbin[index+1:]), string(jbin[index])
 

@@ -2,6 +2,7 @@ package density_test
 
 import (
 	"fmt"
+	"math"
 	"math/cmplx"
 	"testing"
 
@@ -48,8 +49,8 @@ func ExampleMatrix_Trace() {
 	fmt.Printf("%.2f\n", mix.Squared().Trace())
 
 	// Output:
-	// (1.00+0.00i)
-	// (0.82+0.00i)
+	// 1.00
+	// 0.82
 }
 
 func ExampleMatrix_Depolarizing() {
@@ -123,46 +124,106 @@ func ExampleBitPhaseFlip() {
 }
 
 func ExampleMatrix_PartialTrace() {
-	bell := matrix.Apply(
-		matrix.TensorProduct(gate.H(), gate.I()),
-		gate.CNOT(2, 0, 1),
-	)
+	rho := density.New().
+		Add(0.5, qubit.Zero(2).Apply(gate.QFT(2))).
+		Add(0.5, qubit.One(2).Apply(gate.QFT(2)))
 
-	q := qubit.Zero(2).Apply(bell)
-	rho := density.New().Add(1.0, q)
 	for _, r := range rho.Raw() {
 		fmt.Printf("%.1f\n", r)
 	}
-	fmt.Println()
+	fmt.Printf("sqrt_trace: %.2v\n\n", rho.Squared().Trace())
 
 	p0 := rho.PartialTrace(0)
 	for _, r := range p0.Raw() {
 		fmt.Printf("%.1f\n", r)
 	}
-	fmt.Println()
+	fmt.Printf("sqrt_trace: %.2v\n\n", p0.Squared().Trace())
 
 	p1 := rho.PartialTrace(1)
 	for _, r := range p1.Raw() {
 		fmt.Printf("%.1f\n", r)
 	}
+	fmt.Printf("sqrt_trace: %.2v\n\n", p1.Squared().Trace())
 
 	// Output:
-	// [(0.5+0.0i) (0.0+0.0i) (0.0+0.0i) (0.5+0.0i)]
-	// [(0.0+0.0i) (0.0+0.0i) (0.0+0.0i) (0.0+0.0i)]
-	// [(0.0+0.0i) (0.0+0.0i) (0.0+0.0i) (0.0+0.0i)]
-	// [(0.5+0.0i) (0.0+0.0i) (0.0+0.0i) (0.5+0.0i)]
+	// [(0.3+0.0i) (0.0+0.0i) (0.1+0.1i) (0.1-0.1i)]
+	// [(0.0+0.0i) (0.3+0.0i) (0.1-0.1i) (0.1+0.1i)]
+	// [(0.1-0.1i) (0.1+0.1i) (0.3+0.0i) (0.0+0.0i)]
+	// [(0.1+0.1i) (0.1-0.1i) (0.0+0.0i) (0.3+0.0i)]
+	// sqrt_trace: 0.5
 	//
 	// [(0.5+0.0i) (0.0+0.0i)]
 	// [(0.0+0.0i) (0.5+0.0i)]
+	// sqrt_trace: 0.5
 	//
-	// [(0.5+0.0i) (0.0+0.0i)]
-	// [(0.0+0.0i) (0.5+0.0i)]
+	// [(0.5+0.0i) (0.3+0.3i)]
+	// [(0.3-0.3i) (0.5+0.0i)]
+	// sqrt_trace: 0.75
+}
+
+func ExampleMatrix_PartialTrace_x8() {
+	rho := density.New().
+		Add(0.5, qubit.Zero(3).Apply(gate.QFT(3))).
+		Add(0.5, qubit.One(3).Apply(gate.QFT(3)))
+
+	for _, r := range rho.Raw() {
+		fmt.Printf("%.1f\n", r)
+	}
+	fmt.Printf("sqrt_trace: %.2v\n\n", rho.Squared().Trace())
+
+	p0 := rho.PartialTrace(0)
+	for _, r := range p0.Raw() {
+		fmt.Printf("%.1f\n", r)
+	}
+	fmt.Printf("sqrt_trace: %.2v\n\n", p0.Squared().Trace())
+
+	p1 := rho.PartialTrace(1)
+	for _, r := range p1.Raw() {
+		fmt.Printf("%.1f\n", r)
+	}
+	fmt.Printf("sqrt_trace: %.2v\n\n", p1.Squared().Trace())
+
+	p2 := rho.PartialTrace(2)
+	for _, r := range p2.Raw() {
+		fmt.Printf("%.1f\n", r)
+	}
+	fmt.Printf("sqrt_trace: %.2v\n\n", p2.Squared().Trace())
+
+	// Output:
+	// [(0.1+0.0i) (0.0+0.0i) (0.1+0.1i) (0.1-0.1i) (0.1+0.0i) (0.0-0.0i) (0.0+0.0i) (0.1-0.0i)]
+	// [(0.0+0.0i) (0.1+0.0i) (0.1-0.1i) (0.1+0.1i) (0.0-0.0i) (0.1+0.0i) (0.1-0.0i) (0.0+0.0i)]
+	// [(0.1-0.1i) (0.1+0.1i) (0.1+0.0i) (0.0+0.0i) (0.1-0.0i) (0.0+0.0i) (0.1+0.0i) (0.0-0.0i)]
+	// [(0.1+0.1i) (0.1-0.1i) (0.0+0.0i) (0.1+0.0i) (0.0+0.0i) (0.1-0.0i) (0.0-0.0i) (0.1+0.0i)]
+	// [(0.1-0.0i) (0.0+0.0i) (0.1+0.0i) (0.0-0.0i) (0.1+0.0i) (0.0+0.0i) (0.1+0.1i) (0.1-0.1i)]
+	// [(0.0+0.0i) (0.1-0.0i) (0.0-0.0i) (0.1+0.0i) (0.0+0.0i) (0.1+0.0i) (0.1-0.1i) (0.1+0.1i)]
+	// [(0.0-0.0i) (0.1+0.0i) (0.1-0.0i) (0.0+0.0i) (0.1-0.1i) (0.1+0.1i) (0.1+0.0i) (0.0+0.0i)]
+	// [(0.1+0.0i) (0.0-0.0i) (0.0+0.0i) (0.1-0.0i) (0.1+0.1i) (0.1-0.1i) (0.0+0.0i) (0.1+0.0i)]
+	// sqrt_trace: 0.5
+	//
+	// [(0.3+0.0i) (0.0+0.0i) (0.1+0.1i) (0.1-0.1i)]
+	// [(0.0+0.0i) (0.3+0.0i) (0.1-0.1i) (0.1+0.1i)]
+	// [(0.1-0.1i) (0.1+0.1i) (0.3+0.0i) (0.0+0.0i)]
+	// [(0.1+0.1i) (0.1-0.1i) (0.0+0.0i) (0.3+0.0i)]
+	// sqrt_trace: 0.5
+	//
+	// [(0.3+0.0i) (0.0+0.0i) (0.2+0.1i) (0.0-0.1i)]
+	// [(0.0+0.0i) (0.3+0.0i) (0.0-0.1i) (0.2+0.1i)]
+	// [(0.2-0.1i) (0.0+0.1i) (0.3+0.0i) (0.0+0.0i)]
+	// [(0.0+0.1i) (0.2-0.1i) (0.0+0.0i) (0.3+0.0i)]
+	// sqrt_trace: 0.5
+	//
+	// [(0.3+0.0i) (0.1+0.1i) (0.2+0.1i) (0.0+0.1i)]
+	// [(0.1-0.1i) (0.3+0.0i) (0.2-0.1i) (0.2+0.1i)]
+	// [(0.2-0.1i) (0.2+0.1i) (0.3+0.0i) (0.1+0.1i)]
+	// [(0.0-0.1i) (0.2-0.1i) (0.1-0.1i) (0.3+0.0i)]
+	// sqrt_trace: 0.71
 }
 
 func TestPartialTrace(t *testing.T) {
 	type Case struct {
 		index int
 		want  [][]complex128
+		sqrtr float64
 	}
 
 	cases := []struct {
@@ -173,24 +234,24 @@ func TestPartialTrace(t *testing.T) {
 		{
 			density.New().Add(1.0, qubit.Zero(2)),
 			[]Case{
-				{0, [][]complex128{{1, 0}, {0, 0}}},
-				{1, [][]complex128{{1, 0}, {0, 0}}},
+				{0, [][]complex128{{1, 0}, {0, 0}}, 1},
+				{1, [][]complex128{{1, 0}, {0, 0}}, 1},
 			},
 			epsilon.E13(),
 		},
 		{
 			density.New().Add(1.0, qubit.One(2)),
 			[]Case{
-				{0, [][]complex128{{0, 0}, {0, 1}}},
-				{1, [][]complex128{{0, 0}, {0, 1}}},
+				{0, [][]complex128{{0, 0}, {0, 1}}, 1},
+				{1, [][]complex128{{0, 0}, {0, 1}}, 1},
 			},
 			epsilon.E13(),
 		},
 		{
 			density.New().Add(1, qubit.Zero(2).Apply(gate.H(2))),
 			[]Case{
-				{0, [][]complex128{{0.5, 0.5}, {0.5, 0.5}}},
-				{1, [][]complex128{{0.5, 0.5}, {0.5, 0.5}}},
+				{0, [][]complex128{{0.5, 0.5}, {0.5, 0.5}}, 1},
+				{1, [][]complex128{{0.5, 0.5}, {0.5, 0.5}}, 1},
 			},
 			epsilon.E13(),
 		},
@@ -199,8 +260,8 @@ func TestPartialTrace(t *testing.T) {
 				Add(0.5, qubit.Zero(2)).
 				Add(0.5, qubit.One(2)),
 			[]Case{
-				{0, [][]complex128{{0.5, 0}, {0, 0.5}}},
-				{1, [][]complex128{{0.5, 0}, {0, 0.5}}},
+				{0, [][]complex128{{0.5, 0}, {0, 0.5}}, 0.5},
+				{1, [][]complex128{{0.5, 0}, {0, 0.5}}, 0.5},
 			}, epsilon.E13(),
 		},
 		{
@@ -208,8 +269,8 @@ func TestPartialTrace(t *testing.T) {
 				Add(0.5, qubit.Zero(2).Apply(gate.H(2))).
 				Add(0.5, qubit.One(2)),
 			[]Case{
-				{0, [][]complex128{{0.25, 0.25}, {0.25, 0.75}}},
-				{1, [][]complex128{{0.25, 0.25}, {0.25, 0.75}}},
+				{0, [][]complex128{{0.25, 0.25}, {0.25, 0.75}}, 0.75},
+				{1, [][]complex128{{0.25, 0.25}, {0.25, 0.75}}, 0.75},
 			},
 			epsilon.E13(),
 		},
@@ -218,8 +279,8 @@ func TestPartialTrace(t *testing.T) {
 				Add(0.75, qubit.Zero(2).Apply(gate.H(2))).
 				Add(0.25, qubit.One(2).Apply(gate.H(2))),
 			[]Case{
-				{0, [][]complex128{{0.5, 0.25}, {0.25, 0.5}}},
-				{1, [][]complex128{{0.5, 0.25}, {0.25, 0.5}}},
+				{0, [][]complex128{{0.5, 0.25}, {0.25, 0.5}}, 0.625},
+				{1, [][]complex128{{0.5, 0.25}, {0.25, 0.5}}, 0.625},
 			},
 			epsilon.E13(),
 		},
@@ -228,8 +289,8 @@ func TestPartialTrace(t *testing.T) {
 				Add(0.25, qubit.Zero(2).Apply(gate.H(2))).
 				Add(0.75, qubit.One(2).Apply(gate.H(2))),
 			[]Case{
-				{0, [][]complex128{{0.5, -0.25}, {-0.25, 0.5}}},
-				{1, [][]complex128{{0.5, -0.25}, {-0.25, 0.5}}},
+				{0, [][]complex128{{0.5, -0.25}, {-0.25, 0.5}}, 0.625},
+				{1, [][]complex128{{0.5, -0.25}, {-0.25, 0.5}}, 0.625},
 			},
 			epsilon.E13(),
 		},
@@ -237,17 +298,23 @@ func TestPartialTrace(t *testing.T) {
 
 	for _, c := range cases {
 		for _, cs := range c.cs {
-			got := c.rho.PartialTrace(cs.index).Raw()
-			if len(got) != len(cs.want) {
-				t.Errorf("got=%v want=%v", got, cs.want)
+			got := c.rho.PartialTrace(cs.index)
+			p, q := got.Dimension()
+			if p != len(cs.want) || q != len(cs.want) {
+				t.Errorf("got=%v, %v want=%v", p, q, cs.want)
 			}
 
 			for i := 0; i < len(cs.want); i++ {
 				for j := 0; j < len(cs.want[0]); j++ {
-					if cmplx.Abs(got[i][j]-cs.want[i][j]) > c.eps {
-						t.Errorf("%v:%v, got=%v want=%v", i, j, got[i][j], cs.want[i][j])
+					if cmplx.Abs(got.Raw()[i][j]-cs.want[i][j]) > c.eps {
+						t.Errorf("%v:%v, got=%v want=%v", i, j, got.Raw()[i][j], cs.want[i][j])
 					}
 				}
+			}
+
+			sqrtr := got.Squared().Trace()
+			if math.Abs(sqrtr-cs.sqrtr) > c.eps {
+				t.Errorf("got=%v want=%v", sqrtr, cs.sqrtr)
 			}
 		}
 	}
@@ -255,12 +322,12 @@ func TestPartialTrace(t *testing.T) {
 
 func TestExpectedValue(t *testing.T) {
 	cases := []struct {
-		p       []float64
-		q       []*qubit.Qubit
-		tr, str complex128
-		m       matrix.Matrix
-		v       complex128
-		eps     float64
+		p        []float64
+		q        []*qubit.Qubit
+		tr, sqtr float64
+		m        matrix.Matrix
+		v        complex128
+		eps      float64
 	}{
 		{
 			[]float64{0.1, 0.9},
@@ -284,11 +351,11 @@ func TestExpectedValue(t *testing.T) {
 			rho.Add(c.p[i], c.q[i])
 		}
 
-		if cmplx.Abs(rho.Trace()-c.tr) > c.eps {
+		if math.Abs(rho.Trace()-c.tr) > c.eps {
 			t.Errorf("trace=%v", rho.Trace())
 		}
 
-		if cmplx.Abs(rho.Squared().Trace()-c.str) > c.eps {
+		if math.Abs(rho.Squared().Trace()-c.sqtr) > c.eps {
 			t.Errorf("strace%v", rho.Squared().Trace())
 		}
 
