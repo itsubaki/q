@@ -28,8 +28,8 @@ func (m *Matrix) Dimension() (int, int) {
 }
 
 func (m *Matrix) NumberOfBit() int {
-	mm, _ := m.m.Dimension()
-	log := math.Log2(float64(mm))
+	p, _ := m.Dimension()
+	log := math.Log2(float64(p))
 	return int(log)
 }
 
