@@ -62,19 +62,19 @@ func (m *Matrix) Apply(u matrix.Matrix) *Matrix {
 	return m
 }
 
-func (m *Matrix) Measure(q *qubit.Qubit) complex128 {
-	return m.m.Apply(q.OuterProduct(q)).Trace()
+func (m *Matrix) Measure(q *qubit.Qubit) float64 {
+	return real(m.m.Apply(q.OuterProduct(q)).Trace())
 }
 
-func (m *Matrix) ExpectedValue(u matrix.Matrix) complex128 {
-	return m.m.Apply(u).Trace()
+func (m *Matrix) ExpectedValue(u matrix.Matrix) float64 {
+	return real(m.m.Apply(u).Trace())
 }
 
 func (m *Matrix) Trace() float64 {
 	return real(m.m.Trace())
 }
 
-func (m *Matrix) SquaredTrace() float64 {
+func (m *Matrix) SquareTrace() float64 {
 	return real(m.m.Apply(m.m).Trace())
 }
 
