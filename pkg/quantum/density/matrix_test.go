@@ -223,7 +223,7 @@ func TestPartialTrace(t *testing.T) {
 	type Case struct {
 		index int
 		want  [][]complex128
-		sqrtr float64
+		sqtr  float64
 	}
 
 	cases := []struct {
@@ -312,9 +312,9 @@ func TestPartialTrace(t *testing.T) {
 				}
 			}
 
-			sqrtr := got.Squared().Trace()
-			if math.Abs(sqrtr-cs.sqrtr) > c.eps {
-				t.Errorf("got=%v want=%v", sqrtr, cs.sqrtr)
+			sqtr := got.Squared().Trace()
+			if math.Abs(sqtr-cs.sqtr) > c.eps {
+				t.Errorf("got=%v want=%v", sqtr, cs.sqtr)
 			}
 		}
 	}
