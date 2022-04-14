@@ -161,6 +161,22 @@ func ExampleMatrix_PartialTrace_x8() {
 	// trace: 1, square_trace: 0.71
 }
 
+func ExampleMatrix_PartialTrace_x16() {
+	rho := density.New().Add(1.0, qubit.Zero(4).Apply(
+		matrix.TensorProduct(gate.H(2), gate.X(), gate.Z()).
+			Apply(gate.CNOT(4, 1, 3)).
+			Apply(gate.CNOT(4, 0, 2)),
+	))
+
+	p00 := rho.PartialTrace(0).PartialTrace(0)
+	fmt.Printf("trace: %.2f\n", p00.Trace())
+	fmt.Printf("square_trace: %.2f\n", p00.SquareTrace())
+
+	// Output:
+	// trace: 1.00
+	// square_trace: 0.25
+}
+
 func ExampleMatrix_Depolarizing() {
 	rho := density.New().Add(1, qubit.Zero())
 	fmt.Printf("0: %.2f\n", rho.Measure(qubit.Zero()))
