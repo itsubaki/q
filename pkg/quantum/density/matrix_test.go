@@ -14,9 +14,13 @@ import (
 )
 
 func ExampleMatrix_ExpectedValue() {
-	p0, q0 := 0.1, qubit.Zero()
-	p1, q1 := 0.9, qubit.Zero().Apply(gate.H())
-	rho := density.New().Add(p0, q0).Add(p1, q1)
+	rho, _ := density.New(
+		[]float64{0.1, 0.9},
+		[]*qubit.Qubit{
+			qubit.Zero(),
+			qubit.Zero().Apply(gate.H()),
+		},
+	)
 
 	fmt.Printf("X: %.2v\n", rho.ExpectedValue(gate.X()))
 	fmt.Printf("Y: %.2v\n", rho.ExpectedValue(gate.Y()))
@@ -29,9 +33,13 @@ func ExampleMatrix_ExpectedValue() {
 }
 
 func ExampleMatrix_Measure() {
-	p0, q0 := 0.1, qubit.Zero()
-	p1, q1 := 0.9, qubit.One()
-	rho := density.New().Add(p0, q0).Add(p1, q1)
+	rho, _ := density.New(
+		[]float64{0.1, 0.9},
+		[]*qubit.Qubit{
+			qubit.Zero(),
+			qubit.One(),
+		},
+	)
 
 	fmt.Printf("0: %.2v\n", rho.Measure(qubit.Zero()))
 	fmt.Printf("1: %.2v\n", rho.Measure(qubit.One()))
@@ -42,8 +50,8 @@ func ExampleMatrix_Measure() {
 }
 
 func ExampleMatrix_Trace() {
-	pure := density.New().Add(1.0, qubit.Zero())
-	mixed := density.New().Add(0.1, qubit.Zero()).Add(0.9, qubit.One())
+	pure, _ := density.New([]float64{1.0}, []*qubit.Qubit{qubit.Zero()})
+	mixed, _ := density.New([]float64{0.1, 0.9}, []*qubit.Qubit{qubit.Zero(), qubit.One()})
 
 	fmt.Printf("pure:  %.2f\n", pure.Trace())
 	fmt.Printf("mixed: %.2f\n", mixed.Trace())
@@ -54,8 +62,8 @@ func ExampleMatrix_Trace() {
 }
 
 func ExampleMatrix_SquareTrace() {
-	pure := density.New().Add(1.0, qubit.Zero())
-	mixed := density.New().Add(0.1, qubit.Zero()).Add(0.9, qubit.One())
+	pure, _ := density.New([]float64{1.0}, []*qubit.Qubit{qubit.Zero()})
+	mixed, _ := density.New([]float64{0.1, 0.9}, []*qubit.Qubit{qubit.Zero(), qubit.One()})
 
 	fmt.Printf("pure:  %.2f\n", pure.SquareTrace())
 	fmt.Printf("mixed: %.2f\n", mixed.SquareTrace())
@@ -66,9 +74,13 @@ func ExampleMatrix_SquareTrace() {
 }
 
 func ExampleMatrix_PartialTrace() {
-	rho := density.New().
-		Add(0.5, qubit.Zero(2).Apply(gate.QFT(2))).
-		Add(0.5, qubit.One(2).Apply(gate.QFT(2)))
+	rho, _ := density.New(
+		[]float64{0.5, 0.5},
+		[]*qubit.Qubit{
+			qubit.Zero(2).Apply(gate.QFT(2)),
+			qubit.One(2).Apply(gate.QFT(2)),
+		},
+	)
 
 	for _, r := range rho.Raw() {
 		fmt.Printf("%.4f\n", r)
@@ -104,9 +116,13 @@ func ExampleMatrix_PartialTrace() {
 }
 
 func ExampleMatrix_PartialTrace_x8() {
-	rho := density.New().
-		Add(0.5, qubit.Zero(3).Apply(gate.QFT(3))).
-		Add(0.5, qubit.One(3).Apply(gate.QFT(3)))
+	rho, _ := density.New(
+		[]float64{0.5, 0.5},
+		[]*qubit.Qubit{
+			qubit.Zero(3).Apply(gate.QFT(3)),
+			qubit.One(3).Apply(gate.QFT(3)),
+		},
+	)
 
 	for _, r := range rho.Raw() {
 		fmt.Printf("%.4f\n", r)
@@ -162,11 +178,15 @@ func ExampleMatrix_PartialTrace_x8() {
 }
 
 func ExampleMatrix_PartialTrace_x16() {
-	rho := density.New().Add(1.0, qubit.Zero(4).Apply(
-		matrix.TensorProduct(gate.H(2), gate.X(), gate.Z()).
-			Apply(gate.CNOT(4, 1, 3)).
-			Apply(gate.CNOT(4, 0, 2)),
-	))
+	rho, _ := density.New(
+		[]float64{1.0},
+		[]*qubit.Qubit{
+			qubit.Zero(4).
+				Apply(matrix.TensorProduct(gate.H(2), gate.X(), gate.Z()).
+					Apply(gate.CNOT(4, 1, 3)).
+					Apply(gate.CNOT(4, 0, 2))),
+		},
+	)
 
 	p00 := rho.PartialTrace(0).PartialTrace(0)
 	fmt.Printf("trace: %.2f\n", p00.Trace())
@@ -178,12 +198,12 @@ func ExampleMatrix_PartialTrace_x16() {
 }
 
 func ExampleMatrix_Depolarizing() {
-	rho := density.New().Add(1, qubit.Zero())
+	rho, _ := density.New([]float64{1.0}, []*qubit.Qubit{qubit.Zero()})
 	fmt.Printf("0: %.2f\n", rho.Measure(qubit.Zero()))
 	fmt.Printf("1: %.2f\n", rho.Measure(qubit.One()))
 	fmt.Println()
 
-	dep := rho.Depolarizing(1)
+	dep, _ := rho.Depolarizing(1)
 	fmt.Printf("0: %.2f\n", dep.Measure(qubit.Zero()))
 	fmt.Printf("1: %.2f\n", dep.Measure(qubit.One()))
 
@@ -196,7 +216,7 @@ func ExampleMatrix_Depolarizing() {
 }
 
 func ExampleBitFlip() {
-	m0, m1 := density.BitFlip(0.5)
+	m0, m1, _ := density.BitFlip(0.5)
 
 	for _, r := range m0 {
 		fmt.Println(r)
@@ -216,7 +236,7 @@ func ExampleBitFlip() {
 }
 
 func ExamplePhaseFlip() {
-	m0, m1 := density.PhaseFlip(0.5)
+	m0, m1, _ := density.PhaseFlip(0.5)
 
 	for _, r := range m0 {
 		fmt.Println(r)
@@ -236,7 +256,7 @@ func ExamplePhaseFlip() {
 }
 
 func ExampleBitPhaseFlip() {
-	m0, m1 := density.BitPhaseFlip(0.5)
+	m0, m1, _ := density.BitPhaseFlip(0.5)
 
 	for _, r := range m0 {
 		fmt.Println(r)
@@ -281,11 +301,7 @@ func TestExpectedValue(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho := density.New()
-		for i := range c.p {
-			rho.Add(c.p[i], c.q[i])
-		}
-
+		rho, _ := density.New(c.p, c.q)
 		if math.Abs(rho.Trace()-c.tr) > c.eps {
 			t.Errorf("trace=%v", rho.Trace())
 		}
@@ -322,11 +338,7 @@ func TestMeasure(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := density.New()
-		for i := range c.p {
-			got.Add(c.p[i], c.q[i])
-		}
-
+		got, _ := density.New(c.p, c.q)
 		if got.Measure(c.m) != c.want {
 			t.Fail()
 		}
@@ -340,12 +352,14 @@ func TestPartialTrace(t *testing.T) {
 	}
 
 	cases := []struct {
-		rho *density.Matrix
+		p   []float64
+		q   []*qubit.Qubit
 		cs  []Case
 		eps float64
 	}{
 		{
-			density.New().Add(1.0, qubit.Zero(2)),
+			[]float64{1.0},
+			[]*qubit.Qubit{qubit.Zero(2)},
 			[]Case{
 				{0, [][]complex128{{1, 0}, {0, 0}}},
 				{1, [][]complex128{{1, 0}, {0, 0}}},
@@ -353,7 +367,8 @@ func TestPartialTrace(t *testing.T) {
 			epsilon.E13(),
 		},
 		{
-			density.New().Add(1.0, qubit.One(2)),
+			[]float64{1.0},
+			[]*qubit.Qubit{qubit.One(2)},
 			[]Case{
 				{0, [][]complex128{{0, 0}, {0, 1}}},
 				{1, [][]complex128{{0, 0}, {0, 1}}},
@@ -361,7 +376,8 @@ func TestPartialTrace(t *testing.T) {
 			epsilon.E13(),
 		},
 		{
-			density.New().Add(1, qubit.Zero(2).Apply(gate.H(2))),
+			[]float64{1.0},
+			[]*qubit.Qubit{qubit.Zero(2).Apply(gate.H(2))},
 			[]Case{
 				{0, [][]complex128{{0.5, 0.5}, {0.5, 0.5}}},
 				{1, [][]complex128{{0.5, 0.5}, {0.5, 0.5}}},
@@ -369,9 +385,8 @@ func TestPartialTrace(t *testing.T) {
 			epsilon.E13(),
 		},
 		{
-			density.New().
-				Add(0.5, qubit.Zero(2)).
-				Add(0.5, qubit.One(2)),
+			[]float64{0.5, 0.5},
+			[]*qubit.Qubit{qubit.Zero(2), qubit.One(2)},
 			[]Case{
 				{0, [][]complex128{{0.5, 0}, {0, 0.5}}},
 				{1, [][]complex128{{0.5, 0}, {0, 0.5}}},
@@ -379,9 +394,11 @@ func TestPartialTrace(t *testing.T) {
 			epsilon.E13(),
 		},
 		{
-			density.New().
-				Add(0.5, qubit.Zero(2).Apply(gate.H(2))).
-				Add(0.5, qubit.One(2)),
+			[]float64{0.5, 0.5},
+			[]*qubit.Qubit{
+				qubit.Zero(2).Apply(gate.H(2)),
+				qubit.One(2),
+			},
 			[]Case{
 				{0, [][]complex128{{0.25, 0.25}, {0.25, 0.75}}},
 				{1, [][]complex128{{0.25, 0.25}, {0.25, 0.75}}},
@@ -389,9 +406,11 @@ func TestPartialTrace(t *testing.T) {
 			epsilon.E13(),
 		},
 		{
-			density.New().
-				Add(0.75, qubit.Zero(2).Apply(gate.H(2))).
-				Add(0.25, qubit.One(2).Apply(gate.H(2))),
+			[]float64{0.75, 0.25},
+			[]*qubit.Qubit{
+				qubit.Zero(2).Apply(gate.H(2)),
+				qubit.One(2).Apply(gate.H(2)),
+			},
 			[]Case{
 				{0, [][]complex128{{0.5, 0.25}, {0.25, 0.5}}},
 				{1, [][]complex128{{0.5, 0.25}, {0.25, 0.5}}},
@@ -399,9 +418,11 @@ func TestPartialTrace(t *testing.T) {
 			epsilon.E13(),
 		},
 		{
-			density.New().
-				Add(0.25, qubit.Zero(2).Apply(gate.H(2))).
-				Add(0.75, qubit.One(2).Apply(gate.H(2))),
+			[]float64{0.25, 0.75},
+			[]*qubit.Qubit{
+				qubit.Zero(2).Apply(gate.H(2)),
+				qubit.One(2).Apply(gate.H(2)),
+			},
 			[]Case{
 				{0, [][]complex128{{0.5, -0.25}, {-0.25, 0.5}}},
 				{1, [][]complex128{{0.5, -0.25}, {-0.25, 0.5}}},
@@ -412,7 +433,9 @@ func TestPartialTrace(t *testing.T) {
 
 	for _, c := range cases {
 		for _, cs := range c.cs {
-			got := c.rho.PartialTrace(cs.index)
+			rho, _ := density.New(c.p, c.q)
+
+			got := rho.PartialTrace(cs.index)
 			p, q := got.Dimension()
 			if p != len(cs.want) || q != len(cs.want) {
 				t.Errorf("got=%v, %v want=%v", p, q, cs.want)
@@ -462,149 +485,70 @@ func TestApply(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := density.New()
-		for i := range c.p {
-			got.Add(c.p[i], c.q[i])
-		}
-
+		got, _ := density.New(c.p, c.q)
 		if got.Apply(c.g).Measure(c.m) != c.want {
 			t.Fail()
 		}
 	}
 }
 
-func TestAddPanicDimenstion(t *testing.T) {
-	p0, q0 := 0.1, qubit.Zero()
-	p1, q1 := 0.9, qubit.New(1, 0, 0, 0)
+func TestMatrixNew(t *testing.T) {
+	cases := []struct {
+		in   []float64
+		want error
+	}{
+		{[]float64{1.0, 2.0}, fmt.Errorf("invalid length. len(p)=2, len(q)=1")},
+		{[]float64{1.5}, fmt.Errorf("add: p must be 0 <= p =< 1. p=1.5")},
+	}
 
-	defer func() {
-		if err := recover(); err != "invalid dimension. m=2 n=4" {
-			t.Fail()
+	for _, c := range cases {
+		_, got := density.New(c.in, []*qubit.Qubit{qubit.Zero()})
+		if got.Error() != c.want.Error() {
+			t.Errorf("got=%v, want=%v", got, c.want)
 		}
-	}()
-
-	density.New().Add(p0, q0).Add(p1, q1)
-	t.Fail()
-}
-
-func TestAddPanicProbabilityLess(t *testing.T) {
-	cases := []struct {
-		p float64
-	}{
-		{-1},
-	}
-
-	for _, c := range cases {
-		defer func() {
-			msg := fmt.Sprintf("p must be 0 <= p =< 1. p=%v", c.p)
-			if err := recover(); err != msg {
-				t.Fail()
-			}
-		}()
-
-		density.New().Add(c.p, qubit.Zero())
-		t.Fail()
 	}
 }
 
-func TestAddPanicProbabilityLarge(t *testing.T) {
-	cases := []struct {
-		p float64
-	}{
-		{1.1},
-	}
+func TestMatrixAddError(t *testing.T) {
+	rho, _ := density.New([]float64{.50}, []*qubit.Qubit{qubit.Zero()})
 
-	for _, c := range cases {
-		defer func() {
-			msg := fmt.Sprintf("p must be 0 <= p =< 1. p=%v", c.p)
-			if err := recover(); err != msg {
-				t.Fail()
-			}
-		}()
-
-		density.New().Add(c.p, qubit.Zero())
-		t.Fail()
+	got := rho.Add(0.5, qubit.One(2)).Error()
+	want := "invalid dimension. m=2 n=4"
+	if got != want {
+		t.Errorf("got=%v, want=%v", got, want)
 	}
 }
 
-func TestDepolarizingPanicLess(t *testing.T) {
+func TestDepolarizingError(t *testing.T) {
+	rho, _ := density.New([]float64{1.0}, []*qubit.Qubit{qubit.Zero()})
+
 	cases := []struct {
-		p float64
+		in   float64
+		want error
 	}{
-		{-1},
+		{-1, fmt.Errorf("p must be 0 <= p =< 1. p=-1")},
 	}
 
 	for _, c := range cases {
-		defer func() {
-			msg := fmt.Sprintf("p must be 0 <= p =< 1. p=%v", c.p)
-			if err := recover(); err != msg {
-				t.Fail()
-			}
-		}()
-
-		rho := density.New().Add(1, qubit.Zero())
-		rho.Depolarizing(c.p)
-		t.Fail()
+		_, got := rho.Depolarizing(c.in)
+		if got.Error() != c.want.Error() {
+			t.Errorf("got=%v, want=%v", got, c.want)
+		}
 	}
 }
 
-func TestDepolarizingPanicLarge(t *testing.T) {
+func TestFlipError(t *testing.T) {
 	cases := []struct {
-		p float64
+		in   float64
+		want error
 	}{
-		{1.1},
+		{-1, fmt.Errorf("p must be 0 <= p =< 1. p=-1")},
 	}
 
 	for _, c := range cases {
-		defer func() {
-			msg := fmt.Sprintf("p must be 0 <= p =< 1. p=%v", c.p)
-			if err := recover(); err != msg {
-				t.Fail()
-			}
-		}()
-
-		rho := density.New().Add(1, qubit.Zero())
-		rho.Depolarizing(c.p)
-		t.Fail()
-	}
-}
-
-func TestBitFlipPanicLess(t *testing.T) {
-	cases := []struct {
-		p float64
-	}{
-		{-1},
-	}
-
-	for _, c := range cases {
-		defer func() {
-			msg := fmt.Sprintf("p must be 0 <= p =< 1. p=%v", c.p)
-			if err := recover(); err != msg {
-				t.Fail()
-			}
-		}()
-
-		density.BitFlip(c.p)
-		t.Fail()
-	}
-}
-
-func TestBitFlipPanicLarge(t *testing.T) {
-	cases := []struct {
-		p float64
-	}{
-		{1.1},
-	}
-
-	for _, c := range cases {
-		defer func() {
-			msg := fmt.Sprintf("p must be 0 <= p =< 1. p=%v", c.p)
-			if err := recover(); err != msg {
-				t.Fail()
-			}
-		}()
-
-		density.BitFlip(c.p)
-		t.Fail()
+		_, _, got := density.BitPhaseFlip(c.in)
+		if got.Error() != c.want.Error() {
+			t.Errorf("got=%v, want=%v", got, c.want)
+		}
 	}
 }

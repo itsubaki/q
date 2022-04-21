@@ -18,12 +18,14 @@ type Qubit struct {
 	vector vector.Vector
 	Seed   []int
 	Rand   func(seed ...int) float64
+	Errors []error
 }
 
 func New(z ...complex128) *Qubit {
 	q := &Qubit{
 		vector: vector.New(z...),
 		Rand:   rand.Crypto,
+		Errors: make([]error, 0),
 	}
 
 	q.Normalize()
@@ -71,6 +73,7 @@ func (q *Qubit) Clone() *Qubit {
 		vector: q.vector.Clone(),
 		Seed:   q.Seed,
 		Rand:   q.Rand,
+		Errors: q.Errors,
 	}
 }
 
@@ -109,7 +112,12 @@ func (q *Qubit) TensorProduct(qb *Qubit) *Qubit {
 
 func (q *Qubit) Apply(m ...matrix.Matrix) *Qubit {
 	for _, mm := range m {
-		q.vector = q.vector.Apply(mm)
+		v, err := q.vector.Apply(mm)
+		if err != nil {
+			q.Errors = append(q.Errors, fmt.Errorf("apply: %v", err))
+		}
+
+		q.vector = v
 	}
 
 	return q

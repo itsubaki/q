@@ -9,9 +9,9 @@ type State struct {
 	BinaryString []string
 }
 
-func (s State) Value(index ...int) (int64, string) {
+func (s State) Value(index ...int) (int64, string, error) {
 	if len(index) > 1 {
-		panic(fmt.Sprintf("invalid parameter. len(index)=%v", len(index)))
+		return 0, "", fmt.Errorf("invalid parameter. len(index)=%v", len(index))
 	}
 
 	i := 0
@@ -20,10 +20,10 @@ func (s State) Value(index ...int) (int64, string) {
 	}
 
 	if i < 0 || i > len(s.Int)-1 {
-		panic(fmt.Sprintf("invalid parameter. index=%v", index))
+		return 0, "", fmt.Errorf("invalid parameter. index=%v", index)
 	}
 
-	return s.Int[i], s.BinaryString[i]
+	return s.Int[i], s.BinaryString[i], nil
 }
 
 func (s State) String() string {
