@@ -284,30 +284,30 @@ func TestInverse(t *testing.T) {
 		want matrix.Matrix
 		err  error
 	}{
-		// {
-		// 	matrix.New(
-		// 		[]complex128{1, 2, 0, -1},
-		// 		[]complex128{-1, 1, 2, 0},
-		// 		[]complex128{2, 0, 1, 1},
-		// 		[]complex128{1, -2, -1, 1},
-		// 	),
-		// 	matrix.New(
-		// 		[]complex128{1, 0, 0, 0},
-		// 		[]complex128{0, 1, 0, 0},
-		// 		[]complex128{0, 0, 1, 0},
-		// 		[]complex128{0, 0, 0, 1},
-		// 	), nil,
-		// },
-		// {
-		// 	matrix.New(
-		// 		[]complex128{0, 1},
-		// 		[]complex128{1, 0},
-		// 	),
-		// 	matrix.New(
-		// 		[]complex128{1, 0},
-		// 		[]complex128{0, 1},
-		// 	), nil,
-		// },
+		{
+			matrix.New(
+				[]complex128{1, 2, 0, -1},
+				[]complex128{-1, 1, 2, 0},
+				[]complex128{2, 0, 1, 1},
+				[]complex128{1, -2, -1, 1},
+			),
+			matrix.New(
+				[]complex128{1, 0, 0, 0},
+				[]complex128{0, 1, 0, 0},
+				[]complex128{0, 0, 1, 0},
+				[]complex128{0, 0, 0, 1},
+			), nil,
+		},
+		{
+			matrix.New(
+				[]complex128{0, 1},
+				[]complex128{1, 0},
+			),
+			matrix.New(
+				[]complex128{1, 0},
+				[]complex128{0, 1},
+			), nil,
+		},
 		{
 			matrix.New(
 				[]complex128{0, 1, 0},
