@@ -281,6 +281,7 @@ func (q *Q) ControlledModExp2(a, j, N int, control Qubit, target []Qubit) *Q {
 	g, err := gate.CModExp2(n, a, j, N, control.Index(), Index(target...))
 	if err != nil {
 		q.qb.Errors = append(q.qb.Errors, fmt.Errorf("cmodexp2: %v", err))
+		return q
 	}
 
 	q.qb.Apply(g)

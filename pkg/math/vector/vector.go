@@ -121,7 +121,7 @@ func (v Vector) IsUnit() bool {
 func (v Vector) Apply(m matrix.Matrix) (Vector, error) {
 	p, q := m.Dimension()
 	if q != len(v) {
-		return nil, fmt.Errorf("invalid dimension. p=%d q=%d len(v)=%d", p, q, len(v))
+		return nil, fmt.Errorf("invalid dimension. p=%d, q=%d len(v)=%d", p, q, len(v))
 	}
 
 	out := Vector{}

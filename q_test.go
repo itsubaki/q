@@ -1165,3 +1165,24 @@ func TestStateError(t *testing.T) {
 		t.Errorf("got=%v, want=%v", got, want)
 	}
 }
+
+func TestControlledModExp2Error(t *testing.T) {
+	cases := []struct {
+		in, target int
+		want       error
+	}{
+		{15, 1, fmt.Errorf("cmodexp2: invalid parameter. len(target)=1 < log2(15)=4")},
+	}
+
+	for _, c := range cases {
+		qsim := q.New()
+		ctrl := qsim.Zero()
+		target := qsim.ZeroWith(c.target)
+
+		qsim.ControlledModExp2(7, 1, c.in, ctrl, target)
+		got := qsim.Errors()[0]
+		if got.Error() != c.want.Error() {
+			t.Errorf("got=%v, want=%v", got, c.want)
+		}
+	}
+}
