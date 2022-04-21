@@ -1153,3 +1153,15 @@ func TestEigenVector(t *testing.T) {
 		}
 	}
 }
+
+func TestStateError(t *testing.T) {
+	qsim := q.New()
+	qsim.Zero()
+	qsim.State("hoge")
+
+	want := "invalid type=string"
+	got := qsim.Errors()[0].Error()
+	if got != want {
+		t.Errorf("got=%v, want=%v", got, want)
+	}
+}

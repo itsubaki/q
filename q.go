@@ -397,7 +397,7 @@ func (q *Q) State(reg ...any) []qubit.State {
 		case []Qubit:
 			index = append(index, Index(r...))
 		default:
-			q.qb.Errors = append(q.qb.Errors, fmt.Errorf("invalid type %T", r))
+			q.qb.Errors = append(q.qb.Errors, fmt.Errorf("invalid type=%T", r))
 		}
 	}
 

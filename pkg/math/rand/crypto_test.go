@@ -42,6 +42,23 @@ func TestCrypto(t *testing.T) {
 	}
 }
 
+func TestCryptoInt64Error(t *testing.T) {
+	cases := []struct {
+		min, max int64
+		want     error
+	}{
+		{-1, 0, fmt.Errorf("invalid parameter. min=-1, max=0")},
+		{0, -1, fmt.Errorf("invalid parameter. min=0, max=-1")},
+	}
+
+	for _, c := range cases {
+		_, got := rand.CryptoInt64(c.min, c.max)
+		if got.Error() != c.want.Error() {
+			t.Errorf("got=%v, want=%v", got, c.want)
+		}
+	}
+}
+
 func FuzzCryptoInt64(f *testing.F) {
 	f.Add(int64(0), int64(3))
 	f.Fuzz(func(t *testing.T, min, max int64) {

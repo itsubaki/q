@@ -254,12 +254,12 @@ func (m Matrix) Clone() Matrix {
 }
 
 func (m Matrix) Inverse() (Matrix, error) {
-	clone := m.Clone()
-	p, q := clone.Dimension()
+	p, q := m.Dimension()
 	if p != q {
-		return nil, fmt.Errorf("invalid dimension. p=%d q=%d", p, q)
+		return nil, fmt.Errorf("invalid dimension. p=%d, q=%d", p, q)
 	}
 
+	clone := m.Clone()
 	out := Matrix{}
 	for i := 0; i < p; i++ {
 		v := make([]complex128, 0)

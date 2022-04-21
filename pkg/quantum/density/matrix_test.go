@@ -509,6 +509,16 @@ func TestMatrixNew(t *testing.T) {
 	}
 }
 
+func TestMatrixAddError(t *testing.T) {
+	rho, _ := density.New([]float64{.50}, []*qubit.Qubit{qubit.Zero()})
+
+	got := rho.Add(0.5, qubit.One(2)).Error()
+	want := "invalid dimension. m=2 n=4"
+	if got != want {
+		t.Errorf("got=%v, want=%v", got, want)
+	}
+}
+
 func TestDepolarizingError(t *testing.T) {
 	rho, _ := density.New([]float64{1.0}, []*qubit.Qubit{qubit.Zero()})
 
