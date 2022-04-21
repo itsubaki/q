@@ -1133,7 +1133,7 @@ func TestEigenVector(t *testing.T) {
 
 		us := make(map[string]complex128)
 		for _, s := range qsim.State(r1) {
-			_, m := s.Value()
+			_, m, _ := s.Value()
 			if v, ok := us[m]; ok {
 				us[m] = v + s.Amplitude
 				continue
@@ -1152,17 +1152,4 @@ func TestEigenVector(t *testing.T) {
 			}
 		}
 	}
-}
-
-func TestStatePanic(t *testing.T) {
-	qsim := q.New()
-
-	defer func() {
-		if err := recover(); err != "invalid type string" {
-			t.Fail()
-		}
-	}()
-
-	qsim.State("123")
-	t.Fail()
 }

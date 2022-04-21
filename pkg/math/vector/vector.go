@@ -118,10 +118,10 @@ func (v Vector) IsUnit() bool {
 	return v.Norm() == 1
 }
 
-func (v Vector) Apply(m matrix.Matrix) Vector {
+func (v Vector) Apply(m matrix.Matrix) (Vector, error) {
 	p, q := m.Dimension()
 	if q != len(v) {
-		panic(fmt.Sprintf("invalid dimension. p=%d q=%d len(v)=%d", p, q, len(v)))
+		return nil, fmt.Errorf("invalid dimension. p=%d q=%d len(v)=%d", p, q, len(v))
 	}
 
 	out := Vector{}
@@ -134,7 +134,7 @@ func (v Vector) Apply(m matrix.Matrix) Vector {
 		out = append(out, tmp)
 	}
 
-	return out
+	return out, nil
 }
 
 func (v Vector) Equals(w Vector, eps ...float64) bool {

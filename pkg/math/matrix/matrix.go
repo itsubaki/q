@@ -253,11 +253,11 @@ func (m Matrix) Clone() Matrix {
 	return out
 }
 
-func (m Matrix) Inverse() Matrix {
+func (m Matrix) Inverse() (Matrix, error) {
 	clone := m.Clone()
 	p, q := clone.Dimension()
 	if p != q {
-		panic(fmt.Sprintf("invalid dimension. p=%d q=%d", p, q))
+		return nil, fmt.Errorf("invalid dimension. p=%d q=%d", p, q)
 	}
 
 	out := Matrix{}
@@ -292,7 +292,7 @@ func (m Matrix) Inverse() Matrix {
 		}
 	}
 
-	return out
+	return out, nil
 }
 
 func (m Matrix) TensorProduct(n Matrix) Matrix {

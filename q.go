@@ -278,7 +278,11 @@ func (q *Q) ConditionZ(condition bool, qb ...Qubit) *Q {
 
 func (q *Q) ControlledModExp2(a, j, N int, control Qubit, target []Qubit) *Q {
 	n := q.NumberOfBit()
-	g := gate.CModExp2(n, a, j, N, control.Index(), Index(target...))
+	g, err := gate.CModExp2(n, a, j, N, control.Index(), Index(target...))
+	if err != nil {
+		q.qb.Errors = append(q.qb.Errors, fmt.Errorf("cmodexp2: %v", err))
+	}
+
 	q.qb.Apply(g)
 	return q
 }
@@ -380,6 +384,10 @@ func (q *Q) String() string {
 	return q.qb.String()
 }
 
+func (q *Q) Errors() []error {
+	return q.qb.Errors
+}
+
 func (q *Q) State(reg ...any) []qubit.State {
 	index := make([][]int, 0)
 	for _, r := range reg {
@@ -389,7 +397,7 @@ func (q *Q) State(reg ...any) []qubit.State {
 		case []Qubit:
 			index = append(index, Index(r...))
 		default:
-			panic(fmt.Sprintf("invalid type %T", r))
+			q.qb.Errors = append(q.qb.Errors, fmt.Errorf("invalid type %T", r))
 		}
 	}
 

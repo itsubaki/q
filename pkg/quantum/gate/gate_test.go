@@ -99,7 +99,7 @@ func ExampleEmpty() {
 
 func ExampleCModExp2() {
 	bit, a, j, N := 5, 7, 0, 15
-	g := gate.CModExp2(bit, a, j, N, 0, []int{1, 2, 3, 4})
+	g, _ := gate.CModExp2(bit, a, j, N, 0, []int{1, 2, 3, 4})
 
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(bit), "s")
 	for i, r := range g.Transpose() {
@@ -170,7 +170,7 @@ func TestCModExp2(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := gate.CModExp2(c.b, c.a, c.j, c.N, c.c, c.t)
+		got, _ := gate.CModExp2(c.b, c.a, c.j, c.N, c.c, c.t)
 		if !got.IsUnitary() {
 			t.Errorf("modexp is not unitary")
 		}
@@ -179,17 +179,6 @@ func TestCModExp2(t *testing.T) {
 			t.Fail()
 		}
 	}
-}
-
-func TestCModExp2Panic(t *testing.T) {
-	defer func() {
-		if err := recover(); err != "invalid parameter. len(target)=3 < log2(15)=4" {
-			t.Fail()
-		}
-	}()
-
-	gate.CModExp2(7, 7, 1, 15, 1, []int{4, 5, 6})
-	t.Fail()
 }
 
 func TestU(t *testing.T) {
@@ -263,7 +252,12 @@ func TestInverse(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if !c.in.Apply(c.in.Inverse()).Equals(c.want) {
+		inv, err := c.in.Inverse()
+		if err != nil {
+			t.Errorf("inverse: %v", err)
+		}
+
+		if !c.in.Apply(inv).Equals(c.want) {
 			t.Fail()
 		}
 	}

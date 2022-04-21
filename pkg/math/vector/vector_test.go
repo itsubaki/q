@@ -106,7 +106,8 @@ func ExampleVector_Apply() {
 		[]complex128{1, 3},
 	)
 
-	fmt.Println(v.Apply(m))
+	vv, _ := v.Apply(m)
+	fmt.Println(vv)
 
 	// Output:
 	// [(1+0i) (2+0i)]
@@ -297,21 +298,4 @@ func TestEquals(t *testing.T) {
 			t.Fail()
 		}
 	}
-}
-
-func TestApplyPanic(t *testing.T) {
-	v := vector.New(1, 2)
-	m := matrix.New(
-		[]complex128{1},
-		[]complex128{1},
-	)
-
-	defer func() {
-		if err := recover(); err != "invalid dimension. p=2 q=1 len(v)=2" {
-			t.Fail()
-		}
-	}()
-
-	v.Apply(m)
-	t.Fail()
 }

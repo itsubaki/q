@@ -310,28 +310,16 @@ func TestInverse(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := c.in.Apply(c.in.Inverse())
+		inv, err := c.in.Inverse()
+		if err != nil {
+			t.Errorf("inverse: %v", err)
+		}
+
+		got := c.in.Apply(inv)
 		if !got.Equals(c.want) {
 			t.Fail()
 		}
 	}
-}
-
-func TestInversePanic(t *testing.T) {
-	in := matrix.New(
-		[]complex128{1, 2, 0, -1},
-		[]complex128{-1, 1, 2, 0},
-		[]complex128{2, 0, 1, 1},
-	)
-
-	defer func() {
-		if err := recover(); err != "invalid dimension. p=3 q=4" {
-			t.Fail()
-		}
-	}()
-
-	in.Inverse()
-	t.Fail()
 }
 
 func TestCommutator(t *testing.T) {

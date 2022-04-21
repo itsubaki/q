@@ -15,8 +15,19 @@ type Matrix struct {
 	m matrix.Matrix
 }
 
-func New(v ...[]complex128) *Matrix {
-	return &Matrix{matrix.New(v...)}
+func New(p []float64, q []*qubit.Qubit) (*Matrix, error) {
+	out := &Matrix{matrix.New()}
+	if len(p) != len(q) {
+		return nil, fmt.Errorf("invalid length. len(p)=%v, len(q)=%v", len(p), len(q))
+	}
+
+	for i := range p {
+		if err := out.Add(p[i], q[i]); err != nil {
+			return nil, fmt.Errorf("add: %v", err)
+		}
+	}
+
+	return out, nil
 }
 
 func (m *Matrix) Raw() matrix.Matrix {
@@ -33,9 +44,9 @@ func (m *Matrix) NumberOfBit() int {
 	return int(log)
 }
 
-func (m *Matrix) Add(p float64, q *qubit.Qubit) *Matrix {
+func (m *Matrix) Add(p float64, q *qubit.Qubit) error {
 	if p < 0 || p > 1 {
-		panic(fmt.Sprintf("p must be 0 <= p =< 1. p=%v", p))
+		return fmt.Errorf("p must be 0 <= p =< 1. p=%v", p)
 	}
 
 	n := q.Dimension()
@@ -44,7 +55,7 @@ func (m *Matrix) Add(p float64, q *qubit.Qubit) *Matrix {
 	}
 
 	if len(m.m) != n {
-		panic(fmt.Sprintf("invalid dimension. m=%d n=%d", len(m.m), n))
+		return fmt.Errorf("invalid dimension. m=%d n=%d", len(m.m), n)
 	}
 
 	op := q.OuterProduct(q).Mul(complex(p, 0))
@@ -54,7 +65,7 @@ func (m *Matrix) Add(p float64, q *qubit.Qubit) *Matrix {
 		}
 	}
 
-	return m
+	return nil
 }
 
 func (m *Matrix) Apply(u matrix.Matrix) *Matrix {
@@ -121,21 +132,21 @@ func (m *Matrix) PartialTrace(index int) *Matrix {
 	return &Matrix{m: out}
 }
 
-func (m *Matrix) Depolarizing(p float64) *Matrix {
+func (m *Matrix) Depolarizing(p float64) (*Matrix, error) {
 	if p < 0 || p > 1 {
-		panic(fmt.Sprintf("p must be 0 <= p =< 1. p=%v", p))
+		return nil, fmt.Errorf("p must be 0 <= p =< 1. p=%v", p)
 	}
 
 	n := m.NumberOfBit()
 	i := gate.I(n).Mul(complex(p/2, 0))
 	r := m.m.Mul(complex(1-p, 0))
 
-	return &Matrix{i.Add(r)}
+	return &Matrix{i.Add(r)}, nil
 }
 
-func Flip(p float64, m matrix.Matrix) (matrix.Matrix, matrix.Matrix) {
+func Flip(p float64, m matrix.Matrix) (matrix.Matrix, matrix.Matrix, error) {
 	if p < 0 || p > 1 {
-		panic(fmt.Sprintf("p must be 0 <= p =< 1. p=%v", p))
+		return nil, nil, fmt.Errorf("p must be 0 <= p =< 1. p=%v", p)
 	}
 
 	d, _ := m.Dimension()
@@ -143,17 +154,17 @@ func Flip(p float64, m matrix.Matrix) (matrix.Matrix, matrix.Matrix) {
 
 	e0 := gate.I(n).Mul(complex(math.Sqrt(p), 0))
 	e1 := m.Mul(complex(math.Sqrt(1-p), 0))
-	return e0, e1
+	return e0, e1, nil
 }
 
-func BitFlip(p float64) (matrix.Matrix, matrix.Matrix) {
+func BitFlip(p float64) (matrix.Matrix, matrix.Matrix, error) {
 	return Flip(p, gate.X())
 }
 
-func PhaseFlip(p float64) (matrix.Matrix, matrix.Matrix) {
+func PhaseFlip(p float64) (matrix.Matrix, matrix.Matrix, error) {
 	return Flip(p, gate.Z())
 }
 
-func BitPhaseFlip(p float64) (matrix.Matrix, matrix.Matrix) {
+func BitPhaseFlip(p float64) (matrix.Matrix, matrix.Matrix, error) {
 	return Flip(p, gate.Y())
 }
