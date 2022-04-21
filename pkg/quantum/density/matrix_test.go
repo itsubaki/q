@@ -491,3 +491,54 @@ func TestApply(t *testing.T) {
 		}
 	}
 }
+
+func TestMatrixNew(t *testing.T) {
+	cases := []struct {
+		in   []float64
+		want error
+	}{
+		{[]float64{1.0, 2.0}, fmt.Errorf("invalid length. len(p)=2, len(q)=1")},
+		{[]float64{1.5}, fmt.Errorf("add: p must be 0 <= p =< 1. p=1.5")},
+	}
+
+	for _, c := range cases {
+		_, got := density.New(c.in, []*qubit.Qubit{qubit.Zero()})
+		if got.Error() != c.want.Error() {
+			t.Errorf("got=%v, want=%v", got, c.want)
+		}
+	}
+}
+
+func TestDepolarizingError(t *testing.T) {
+	rho, _ := density.New([]float64{1.0}, []*qubit.Qubit{qubit.Zero()})
+
+	cases := []struct {
+		in   float64
+		want error
+	}{
+		{-1, fmt.Errorf("p must be 0 <= p =< 1. p=-1")},
+	}
+
+	for _, c := range cases {
+		_, got := rho.Depolarizing(c.in)
+		if got.Error() != c.want.Error() {
+			t.Errorf("got=%v, want=%v", got, c.want)
+		}
+	}
+}
+
+func TestFlipError(t *testing.T) {
+	cases := []struct {
+		in   float64
+		want error
+	}{
+		{-1, fmt.Errorf("p must be 0 <= p =< 1. p=-1")},
+	}
+
+	for _, c := range cases {
+		_, _, got := density.BitPhaseFlip(c.in)
+		if got.Error() != c.want.Error() {
+			t.Errorf("got=%v, want=%v", got, c.want)
+		}
+	}
+}

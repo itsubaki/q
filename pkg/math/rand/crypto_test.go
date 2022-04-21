@@ -1,50 +1,44 @@
 package rand_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/itsubaki/q/pkg/math/rand"
 )
 
+func ExampleCryptoInt64() {
+	r, _ := rand.CryptoInt64(2, 14)
+
+	for _, e := range []int64{2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13} {
+		if r == e {
+			fmt.Println("found")
+			break
+		}
+	}
+
+	// Output:
+	// found
+}
+
+func ExampleCoprime() {
+	p := rand.Coprime(15)
+
+	for _, e := range []int{2, 4, 7, 8, 11, 13, 14} {
+		if p == e {
+			fmt.Println("found")
+			break
+		}
+	}
+
+	// Output:
+	// found
+}
+
 func TestCrypto(t *testing.T) {
 	r := rand.Crypto()
 	if r < 0 && r > 1 {
 		t.Fail()
-	}
-}
-
-func TestCryptoInt64(t *testing.T) {
-	r, err := rand.CryptoInt64(2, 14)
-	if err != nil {
-		t.Errorf("crypto: %v", err)
-	}
-
-	found := false
-	for _, e := range []int64{2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13} {
-		if r == e {
-			found = true
-			break
-		}
-	}
-
-	if !found {
-		t.Errorf("coprime=%v", r)
-	}
-}
-
-func TestCoprime(t *testing.T) {
-	p := rand.Coprime(15)
-
-	found := false
-	for _, e := range []int{2, 4, 7, 8, 11, 13, 14} {
-		if p == e {
-			found = true
-			break
-		}
-	}
-
-	if !found {
-		t.Errorf("coprime=%v", p)
 	}
 }
 
