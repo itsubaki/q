@@ -252,12 +252,7 @@ func TestInverse(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		inv, err := c.in.Inverse()
-		if err != nil {
-			t.Errorf("inverse: %v", err)
-		}
-
-		if !c.in.Apply(inv).Equals(c.want) {
+		if !c.in.Apply(c.in.Inverse()).Equals(c.want) {
 			t.Fail()
 		}
 	}

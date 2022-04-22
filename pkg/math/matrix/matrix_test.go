@@ -282,7 +282,6 @@ func TestInverse(t *testing.T) {
 	cases := []struct {
 		in   matrix.Matrix
 		want matrix.Matrix
-		err  error
 	}{
 		{
 			matrix.New(
@@ -296,7 +295,7 @@ func TestInverse(t *testing.T) {
 				[]complex128{0, 1, 0, 0},
 				[]complex128{0, 0, 1, 0},
 				[]complex128{0, 0, 0, 1},
-			), nil,
+			),
 		},
 		{
 			matrix.New(
@@ -306,30 +305,12 @@ func TestInverse(t *testing.T) {
 			matrix.New(
 				[]complex128{1, 0},
 				[]complex128{0, 1},
-			), nil,
-		},
-		{
-			matrix.New(
-				[]complex128{0, 1, 0},
-				[]complex128{1, 0, 0},
 			),
-			matrix.New(
-				[]complex128{1, 0},
-				[]complex128{0, 1},
-			), fmt.Errorf("invalid dimension. p=2, q=3"),
 		},
 	}
 
 	for _, c := range cases {
-		inv, err := c.in.Inverse()
-		if err != nil {
-			if err.Error() != c.err.Error() {
-				t.Errorf("got=%v, want=%v", err, c.err)
-			}
-			continue
-		}
-
-		got := c.in.Apply(inv)
+		got := c.in.Apply(c.in.Inverse())
 		if !got.Equals(c.want) {
 			t.Fail()
 		}

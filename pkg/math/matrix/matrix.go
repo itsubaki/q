@@ -1,7 +1,6 @@
 package matrix
 
 import (
-	"fmt"
 	"math/cmplx"
 
 	"github.com/itsubaki/q/pkg/math/epsilon"
@@ -253,13 +252,10 @@ func (m Matrix) Clone() Matrix {
 	return out
 }
 
-func (m Matrix) Inverse() (Matrix, error) {
+func (m Matrix) Inverse() Matrix {
 	p, q := m.Dimension()
-	if p != q {
-		return nil, fmt.Errorf("invalid dimension. p=%d, q=%d", p, q)
-	}
-
 	clone := m.Clone()
+
 	out := Matrix{}
 	for i := 0; i < p; i++ {
 		v := make([]complex128, 0)
@@ -292,7 +288,7 @@ func (m Matrix) Inverse() (Matrix, error) {
 		}
 	}
 
-	return out, nil
+	return out
 }
 
 func (m Matrix) TensorProduct(n Matrix) Matrix {
