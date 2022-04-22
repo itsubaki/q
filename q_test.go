@@ -1133,7 +1133,7 @@ func TestEigenVector(t *testing.T) {
 
 		us := make(map[string]complex128)
 		for _, s := range qsim.State(r1) {
-			_, m, _ := s.Value()
+			_, m := s.Value()
 			if v, ok := us[m]; ok {
 				us[m] = v + s.Amplitude
 				continue
@@ -1150,39 +1150,6 @@ func TestEigenVector(t *testing.T) {
 			if cmplx.Abs(us[c.bin[i]]-c.amp[i]) > c.eps {
 				t.Fail()
 			}
-		}
-	}
-}
-
-func TestStateError(t *testing.T) {
-	qsim := q.New()
-	qsim.Zero()
-	qsim.State("hoge")
-
-	want := "invalid type=string"
-	got := qsim.Errors()[0].Error()
-	if got != want {
-		t.Errorf("got=%v, want=%v", got, want)
-	}
-}
-
-func TestControlledModExp2Error(t *testing.T) {
-	cases := []struct {
-		in, target int
-		want       error
-	}{
-		{15, 1, fmt.Errorf("cmodexp2: invalid parameter. len(target)=1 < log2(15)=4")},
-	}
-
-	for _, c := range cases {
-		qsim := q.New()
-		ctrl := qsim.Zero()
-		target := qsim.ZeroWith(c.target)
-
-		qsim.ControlledModExp2(7, 1, c.in, ctrl, target)
-		got := qsim.Errors()[0]
-		if got.Error() != c.want.Error() {
-			t.Errorf("got=%v, want=%v", got, c.want)
 		}
 	}
 }

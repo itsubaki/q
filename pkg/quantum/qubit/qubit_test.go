@@ -650,13 +650,3 @@ func TestString(t *testing.T) {
 		}
 	}
 }
-
-func TestApplyError(t *testing.T) {
-	qb := qubit.Zero().Apply(gate.H(2))
-
-	got := qb.Errors[0].Error()
-	want := "apply: invalid dimension. p=4, q=4 len(v)=2"
-	if got != want {
-		t.Errorf("got=%v, want=%v", got, want)
-	}
-}

@@ -60,11 +60,6 @@ func main() {
 		qsim.Seed = []int{seed}
 		qsim.Rand = rand.Math
 	}
-	defer func() {
-		for _, e := range qsim.Errors() {
-			fmt.Println(e)
-		}
-	}()
 
 	r0 := qsim.ZeroWith(t)
 	r1 := qsim.ZeroLog2(N)
@@ -90,7 +85,7 @@ func main() {
 
 	sum := 0.0
 	for _, state := range qsim.State(r0) {
-		i, m, _ := state.Value()
+		i, m := state.Value()
 		s, r, d, ok := number.FindOrder(a, N, fmt.Sprintf("0.%s", m))
 		if !ok || number.IsOdd(r) {
 			fmt.Printf("  i=%3d: N=%d, a=%d. s/r=%2d/%2d ([0.%v]~%.4f).\n", i, N, a, s, r, m, d)

@@ -99,7 +99,7 @@ func ExampleEmpty() {
 
 func ExampleCModExp2() {
 	n, a, j, N := 5, 7, 0, 15
-	g, _ := gate.CModExp2(n, a, j, N, 0, []int{1, 2, 3, 4})
+	g := gate.CModExp2(n, a, j, N, 0, []int{1, 2, 3, 4})
 
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 	for i, r := range g.Transpose() {
@@ -170,30 +170,13 @@ func TestCModExp2(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got, _ := gate.CModExp2(c.n, c.a, c.j, c.N, c.c, c.t)
+		got := gate.CModExp2(c.n, c.a, c.j, c.N, c.c, c.t)
 		if !got.IsUnitary() {
 			t.Errorf("modexp is not unitary")
 		}
 
 		if !got.Equals(c.want) {
 			t.Fail()
-		}
-	}
-}
-
-func TestCModExp2Error(t *testing.T) {
-	cases := []struct {
-		n, a, j, N, c int
-		t             []int
-		want          error
-	}{
-		{7, 7, 1, 15, 1, []int{4, 5}, fmt.Errorf("invalid parameter. len(target)=2 < log2(15)=4")},
-	}
-
-	for _, c := range cases {
-		_, got := gate.CModExp2(c.n, c.a, c.j, c.N, c.c, c.t)
-		if got.Error() != c.want.Error() {
-			t.Errorf("got=%v, want=%v", got, c.want)
 		}
 	}
 }

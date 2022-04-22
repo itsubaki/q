@@ -364,12 +364,8 @@ func QFT(n int) matrix.Matrix {
 }
 
 // CModExp2 returns unitary matrix of controlled modular exponentiation operation. |j>|k> -> |j>|a**(2**j) * k mod N>
-func CModExp2(n, a, j, N, c int, t []int) (matrix.Matrix, error) {
-	min := int(math.Log2(float64(N))) + 1
-	if len(t) < min {
-		return nil, fmt.Errorf("invalid parameter. len(target)=%v < log2(%d)=%v", len(t), N, min)
-	}
-
+// len(t) must be larger than log2(N)
+func CModExp2(n, a, j, N, c int, t []int) matrix.Matrix {
 	m := I([]int{n}...)
 	d, _ := m.Dimension()
 
@@ -406,5 +402,5 @@ func CModExp2(n, a, j, N, c int, t []int) (matrix.Matrix, error) {
 		g[i] = m[ii]
 	}
 
-	return g.Transpose(), nil
+	return g.Transpose()
 }

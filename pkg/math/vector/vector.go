@@ -1,7 +1,6 @@
 package vector
 
 import (
-	"fmt"
 	"math/cmplx"
 
 	"github.com/itsubaki/q/pkg/math/epsilon"
@@ -118,11 +117,8 @@ func (v Vector) IsUnit() bool {
 	return v.Norm() == 1
 }
 
-func (v Vector) Apply(m matrix.Matrix) (Vector, error) {
+func (v Vector) Apply(m matrix.Matrix) Vector {
 	p, q := m.Dimension()
-	if q != len(v) {
-		return nil, fmt.Errorf("invalid dimension. p=%d, q=%d len(v)=%d", p, q, len(v))
-	}
 
 	out := Vector{}
 	for i := 0; i < p; i++ {
@@ -134,7 +130,7 @@ func (v Vector) Apply(m matrix.Matrix) (Vector, error) {
 		out = append(out, tmp)
 	}
 
-	return out, nil
+	return out
 }
 
 func (v Vector) Equals(w Vector, eps ...float64) bool {
