@@ -557,6 +557,13 @@ func TestIsUnitary(t *testing.T) {
 			),
 			false,
 		},
+		{
+			matrix.New(
+				[]complex128{0, 0},
+				[]complex128{1, 1},
+			),
+			false,
+		},
 	}
 
 	for _, c := range cases {
