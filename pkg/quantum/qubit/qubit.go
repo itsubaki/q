@@ -244,13 +244,14 @@ func (q *Qubit) State(index ...[]int) []State {
 			continue
 		}
 
-		s := State{Amplitude: amp, Probability: math.Pow(cmplx.Abs(amp), 2)}
-		b := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
+		s := State{
+			Amplitude:   amp,
+			Probability: math.Pow(cmplx.Abs(amp), 2),
+		}
 
+		b := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
 		for _, idx := range index {
-			binary := pickup(b, idx)
-			s.Int = append(s.Int, number.Must(strconv.ParseInt(binary, 2, 0)))
-			s.BinaryString = append(s.BinaryString, binary)
+			s.Add(take(b, idx))
 		}
 
 		state = append(state, s)
@@ -273,7 +274,7 @@ func round(a complex128, eps ...float64) complex128 {
 	return a
 }
 
-func pickup(binary string, idx []int) string {
+func take(binary string, idx []int) string {
 	var sb strings.Builder
 	for _, i := range idx {
 		sb.WriteString(binary[i : i+1])
