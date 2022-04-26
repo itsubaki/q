@@ -283,6 +283,7 @@ func TestExpectedValue(t *testing.T) {
 		m        matrix.Matrix
 		v        float64
 		eps      float64
+		hasErr   bool
 	}{
 		{
 			[]float64{0.1, 0.9},
@@ -290,6 +291,7 @@ func TestExpectedValue(t *testing.T) {
 			1, 0.82,
 			gate.X(), 0.0,
 			epsilon.E13(),
+			false,
 		},
 		{
 			[]float64{0.1, 0.9},
@@ -297,11 +299,17 @@ func TestExpectedValue(t *testing.T) {
 			1, 0.91,
 			gate.X(), 0.9,
 			epsilon.E13(),
+			false,
 		},
 	}
 
 	for _, c := range cases {
-		rho, _ := density.New(c.p, c.q)
+		rho, err := density.New(c.p, c.q)
+		if (err != nil) != c.hasErr {
+			t.Errorf("err: %v", err)
+			continue
+		}
+
 		if math.Abs(rho.Trace()-c.tr) > c.eps {
 			t.Errorf("trace=%v", rho.Trace())
 		}
@@ -318,27 +326,35 @@ func TestExpectedValue(t *testing.T) {
 
 func TestMeasure(t *testing.T) {
 	cases := []struct {
-		p    []float64
-		q    []*qubit.Qubit
-		m    *qubit.Qubit
-		want float64
+		p      []float64
+		q      []*qubit.Qubit
+		m      *qubit.Qubit
+		want   float64
+		hasErr bool
 	}{
 		{
 			[]float64{1},
 			[]*qubit.Qubit{qubit.Zero()},
 			qubit.Zero(),
 			1,
+			false,
 		},
 		{
 			[]float64{1},
 			[]*qubit.Qubit{qubit.Zero()},
 			qubit.One(),
 			0,
+			false,
 		},
 	}
 
 	for _, c := range cases {
-		got, _ := density.New(c.p, c.q)
+		got, err := density.New(c.p, c.q)
+		if (err != nil) != c.hasErr {
+			t.Errorf("err: %v", err)
+			continue
+		}
+
 		if got.Measure(c.m) != c.want {
 			t.Fail()
 		}
@@ -494,61 +510,74 @@ func TestApply(t *testing.T) {
 
 func TestMatrixNew(t *testing.T) {
 	cases := []struct {
-		in   []float64
-		want error
+		in     []float64
+		hasErr bool
 	}{
-		{[]float64{1.0, 2.0}, fmt.Errorf("invalid length. len(p)=2, len(q)=1")},
-		{[]float64{1.5}, fmt.Errorf("add: p must be 0 <= p =< 1. p=1.5")},
+		{[]float64{1.0, 2.0}, true},
+		{[]float64{1.5}, true},
 	}
 
 	for _, c := range cases {
-		_, got := density.New(c.in, []*qubit.Qubit{qubit.Zero()})
-		if got.Error() != c.want.Error() {
-			t.Errorf("got=%v, want=%v", got, c.want)
+		_, err := density.New(c.in, []*qubit.Qubit{qubit.Zero()})
+		if (err != nil) != c.hasErr {
+			t.Errorf("err: %v", err)
+			continue
 		}
 	}
 }
 
-func TestMatrixAddError(t *testing.T) {
-	rho, _ := density.New([]float64{.50}, []*qubit.Qubit{qubit.Zero()})
+func TestMatrixAdd(t *testing.T) {
+	rho, _ := density.New([]float64{0.5}, []*qubit.Qubit{qubit.Zero()})
 
-	got := rho.Add(0.5, qubit.One(2)).Error()
-	want := "invalid dimension. m=2 n=4"
-	if got != want {
-		t.Errorf("got=%v, want=%v", got, want)
+	cases := []struct {
+		p      float64
+		q      *qubit.Qubit
+		hasErr bool
+	}{
+		{0.5, qubit.One(), false},
+		{0.5, qubit.One(2), true},
+	}
+
+	for _, c := range cases {
+		if err := rho.Add(c.p, c.q); (err != nil) != c.hasErr {
+			t.Errorf("err: %v", err)
+			continue
+		}
 	}
 }
 
-func TestDepolarizingError(t *testing.T) {
+func TestDepolarizing(t *testing.T) {
 	rho, _ := density.New([]float64{1.0}, []*qubit.Qubit{qubit.Zero()})
 
 	cases := []struct {
-		in   float64
-		want error
+		p      float64
+		hasErr bool
 	}{
-		{-1, fmt.Errorf("p must be 0 <= p =< 1. p=-1")},
+		{-1, true},
 	}
 
 	for _, c := range cases {
-		_, got := rho.Depolarizing(c.in)
-		if got.Error() != c.want.Error() {
-			t.Errorf("got=%v, want=%v", got, c.want)
+		_, err := rho.Depolarizing(c.p)
+		if (err != nil) != c.hasErr {
+			t.Errorf("err: %v", err)
+			continue
 		}
 	}
 }
 
-func TestFlipError(t *testing.T) {
+func TestFlip(t *testing.T) {
 	cases := []struct {
-		in   float64
-		want error
+		in     float64
+		hasErr bool
 	}{
-		{-1, fmt.Errorf("p must be 0 <= p =< 1. p=-1")},
+		{-1, true},
 	}
 
 	for _, c := range cases {
-		_, _, got := density.BitPhaseFlip(c.in)
-		if got.Error() != c.want.Error() {
-			t.Errorf("got=%v, want=%v", got, c.want)
+		_, _, err := density.BitPhaseFlip(c.in)
+		if (err != nil) != c.hasErr {
+			t.Errorf("err: %v", err)
+			continue
 		}
 	}
 }
