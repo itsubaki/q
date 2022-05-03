@@ -89,7 +89,7 @@ func (m *Matrix) SquareTrace() float64 {
 	return real(m.m.Apply(m.m).Trace())
 }
 
-func (m *Matrix) PartialTrace(index []int) *Matrix {
+func (m *Matrix) PartialTrace(index ...int) *Matrix {
 	n := m.NumberOfBit()
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 	out := matrix.Zero(number.Pow(2, n-1))
