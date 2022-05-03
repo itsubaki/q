@@ -60,9 +60,9 @@ func (m Matrix) Dimension() (int, int) {
 func (m Matrix) Transpose() Matrix {
 	p, q := m.Dimension()
 
-	out := Matrix{}
+	out := make(Matrix, 0, p)
 	for i := 0; i < p; i++ {
-		v := make([]complex128, 0)
+		v := make([]complex128, 0, q)
 		for j := 0; j < q; j++ {
 			v = append(v, m[j][i])
 		}
@@ -76,9 +76,9 @@ func (m Matrix) Transpose() Matrix {
 func (m Matrix) Conjugate() Matrix {
 	p, q := m.Dimension()
 
-	out := Matrix{}
+	out := make(Matrix, 0, p)
 	for i := 0; i < p; i++ {
-		v := make([]complex128, 0)
+		v := make([]complex128, 0, q)
 		for j := 0; j < q; j++ {
 			v = append(v, cmplx.Conj(m[i][j]))
 		}
@@ -136,9 +136,9 @@ func (m Matrix) Apply(n Matrix) Matrix {
 	p, _ := m.Dimension()
 	a, b := n.Dimension()
 
-	out := Matrix{}
+	out := make(Matrix, 0, a)
 	for i := 0; i < a; i++ {
-		v := make([]complex128, 0)
+		v := make([]complex128, 0, b)
 		for j := 0; j < b; j++ {
 			c := complex(0, 0)
 			for k := 0; k < p; k++ {
@@ -156,9 +156,9 @@ func (m Matrix) Apply(n Matrix) Matrix {
 func (m Matrix) Mul(z complex128) Matrix {
 	p, q := m.Dimension()
 
-	out := Matrix{}
+	out := make(Matrix, 0, p)
 	for i := 0; i < p; i++ {
-		v := make([]complex128, 0)
+		v := make([]complex128, 0, q)
 		for j := 0; j < q; j++ {
 			v = append(v, z*m[i][j])
 		}
@@ -172,9 +172,9 @@ func (m Matrix) Mul(z complex128) Matrix {
 func (m Matrix) Add(n Matrix) Matrix {
 	p, q := m.Dimension()
 
-	out := Matrix{}
+	out := make(Matrix, 0, p)
 	for i := 0; i < p; i++ {
-		v := make([]complex128, 0)
+		v := make([]complex128, 0, q)
 		for j := 0; j < q; j++ {
 			v = append(v, m[i][j]+n[i][j])
 		}
@@ -188,9 +188,9 @@ func (m Matrix) Add(n Matrix) Matrix {
 func (m Matrix) Sub(n Matrix) Matrix {
 	p, q := m.Dimension()
 
-	out := Matrix{}
+	out := make(Matrix, 0, p)
 	for i := 0; i < p; i++ {
-		v := make([]complex128, 0)
+		v := make([]complex128, 0, q)
 		for j := 0; j < q; j++ {
 			v = append(v, m[i][j]-n[i][j])
 		}
@@ -239,9 +239,9 @@ func (m Matrix) Imag() [][]float64 {
 func (m Matrix) Clone() Matrix {
 	p, q := m.Dimension()
 
-	out := Matrix{}
+	out := make(Matrix, 0, p)
 	for i := 0; i < p; i++ {
-		v := make([]complex128, 0)
+		v := make([]complex128, 0, q)
 		for j := 0; j < q; j++ {
 			v = append(v, m[i][j])
 		}
@@ -256,9 +256,9 @@ func (m Matrix) Inverse() Matrix {
 	p, q := m.Dimension()
 	clone := m.Clone()
 
-	out := Matrix{}
+	out := make(Matrix, 0, p)
 	for i := 0; i < p; i++ {
-		v := make([]complex128, 0)
+		v := make([]complex128, 0, q)
 		for j := 0; j < q; j++ {
 			if i == j {
 				v = append(v, 1)
@@ -295,10 +295,10 @@ func (m Matrix) TensorProduct(n Matrix) Matrix {
 	p, q := m.Dimension()
 	a, b := n.Dimension()
 
-	out := Matrix{}
+	out := make(Matrix, 0, p*a)
 	for i := 0; i < p; i++ {
 		for k := 0; k < a; k++ {
-			r := make([]complex128, 0)
+			r := make([]complex128, 0, q*b)
 			for j := 0; j < q; j++ {
 				for l := 0; l < b; l++ {
 					r = append(r, m[i][j]*n[k][l])

@@ -10,7 +10,7 @@ import (
 type Vector []complex128
 
 func New(z ...complex128) Vector {
-	out := Vector{}
+	out := make(Vector, 0, len(z))
 	for _, zi := range z {
 		out = append(out, zi)
 	}
@@ -19,7 +19,7 @@ func New(z ...complex128) Vector {
 }
 
 func Zero(n int) Vector {
-	out := Vector{}
+	out := make(Vector, 0, n)
 	for i := 0; i < n; i++ {
 		out = append(out, 0)
 	}
@@ -32,7 +32,7 @@ func (v Vector) Complex() []complex128 {
 }
 
 func (v Vector) Clone() Vector {
-	clone := Vector{}
+	clone := make(Vector, 0, len(v))
 	for i := 0; i < len(v); i++ {
 		clone = append(clone, v[i])
 	}
@@ -41,7 +41,7 @@ func (v Vector) Clone() Vector {
 }
 
 func (v Vector) Dual() Vector {
-	out := Vector{}
+	out := make(Vector, 0, len(v))
 	for i := 0; i < len(v); i++ {
 		out = append(out, cmplx.Conj(v[i]))
 	}
@@ -50,7 +50,7 @@ func (v Vector) Dual() Vector {
 }
 
 func (v Vector) Add(w Vector) Vector {
-	out := Vector{}
+	out := make(Vector, 0, len(v))
 	for i := 0; i < len(v); i++ {
 		out = append(out, v[i]+w[i])
 	}
@@ -59,7 +59,7 @@ func (v Vector) Add(w Vector) Vector {
 }
 
 func (v Vector) Mul(z complex128) Vector {
-	out := Vector{}
+	out := make(Vector, 0, len(v))
 	for i := range v {
 		out = append(out, z*v[i])
 	}
@@ -68,7 +68,7 @@ func (v Vector) Mul(z complex128) Vector {
 }
 
 func (v Vector) TensorProduct(w Vector) Vector {
-	out := Vector{}
+	out := make(Vector, 0, len(v)*len(w))
 	for i := 0; i < len(v); i++ {
 		for j := 0; j < len(w); j++ {
 			out = append(out, v[i]*w[j])
@@ -92,9 +92,9 @@ func (v Vector) InnerProduct(w Vector) complex128 {
 func (v Vector) OuterProduct(w Vector) matrix.Matrix {
 	dual := w.Dual()
 
-	out := matrix.Matrix{}
+	out := make(matrix.Matrix, 0, len(v))
 	for i := 0; i < len(v); i++ {
-		vv := make([]complex128, 0)
+		vv := make([]complex128, 0, len(dual))
 		for j := 0; j < len(dual); j++ {
 			vv = append(vv, v[i]*dual[j])
 		}
@@ -120,14 +120,14 @@ func (v Vector) IsUnit() bool {
 func (v Vector) Apply(m matrix.Matrix) Vector {
 	p, q := m.Dimension()
 
-	out := Vector{}
+	out := make(Vector, 0, p)
 	for i := 0; i < p; i++ {
-		tmp := complex(0, 0)
+		vv := complex(0, 0)
 		for j := 0; j < q; j++ {
-			tmp = tmp + m[i][j]*v[j]
+			vv = vv + m[i][j]*v[j]
 		}
 
-		out = append(out, tmp)
+		out = append(out, vv)
 	}
 
 	return out
