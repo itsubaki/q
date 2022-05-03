@@ -89,26 +89,24 @@ func (m *Matrix) SquareTrace() float64 {
 	return real(m.m.Apply(m.m).Trace())
 }
 
-func (m *Matrix) PartialTrace(index int) *Matrix {
+func (m *Matrix) PartialTrace(index []int) *Matrix {
 	n := m.NumberOfBit()
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 	out := matrix.Zero(number.Pow(2, n-1))
 
 	p, q := m.Dimension()
 	for i := 0; i < p; i++ {
-		ibin := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
-		k, kk := fmt.Sprintf("%s%s", ibin[:index], ibin[index+1:]), string(ibin[index])
+		k, kr := take(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)), index)
 
 		for j := 0; j < q; j++ {
-			jbin := fmt.Sprintf(f, strconv.FormatInt(int64(j), 2))
-			l, ll := fmt.Sprintf("%s%s", jbin[:index], jbin[index+1:]), string(jbin[index])
+			l, lr := take(fmt.Sprintf(f, strconv.FormatInt(int64(j), 2)), index)
 
-			if kk != ll {
+			if k != l {
 				continue
 			}
 
-			r := number.Must(strconv.ParseInt(k, 2, 0))
-			c := number.Must(strconv.ParseInt(l, 2, 0))
+			r := number.Must(strconv.ParseInt(kr, 2, 0))
+			c := number.Must(strconv.ParseInt(lr, 2, 0))
 
 			out[r][c] = out[r][c] + m.m[i][j]
 
@@ -167,4 +165,26 @@ func PhaseFlip(p float64) (matrix.Matrix, matrix.Matrix, error) {
 
 func BitPhaseFlip(p float64) (matrix.Matrix, matrix.Matrix, error) {
 	return Flip(p, gate.Y())
+}
+
+func take(binary string, index []int) (string, string) {
+	var out, remain string
+	for i, v := range binary {
+		found := false
+		for _, j := range index {
+			if i == j {
+				out = out + string(v)
+				found = true
+				break
+			}
+		}
+
+		if found {
+			continue
+		}
+
+		remain = remain + string(v)
+	}
+
+	return out, remain
 }

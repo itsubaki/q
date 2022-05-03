@@ -87,13 +87,13 @@ func ExampleMatrix_PartialTrace() {
 	}
 	fmt.Printf("trace: %.2v, square_trace: %.2v\n\n", rho.Trace(), rho.SquareTrace())
 
-	p0 := rho.PartialTrace(0)
+	p0 := rho.PartialTrace([]int{0})
 	for _, r := range p0.Raw() {
 		fmt.Printf("%.4f\n", r)
 	}
 	fmt.Printf("trace: %.2v, square_trace: %.2v\n\n", p0.Trace(), p0.SquareTrace())
 
-	p1 := rho.PartialTrace(1)
+	p1 := rho.PartialTrace([]int{1})
 	for _, r := range p1.Raw() {
 		fmt.Printf("%.4f\n", r)
 	}
@@ -129,19 +129,19 @@ func ExampleMatrix_PartialTrace_x8() {
 	}
 	fmt.Printf("trace: %.2v, square_trace: %.2v\n\n", rho.Trace(), rho.SquareTrace())
 
-	p0 := rho.PartialTrace(0)
+	p0 := rho.PartialTrace([]int{0})
 	for _, r := range p0.Raw() {
 		fmt.Printf("%.4f\n", r)
 	}
 	fmt.Printf("trace: %.2v, square_trace: %.2v\n\n", p0.Trace(), p0.SquareTrace())
 
-	p1 := rho.PartialTrace(1)
+	p1 := rho.PartialTrace([]int{1})
 	for _, r := range p1.Raw() {
 		fmt.Printf("%.4f\n", r)
 	}
 	fmt.Printf("trace: %.2v, square_trace: %.2v\n\n", p1.Trace(), p1.SquareTrace())
 
-	p2 := rho.PartialTrace(2)
+	p2 := rho.PartialTrace([]int{2})
 	for _, r := range p2.Raw() {
 		fmt.Printf("%.4f\n", r)
 	}
@@ -188,9 +188,9 @@ func ExampleMatrix_PartialTrace_x16() {
 		},
 	)
 
-	p00 := rho.PartialTrace(0).PartialTrace(0)
-	fmt.Printf("trace: %.2f\n", p00.Trace())
-	fmt.Printf("square_trace: %.2f\n", p00.SquareTrace())
+	p01 := rho.PartialTrace([]int{0, 1})
+	fmt.Printf("trace: %.2f\n", p01.Trace())
+	fmt.Printf("square_trace: %.2f\n", p01.SquareTrace())
 
 	// Output:
 	// trace: 1.00
@@ -451,7 +451,7 @@ func TestPartialTrace(t *testing.T) {
 		for _, cs := range c.cs {
 			rho, _ := density.New(c.p, c.q)
 
-			got := rho.PartialTrace(cs.index)
+			got := rho.PartialTrace([]int{cs.index})
 			p, q := got.Dimension()
 			if p != len(cs.want) || q != len(cs.want) {
 				t.Errorf("got=%v, %v want=%v", p, q, cs.want)

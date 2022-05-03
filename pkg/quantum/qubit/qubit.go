@@ -274,9 +274,9 @@ func round(a complex128, eps ...float64) complex128 {
 	return a
 }
 
-func take(binary string, idx []int) string {
+func take(binary string, index []int) string {
 	var sb strings.Builder
-	for _, i := range idx {
+	for _, i := range index {
 		sb.WriteString(binary[i : i+1])
 	}
 
