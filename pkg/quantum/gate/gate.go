@@ -253,7 +253,7 @@ func ControlledZ(n int, c []int, t int) matrix.Matrix {
 		}
 	}
 
-	return g.Transpose()
+	return g
 }
 
 func CZ(n, c, t int) matrix.Matrix {
@@ -281,7 +281,7 @@ func ControlledS(n int, c []int, t int) matrix.Matrix {
 		}
 	}
 
-	return g.Transpose()
+	return g
 }
 
 func CS(n, c, t int) matrix.Matrix {
@@ -313,7 +313,7 @@ func ControlledR(k, n int, c []int, t int) matrix.Matrix {
 		}
 	}
 
-	return g.Transpose()
+	return g
 }
 
 func CR(k, n, c, t int) matrix.Matrix {
