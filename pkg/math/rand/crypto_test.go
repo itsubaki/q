@@ -7,8 +7,8 @@ import (
 	"github.com/itsubaki/q/pkg/math/rand"
 )
 
-func ExampleMustCryptoInt64() {
-	r := rand.MustCryptoInt64(2, 14)
+func ExampleCryptoInt64() {
+	r := rand.CryptoInt64(2, 14)
 
 	for _, e := range []int64{2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13} {
 		if r == e {
@@ -42,13 +42,13 @@ func TestCrypto(t *testing.T) {
 	}
 }
 
-func FuzzMustCryptoInt64(f *testing.F) {
+func FuzzCryptoInt64(f *testing.F) {
 	f.Add(int64(0), int64(3))
 	f.Fuzz(func(t *testing.T, min, max int64) {
 		if min >= max || max < 0 || min < 0 {
 			return
 		}
 
-		rand.MustCryptoInt64(min, max)
+		rand.CryptoInt64(min, max)
 	})
 }
