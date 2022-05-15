@@ -419,7 +419,7 @@ func TestDagger(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if !c.in.Transpose().Conjugate().Equals(c.in.Dagger()) {
+		if !c.in.Dagger().Equals(c.in.Transpose().Conjugate()) {
 			t.Fail()
 		}
 	}
@@ -557,18 +557,11 @@ func TestIsUnitary(t *testing.T) {
 			),
 			false,
 		},
-		{
-			matrix.New(
-				[]complex128{0, 0},
-				[]complex128{1, 1},
-			),
-			false,
-		},
 	}
 
-	for _, c := range cases {
+	for i, c := range cases {
 		if c.in.IsUnitary() != c.want {
-			t.Fail()
+			t.Errorf("case[%v] is failed", i)
 		}
 	}
 }

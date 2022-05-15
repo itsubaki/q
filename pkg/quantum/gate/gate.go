@@ -172,11 +172,11 @@ func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
 			r := number.Must(strconv.Atoi(string(row[t])))
 			c := number.Must(strconv.Atoi(string(col[t])))
 
-			g[i][j] = u[c][r]
+			g[j][i] = u[c][r]
 		}
 	}
 
-	return g.Transpose()
+	return g
 }
 
 func C(u matrix.Matrix, n int, c int, t int) matrix.Matrix {
@@ -217,7 +217,7 @@ func ControlledNot(n int, c []int, t int) matrix.Matrix {
 		g[i] = m[ii]
 	}
 
-	return g.Transpose()
+	return g
 }
 
 func CNOT(n, c, t int) matrix.Matrix {
@@ -399,8 +399,8 @@ func CModExp2(n, a, j, N, c int, t []int) matrix.Matrix {
 
 	g := make(matrix.Matrix, d)
 	for i, ii := range index {
-		g[i] = m[ii]
+		g[ii] = m[i]
 	}
 
-	return g.Transpose()
+	return g
 }

@@ -20,10 +20,16 @@ func New(v ...[]complex128) Matrix {
 func Zero(n int) Matrix {
 	out := make(Matrix, n)
 	for i := 0; i < n; i++ {
-		out[i] = make([]complex128, 0)
-		for j := 0; j < n; j++ {
-			out[i] = append(out[i], 0)
-		}
+		out[i] = make([]complex128, n)
+	}
+
+	return out
+}
+
+func Identity(n int) Matrix {
+	out := Zero(n)
+	for i := 0; i < n; i++ {
+		out[i][i] = 1
 	}
 
 	return out
@@ -89,47 +95,47 @@ func (m Matrix) Conjugate() Matrix {
 	return out
 }
 
+// Dagger returns conjugate transpose matrix
 func (m Matrix) Dagger() Matrix {
-	return m.Transpose().Conjugate()
+	p, q := m.Dimension()
+
+	out := make(Matrix, 0, p)
+	for i := 0; i < p; i++ {
+		v := make([]complex128, 0, q)
+		for j := 0; j < q; j++ {
+			v = append(v, cmplx.Conj(m[j][i]))
+		}
+
+		out = append(out, v)
+	}
+
+	return out
+}
+
+func (m Matrix) IsSquare() bool {
+	p, q := m.Dimension()
+	if p == q {
+		return true
+	}
+
+	return false
 }
 
 func (m Matrix) IsHermite(eps ...float64) bool {
-	p, q := m.Dimension()
-	d := m.Dagger()
-	e := epsilon.E13(eps...)
-
-	for i := 0; i < p; i++ {
-		for j := 0; j < q; j++ {
-			if cmplx.Abs(m[i][j]-d[i][j]) > e {
-				return false
-			}
-		}
+	if !m.IsSquare() {
+		return false
 	}
 
-	return true
+	return m.Equals(m.Dagger(), epsilon.E13(eps...))
 }
 
 func (m Matrix) IsUnitary(eps ...float64) bool {
-	p, q := m.Dimension()
-	d := m.Apply(m.Dagger())
-	e := epsilon.E13(eps...)
-
-	for i := 0; i < p; i++ {
-		for j := 0; j < q; j++ {
-			if i == j {
-				if cmplx.Abs(d[i][j]-1) > e {
-					return false
-				}
-				continue
-			}
-
-			if cmplx.Abs(d[i][j]) > e {
-				return false
-			}
-		}
+	if !m.IsSquare() {
+		return false
 	}
 
-	return true
+	n, _ := m.Dimension()
+	return m.Apply(m.Dagger()).Equals(Identity(n), epsilon.E13(eps...))
 }
 
 func (m Matrix) Apply(n Matrix) Matrix {

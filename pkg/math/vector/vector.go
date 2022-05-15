@@ -19,12 +19,7 @@ func New(z ...complex128) Vector {
 }
 
 func Zero(n int) Vector {
-	out := make(Vector, 0, n)
-	for i := 0; i < n; i++ {
-		out = append(out, 0)
-	}
-
-	return out
+	return make(Vector, n)
 }
 
 func (v Vector) Complex() []complex128 {
