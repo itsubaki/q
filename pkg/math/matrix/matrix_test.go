@@ -63,33 +63,44 @@ func BenchmarkApplyConcurrencyN8(b *testing.B) {
 	}
 }
 
-func BenchmarkTensorProductN6(b *testing.B) {
-	n := 6
-	x := matrix.TensorProductN(matrix.New(
+func BenchmarkTensorProductN8(b *testing.B) {
+	n := 8
+	x := matrix.New(
 		[]complex128{0, 1},
 		[]complex128{1, 0},
-	), n)
+	)
 
-	b.ResetTimer()
+	f := func() {
+		a := matrix.New(
+			[]complex128{1, 0},
+			[]complex128{0, 1},
+		)
+
+		for j := 0; j < n; j++ {
+			a = matrix.TensorProduct(a, x)
+		}
+	}
+
 	for i := 0; i < b.N; i++ {
-		matrix.TensorProduct(x, x)
+		f()
 	}
 }
 
-func BenchmarkTensorProductConcurrencyN6(b *testing.B) {
-	tensorproduct := func(n, m matrix.Matrix) matrix.Matrix {
+func BenchmarkTensorProductConcurrencyN8(b *testing.B) {
+	tensorproduct := func(m, n matrix.Matrix) matrix.Matrix {
 		p, q := m.Dimension()
 		a, b := n.Dimension()
 
 		wg := sync.WaitGroup{}
 		out := make(matrix.Matrix, p*a)
 		for i := 0; i < p; i++ {
-			wg.Add(1)
-			go func(i int, out *matrix.Matrix) {
-				defer wg.Done()
+			for k := 0; k < a; k++ {
+				wg.Add(1)
 
-				for k := 0; k < a; k++ {
-					r := make([]complex128, q*b)
+				go func(i, k int, out *matrix.Matrix) {
+					defer wg.Done()
+
+					r := make([]complex128, 0, q*b)
 					for j := 0; j < q; j++ {
 						for l := 0; l < b; l++ {
 							r = append(r, m[i][j]*n[k][l])
@@ -97,23 +108,33 @@ func BenchmarkTensorProductConcurrencyN6(b *testing.B) {
 					}
 
 					(*out)[i] = r
-				}
-			}(i, &out)
+				}(i, k, &out)
+			}
 		}
 
 		wg.Wait()
 		return out
 	}
 
-	n := 6
-	x := matrix.TensorProductN(matrix.New(
+	n := 8
+	x := matrix.New(
 		[]complex128{0, 1},
 		[]complex128{1, 0},
-	), n)
+	)
 
-	b.ResetTimer()
+	f := func() {
+		for j := 0; j < n; j++ {
+			a := matrix.New(
+				[]complex128{0, 1},
+				[]complex128{1, 0},
+			)
+
+			a = tensorproduct(a, x)
+		}
+	}
+
 	for i := 0; i < b.N; i++ {
-		tensorproduct(x, x)
+		f()
 	}
 }
 
