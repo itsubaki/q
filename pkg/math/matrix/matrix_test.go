@@ -82,14 +82,14 @@ func BenchmarkTensorProductConcurrencyN6(b *testing.B) {
 		a, b := n.Dimension()
 
 		wg := sync.WaitGroup{}
-		out := make(matrix.Matrix, a)
+		out := make(matrix.Matrix, p*a)
 		for i := 0; i < p; i++ {
 			wg.Add(1)
 			go func(i int, out *matrix.Matrix) {
 				defer wg.Done()
 
 				for k := 0; k < a; k++ {
-					r := make([]complex128, 0)
+					r := make([]complex128, q*b)
 					for j := 0; j < q; j++ {
 						for l := 0; l < b; l++ {
 							r = append(r, m[i][j]*n[k][l])
