@@ -86,58 +86,6 @@ func BenchmarkTensorProductN8(b *testing.B) {
 	}
 }
 
-func BenchmarkTensorProductConcurrencyN8(b *testing.B) {
-	tensorproduct := func(m, n matrix.Matrix) matrix.Matrix {
-		p, q := m.Dimension()
-		a, b := n.Dimension()
-
-		wg := sync.WaitGroup{}
-		out := make(matrix.Matrix, p*a)
-		for i := 0; i < p; i++ {
-			for k := 0; k < a; k++ {
-				wg.Add(1)
-
-				go func(i, k int, out *matrix.Matrix) {
-					defer wg.Done()
-
-					r := make([]complex128, 0, q*b)
-					for j := 0; j < q; j++ {
-						for l := 0; l < b; l++ {
-							r = append(r, m[i][j]*n[k][l])
-						}
-					}
-
-					(*out)[i] = r
-				}(i, k, &out)
-			}
-		}
-
-		wg.Wait()
-		return out
-	}
-
-	n := 8
-	x := matrix.New(
-		[]complex128{0, 1},
-		[]complex128{1, 0},
-	)
-
-	f := func() {
-		for j := 0; j < n; j++ {
-			a := matrix.New(
-				[]complex128{0, 1},
-				[]complex128{1, 0},
-			)
-
-			a = tensorproduct(a, x)
-		}
-	}
-
-	for i := 0; i < b.N; i++ {
-		f()
-	}
-}
-
 func ExampleZero() {
 	fmt.Println(matrix.Zero(0))
 	fmt.Println(matrix.Zero(1))
