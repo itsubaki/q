@@ -482,6 +482,34 @@ func TestEquals(t *testing.T) {
 	}
 }
 
+func TestIsSquare(t *testing.T) {
+	cases := []struct {
+		in   matrix.Matrix
+		want bool
+	}{
+		{
+			matrix.New(
+				[]complex128{0, 1},
+				[]complex128{1, 0},
+			),
+			true,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 2, 3},
+				[]complex128{4, 5, 6},
+			),
+			false,
+		},
+	}
+
+	for _, c := range cases {
+		if c.in.IsSquare() != c.want {
+			t.Fail()
+		}
+	}
+}
+
 func TestIsHermite(t *testing.T) {
 	cases := []struct {
 		in   matrix.Matrix
@@ -512,6 +540,13 @@ func TestIsHermite(t *testing.T) {
 			matrix.New(
 				[]complex128{1, 2},
 				[]complex128{3, 4},
+			),
+			false,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 2, 3},
+				[]complex128{4, 5, 6},
 			),
 			false,
 		},
@@ -554,6 +589,13 @@ func TestIsUnitary(t *testing.T) {
 			matrix.New(
 				[]complex128{1, 2},
 				[]complex128{3, 4},
+			),
+			false,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 2, 3},
+				[]complex128{4, 5, 6},
 			),
 			false,
 		},
