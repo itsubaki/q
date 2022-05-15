@@ -214,7 +214,7 @@ func ControlledNot(n int, c []int, t int) matrix.Matrix {
 
 	g := make(matrix.Matrix, d)
 	for i, ii := range index {
-		g[i] = m[ii]
+		g[ii] = m[i]
 	}
 
 	return g
