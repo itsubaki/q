@@ -136,12 +136,25 @@ func (q *Qubit) Probability() []float64 {
 }
 
 func (q *Qubit) Measure(index int) *Qubit {
-	zero, p := q.ProbabilityZeroAt(index)
-	sum := number.Sum(p)
+	n := q.NumberOfBit()
+	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 
-	r := q.Rand(q.Seed...)
-	if r > sum {
-		for _, i := range zero {
+	zidx, oidx := make([]int, 0), make([]int, 0)
+	zprop := make([]float64, 0)
+	for i, p := range q.Probability() {
+		bits := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)))
+
+		if bits[index] == '0' {
+			zidx, zprop = append(zidx, i), append(zprop, p)
+			continue
+		}
+
+		oidx = append(oidx, i)
+	}
+
+	// One()
+	if q.Rand(q.Seed...) > number.Sum(zprop) {
+		for _, i := range zidx {
 			q.vector[i] = complex(0, 0)
 		}
 
@@ -149,57 +162,13 @@ func (q *Qubit) Measure(index int) *Qubit {
 		return One()
 	}
 
-	one, _ := q.ProbabilityOneAt(index)
-	for _, i := range one {
+	// Zero()
+	for _, i := range oidx {
 		q.vector[i] = complex(0, 0)
 	}
 
 	q.Normalize()
 	return Zero()
-}
-
-func (q *Qubit) ProbabilityZeroAt(index int) ([]int, []float64) {
-	dim := q.Dimension()
-	div := dim / number.Pow(2, index+1)
-
-	p := q.Probability()
-	idx, prob := make([]int, 0), make([]float64, 0)
-	for i := 0; i < dim; i++ {
-		idx, prob = append(idx, i), append(prob, p[i])
-
-		if (i+1)%div == 0 {
-			i = i + div
-		}
-	}
-
-	return idx, prob
-}
-
-func (q *Qubit) ProbabilityOneAt(index int) ([]int, []float64) {
-	z, _ := q.ProbabilityZeroAt(index)
-
-	one := make([]int, 0)
-	for i := range q.vector {
-		found := false
-		for _, j := range z {
-			if i == j {
-				found = true
-				break
-			}
-		}
-
-		if !found {
-			one = append(one, i)
-		}
-	}
-
-	p := q.Probability()
-	idx, prob := make([]int, 0), make([]float64, 0)
-	for _, i := range one {
-		idx, prob = append(idx, i), append(prob, p[i])
-	}
-
-	return idx, prob
 }
 
 func (q *Qubit) Int() int64 {
