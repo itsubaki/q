@@ -7,7 +7,7 @@
 
 - quantum computation simulator
 - pure golang implementation
-- no external library used
+- full scratch
 
 # Example
 
@@ -197,7 +197,7 @@ for i := 0; i < 10; i++{
 
   // Controlled-U^2
   qsim.CNOT(q3, q5).CCNOT(q1, q5, q3).CNOT(q3, q5)
-  qsim.CNOT(q4, q6).CCNOT(q1, q6, q4).CNOT(q4, q6)
+  qsim.CNOT(q6, q4).CCNOT(q1, q4, q6).CNOT(q6, q4)
 
   // inverse QFT
   qsim.Swap(q0, q2)
@@ -231,7 +231,3 @@ for i := 0; i < 10; i++{
 # Reference
 
 - Michael A. Nielsen, Issac L. Chuang. Quantum Computation and Quantum Information.
-- C. Figgatt, D. Maslov, K. A. Landsman, N. M. Linke, S. Debnath, and C. Monroe. Complete 3-Qubit Grover Search on a Programmable Quantum Computer.
-- Zhengjun Cao, Zhenfu Cao, Lihua Liu. Remarks on Quantum Modular Exponentiation and Some Experimental Demonstrations of Shor’s Algorithm.
-- Michael R. Geller, Zhongyuan Zhou. Factoring 51 and 85 with 8 qubits.
-- Eric R. Johnson, Nic Harrigan, and Merecedes Gimeno-Segovia. Programming Quantum Computers. O'Reilly.

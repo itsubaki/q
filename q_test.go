@@ -782,6 +782,7 @@ func Example_errorCorrection() {
 }
 
 func Example_grover3qubit() {
+	// NOTE: C. Figgatt, D. Maslov, K. A. Landsman, N. M. Linke, S. Debnath, and C. Monroe. Complete 3-Qubit Grover Search on a Programmable Quantum Computer.
 	qsim := q.New()
 
 	// initial state
@@ -815,6 +816,7 @@ func Example_grover3qubit() {
 }
 
 func Example_grover4qubit() {
+	// NOTE: Eric R. Johnson, Nic Harrigan, and Merecedes Gimeno-Segovia. Programming Quantum Computers. O'Reilly.
 	qsim := q.New()
 
 	// initial state
@@ -895,6 +897,7 @@ func Example_qFT() {
 }
 
 func Example_shorFactoring15() {
+	// NOTE: Zhengjun Cao, Zhenfu Cao, Lihua Liu. Remarks on Quantum Modular Exponentiation and Some Experimental Demonstrations of Shor’s Algorithm.
 	N := 15
 	a := 7
 
@@ -921,7 +924,7 @@ func Example_shorFactoring15() {
 
 	// Controlled-U^(2^1)
 	qsim.CNOT(q3, q5).CCNOT(q1, q5, q3).CNOT(q3, q5)
-	qsim.CNOT(q4, q6).CCNOT(q1, q6, q4).CNOT(q4, q6)
+	qsim.CNOT(q6, q4).CCNOT(q1, q4, q6).CNOT(q6, q4)
 
 	// inverse QFT
 	qsim.Swap(q0, q2)
@@ -986,6 +989,7 @@ func Example_shorFactoring21() {
 }
 
 func Example_shorFactoring51() {
+	// NOTE: Michael R. Geller, Zhongyuan Zhou. Factoring 51 and 85 with 8 qubits.
 	N := 51
 	a := 5 // 5, 7, 10, 11, 14, 20, 22, 23, 28, 29, 31, 37, 40, 41, 44, 46
 
@@ -1041,6 +1045,7 @@ func Example_shorFactoring51() {
 }
 
 func Example_shorFactoring85() {
+	// NOTE: Michael R. Geller, Zhongyuan Zhou. Factoring 51 and 85 with 8 qubits.
 	N := 85
 	a := 14
 
