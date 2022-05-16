@@ -2,6 +2,7 @@ package matrix_test
 
 import (
 	"fmt"
+	"math/cmplx"
 	"sync"
 	"testing"
 
@@ -63,26 +64,64 @@ func BenchmarkApplyConcurrencyN8(b *testing.B) {
 	}
 }
 
+func BenchmarkDaggerN8(b *testing.B) {
+	n := 8
+	m := matrix.TensorProductN(matrix.New(
+		[]complex128{0, 1},
+		[]complex128{1, 0},
+	), n)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		m.Dagger()
+	}
+}
+
+func BenchmarkDaggerConcurrencyN8(b *testing.B) {
+	n := 8
+	m := matrix.TensorProductN(matrix.New(
+		[]complex128{0, 1},
+		[]complex128{1, 0},
+	), n)
+
+	dagger := func(m matrix.Matrix) {
+		p, q := m.Dimension()
+
+		wg := sync.WaitGroup{}
+		out := make(matrix.Matrix, p)
+		for i := 0; i < p; i++ {
+			wg.Add(1)
+
+			go func(i int, out *matrix.Matrix) {
+				defer wg.Done()
+
+				v := make([]complex128, 0, q)
+				for j := 0; j < q; j++ {
+					v = append(v, cmplx.Conj(m[j][i]))
+				}
+
+				(*out)[i] = v
+			}(i, &out)
+		}
+
+		wg.Wait()
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		dagger(m)
+	}
+}
+
 func BenchmarkTensorProductN8(b *testing.B) {
 	n := 8
-	x := matrix.New(
+	m := matrix.New(
 		[]complex128{0, 1},
 		[]complex128{1, 0},
 	)
 
-	f := func() {
-		a := matrix.New(
-			[]complex128{1, 0},
-			[]complex128{0, 1},
-		)
-
-		for j := 0; j < n; j++ {
-			a = matrix.TensorProduct(a, x)
-		}
-	}
-
 	for i := 0; i < b.N; i++ {
-		f()
+		matrix.TensorProductN(m, n)
 	}
 }
 
