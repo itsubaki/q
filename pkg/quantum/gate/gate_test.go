@@ -97,9 +97,9 @@ func ExampleEmpty() {
 	// [[] [] []]
 }
 
-func ExampleCModExp2() {
+func ExampleControlledModExp2() {
 	n, a, j, N := 5, 7, 0, 15
-	g := gate.CModExp2(n, a, j, N, 0, []int{1, 2, 3, 4})
+	g := gate.ControlledModExp2(n, a, j, N, 0, []int{1, 2, 3, 4})
 
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 	for i, r := range g.Transpose() {
@@ -146,7 +146,7 @@ func ExampleCModExp2() {
 	// 1:1110=14 1:1000= 8  8
 }
 
-func TestCModExp2(t *testing.T) {
+func TestControlledModExp2(t *testing.T) {
 	g1 := matrix.Apply(
 		gate.CNOT(7, 3, 5),
 		gate.CCNOT(7, 1, 5, 3),
@@ -170,7 +170,7 @@ func TestCModExp2(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := gate.CModExp2(c.n, c.a, c.j, c.N, c.c, c.t)
+		got := gate.ControlledModExp2(c.n, c.a, c.j, c.N, c.c, c.t)
 		if !got.IsUnitary() {
 			t.Errorf("modexp is not unitary")
 		}
