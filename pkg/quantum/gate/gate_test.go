@@ -291,7 +291,7 @@ func TestIsUnitary(t *testing.T) {
 		{gate.Y(), true},
 		{gate.Z(), true},
 		{gate.U(1, 2, 3), true},
-		{gate.R(2 * math.Pi / 16), true},
+		{gate.R(gate.Theta(4)), true},
 		{gate.RX(1.23), true},
 		{gate.RY(1.23), true},
 		{gate.RZ(1.23), true},
