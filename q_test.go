@@ -221,6 +221,20 @@ func ExampleQ_Apply() {
 	// [11][  3]( 0.7071 0.0000i): 0.5000
 }
 
+func ExampleQ_U() {
+	qsim := q.New()
+
+	q0 := qsim.Zero()
+	qsim.U(math.Pi, 0, math.Pi, q0)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [1][  1]( 1.0000 0.0000i): 1.0000
+}
+
 func ExampleQ_I() {
 	qsim := q.New()
 
@@ -305,18 +319,18 @@ func ExampleQ_T() {
 	// [1][  1]( 0.7071 0.7071i): 1.0000
 }
 
-func ExampleQ_U() {
+func ExampleQ_R() {
 	qsim := q.New()
 
-	q0 := qsim.Zero()
-	qsim.U(math.Pi, 0, math.Pi, q0)
+	q0 := qsim.One()
+	qsim.R(2*math.Pi/4, q0)
 
 	for _, s := range qsim.State() {
 		fmt.Println(s)
 	}
 
 	// Output:
-	// [1][  1]( 1.0000 0.0000i): 1.0000
+	// [1][  1]( 0.0000 1.0000i): 1.0000
 }
 
 func ExampleQ_RX() {
@@ -874,10 +888,10 @@ func Example_qFT() {
 	q2 := qsim.Zero()
 
 	qsim.H(q0)
-	qsim.CR(2, q1, q0)
-	qsim.CR(3, q2, q0)
+	qsim.CR(gate.Theta(2), q1, q0)
+	qsim.CR(gate.Theta(3), q2, q0)
 	qsim.H(q1)
-	qsim.CR(2, q2, q1)
+	qsim.CR(gate.Theta(2), q2, q1)
 	qsim.H(q2)
 	qsim.Swap(q0, q2)
 
@@ -1014,16 +1028,17 @@ func Example_shorFactoring51() {
 	qsim.CNOT(q2, q6)
 	qsim.CNOT(q3, q7)
 
+	// inverse QFT
 	qsim.Swap(q0, q1, q2, q3)
 	qsim.H(q3)
-	qsim.CR(2, q3, q2)
+	qsim.CR(-1*gate.Theta(2), q3, q2)
 	qsim.H(q2)
-	qsim.CR(3, q3, q1)
-	qsim.CR(2, q2, q1)
+	qsim.CR(-1*gate.Theta(3), q3, q1)
+	qsim.CR(-1*gate.Theta(2), q2, q1)
 	qsim.H(q1)
-	qsim.CR(4, q3, q0)
-	qsim.CR(3, q2, q0)
-	qsim.CR(2, q1, q0)
+	qsim.CR(-1*gate.Theta(4), q3, q0)
+	qsim.CR(-1*gate.Theta(3), q2, q0)
+	qsim.CR(-1*gate.Theta(2), q1, q0)
 	qsim.H(q0)
 
 	m := qsim.Measure(q0, q1, q2, q3).BinaryString()
@@ -1070,11 +1085,12 @@ func Example_shorFactoring85() {
 	qsim.CNOT(q2, q6)
 	qsim.CNOT(q3, q7)
 
+	// inverse QFT
 	qsim.Swap(q0, q1, q2, q3)
 	qsim.H(q3)
-	qsim.CR(2, q3, q2).H(q2)
-	qsim.CR(3, q3, q1).CR(2, q2, q1).H(q1)
-	qsim.CR(4, q3, q0).CR(3, q2, q0).CR(2, q1, q0).H(q0)
+	qsim.CR(-1*gate.Theta(2), q3, q2).H(q2)
+	qsim.CR(-1*gate.Theta(3), q3, q1).CR(-1*gate.Theta(2), q2, q1).H(q1)
+	qsim.CR(-1*gate.Theta(4), q3, q0).CR(-1*gate.Theta(3), q2, q0).CR(-1*gate.Theta(2), q1, q0).H(q0)
 
 	m := qsim.Measure(q0, q1, q2, q3).BinaryString()
 	s, r, d, ok := number.FindOrder(a, N, fmt.Sprintf("0.%s", m))
