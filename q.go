@@ -115,12 +115,12 @@ func (q *Q) Reset(qb ...Qubit) {
 	}
 }
 
-func (q *Q) I(qb ...Qubit) *Q {
-	return q.Apply(gate.I(), qb...)
+func (q *Q) U(theta, phi, lambda float64, qb ...Qubit) *Q {
+	return q.Apply(gate.U(theta, phi, lambda), qb...)
 }
 
-func (q *Q) H(qb ...Qubit) *Q {
-	return q.Apply(gate.H(), qb...)
+func (q *Q) I(qb ...Qubit) *Q {
+	return q.Apply(gate.I(), qb...)
 }
 
 func (q *Q) X(qb ...Qubit) *Q {
@@ -135,6 +135,10 @@ func (q *Q) Z(qb ...Qubit) *Q {
 	return q.Apply(gate.Z(), qb...)
 }
 
+func (q *Q) H(qb ...Qubit) *Q {
+	return q.Apply(gate.H(), qb...)
+}
+
 func (q *Q) S(qb ...Qubit) *Q {
 	return q.Apply(gate.S(), qb...)
 }
@@ -143,8 +147,8 @@ func (q *Q) T(qb ...Qubit) *Q {
 	return q.Apply(gate.T(), qb...)
 }
 
-func (q *Q) U(theta, phi, lambda float64, qb ...Qubit) *Q {
-	return q.Apply(gate.U(theta, phi, lambda), qb...)
+func (q *Q) R(theta float64, qb ...Qubit) *Q {
+	return q.Apply(gate.R(theta), qb...)
 }
 
 func (q *Q) RX(theta float64, qb ...Qubit) *Q {
@@ -199,43 +203,6 @@ func (q *Q) C(m matrix.Matrix, control, target Qubit) *Q {
 	return q.Controlled(m, []Qubit{control}, target)
 }
 
-func (q *Q) ControlledR(k int, control []Qubit, target Qubit) *Q {
-	n := q.NumberOfBit()
-	g := gate.ControlledR(k, n, Index(control...), target.Index())
-	q.qb.Apply(g)
-	return q
-}
-
-func (q *Q) CR(k int, control, target Qubit) *Q {
-	return q.ControlledR(k, []Qubit{control}, target)
-}
-
-func (q *Q) InverseCR(k int, control, target Qubit) *Q {
-	n := q.NumberOfBit()
-	g := gate.ControlledR(k, n, []int{control.Index()}, target.Index()).Dagger()
-	q.qb.Apply(g)
-	return q
-}
-
-func (q *Q) InvCR(k int, control, target Qubit) *Q {
-	return q.InverseCR(k, control, target)
-}
-
-func (q *Q) ControlledZ(control []Qubit, target Qubit) *Q {
-	n := q.NumberOfBit()
-	g := gate.ControlledZ(n, Index(control...), target.Index())
-	q.qb.Apply(g)
-	return q
-}
-
-func (q *Q) CZ(control, target Qubit) *Q {
-	return q.ControlledZ([]Qubit{control}, target)
-}
-
-func (q *Q) CCZ(control0, control1, target Qubit) *Q {
-	return q.ControlledZ([]Qubit{control0, control1}, target)
-}
-
 func (q *Q) ControlledNot(control []Qubit, target Qubit) *Q {
 	n := q.NumberOfBit()
 	g := gate.ControlledNot(n, Index(control...), target.Index())
@@ -259,20 +226,30 @@ func (q *Q) Toffoli(control0, control1, target Qubit) *Q {
 	return q.CCNOT(control0, control1, target)
 }
 
-func (q *Q) Condition(condition bool, m matrix.Matrix, qb ...Qubit) *Q {
-	if condition {
-		return q.Apply(m, qb...)
-	}
-
+func (q *Q) ControlledZ(control []Qubit, target Qubit) *Q {
+	n := q.NumberOfBit()
+	g := gate.ControlledZ(n, Index(control...), target.Index())
+	q.qb.Apply(g)
 	return q
 }
 
-func (q *Q) ConditionX(condition bool, qb ...Qubit) *Q {
-	return q.Condition(condition, gate.X(), qb...)
+func (q *Q) CZ(control, target Qubit) *Q {
+	return q.ControlledZ([]Qubit{control}, target)
 }
 
-func (q *Q) ConditionZ(condition bool, qb ...Qubit) *Q {
-	return q.Condition(condition, gate.Z(), qb...)
+func (q *Q) CCZ(control0, control1, target Qubit) *Q {
+	return q.ControlledZ([]Qubit{control0, control1}, target)
+}
+
+func (q *Q) ControlledR(theta float64, control []Qubit, target Qubit) *Q {
+	n := q.NumberOfBit()
+	g := gate.ControlledR(theta, n, Index(control...), target.Index())
+	q.qb.Apply(g)
+	return q
+}
+
+func (q *Q) CR(theta float64, control, target Qubit) *Q {
+	return q.ControlledR(theta, []Qubit{control}, target)
 }
 
 func (q *Q) ControlledModExp2(a, j, N int, control Qubit, target []Qubit) *Q {
@@ -288,6 +265,22 @@ func (q *Q) CModExp2(a, N int, control []Qubit, target []Qubit) *Q {
 	}
 
 	return q
+}
+
+func (q *Q) Condition(condition bool, m matrix.Matrix, qb ...Qubit) *Q {
+	if condition {
+		return q.Apply(m, qb...)
+	}
+
+	return q
+}
+
+func (q *Q) ConditionX(condition bool, qb ...Qubit) *Q {
+	return q.Condition(condition, gate.X(), qb...)
+}
+
+func (q *Q) ConditionZ(condition bool, qb ...Qubit) *Q {
+	return q.Condition(condition, gate.Z(), qb...)
 }
 
 func (q *Q) Swap(qb ...Qubit) *Q {
@@ -310,7 +303,7 @@ func (q *Q) QFT(qb ...Qubit) *Q {
 
 		k := 2
 		for j := i + 1; j < l; j++ {
-			q.CR(k, qb[j], qb[i])
+			q.CR(gate.Theta(k), qb[j], qb[i])
 			k++
 		}
 	}
@@ -323,7 +316,7 @@ func (q *Q) InverseQFT(qb ...Qubit) *Q {
 	for i := l - 1; i > -1; i-- {
 		k := l - i
 		for j := l - 1; j > i; j-- {
-			q.InvCR(k, qb[j], qb[i])
+			q.CR(-1*gate.Theta(k), qb[j], qb[i])
 			k--
 		}
 

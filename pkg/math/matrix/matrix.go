@@ -95,7 +95,7 @@ func (m Matrix) Conjugate() Matrix {
 	return out
 }
 
-// Dagger returns conjugate transpose matrix
+// Dagger returns conjugate transpose matrix.
 func (m Matrix) Dagger() Matrix {
 	p, q := m.Dimension()
 

@@ -27,44 +27,16 @@ func Empty(n ...int) []matrix.Matrix {
 	return make([]matrix.Matrix, n[0])
 }
 
+// Theta returns 2 * pi / 2**k
+func Theta(k int) float64 {
+	return 2 * math.Pi / math.Pow(2, float64(k))
+}
+
 func U(theta, phi, lambda float64) matrix.Matrix {
 	v := complex(theta/2, 0)
 	return matrix.Matrix{
 		[]complex128{cmplx.Cos(v), -1 * cmplx.Exp(complex(0, lambda)) * cmplx.Sin(v)},
 		[]complex128{cmplx.Exp(complex(0, phi)) * cmplx.Sin(v), cmplx.Exp(complex(0, (phi+lambda))) * cmplx.Cos(v)},
-	}
-}
-
-func RX(theta float64) matrix.Matrix {
-	v := complex(theta/2, 0)
-	return matrix.Matrix{
-		[]complex128{cmplx.Cos(v), -1i * cmplx.Sin(v)},
-		[]complex128{-1i * cmplx.Sin(v), cmplx.Cos(v)},
-	}
-}
-
-func RY(theta float64) matrix.Matrix {
-	v := complex(theta/2, 0)
-	return matrix.Matrix{
-		[]complex128{cmplx.Cos(v), -1 * cmplx.Sin(v)},
-		[]complex128{cmplx.Sin(v), cmplx.Cos(v)},
-	}
-}
-
-func RZ(theta float64) matrix.Matrix {
-	v := complex(0, theta/2)
-	return matrix.Matrix{
-		[]complex128{cmplx.Exp(-1 * v), 0},
-		[]complex128{0, cmplx.Exp(v)},
-	}
-}
-
-func R(k int) matrix.Matrix {
-	p := 2 * math.Pi / math.Pow(2, float64(k))
-	e := cmplx.Exp(complex(0, p))
-	return matrix.Matrix{
-		[]complex128{1, 0},
-		[]complex128{0, e},
 	}
 }
 
@@ -117,6 +89,38 @@ func T(n ...int) matrix.Matrix {
 		[]complex128{1, 0},
 		[]complex128{0, v},
 	}, n...)
+}
+
+func R(theta float64) matrix.Matrix {
+	e := cmplx.Exp(complex(0, theta))
+	return matrix.Matrix{
+		[]complex128{1, 0},
+		[]complex128{0, e},
+	}
+}
+
+func RX(theta float64) matrix.Matrix {
+	v := complex(theta/2, 0)
+	return matrix.Matrix{
+		[]complex128{cmplx.Cos(v), -1i * cmplx.Sin(v)},
+		[]complex128{-1i * cmplx.Sin(v), cmplx.Cos(v)},
+	}
+}
+
+func RY(theta float64) matrix.Matrix {
+	v := complex(theta/2, 0)
+	return matrix.Matrix{
+		[]complex128{cmplx.Cos(v), -1 * cmplx.Sin(v)},
+		[]complex128{cmplx.Sin(v), cmplx.Cos(v)},
+	}
+}
+
+func RZ(theta float64) matrix.Matrix {
+	v := complex(0, theta/2)
+	return matrix.Matrix{
+		[]complex128{cmplx.Exp(-1 * v), 0},
+		[]complex128{0, cmplx.Exp(v)},
+	}
 }
 
 func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
@@ -288,13 +292,13 @@ func CS(n, c, t int) matrix.Matrix {
 	return ControlledS(n, []int{c}, t)
 }
 
-func ControlledR(k, n int, c []int, t int) matrix.Matrix {
+func ControlledR(theta float64, n int, c []int, t int) matrix.Matrix {
 	g := I([]int{n}...)
 	d, _ := g.Dimension()
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 
-	p := 2 * math.Pi / math.Pow(2, float64(k))
-	e := cmplx.Exp(complex(0, p))
+	// exp(i * theta)
+	e := cmplx.Exp(complex(0, theta))
 
 	for i := 0; i < d; i++ {
 		bits := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)))
@@ -316,8 +320,8 @@ func ControlledR(k, n int, c []int, t int) matrix.Matrix {
 	return g
 }
 
-func CR(k, n, c, t int) matrix.Matrix {
-	return ControlledR(k, n, []int{c}, t)
+func CR(theta float64, n, c, t int) matrix.Matrix {
+	return ControlledR(theta, n, []int{c}, t)
 }
 
 // Swap returns unitary matrix of Swap operation.
@@ -355,7 +359,7 @@ func QFT(n int) matrix.Matrix {
 
 		k := 2
 		for j := i + 1; j < n; j++ {
-			g = g.Apply(CR(k, n, j, i))
+			g = g.Apply(CR(Theta(k), n, j, i))
 			k++
 		}
 	}
@@ -363,8 +367,8 @@ func QFT(n int) matrix.Matrix {
 	return g
 }
 
-// ControlledModExp2 returns unitary matrix of controlled modular exponentiation operation. |j>|k> -> |j>|a**(2**j) * k mod N>
-// len(t) must be larger than log2(N)
+// ControlledModExp2 returns unitary matrix of controlled modular exponentiation operation. |j>|k> -> |j>|a**(2**j) * k mod N>.
+// len(t) must be larger than log2(N).
 func ControlledModExp2(n, a, j, N, c int, t []int) matrix.Matrix {
 	m := I([]int{n}...)
 	d, _ := m.Dimension()
