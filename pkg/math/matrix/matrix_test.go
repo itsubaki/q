@@ -192,9 +192,8 @@ func ExampleMatrix_Apply() {
 		fmt.Println(r)
 	}
 
-	xx := x.Apply(x)
 	fmt.Println("xx:")
-	for _, r := range xx {
+	for _, r := range x.Apply(x) {
 		fmt.Println(r)
 	}
 
@@ -213,8 +212,7 @@ func ExampleTensorProduct() {
 		[]complex128{1, 0},
 	)
 
-	xx := matrix.TensorProduct(x, x)
-	for _, r := range xx {
+	for _, r := range matrix.TensorProduct(x, x) {
 		fmt.Println(r)
 	}
 
@@ -231,8 +229,7 @@ func ExampleTensorProductN() {
 		[]complex128{1, 0},
 	)
 
-	xx := matrix.TensorProductN(x, 2)
-	for _, r := range xx {
+	for _, r := range matrix.TensorProductN(x, 2) {
 		fmt.Println(r)
 	}
 
@@ -249,12 +246,34 @@ func ExampleApply() {
 		[]complex128{1, 0},
 	)
 
-	xx := matrix.Apply(x, x)
-	for _, r := range xx {
+	for _, r := range matrix.Apply(x, x) {
 		fmt.Println(r)
 	}
 
 	// Output:
+	// [(1+0i) (0+0i)]
+	// [(0+0i) (1+0i)]
+}
+
+func ExampleApplyN() {
+	x := matrix.New(
+		[]complex128{0, 1},
+		[]complex128{1, 0},
+	)
+
+	for _, r := range matrix.ApplyN(x) {
+		fmt.Println(r)
+	}
+	fmt.Println()
+
+	for _, r := range matrix.ApplyN(x, 2) {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [(0+0i) (1+0i)]
+	// [(1+0i) (0+0i)]
+	//
 	// [(1+0i) (0+0i)]
 	// [(0+0i) (1+0i)]
 }
@@ -264,14 +283,14 @@ func ExampleMatrix_TensorProduct() {
 		[]complex128{0, 1},
 		[]complex128{1, 0},
 	)
+
 	fmt.Println("x:")
 	for _, r := range x {
 		fmt.Println(r)
 	}
 
-	xx := x.TensorProduct(x)
 	fmt.Println("xx:")
-	for _, r := range xx {
+	for _, r := range x.TensorProduct(x) {
 		fmt.Println(r)
 	}
 

@@ -327,6 +327,19 @@ func Apply(m ...Matrix) Matrix {
 	return out
 }
 
+func ApplyN(m Matrix, n ...int) Matrix {
+	if len(n) < 1 {
+		return m
+	}
+
+	list := make([]Matrix, 0)
+	for i := 0; i < n[0]; i++ {
+		list = append(list, m)
+	}
+
+	return Apply(list...)
+}
+
 func TensorProductN(m Matrix, n ...int) Matrix {
 	if len(n) < 1 {
 		return m
