@@ -219,9 +219,9 @@ func (m Matrix) Trace() complex128 {
 }
 
 func (m Matrix) Real() [][]float64 {
-	out := make([][]float64, 0)
+	out := make([][]float64, 0, len(m))
 	for i, r := range m {
-		out = append(out, make([]float64, 0))
+		out = append(out, make([]float64, 0, len(m[i])))
 		for j := range r {
 			out[i] = append(out[i], real(m[i][j]))
 		}
@@ -231,9 +231,9 @@ func (m Matrix) Real() [][]float64 {
 }
 
 func (m Matrix) Imag() [][]float64 {
-	out := make([][]float64, 0)
+	out := make([][]float64, 0, len(m))
 	for i, r := range m {
-		out = append(out, make([]float64, 0))
+		out = append(out, make([]float64, 0, len(m[i])))
 		for j := range r {
 			out[i] = append(out[i], imag(m[i][j]))
 		}
@@ -332,7 +332,7 @@ func ApplyN(m Matrix, n ...int) Matrix {
 		return m
 	}
 
-	list := make([]Matrix, 0)
+	list := make([]Matrix, 0, n[0])
 	for i := 0; i < n[0]; i++ {
 		list = append(list, m)
 	}
@@ -345,7 +345,7 @@ func TensorProductN(m Matrix, n ...int) Matrix {
 		return m
 	}
 
-	list := make([]Matrix, 0)
+	list := make([]Matrix, 0, n[0])
 	for i := 0; i < n[0]; i++ {
 		list = append(list, m)
 	}

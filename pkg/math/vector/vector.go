@@ -148,7 +148,7 @@ func (v Vector) Dimension() int {
 }
 
 func (v Vector) Real() []float64 {
-	out := make([]float64, 0)
+	out := make([]float64, 0, len(v))
 	for i := range v {
 		out = append(out, real(v[i]))
 	}
@@ -157,7 +157,7 @@ func (v Vector) Real() []float64 {
 }
 
 func (v Vector) Imag() []float64 {
-	out := make([]float64, 0)
+	out := make([]float64, 0, len(v))
 	for i := range v {
 		out = append(out, imag(v[i]))
 	}
@@ -170,7 +170,7 @@ func TensorProductN(v Vector, n ...int) Vector {
 		return v
 	}
 
-	list := make([]Vector, 0)
+	list := make([]Vector, 0, n[0])
 	for i := 0; i < n[0]; i++ {
 		list = append(list, v)
 	}

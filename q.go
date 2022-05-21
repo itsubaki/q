@@ -16,7 +16,7 @@ func (q Qubit) Index() int {
 }
 
 func Index(qb ...Qubit) []int {
-	index := make([]int, 0)
+	index := make([]int, 0, len(qb))
 	for i := range qb {
 		index = append(index, qb[i].Index())
 	}
@@ -51,7 +51,7 @@ func (q *Q) New(v ...complex128) Qubit {
 }
 
 func (q *Q) NewOf(binary string) []Qubit {
-	qb := make([]Qubit, 0)
+	qb := make([]Qubit, 0, len(binary))
 	for _, b := range binary {
 		if b == '0' {
 			qb = append(qb, q.Zero())
@@ -73,7 +73,7 @@ func (q *Q) One() Qubit {
 }
 
 func (q *Q) ZeroWith(n int) []Qubit {
-	qb := make([]Qubit, 0)
+	qb := make([]Qubit, 0, n)
 	for i := 0; i < n; i++ {
 		qb = append(qb, q.Zero())
 	}
@@ -82,7 +82,7 @@ func (q *Q) ZeroWith(n int) []Qubit {
 }
 
 func (q *Q) OneWith(n int) []Qubit {
-	qb := make([]Qubit, 0)
+	qb := make([]Qubit, 0, n)
 	for i := 0; i < n; i++ {
 		qb = append(qb, q.One())
 	}
@@ -332,15 +332,16 @@ func (q *Q) InvQFT(qb ...Qubit) *Q {
 
 func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
 	if len(qb) < 1 {
-		m := make([]*qubit.Qubit, 0)
-		for i := 0; i < q.NumberOfBit(); i++ {
+		n := q.NumberOfBit()
+		m := make([]*qubit.Qubit, 0, n)
+		for i := 0; i < n; i++ {
 			m = append(m, q.qb.Measure(i))
 		}
 
 		return qubit.TensorProduct(m...)
 	}
 
-	m := make([]*qubit.Qubit, 0)
+	m := make([]*qubit.Qubit, 0, len(qb))
 	for i := 0; i < len(qb); i++ {
 		m = append(m, q.qb.Measure(qb[i].Index()))
 	}

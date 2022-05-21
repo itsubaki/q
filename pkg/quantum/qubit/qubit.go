@@ -197,8 +197,9 @@ func (q *Qubit) String() string {
 
 func (q *Qubit) State(index ...[]int) []State {
 	if len(index) < 1 {
-		idx := make([]int, 0)
-		for i := 0; i < q.NumberOfBit(); i++ {
+		n := q.NumberOfBit()
+		idx := make([]int, 0, n)
+		for i := 0; i < n; i++ {
 			idx = append(idx, i)
 		}
 

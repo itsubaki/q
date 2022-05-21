@@ -192,7 +192,7 @@ func ControlledNot(n int, c []int, t int) matrix.Matrix {
 	d, _ := m.Dimension()
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 
-	index := make([]int64, 0)
+	index := make([]int64, 0, d)
 	for i := 0; i < d; i++ {
 		bits := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)))
 
@@ -379,7 +379,7 @@ func ControlledModExp2(n, a, j, N, c int, t []int) matrix.Matrix {
 	bf := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 	tf := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(r1len), "s")
 
-	index := make([]int64, 0)
+	index := make([]int64, 0, d)
 	for i := 0; i < d; i++ {
 		bits := []rune(fmt.Sprintf(bf, strconv.FormatInt(int64(i), 2)))
 		if bits[c] == '0' {
