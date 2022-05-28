@@ -64,3 +64,17 @@ func (s State) Equals(v State, eps ...float64) bool {
 func (s State) String() string {
 	return fmt.Sprintf("%v%3v(% .4f% .4fi): %.4f", s.BinaryString, s.Int, real(s.Amplitude), imag(s.Amplitude), s.Probability)
 }
+
+func Equals(s, v []State, eps ...float64) bool {
+	if len(s) != len(v) {
+		return false
+	}
+
+	for i := range s {
+		if !s[i].Equals(v[i], eps...) {
+			return false
+		}
+	}
+
+	return true
+}

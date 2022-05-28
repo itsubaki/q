@@ -75,3 +75,34 @@ func TestState_Equals(t *testing.T) {
 		}
 	}
 }
+
+func TestEquals(t *testing.T) {
+	cases := []struct {
+		s    []qubit.State
+		v    []qubit.State
+		want bool
+	}{
+		{
+			[]qubit.State{},
+			[]qubit.State{},
+			true,
+		},
+		{
+			[]qubit.State{{}},
+			[]qubit.State{{}, {}},
+			false,
+		},
+		{
+			[]qubit.State{{Amplitude: complex(1, 0)}},
+			[]qubit.State{{Amplitude: complex(0, 1)}},
+			false,
+		},
+	}
+
+	for _, c := range cases {
+		got := qubit.Equals(c.s, c.v)
+		if got != c.want {
+			t.Errorf("got=%v want=%v", got, c.want)
+		}
+	}
+}
