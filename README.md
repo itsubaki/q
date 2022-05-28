@@ -137,10 +137,12 @@ qsim.H(q0, q1, q2, q3)
 N := number.Pow(2, qsim.NumberOfBit())
 r := math.Floor(math.Pi / 4 * math.Sqrt(float64(N)))
 for i := 0; i < int(r); i++ {
+  // oracle for |110>|x>
   qsim.X(q2, q3)
   qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)
   qsim.X(q2, q3)
 
+  // amplification
   qsim.H(q0, q1, q2, q3)
   qsim.X(q0, q1, q2, q3)
   qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)
@@ -163,7 +165,7 @@ for _, s := range qsim.State() {
 // [1001][  9]( 0.0508 0.0000i): 0.0026
 // [1010][ 10]( 0.0508 0.0000i): 0.0026
 // [1011][ 11]( 0.0508 0.0000i): 0.0026
-// [1100][ 12](-0.9805 0.0000i): 0.9613 -> answer!
+// [1100][ 12](-0.9805 0.0000i): 0.9613
 // [1101][ 13]( 0.0508 0.0000i): 0.0026
 // [1110][ 14]( 0.0508 0.0000i): 0.0026
 // [1111][ 15]( 0.0508 0.0000i): 0.0026

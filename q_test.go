@@ -846,10 +846,12 @@ func Example_grover4qubit() {
 	N := number.Pow(2, qsim.NumberOfBit())
 	r := math.Floor(math.Pi / 4 * math.Sqrt(float64(N)))
 	for i := 0; i < int(r); i++ {
+		// oracle for |110>|x>
 		qsim.X(q2, q3)
 		qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)
 		qsim.X(q2, q3)
 
+		// amplification
 		qsim.H(q0, q1, q2, q3)
 		qsim.X(q0, q1, q2, q3)
 		qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)
