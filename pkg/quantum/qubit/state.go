@@ -2,8 +2,10 @@ package qubit
 
 import (
 	"fmt"
+	"math/cmplx"
 	"strconv"
 
+	"github.com/itsubaki/q/pkg/math/epsilon"
 	"github.com/itsubaki/q/pkg/math/number"
 )
 
@@ -28,6 +30,23 @@ func (s State) Value(index ...int) (int64, string) {
 	}
 
 	return s.Int[i], s.BinaryString[i]
+}
+
+func (s State) Equals(v State, eps ...float64) bool {
+	if len(s.Int) != len(v.Int) {
+		return false
+	}
+
+	if len(s.BinaryString) != len(v.BinaryString) {
+		return false
+	}
+
+	e := epsilon.E13(eps...)
+	if cmplx.Abs(s.Amplitude-v.Amplitude) > e {
+		return false
+	}
+
+	return true
 }
 
 func (s State) String() string {
