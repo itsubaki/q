@@ -55,6 +55,17 @@ func TestState_Equals(t *testing.T) {
 			qubit.State{Int: []int64{1}, BinaryString: []string{"001"}, Amplitude: complex(1, 1)},
 			true,
 		},
+		{
+			qubit.State{Int: []int64{1}, BinaryString: []string{"001"}, Amplitude: complex(1, 1)},
+			qubit.State{Int: []int64{1}, BinaryString: []string{"002"}, Amplitude: complex(1, 1)},
+			false,
+		},
+
+		{
+			qubit.State{Int: []int64{1}, BinaryString: []string{"001"}, Amplitude: complex(1, 1)},
+			qubit.State{Int: []int64{2}, BinaryString: []string{"001"}, Amplitude: complex(1, 1)},
+			false,
+		},
 	}
 
 	for _, c := range cases {

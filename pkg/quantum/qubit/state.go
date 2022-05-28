@@ -41,6 +41,18 @@ func (s State) Equals(v State, eps ...float64) bool {
 		return false
 	}
 
+	for i := range s.Int {
+		if s.Int[i] != v.Int[i] {
+			return false
+		}
+	}
+
+	for i := range s.BinaryString {
+		if s.BinaryString[i] != v.BinaryString[i] {
+			return false
+		}
+	}
+
 	e := epsilon.E13(eps...)
 	if cmplx.Abs(s.Amplitude-v.Amplitude) > e {
 		return false
