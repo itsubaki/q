@@ -24,3 +24,8 @@ cover.html
 cover.out
 coverage.txt
 coverage.html
+
+
+# Github codespaces
+.vscode
+oryxBuildBinary
