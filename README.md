@@ -7,7 +7,7 @@
 
 - quantum computation simulator
 - pure golang implementation
-- full scratch
+- using only the standard library
 
 # Example
 

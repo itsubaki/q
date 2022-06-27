@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/itsubaki/q"
-	"github.com/itsubaki/q/pkg/math/number"
-	"github.com/itsubaki/q/pkg/math/rand"
+	"github.com/itsubaki/q/math/number"
+	"github.com/itsubaki/q/math/rand"
 )
 
 // go run main.go --N 15

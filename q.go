@@ -3,10 +3,10 @@ package q
 import (
 	"math"
 
-	"github.com/itsubaki/q/pkg/math/matrix"
-	"github.com/itsubaki/q/pkg/math/rand"
-	"github.com/itsubaki/q/pkg/quantum/gate"
-	"github.com/itsubaki/q/pkg/quantum/qubit"
+	"github.com/itsubaki/q/math/matrix"
+	"github.com/itsubaki/q/math/rand"
+	"github.com/itsubaki/q/quantum/gate"
+	"github.com/itsubaki/q/quantum/qubit"
 )
 
 type Qubit int

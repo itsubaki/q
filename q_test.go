@@ -7,10 +7,10 @@ import (
 	"testing"
 
 	"github.com/itsubaki/q"
-	"github.com/itsubaki/q/pkg/math/epsilon"
-	"github.com/itsubaki/q/pkg/math/number"
-	"github.com/itsubaki/q/pkg/math/rand"
-	"github.com/itsubaki/q/pkg/quantum/gate"
+	"github.com/itsubaki/q/math/epsilon"
+	"github.com/itsubaki/q/math/number"
+	"github.com/itsubaki/q/math/rand"
+	"github.com/itsubaki/q/quantum/gate"
 )
 
 func ExampleQ_Zero() {
