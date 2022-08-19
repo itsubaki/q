@@ -175,31 +175,34 @@ func ExampleQ_Measure() {
 	q2 := qsim.Zero()
 	qsim.X(q0)
 
-	o := qsim.Measure(q0)
-	fmt.Println(o)
-	fmt.Println(o.IsOne())
-	fmt.Println(o.BinaryString())
-
-	m := qsim.Measure(q0, q1, q2)
-	fmt.Println(m)
-	fmt.Println(m.Int())
-	fmt.Println(m.BinaryString())
-
-	mm := qsim.Measure()
-	fmt.Println(mm)
-	fmt.Println(mm.Int())
-	fmt.Println(mm.BinaryString())
+	fmt.Println(qsim.Measure(q0))
+	fmt.Println(qsim.Measure(q0, q1, q2))
+	fmt.Println(qsim.Measure())
 
 	// Output:
 	// [(0+0i) (1+0i)]
-	// true
-	// 1
 	// [(0+0i) (0+0i) (0+0i) (0+0i) (1+0i) (0+0i) (0+0i) (0+0i)]
-	// 4
-	// 100
 	// [(0+0i) (0+0i) (0+0i) (0+0i) (1+0i) (0+0i) (0+0i) (0+0i)]
-	// 4
-	// 100
+}
+
+func ExampleQ_M() {
+	qsim := q.New()
+	qsim.Seed = []int{1}
+	qsim.Rand = rand.Math
+
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
+	qsim.X(q0)
+
+	fmt.Println(qsim.M(q0))
+	fmt.Println(qsim.M(q0, q1, q2))
+	fmt.Println(qsim.M())
+
+	// Output:
+	// [(0+0i) (1+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i) (1+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i) (1+0i) (0+0i) (0+0i) (0+0i)]
 }
 
 func ExampleQ_Apply() {
@@ -425,6 +428,23 @@ func ExampleQ_InvQFT() {
 
 	qsim.QFT(q0, q1, q2)
 	qsim.InvQFT(q0, q1, q2)
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [010][  2]( 1.0000 0.0000i): 1.0000
+}
+
+func ExampleQ_IQFT() {
+	qsim := q.New()
+
+	q0 := qsim.Zero()
+	q1 := qsim.One()
+	q2 := qsim.Zero()
+
+	qsim.QFT(q0, q1, q2)
+	qsim.IQFT(q0, q1, q2)
 	for _, s := range qsim.State() {
 		fmt.Println(s)
 	}

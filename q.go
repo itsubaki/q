@@ -330,6 +330,14 @@ func (q *Q) InvQFT(qb ...Qubit) *Q {
 	return q.InverseQFT(qb...)
 }
 
+func (q *Q) IQFT(qb ...Qubit) *Q {
+	return q.InverseQFT(qb...)
+}
+
+func (q *Q) M(qb ...Qubit) *qubit.Qubit {
+	return q.Measure(qb...)
+}
+
 func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
 	if len(qb) < 1 {
 		n := q.NumberOfBit()
