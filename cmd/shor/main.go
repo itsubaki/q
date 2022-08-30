@@ -83,7 +83,6 @@ func main() {
 	qsim.Measure(r1...)
 	print("measure reg1", qsim, r0, r1)
 
-	sum := 0.0
 	for _, state := range qsim.State(r0) {
 		i, m := state.Value()
 		s, r, d, ok := number.FindOrder(a, N, fmt.Sprintf("0.%s", m))
@@ -100,10 +99,7 @@ func main() {
 		}
 
 		fmt.Printf("* i=%3d: N=%d, a=%d. s/r=%2d/%2d ([0.%v]~%.4f). p=%v, q=%v.\n", i, N, a, s, r, m, d, p0, p1)
-		sum = sum + state.Probability
 	}
-
-	fmt.Printf("success rate: %v\n", sum)
 }
 
 func print(desc string, qsim *q.Q, reg ...any) {
