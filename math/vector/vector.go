@@ -10,11 +10,8 @@ import (
 type Vector []complex128
 
 func New(z ...complex128) Vector {
-	out := make(Vector, 0, len(z))
-	for _, zi := range z {
-		out = append(out, zi)
-	}
-
+	out := make(Vector, len(z))
+	copy(out, z)
 	return out
 }
 

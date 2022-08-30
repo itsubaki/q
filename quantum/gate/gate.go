@@ -12,10 +12,7 @@ import (
 
 func New(v ...[]complex128) matrix.Matrix {
 	g := make(matrix.Matrix, len(v))
-	for i := 0; i < len(v); i++ {
-		g[i] = v[i]
-	}
-
+	copy(g, v)
 	return g
 }
 

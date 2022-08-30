@@ -17,9 +17,7 @@ type State struct {
 }
 
 func (s *State) Add(binary string) {
-	i := number.Must(strconv.ParseInt(binary, 2, 0))
-
-	s.Int = append(s.Int, i)
+	s.Int = append(s.Int, number.Must(strconv.ParseInt(binary, 2, 0)))
 	s.BinaryString = append(s.BinaryString, binary)
 }
 
@@ -53,12 +51,7 @@ func (s State) Equals(v State, eps ...float64) bool {
 		}
 	}
 
-	e := epsilon.E13(eps...)
-	if cmplx.Abs(s.Amplitude-v.Amplitude) > e {
-		return false
-	}
-
-	return true
+	return cmplx.Abs(s.Amplitude-v.Amplitude) < epsilon.E13(eps...)
 }
 
 func (s State) String() string {

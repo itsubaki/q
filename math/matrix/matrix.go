@@ -10,10 +10,7 @@ type Matrix [][]complex128
 
 func New(v ...[]complex128) Matrix {
 	out := make(Matrix, len(v))
-	for i := 0; i < len(v); i++ {
-		out[i] = v[i]
-	}
-
+	copy(out, v)
 	return out
 }
 
@@ -114,11 +111,7 @@ func (m Matrix) Dagger() Matrix {
 
 func (m Matrix) IsSquare() bool {
 	p, q := m.Dimension()
-	if p == q {
-		return true
-	}
-
-	return false
+	return p == q
 }
 
 func (m Matrix) IsHermite(eps ...float64) bool {
