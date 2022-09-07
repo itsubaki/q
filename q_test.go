@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/cmplx"
+	"sort"
 	"testing"
 
 	"github.com/itsubaki/q"
@@ -11,6 +12,7 @@ import (
 	"github.com/itsubaki/q/math/number"
 	"github.com/itsubaki/q/math/rand"
 	"github.com/itsubaki/q/quantum/gate"
+	"github.com/itsubaki/q/quantum/qubit"
 )
 
 func ExampleQ_Zero() {
@@ -1130,6 +1132,49 @@ func Example_shorFactoring85() {
 
 	// Output:
 	// N=85, a=14. p=5, q=17. s/r=15/16 ([0.1111]~0.938)
+}
+
+func Example_top() {
+	N := 21
+	a := 11
+
+	qsim := q.New()
+	qsim.Seed = []int{1}
+	qsim.Rand = rand.Math
+
+	r0 := qsim.ZeroWith(4)
+	r1 := qsim.ZeroLog2(N)
+
+	qsim.X(r1[len(r1)-1])
+	qsim.H(r0...)
+	qsim.CModExp2(a, N, r0, r1)
+	qsim.IQFT(r0...)
+	qsim.M(r1...)
+
+	top := func(n int, s []qubit.State) []qubit.State {
+		sort.Slice(s, func(i, j int) bool { return s[i].Probability > s[j].Probability })
+		if len(s) < n {
+			return s
+		}
+
+		return s[:n]
+	}
+
+	for _, s := range top(10, qsim.State(r0)) {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [1000][  8](-0.4330 0.0000i): 0.1875
+	// [0000][  0]( 0.4330 0.0000i): 0.1875
+	// [1101][ 13](-0.1334 0.3219i): 0.1214
+	// [0101][  5]( 0.1334-0.3219i): 0.1214
+	// [1011][ 11]( 0.1334 0.3219i): 0.1214
+	// [0011][  3](-0.1334-0.3219i): 0.1214
+	// [0100][  4]( 0.0000-0.1443i): 0.0208
+	// [0110][  6](-0.1021 0.1021i): 0.0208
+	// [1010][ 10](-0.1021-0.1021i): 0.0208
+	// [0010][  2]( 0.1021 0.1021i): 0.0208
 }
 
 func ExampleQ_Raw() {
