@@ -11,23 +11,49 @@ import (
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
+type State struct {
+	Probability float64
+	Qubit       *qubit.Qubit
+}
+
 type Matrix struct {
 	m matrix.Matrix
 }
 
-func New(p []float64, q []*qubit.Qubit) (*Matrix, error) {
-	out := &Matrix{matrix.New()}
-	if len(p) != len(q) {
-		return nil, fmt.Errorf("invalid length. len(p)=%v, len(q)=%v", len(p), len(q))
+func New(ensemble []State) (*Matrix, error) {
+	m := &Matrix{matrix.New()}
+	if err := m.Add(ensemble); err != nil {
+		return nil, fmt.Errorf("add: %v", err)
 	}
 
-	for i := range p {
-		if err := out.Add(p[i], q[i]); err != nil {
-			return nil, fmt.Errorf("add: %v", err)
+	return m, nil
+}
+
+func (m *Matrix) Add(ensemble []State) error {
+	for _, s := range ensemble {
+		if s.Probability < 0 || s.Probability > 1 {
+			return fmt.Errorf("p must be 0 <= p =< 1. p=%v", s.Probability)
 		}
+
+		n := s.Qubit.Dimension()
+		if len(m.m) < 1 {
+			m.m = matrix.Zero(n)
+		}
+
+		if len(m.m) != n {
+			return fmt.Errorf("invalid dimension. m=%d n=%d", len(m.m), n)
+		}
+
+		op := s.Qubit.OuterProduct(s.Qubit).Mul(complex(s.Probability, 0))
+		for i := 0; i < n; i++ {
+			for j := 0; j < n; j++ {
+				m.m[i][j] = m.m[i][j] + op[i][j]
+			}
+		}
+
 	}
 
-	return out, nil
+	return nil
 }
 
 func (m *Matrix) Raw() matrix.Matrix {
@@ -42,30 +68,6 @@ func (m *Matrix) NumberOfBit() int {
 	p, _ := m.Dimension()
 	log := math.Log2(float64(p))
 	return int(log)
-}
-
-func (m *Matrix) Add(p float64, q *qubit.Qubit) error {
-	if p < 0 || p > 1 {
-		return fmt.Errorf("p must be 0 <= p =< 1. p=%v", p)
-	}
-
-	n := q.Dimension()
-	if len(m.m) < 1 {
-		m.m = matrix.Zero(n)
-	}
-
-	if len(m.m) != n {
-		return fmt.Errorf("invalid dimension. m=%d n=%d", len(m.m), n)
-	}
-
-	op := q.OuterProduct(q).Mul(complex(p, 0))
-	for i := 0; i < n; i++ {
-		for j := 0; j < n; j++ {
-			m.m[i][j] = m.m[i][j] + op[i][j]
-		}
-	}
-
-	return nil
 }
 
 func (m *Matrix) Apply(u matrix.Matrix) *Matrix {
