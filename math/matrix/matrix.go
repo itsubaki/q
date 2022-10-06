@@ -132,17 +132,19 @@ func (m Matrix) IsUnitary(eps ...float64) bool {
 }
 
 func (m Matrix) Apply(n Matrix) Matrix {
-	p, _ := m.Dimension()
-	a, b := n.Dimension()
+	a, b := m.Dimension()
+	_, p := n.Dimension()
 
 	out := make(Matrix, 0, a)
 	for i := 0; i < a; i++ {
 		v := make([]complex128, 0, b)
-		for j := 0; j < b; j++ {
-			c := complex(0, 0)
-			for k := 0; k < p; k++ {
+
+		for j := 0; j < p; j++ {
+			var c complex128
+			for k := 0; k < b; k++ {
 				c = c + n[i][k]*m[k][j]
 			}
+
 			v = append(v, c)
 		}
 
