@@ -63,14 +63,15 @@ func (m Matrix) Dimension() (int, int) {
 func (m Matrix) Transpose() Matrix {
 	p, q := m.Dimension()
 
-	out := make(Matrix, 0, p)
-	for i := 0; i < p; i++ {
-		v := make([]complex128, 0, q)
-		for j := 0; j < q; j++ {
-			v = append(v, m[j][i])
-		}
+	out := make(Matrix, q)
+	for i := range out {
+		out[i] = make([]complex128, p)
+	}
 
-		out = append(out, v)
+	for i := 0; i < q; i++ {
+		for j := 0; j < p; j++ {
+			out[i][j] = m[j][i]
+		}
 	}
 
 	return out
