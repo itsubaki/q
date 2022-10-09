@@ -36,7 +36,7 @@ func BenchmarkApplyConcurrencyN8(b *testing.B) {
 
 				v := make([]complex128, b)
 				for j := 0; j < b; j++ {
-					c := complex(0, 0)
+					var c complex128
 					for k := 0; k < p; k++ {
 						c = c + n[i][k]*m[k][j]
 					}

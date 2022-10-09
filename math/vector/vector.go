@@ -73,7 +73,7 @@ func (v Vector) TensorProduct(w Vector) Vector {
 func (v Vector) InnerProduct(w Vector) complex128 {
 	dual := w.Dual()
 
-	out := complex(0, 0)
+	var out complex128
 	for i := 0; i < len(v); i++ {
 		out = out + v[i]*dual[i]
 	}
@@ -114,12 +114,12 @@ func (v Vector) Apply(m matrix.Matrix) Vector {
 
 	out := make(Vector, 0, p)
 	for i := 0; i < p; i++ {
-		vv := complex(0, 0)
+		var c complex128
 		for j := 0; j < q; j++ {
-			vv = vv + m[i][j]*v[j]
+			c = c + m[i][j]*v[j]
 		}
 
-		out = append(out, vv)
+		out = append(out, c)
 	}
 
 	return out

@@ -36,12 +36,12 @@ func BenchmarkApplyConcurrencyN12(b *testing.B) {
 			go func(i int, out *vector.Vector) {
 				defer wg.Done()
 
-				vv := complex(0, 0)
+				var c complex128
 				for j := 0; j < q; j++ {
-					vv = vv + m[i][j]*v[j]
+					c = c + m[i][j]*v[j]
 				}
 
-				(*out)[i] = vv
+				(*out)[i] = c
 			}(i, &out)
 		}
 
