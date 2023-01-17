@@ -57,8 +57,7 @@ func main() {
 
 	qsim := q.New()
 	if seed > 0 {
-		qsim.Seed = []int{seed}
-		qsim.Rand = rand.Math
+		qsim.Rand = rand.Const(seed)
 	}
 
 	r0 := qsim.ZeroWith(t)

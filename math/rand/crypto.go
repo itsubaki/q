@@ -8,7 +8,7 @@ import (
 	"github.com/itsubaki/q/math/number"
 )
 
-func Crypto(_ ...int) float64 {
+func Crypto() float64 {
 	v := CryptoInt64(0, math.MaxInt64)
 	return float64(v) / math.MaxInt64
 }

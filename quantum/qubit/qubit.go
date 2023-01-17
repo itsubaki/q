@@ -16,8 +16,7 @@ import (
 
 type Qubit struct {
 	vector vector.Vector
-	Seed   []int
-	Rand   func(seed ...int) float64
+	Rand   func() float64
 }
 
 func New(z ...complex128) *Qubit {
@@ -69,7 +68,6 @@ func (q *Qubit) Dimension() int {
 func (q *Qubit) Clone() *Qubit {
 	return &Qubit{
 		vector: q.vector.Clone(),
-		Seed:   q.Seed,
 		Rand:   q.Rand,
 	}
 }
@@ -153,7 +151,7 @@ func (q *Qubit) Measure(index int) *Qubit {
 	}
 
 	// One()
-	if q.Rand(q.Seed...) > number.Sum(zprop) {
+	if q.Rand() > number.Sum(zprop) {
 		for _, i := range zidx {
 			q.vector[i] = complex(0, 0)
 		}

@@ -169,8 +169,7 @@ func ExampleQ_Probability() {
 
 func ExampleQ_Measure() {
 	qsim := q.New()
-	qsim.Seed = []int{1}
-	qsim.Rand = rand.Math
+	qsim.Rand = rand.Const()
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
@@ -189,8 +188,7 @@ func ExampleQ_Measure() {
 
 func ExampleQ_M() {
 	qsim := q.New()
-	qsim.Seed = []int{1}
-	qsim.Rand = rand.Math
+	qsim.Rand = rand.Const()
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
@@ -673,8 +671,7 @@ func Example_bellState() {
 
 func Example_bellState2() {
 	qsim := q.New()
-	qsim.Seed = []int{1}
-	qsim.Rand = rand.Math
+	qsim.Rand = rand.Const()
 
 	r := qsim.ZeroWith(2)
 
@@ -940,8 +937,7 @@ func Example_shorFactoring15() {
 	a := 7
 
 	qsim := q.New()
-	qsim.Seed = []int{1}
-	qsim.Rand = rand.Math
+	qsim.Rand = rand.Const()
 
 	// initial state
 	q0 := qsim.Zero()
@@ -997,8 +993,7 @@ func Example_shorFactoring21() {
 	a := 8
 
 	qsim := q.New()
-	qsim.Seed = []int{1}
-	qsim.Rand = rand.Math
+	qsim.Rand = rand.Const()
 
 	r0 := qsim.ZeroWith(4)
 	r1 := qsim.ZeroLog2(N)
@@ -1032,8 +1027,7 @@ func Example_shorFactoring51() {
 	a := 5 // 5, 7, 10, 11, 14, 20, 22, 23, 28, 29, 31, 37, 40, 41, 44, 46
 
 	qsim := q.New()
-	qsim.Seed = []int{1}
-	qsim.Rand = rand.Math
+	qsim.Rand = rand.Const()
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
@@ -1089,8 +1083,7 @@ func Example_shorFactoring85() {
 	a := 14
 
 	qsim := q.New()
-	qsim.Seed = []int{1}
-	qsim.Rand = rand.Math
+	qsim.Rand = rand.Const()
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
@@ -1139,8 +1132,7 @@ func Example_top() {
 	a := 11
 
 	qsim := q.New()
-	qsim.Seed = []int{1}
-	qsim.Rand = rand.Math
+	qsim.Rand = rand.Const()
 
 	r0 := qsim.ZeroWith(4)
 	r1 := qsim.ZeroLog2(N)

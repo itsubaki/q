@@ -293,8 +293,7 @@ func Example_errorCorrectionPhaseFlip() {
 
 func Example_quantumTeleportation() {
 	phi := qubit.New(1, 2)
-	phi.Seed = []int{1}
-	phi.Rand = rand.Math
+	phi.Rand = rand.Const()
 
 	fmt.Println("before:")
 	for _, s := range phi.State() {
@@ -339,8 +338,7 @@ func Example_quantumTeleportation() {
 
 func Example_quantumTeleportation2() {
 	phi := qubit.New(1, 2)
-	phi.Seed = []int{1}
-	phi.Rand = rand.Math
+	phi.Rand = rand.Const()
 
 	fmt.Println("before:")
 	for _, s := range phi.State() {
