@@ -37,9 +37,11 @@ func ExampleCoprime() {
 
 func TestCrypto(t *testing.T) {
 	r := rand.Crypto()
-	if r < 0 && r > 1 {
-		t.Fail()
+	if r >= 0 && r < 1 {
+		return
 	}
+
+	t.Fail()
 }
 
 func FuzzCryptoInt64(f *testing.F) {
