@@ -1,8 +1,6 @@
 package rand
 
-import (
-	"math/rand"
-)
+import "math/rand"
 
 func Const(seed ...int) func() float64 {
 	s := 1

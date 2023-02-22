@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"math"
 	"math/cmplx"
+	"math/rand"
 	"sort"
 	"testing"
 
 	"github.com/itsubaki/q"
 	"github.com/itsubaki/q/math/epsilon"
 	"github.com/itsubaki/q/math/number"
-	"github.com/itsubaki/q/math/rand"
+	rnd "github.com/itsubaki/q/math/rand"
 	"github.com/itsubaki/q/quantum/gate"
 	"github.com/itsubaki/q/quantum/qubit"
 )
@@ -169,7 +170,7 @@ func ExampleQ_Probability() {
 
 func ExampleQ_Measure() {
 	qsim := q.New()
-	qsim.Rand = rand.Const()
+	qsim.Rand = rnd.Const()
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
@@ -188,7 +189,7 @@ func ExampleQ_Measure() {
 
 func ExampleQ_M() {
 	qsim := q.New()
-	qsim.Rand = rand.Const()
+	qsim.Rand = rnd.Const()
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
@@ -671,7 +672,7 @@ func Example_bellState() {
 
 func Example_bellState2() {
 	qsim := q.New()
-	qsim.Rand = rand.Const()
+	qsim.Rand = rnd.Const()
 
 	r := qsim.ZeroWith(2)
 
@@ -937,7 +938,7 @@ func Example_shorFactoring15() {
 	a := 7
 
 	qsim := q.New()
-	qsim.Rand = rand.Const()
+	qsim.Rand = rnd.Const()
 
 	// initial state
 	q0 := qsim.Zero()
@@ -993,7 +994,7 @@ func Example_shorFactoring21() {
 	a := 8
 
 	qsim := q.New()
-	qsim.Rand = rand.Const()
+	qsim.Rand = rnd.Const()
 
 	r0 := qsim.ZeroWith(4)
 	r1 := qsim.ZeroLog2(N)
@@ -1027,7 +1028,7 @@ func Example_shorFactoring51() {
 	a := 5 // 5, 7, 10, 11, 14, 20, 22, 23, 28, 29, 31, 37, 40, 41, 44, 46
 
 	qsim := q.New()
-	qsim.Rand = rand.Const()
+	qsim.Rand = rnd.Const()
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
@@ -1083,7 +1084,7 @@ func Example_shorFactoring85() {
 	a := 14
 
 	qsim := q.New()
-	qsim.Rand = rand.Const()
+	qsim.Rand = rnd.Const()
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
@@ -1127,12 +1128,31 @@ func Example_shorFactoring85() {
 	// N=85, a=14. p=5, q=17. s/r=15/16 ([0.1111]~0.938)
 }
 
+func Example_mathrand() {
+	qsim := q.New()
+	qsim.Rand = func() float64 {
+		return rand.Float64()
+	}
+	rand.Seed(1)
+
+	q0 := qsim.Zero()
+	qsim.H(q0)
+	qsim.Measure(q0)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [1][  1]( 1.0000 0.0000i): 1.0000
+}
+
 func Example_top() {
 	N := 21
 	a := 11
 
 	qsim := q.New()
-	qsim.Rand = rand.Const()
+	qsim.Rand = rnd.Const()
 
 	r0 := qsim.ZeroWith(4)
 	r1 := qsim.ZeroLog2(N)
@@ -1143,7 +1163,7 @@ func Example_top() {
 	qsim.IQFT(r0...)
 	qsim.M(r1...)
 
-	top := func(n int, s []qubit.State) []qubit.State {
+	top := func(s []qubit.State, n int) []qubit.State {
 		sort.Slice(s, func(i, j int) bool { return s[i].Probability > s[j].Probability })
 		if len(s) < n {
 			return s
@@ -1152,7 +1172,7 @@ func Example_top() {
 		return s[:n]
 	}
 
-	for _, s := range top(10, qsim.State(r0)) {
+	for _, s := range top(qsim.State(r0), 10) {
 		fmt.Println(s)
 	}
 
