@@ -14,11 +14,14 @@ import (
 	"github.com/itsubaki/q/math/vector"
 )
 
+// Qubit is a qubit.
 type Qubit struct {
 	vector vector.Vector
-	Rand   func() float64
+	Rand   func() float64 // Random number generator
 }
 
+// New returns a new qubit.
+// z is a vector of complex128.
 func New(z ...complex128) *Qubit {
 	q := &Qubit{
 		vector: vector.New(z...),
@@ -29,42 +32,53 @@ func New(z ...complex128) *Qubit {
 	return q
 }
 
+// Zero returns a |0> qubit.
+// n is the number of qubits.
 func Zero(n ...int) *Qubit {
 	v := vector.TensorProductN(vector.Vector{1, 0}, n...)
 	return New(v.Complex()...)
 }
 
+// One returns a |1> qubit.
+// n is the number of qubits.
 func One(n ...int) *Qubit {
 	v := vector.TensorProductN(vector.Vector{0, 1}, n...)
 	return New(v.Complex()...)
 }
 
+// NumberOfBit returns the number of qubits.
 func (q *Qubit) NumberOfBit() int {
 	d := float64(q.Dimension())
 	n := math.Log2(d)
 	return int(n)
 }
 
+// IsZero returns true if q is zero qubit.
 func (q *Qubit) IsZero(eps ...float64) bool {
 	return q.Equals(Zero(), eps...)
 }
 
+// IsOne returns true if q is one qubit.
 func (q *Qubit) IsOne(eps ...float64) bool {
 	return q.Equals(One(), eps...)
 }
 
+// InnerProduct returns the inner product of q and qb.
 func (q *Qubit) InnerProduct(qb *Qubit) complex128 {
 	return q.vector.InnerProduct(qb.vector)
 }
 
+// OuterProduct returns the outer product of q and qb.
 func (q *Qubit) OuterProduct(qb *Qubit) matrix.Matrix {
 	return q.vector.OuterProduct(qb.vector)
 }
 
+// Dimension returns the dimension of q.
 func (q *Qubit) Dimension() int {
 	return q.vector.Dimension()
 }
 
+// Clone returns a clone of q.
 func (q *Qubit) Clone() *Qubit {
 	return &Qubit{
 		vector: q.vector.Clone(),
@@ -72,6 +86,7 @@ func (q *Qubit) Clone() *Qubit {
 	}
 }
 
+// Fidelity returns the fidelity of q and qb.
 func (q *Qubit) Fidelity(qb *Qubit) float64 {
 	p0 := qb.Probability()
 	p1 := q.Probability()
@@ -84,6 +99,7 @@ func (q *Qubit) Fidelity(qb *Qubit) float64 {
 	return sum
 }
 
+// TraceDistance returns the trace distance of q and qb.
 func (q *Qubit) TraceDistance(qb *Qubit) float64 {
 	p0 := qb.Probability()
 	p1 := q.Probability()
@@ -96,15 +112,18 @@ func (q *Qubit) TraceDistance(qb *Qubit) float64 {
 	return sum / 2
 }
 
+// Equals returns true if q and qb are equal.
 func (q *Qubit) Equals(qb *Qubit, eps ...float64) bool {
 	return q.vector.Equals(qb.vector, eps...)
 }
 
+// TensorProduct returns the tensor product of q and qb.
 func (q *Qubit) TensorProduct(qb *Qubit) *Qubit {
 	q.vector = q.vector.TensorProduct(qb.vector)
 	return q
 }
 
+// Apply returns a qubit that is applied m.
 func (q *Qubit) Apply(m ...matrix.Matrix) *Qubit {
 	for _, mm := range m {
 		q.vector = q.vector.Apply(mm)
@@ -113,6 +132,7 @@ func (q *Qubit) Apply(m ...matrix.Matrix) *Qubit {
 	return q
 }
 
+// Normalize returns a normalized qubit.
 func (q *Qubit) Normalize() *Qubit {
 	sum := number.Sum(q.Probability())
 	z := 1 / math.Sqrt(sum)
@@ -120,10 +140,12 @@ func (q *Qubit) Normalize() *Qubit {
 	return q
 }
 
+// Amplitude returns the amplitude of q.
 func (q *Qubit) Amplitude() []complex128 {
 	return q.vector.Complex()
 }
 
+// Probability returns the probability of q.
 func (q *Qubit) Probability() []float64 {
 	p := make([]float64, 0)
 	for _, a := range q.Amplitude() {
@@ -133,6 +155,7 @@ func (q *Qubit) Probability() []float64 {
 	return p
 }
 
+// Measure returns a measured qubit.
 func (q *Qubit) Measure(index int) *Qubit {
 	n := q.NumberOfBit()
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
@@ -169,10 +192,12 @@ func (q *Qubit) Measure(index int) *Qubit {
 	return Zero()
 }
 
+// Int returns the integer representation of q.
 func (q *Qubit) Int() int64 {
 	return number.Must(strconv.ParseInt(q.BinaryString(), 2, 0))
 }
 
+// BinaryString returns the binary string representation of q.
 func (q *Qubit) BinaryString() string {
 	c := q.Clone()
 
@@ -189,10 +214,12 @@ func (q *Qubit) BinaryString() string {
 	return sb.String()
 }
 
+// String returns the string representation of q.
 func (q *Qubit) String() string {
 	return fmt.Sprintf("%v", q.vector)
 }
 
+// State returns the state of q with index.
 func (q *Qubit) State(index ...[]int) []State {
 	if len(index) < 1 {
 		n := q.NumberOfBit()

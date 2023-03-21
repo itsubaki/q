@@ -11,15 +11,18 @@ import (
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
+// State is a quantum state.
 type State struct {
 	Probability float64
 	Qubit       *qubit.Qubit
 }
 
+// Matrix is a density matrix.
 type Matrix struct {
 	m matrix.Matrix
 }
 
+// New returns a new density matrix.
 func New(ensemble []State) (*Matrix, error) {
 	m := &Matrix{matrix.New()}
 	if err := m.Add(ensemble); err != nil {
@@ -29,6 +32,7 @@ func New(ensemble []State) (*Matrix, error) {
 	return m, nil
 }
 
+// Add adds a quantum state to the density matrix.
 func (m *Matrix) Add(ensemble []State) error {
 	for _, s := range ensemble {
 		if s.Probability < 0 || s.Probability > 1 {
@@ -56,41 +60,50 @@ func (m *Matrix) Add(ensemble []State) error {
 	return nil
 }
 
+// Raw returns the raw matrix.
 func (m *Matrix) Raw() matrix.Matrix {
 	return m.m
 }
 
+// Dimension returns the dimension of the density matrix.
 func (m *Matrix) Dimension() (int, int) {
 	return len(m.m), len(m.m[0])
 }
 
+// NumberOfBit returns the number of qubits.
 func (m *Matrix) NumberOfBit() int {
 	p, _ := m.Dimension()
 	log := math.Log2(float64(p))
 	return int(log)
 }
 
+// Apply applies a unitary matrix to the density matrix.
 func (m *Matrix) Apply(u matrix.Matrix) *Matrix {
 	m.m = u.Dagger().Apply(m.m).Apply(u)
 	return m
 }
 
+// Measure returns the probability of measuring the qubit in the given state.
 func (m *Matrix) Measure(q *qubit.Qubit) float64 {
 	return real(m.m.Apply(q.OuterProduct(q)).Trace())
 }
 
+// ExpectationValue returns the expectation value of the given operator.
 func (m *Matrix) ExpectedValue(u matrix.Matrix) float64 {
 	return real(m.m.Apply(u).Trace())
 }
 
+// Trace returns the trace of the density matrix.
 func (m *Matrix) Trace() float64 {
 	return real(m.m.Trace())
 }
 
+// SquareTrace returns the square trace of the density matrix.
 func (m *Matrix) SquareTrace() float64 {
 	return real(m.m.Apply(m.m).Trace())
 }
 
+// PartialTrace returns the partial trace of the density matrix.
 func (m *Matrix) PartialTrace(index ...int) *Matrix {
 	n := m.NumberOfBit()
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
@@ -132,6 +145,7 @@ func (m *Matrix) PartialTrace(index ...int) *Matrix {
 	return &Matrix{m: out}
 }
 
+// Depolarizing returns the depolarizing channel.
 func (m *Matrix) Depolarizing(p float64) (*Matrix, error) {
 	if p < 0 || p > 1 {
 		return nil, fmt.Errorf("p must be 0 <= p =< 1. p=%v", p)
@@ -144,6 +158,7 @@ func (m *Matrix) Depolarizing(p float64) (*Matrix, error) {
 	return &Matrix{i.Add(r)}, nil
 }
 
+// Flip returns the flip channel.
 func Flip(p float64, m matrix.Matrix) (matrix.Matrix, matrix.Matrix, error) {
 	if p < 0 || p > 1 {
 		return nil, nil, fmt.Errorf("p must be 0 <= p =< 1. p=%v", p)
@@ -157,14 +172,17 @@ func Flip(p float64, m matrix.Matrix) (matrix.Matrix, matrix.Matrix, error) {
 	return e0, e1, nil
 }
 
+// BitFlip returns the bit flip channel.
 func BitFlip(p float64) (matrix.Matrix, matrix.Matrix, error) {
 	return Flip(p, gate.X())
 }
 
+// PhaseFlip returns the phase flip channel.
 func PhaseFlip(p float64) (matrix.Matrix, matrix.Matrix, error) {
 	return Flip(p, gate.Z())
 }
 
+// BitPhaseFlip returns the bit-phase flip channel.
 func BitPhaseFlip(p float64) (matrix.Matrix, matrix.Matrix, error) {
 	return Flip(p, gate.Y())
 }

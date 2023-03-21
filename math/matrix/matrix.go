@@ -6,14 +6,17 @@ import (
 	"github.com/itsubaki/q/math/epsilon"
 )
 
+// Matrix is a matrix of complex128.
 type Matrix [][]complex128
 
+// New returns a new matrix of complex128.
 func New(v ...[]complex128) Matrix {
 	out := make(Matrix, len(v))
 	copy(out, v)
 	return out
 }
 
+// Zero returns a zero matrix of nxn.
 func Zero(n int) Matrix {
 	out := make(Matrix, n)
 	for i := 0; i < n; i++ {
@@ -23,6 +26,7 @@ func Zero(n int) Matrix {
 	return out
 }
 
+// Identity returns a identity matrix of nxn.
 func Identity(n int) Matrix {
 	out := Zero(n)
 	for i := 0; i < n; i++ {
@@ -32,6 +36,8 @@ func Identity(n int) Matrix {
 	return out
 }
 
+// Equals returns true if m equals n.
+// If eps is not given, epsilon.E13 is used.
 func (m Matrix) Equals(n Matrix, eps ...float64) bool {
 	p, q := m.Dimension()
 	a, b := n.Dimension()
@@ -56,10 +62,12 @@ func (m Matrix) Equals(n Matrix, eps ...float64) bool {
 	return true
 }
 
+// Dimension returns a dimension of matrix.
 func (m Matrix) Dimension() (int, int) {
 	return len(m), len(m[0])
 }
 
+// Transpose returns a transpose matrix.
 func (m Matrix) Transpose() Matrix {
 	p, q := m.Dimension()
 
@@ -77,6 +85,7 @@ func (m Matrix) Transpose() Matrix {
 	return out
 }
 
+// Conjugate returns a conjugate matrix.
 func (m Matrix) Conjugate() Matrix {
 	p, q := m.Dimension()
 
@@ -110,11 +119,13 @@ func (m Matrix) Dagger() Matrix {
 	return out
 }
 
+// IsSquare returns true if m is square matrix.
 func (m Matrix) IsSquare() bool {
 	p, q := m.Dimension()
 	return p == q
 }
 
+// IsHermitian returns true if m is hermitian matrix.
 func (m Matrix) IsHermite(eps ...float64) bool {
 	if !m.IsSquare() {
 		return false
@@ -123,6 +134,7 @@ func (m Matrix) IsHermite(eps ...float64) bool {
 	return m.Equals(m.Dagger(), epsilon.E13(eps...))
 }
 
+// IsUnitary returns true if m is unitary matrix.
 func (m Matrix) IsUnitary(eps ...float64) bool {
 	if !m.IsSquare() {
 		return false
@@ -132,6 +144,7 @@ func (m Matrix) IsUnitary(eps ...float64) bool {
 	return m.Apply(m.Dagger()).Equals(Identity(n), epsilon.E13(eps...))
 }
 
+// Apply returns a matrix product of m and n.
 func (m Matrix) Apply(n Matrix) Matrix {
 	a, b := m.Dimension()
 	_, p := n.Dimension()
@@ -155,6 +168,7 @@ func (m Matrix) Apply(n Matrix) Matrix {
 	return out
 }
 
+// Mul returns a matrix of z*m.
 func (m Matrix) Mul(z complex128) Matrix {
 	p, q := m.Dimension()
 
@@ -171,6 +185,7 @@ func (m Matrix) Mul(z complex128) Matrix {
 	return out
 }
 
+// Add returns a matrix of m+n.
 func (m Matrix) Add(n Matrix) Matrix {
 	p, q := m.Dimension()
 
@@ -187,6 +202,7 @@ func (m Matrix) Add(n Matrix) Matrix {
 	return out
 }
 
+// Sub returns a matrix of m-n.
 func (m Matrix) Sub(n Matrix) Matrix {
 	p, q := m.Dimension()
 
@@ -203,6 +219,7 @@ func (m Matrix) Sub(n Matrix) Matrix {
 	return out
 }
 
+// Trace returns a trace of matrix.
 func (m Matrix) Trace() complex128 {
 	p, _ := m.Dimension()
 
@@ -214,6 +231,7 @@ func (m Matrix) Trace() complex128 {
 	return sum
 }
 
+// Real returns a real part of matrix.
 func (m Matrix) Real() [][]float64 {
 	out := make([][]float64, 0, len(m))
 	for i, r := range m {
@@ -226,6 +244,7 @@ func (m Matrix) Real() [][]float64 {
 	return out
 }
 
+// Imag returns a imaginary part of matrix.
 func (m Matrix) Imag() [][]float64 {
 	out := make([][]float64, 0, len(m))
 	for i, r := range m {
@@ -238,6 +257,7 @@ func (m Matrix) Imag() [][]float64 {
 	return out
 }
 
+// Clone returns a clone of matrix.
 func (m Matrix) Clone() Matrix {
 	p, q := m.Dimension()
 
@@ -254,6 +274,7 @@ func (m Matrix) Clone() Matrix {
 	return out
 }
 
+// Inverse returns a inverse matrix of m.
 func (m Matrix) Inverse() Matrix {
 	p, q := m.Dimension()
 	clone := m.Clone()
@@ -293,6 +314,7 @@ func (m Matrix) Inverse() Matrix {
 	return out
 }
 
+// TensorProduct returns a matrix of m⊗n.
 func (m Matrix) TensorProduct(n Matrix) Matrix {
 	p, q := m.Dimension()
 	a, b := n.Dimension()
@@ -358,12 +380,14 @@ func TensorProduct(m ...Matrix) Matrix {
 	return out
 }
 
+// Commutator returns a matrix of [m,n].
 func Commutator(m, n Matrix) Matrix {
 	mn := n.Apply(m)
 	nm := m.Apply(n)
 	return mn.Sub(nm)
 }
 
+// ANtiCommutator returns a matrix of {m,n}.
 func AntiCommutator(m, n Matrix) Matrix {
 	mn := n.Apply(m)
 	nm := m.Apply(n)

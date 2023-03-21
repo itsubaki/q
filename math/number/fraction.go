@@ -6,6 +6,8 @@ import (
 	"github.com/itsubaki/q/math/epsilon"
 )
 
+// ContienuedFraction returns a continued fraction of real.
+// if eps is empty, epsilon.E3 is used.
 func ContinuedFraction(real float64, eps ...float64) []int {
 	e := epsilon.E3(eps...)
 	if real < e {
@@ -28,6 +30,7 @@ func ContinuedFraction(real float64, eps ...float64) []int {
 	return list
 }
 
+// Convergent returns a convergent of continued fraction.
 func Convergent(cfx []int) (int, int, float64) {
 	l := len(cfx)
 	if l == 1 {

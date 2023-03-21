@@ -61,6 +61,7 @@ func ModExp2(a, j, N int) int {
 	return p
 }
 
+// BaseExp returns a^b = N. If N is not a^b, return false.
 func BaseExp(N int, eps ...float64) (int, int, bool) {
 	e := epsilon.E13(eps...)
 

@@ -9,6 +9,7 @@ import (
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
+// Qubit is a quantum bit.
 type Qubit int
 
 func (q Qubit) Index() int {
@@ -24,11 +25,13 @@ func Index(qb ...Qubit) []int {
 	return index
 }
 
+// Q is a quantum computer simulator.
 type Q struct {
 	qb   *qubit.Qubit
 	Rand func() float64
 }
 
+// New returns a new quantum computer simulator.
 func New() *Q {
 	return &Q{
 		qb:   nil,
@@ -36,6 +39,7 @@ func New() *Q {
 	}
 }
 
+// New returns a new qubit.
 func (q *Q) New(v ...complex128) Qubit {
 	if q.qb == nil {
 		q.qb = qubit.New(v...)
@@ -48,6 +52,7 @@ func (q *Q) New(v ...complex128) Qubit {
 	return Qubit(index)
 }
 
+// NewOf returns a new qubit from binary string.
 func (q *Q) NewOf(binary string) []Qubit {
 	qb := make([]Qubit, 0, len(binary))
 	for _, b := range binary {
@@ -62,14 +67,17 @@ func (q *Q) NewOf(binary string) []Qubit {
 	return qb
 }
 
+// Zero returns a |0> qubit.
 func (q *Q) Zero() Qubit {
 	return q.New(1, 0)
 }
 
+// One returns a |1> qubit.
 func (q *Q) One() Qubit {
 	return q.New(0, 1)
 }
 
+// ZeroWith returns a |0> qubit with n qubits.
 func (q *Q) ZeroWith(n int) []Qubit {
 	qb := make([]Qubit, 0, n)
 	for i := 0; i < n; i++ {
@@ -79,6 +87,7 @@ func (q *Q) ZeroWith(n int) []Qubit {
 	return qb
 }
 
+// OneWith returns a |1> qubit with n qubits.
 func (q *Q) OneWith(n int) []Qubit {
 	qb := make([]Qubit, 0, n)
 	for i := 0; i < n; i++ {
@@ -88,23 +97,28 @@ func (q *Q) OneWith(n int) []Qubit {
 	return qb
 }
 
+// ZeroLog2 returns a |0> qubit with log2(N) qubits.
 func (q *Q) ZeroLog2(N int) []Qubit {
 	n := int(math.Log2(float64(N))) + 1
 	return q.ZeroWith(n)
 }
 
+// NumberOfBit returns the number of qubits.
 func (q *Q) NumberOfBit() int {
 	return q.qb.NumberOfBit()
 }
 
+// Amplitude returns the amplitude of qubits.
 func (q *Q) Amplitude() []complex128 {
 	return q.qb.Amplitude()
 }
 
+// Probability returns the probability of qubits.
 func (q *Q) Probability() []float64 {
 	return q.qb.Probability()
 }
 
+// Reset resets qubits.
 func (q *Q) Reset(qb ...Qubit) {
 	for i := range qb {
 		if q.Measure(qb[i]).IsOne() {
@@ -113,54 +127,67 @@ func (q *Q) Reset(qb ...Qubit) {
 	}
 }
 
+// U applies U gate.
 func (q *Q) U(theta, phi, lambda float64, qb ...Qubit) *Q {
 	return q.Apply(gate.U(theta, phi, lambda), qb...)
 }
 
+// I applies I gate.
 func (q *Q) I(qb ...Qubit) *Q {
 	return q.Apply(gate.I(), qb...)
 }
 
+// X applies X gate.
 func (q *Q) X(qb ...Qubit) *Q {
 	return q.Apply(gate.X(), qb...)
 }
 
+// Y applies Y gate.
 func (q *Q) Y(qb ...Qubit) *Q {
 	return q.Apply(gate.Y(), qb...)
 }
 
+// Z applies Z gate.
 func (q *Q) Z(qb ...Qubit) *Q {
 	return q.Apply(gate.Z(), qb...)
 }
 
+// H applies H gate.
 func (q *Q) H(qb ...Qubit) *Q {
 	return q.Apply(gate.H(), qb...)
 }
 
+// S applies S gate.
 func (q *Q) S(qb ...Qubit) *Q {
 	return q.Apply(gate.S(), qb...)
 }
 
+// T applies T gate.
 func (q *Q) T(qb ...Qubit) *Q {
 	return q.Apply(gate.T(), qb...)
 }
 
+// R applies R gate with theta.
 func (q *Q) R(theta float64, qb ...Qubit) *Q {
 	return q.Apply(gate.R(theta), qb...)
 }
 
+// RX applies RX gate with theta.
 func (q *Q) RX(theta float64, qb ...Qubit) *Q {
 	return q.Apply(gate.RX(theta), qb...)
 }
 
+// RY applies RY gate with theta.
 func (q *Q) RY(theta float64, qb ...Qubit) *Q {
 	return q.Apply(gate.RY(theta), qb...)
 }
 
+// RZ applies RZ gate with theta.
 func (q *Q) RZ(theta float64, qb ...Qubit) *Q {
 	return q.Apply(gate.RZ(theta), qb...)
 }
 
+// Apply applies matrix to qubits.
 func (q *Q) Apply(m matrix.Matrix, qb ...Qubit) *Q {
 	if len(qb) < 1 {
 		q.qb.Apply(m)
@@ -201,6 +228,7 @@ func (q *Q) C(m matrix.Matrix, control, target Qubit) *Q {
 	return q.Controlled(m, []Qubit{control}, target)
 }
 
+// ControlledNot applies CNOT gate.
 func (q *Q) ControlledNot(control []Qubit, target Qubit) *Q {
 	n := q.NumberOfBit()
 	g := gate.ControlledNot(n, Index(control...), target.Index())
@@ -208,22 +236,27 @@ func (q *Q) ControlledNot(control []Qubit, target Qubit) *Q {
 	return q
 }
 
+// CNOT applies CNOT gate.
 func (q *Q) CNOT(control, target Qubit) *Q {
 	return q.ControlledNot([]Qubit{control}, target)
 }
 
+// CCNOT applies CCNOT gate.
 func (q *Q) CCNOT(control0, control1, target Qubit) *Q {
 	return q.ControlledNot([]Qubit{control0, control1}, target)
 }
 
+// CCCNOT applies CCCNOT gate.
 func (q *Q) CCCNOT(control0, control1, control2, target Qubit) *Q {
 	return q.ControlledNot([]Qubit{control0, control1, control2}, target)
 }
 
+// Toffoli applies Toffoli gate.
 func (q *Q) Toffoli(control0, control1, target Qubit) *Q {
 	return q.CCNOT(control0, control1, target)
 }
 
+// ControlledZ applies Controlled-Z gate.
 func (q *Q) ControlledZ(control []Qubit, target Qubit) *Q {
 	n := q.NumberOfBit()
 	g := gate.ControlledZ(n, Index(control...), target.Index())
@@ -250,6 +283,7 @@ func (q *Q) CR(theta float64, control, target Qubit) *Q {
 	return q.ControlledR(theta, []Qubit{control}, target)
 }
 
+// ControlledModExp2 applies Controlled-ModExp2 gate.
 func (q *Q) ControlledModExp2(a, j, N int, control Qubit, target []Qubit) *Q {
 	n := q.NumberOfBit()
 	g := gate.ControlledModExp2(n, a, j, N, control.Index(), Index(target...))
@@ -257,6 +291,7 @@ func (q *Q) ControlledModExp2(a, j, N int, control Qubit, target []Qubit) *Q {
 	return q
 }
 
+// CModExp2 applies Controlled-ModExp2 gate.
 func (q *Q) CModExp2(a, N int, control []Qubit, target []Qubit) *Q {
 	for i := 0; i < len(control); i++ {
 		q.ControlledModExp2(a, i, N, control[i], target)
@@ -265,6 +300,7 @@ func (q *Q) CModExp2(a, N int, control []Qubit, target []Qubit) *Q {
 	return q
 }
 
+// Condition applies m if condition is true.
 func (q *Q) Condition(condition bool, m matrix.Matrix, qb ...Qubit) *Q {
 	if condition {
 		return q.Apply(m, qb...)
@@ -273,14 +309,17 @@ func (q *Q) Condition(condition bool, m matrix.Matrix, qb ...Qubit) *Q {
 	return q
 }
 
+// ConditionX applies X gate if condition is true.
 func (q *Q) ConditionX(condition bool, qb ...Qubit) *Q {
 	return q.Condition(condition, gate.X(), qb...)
 }
 
+// ConditionZ applies Z gate if condition is true.
 func (q *Q) ConditionZ(condition bool, qb ...Qubit) *Q {
 	return q.Condition(condition, gate.Z(), qb...)
 }
 
+// Swap applies Swap gate.
 func (q *Q) Swap(qb ...Qubit) *Q {
 	n := q.NumberOfBit()
 	l := len(qb)
@@ -294,6 +333,7 @@ func (q *Q) Swap(qb ...Qubit) *Q {
 	return q
 }
 
+// QFT applies Quantum Fourier Transform.
 func (q *Q) QFT(qb ...Qubit) *Q {
 	l := len(qb)
 	for i := 0; i < l; i++ {
@@ -309,6 +349,7 @@ func (q *Q) QFT(qb ...Qubit) *Q {
 	return q
 }
 
+// InverseQFT applies Inverse Quantum Fourier Transform.
 func (q *Q) InverseQFT(qb ...Qubit) *Q {
 	l := len(qb)
 	for i := l - 1; i > -1; i-- {
@@ -324,18 +365,22 @@ func (q *Q) InverseQFT(qb ...Qubit) *Q {
 	return q
 }
 
+// InvQFT applies Inverse Quantum Fourier Transform.
 func (q *Q) InvQFT(qb ...Qubit) *Q {
 	return q.InverseQFT(qb...)
 }
 
+// IQFT applies Inverse Quantum Fourier Transform.
 func (q *Q) IQFT(qb ...Qubit) *Q {
 	return q.InverseQFT(qb...)
 }
 
+// M returns the measured state of a qubit.
 func (q *Q) M(qb ...Qubit) *qubit.Qubit {
 	return q.Measure(qb...)
 }
 
+// Measure returns the measured state of a qubit.
 func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
 	if len(qb) < 1 {
 		n := q.NumberOfBit()
@@ -355,6 +400,7 @@ func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
 	return qubit.TensorProduct(m...)
 }
 
+// Clone returns a clone of a quantum computer simulator.
 func (q *Q) Clone() *Q {
 	if q.qb == nil {
 		return &Q{
@@ -369,14 +415,17 @@ func (q *Q) Clone() *Q {
 	}
 }
 
+// Raw returns the internal qubit.
 func (q *Q) Raw() *qubit.Qubit {
 	return q.qb
 }
 
+// String returns the string representation of a quantum computer simulator.
 func (q *Q) String() string {
 	return q.qb.String()
 }
 
+// State returns the state of a qubit.
 func (q *Q) State(reg ...any) []qubit.State {
 	index := make([][]int, 0)
 	for _, r := range reg {

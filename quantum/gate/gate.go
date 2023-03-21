@@ -10,12 +10,19 @@ import (
 	"github.com/itsubaki/q/math/number"
 )
 
+// Theta returns 2 * pi / 2**k
+func Theta(k int) float64 {
+	return 2 * math.Pi / math.Pow(2, float64(k))
+}
+
+// New returns a new gate.
 func New(v ...[]complex128) matrix.Matrix {
 	g := make(matrix.Matrix, len(v))
 	copy(g, v)
 	return g
 }
 
+// Empty returns a list of empty gate.
 func Empty(n ...int) []matrix.Matrix {
 	if len(n) < 1 {
 		return make([]matrix.Matrix, 0)
@@ -24,11 +31,7 @@ func Empty(n ...int) []matrix.Matrix {
 	return make([]matrix.Matrix, n[0])
 }
 
-// Theta returns 2 * pi / 2**k
-func Theta(k int) float64 {
-	return 2 * math.Pi / math.Pow(2, float64(k))
-}
-
+// U returns a unitary gate.
 func U(theta, phi, lambda float64) matrix.Matrix {
 	v := complex(theta/2, 0)
 	return matrix.Matrix{
@@ -37,6 +40,7 @@ func U(theta, phi, lambda float64) matrix.Matrix {
 	}
 }
 
+// I returns a identity gate.
 func I(n ...int) matrix.Matrix {
 	return matrix.TensorProductN(matrix.Matrix{
 		[]complex128{1, 0},
@@ -44,6 +48,7 @@ func I(n ...int) matrix.Matrix {
 	}, n...)
 }
 
+// X returns a Pauli-X gate.
 func X(n ...int) matrix.Matrix {
 	return matrix.TensorProductN(matrix.Matrix{
 		[]complex128{0, 1},
@@ -51,6 +56,7 @@ func X(n ...int) matrix.Matrix {
 	}, n...)
 }
 
+// Y returns a Pauli-Y gate.
 func Y(n ...int) matrix.Matrix {
 	return matrix.TensorProductN(matrix.Matrix{
 		[]complex128{0, -1i},
@@ -58,6 +64,7 @@ func Y(n ...int) matrix.Matrix {
 	}, n...)
 }
 
+// Z returns a Pauli-Z gate.
 func Z(n ...int) matrix.Matrix {
 	return matrix.TensorProductN(matrix.Matrix{
 		[]complex128{1, 0},
@@ -65,6 +72,7 @@ func Z(n ...int) matrix.Matrix {
 	}, n...)
 }
 
+// H returns a Hadamard gate.
 func H(n ...int) matrix.Matrix {
 	v := complex(1/math.Sqrt2, 0)
 	return matrix.TensorProductN(matrix.Matrix{
@@ -73,6 +81,7 @@ func H(n ...int) matrix.Matrix {
 	}, n...)
 }
 
+// S returns a S gate.
 func S(n ...int) matrix.Matrix {
 	return matrix.TensorProductN(matrix.Matrix{
 		[]complex128{1, 0},
@@ -80,6 +89,7 @@ func S(n ...int) matrix.Matrix {
 	}, n...)
 }
 
+// T returns a T gate.
 func T(n ...int) matrix.Matrix {
 	v := cmplx.Exp(1i * math.Pi / 4)
 	return matrix.TensorProductN(matrix.Matrix{
@@ -88,6 +98,7 @@ func T(n ...int) matrix.Matrix {
 	}, n...)
 }
 
+// CNOT returns a CNOT gate.
 func R(theta float64) matrix.Matrix {
 	e := cmplx.Exp(complex(0, theta))
 	return matrix.Matrix{
@@ -96,6 +107,7 @@ func R(theta float64) matrix.Matrix {
 	}
 }
 
+// RX returns a rotation gate around the X axis.
 func RX(theta float64) matrix.Matrix {
 	v := complex(theta/2, 0)
 	return matrix.Matrix{
@@ -104,6 +116,7 @@ func RX(theta float64) matrix.Matrix {
 	}
 }
 
+// RY returns a rotation gate around the Y axis.
 func RY(theta float64) matrix.Matrix {
 	v := complex(theta/2, 0)
 	return matrix.Matrix{
@@ -112,6 +125,7 @@ func RY(theta float64) matrix.Matrix {
 	}
 }
 
+// RZ returns a rotation gate around the Z axis.
 func RZ(theta float64) matrix.Matrix {
 	v := complex(0, theta/2)
 	return matrix.Matrix{
@@ -120,6 +134,7 @@ func RZ(theta float64) matrix.Matrix {
 	}
 }
 
+// Controlled returns a controlled-u gate.
 func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
 	g := I([]int{n}...)
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
@@ -180,10 +195,12 @@ func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
 	return g
 }
 
+// C returns a controlled-u gate.
 func C(u matrix.Matrix, n int, c int, t int) matrix.Matrix {
 	return Controlled(u, n, []int{c}, t)
 }
 
+// ControlledNot returns a controlled-not gate.
 func ControlledNot(n int, c []int, t int) matrix.Matrix {
 	m := I([]int{n}...)
 	d, _ := m.Dimension()
@@ -221,18 +238,22 @@ func ControlledNot(n int, c []int, t int) matrix.Matrix {
 	return g
 }
 
+// CNOT returns a controlled-not gate.
 func CNOT(n, c, t int) matrix.Matrix {
 	return ControlledNot(n, []int{c}, t)
 }
 
+// CCNOT returns a controlled-controlled-not gate.
 func CCNOT(n, c0, c1, t int) matrix.Matrix {
 	return ControlledNot(n, []int{c0, c1}, t)
 }
 
+// Toffoli returns a toffoli gate.
 func Toffoli(n, c0, c1, t int) matrix.Matrix {
 	return CCNOT(n, c0, c1, t)
 }
 
+// ControlledZ returns a controlled-z gate.
 func ControlledZ(n int, c []int, t int) matrix.Matrix {
 	g := I([]int{n}...)
 	d, _ := g.Dimension()
@@ -257,10 +278,12 @@ func ControlledZ(n int, c []int, t int) matrix.Matrix {
 	return g
 }
 
+// CZ returns a controlled-z gate.
 func CZ(n, c, t int) matrix.Matrix {
 	return ControlledZ(n, []int{c}, t)
 }
 
+// ControlledS returns a controlled-s gate.
 func ControlledS(n int, c []int, t int) matrix.Matrix {
 	g := I([]int{n}...)
 	d, _ := g.Dimension()
@@ -285,10 +308,12 @@ func ControlledS(n int, c []int, t int) matrix.Matrix {
 	return g
 }
 
+// CS returns a controlled-s gate.
 func CS(n, c, t int) matrix.Matrix {
 	return ControlledS(n, []int{c}, t)
 }
 
+// ControlledR returns a controlled-r gate.
 func ControlledR(theta float64, n int, c []int, t int) matrix.Matrix {
 	g := I([]int{n}...)
 	d, _ := g.Dimension()
@@ -317,11 +342,12 @@ func ControlledR(theta float64, n int, c []int, t int) matrix.Matrix {
 	return g
 }
 
+// CR returns a controlled-r gate.
 func CR(theta float64, n, c, t int) matrix.Matrix {
 	return ControlledR(theta, n, []int{c}, t)
 }
 
-// Swap returns unitary matrix of Swap operation.
+// Swap returns a swap gate.
 func Swap(n, c, t int) matrix.Matrix {
 	return matrix.Apply(
 		CNOT(n, c, t),
@@ -330,7 +356,7 @@ func Swap(n, c, t int) matrix.Matrix {
 	)
 }
 
-// Fredkin returns unitary matrix of Controlled-Swap operation.
+// Fredkin returns a fredkin gate.
 func Fredkin(n, c, t0, t1 int) matrix.Matrix {
 	return matrix.Apply(
 		CNOT(n, t0, t1),
@@ -339,7 +365,7 @@ func Fredkin(n, c, t0, t1 int) matrix.Matrix {
 	)
 }
 
-// QFT returns unitary matrix of Quantum Fourier Transform operation.
+// QFT returns a gate of Quantum Fourier Transform operation.
 func QFT(n int) matrix.Matrix {
 	g := I(n)
 
@@ -364,7 +390,8 @@ func QFT(n int) matrix.Matrix {
 	return g
 }
 
-// ControlledModExp2 returns unitary matrix of controlled modular exponentiation operation. |j>|k> -> |j>|a**(2**j) * k mod N>.
+// ControlledModExp2 returns gate of controlled modular exponentiation operation.
+// |j>|k> -> |j>|a**(2**j) * k mod N>.
 // len(t) must be larger than log2(N).
 func ControlledModExp2(n, a, j, N, c int, t []int) matrix.Matrix {
 	m := I([]int{n}...)

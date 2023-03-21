@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// ParseFloat returns float64 from binary string.
 func ParseFloat(binary string) (float64, error) {
 	for _, b := range binary {
 		if b == '0' || b == '1' || b == '.' {
