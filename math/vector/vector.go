@@ -67,7 +67,7 @@ func (v Vector) Mul(z complex128) Vector {
 	return out
 }
 
-// TensorProduct returns a vector of v⊗w.
+// TensorProduct returns the tensor product of v and w.
 func (v Vector) TensorProduct(w Vector) Vector {
 	out := make(Vector, 0, len(v)*len(w))
 	for i := 0; i < len(v); i++ {

@@ -314,7 +314,7 @@ func (m Matrix) Inverse() Matrix {
 	return out
 }
 
-// TensorProduct returns a matrix of m⊗n.
+// TensorProduct returns a tensor product of m and n.
 func (m Matrix) TensorProduct(n Matrix) Matrix {
 	p, q := m.Dimension()
 	a, b := n.Dimension()
@@ -387,7 +387,7 @@ func Commutator(m, n Matrix) Matrix {
 	return mn.Sub(nm)
 }
 
-// ANtiCommutator returns a matrix of {m,n}.
+// AntiCommutator returns a matrix of {m,n}.
 func AntiCommutator(m, n Matrix) Matrix {
 	mn := n.Apply(m)
 	nm := m.Apply(n)
