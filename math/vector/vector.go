@@ -7,22 +7,27 @@ import (
 	"github.com/itsubaki/q/math/matrix"
 )
 
+// Vector is a vector of complex128.
 type Vector []complex128
 
+// New returns a new vector of complex128.
 func New(z ...complex128) Vector {
 	out := make(Vector, len(z))
 	copy(out, z)
 	return out
 }
 
+// Zero returns a vector of length n with all elements zero.
 func Zero(n int) Vector {
 	return make(Vector, n)
 }
 
+// Complex returns a slice of complex128.
 func (v Vector) Complex() []complex128 {
 	return []complex128(v)
 }
 
+// Clone returns a clone of vector.
 func (v Vector) Clone() Vector {
 	clone := make(Vector, 0, len(v))
 	for i := 0; i < len(v); i++ {
@@ -32,6 +37,7 @@ func (v Vector) Clone() Vector {
 	return clone
 }
 
+// Dual returns a dual vector.
 func (v Vector) Dual() Vector {
 	out := make(Vector, 0, len(v))
 	for i := 0; i < len(v); i++ {
@@ -41,6 +47,7 @@ func (v Vector) Dual() Vector {
 	return out
 }
 
+// Add returns a vector of v+w.
 func (v Vector) Add(w Vector) Vector {
 	out := make(Vector, 0, len(v))
 	for i := 0; i < len(v); i++ {
@@ -50,6 +57,7 @@ func (v Vector) Add(w Vector) Vector {
 	return out
 }
 
+// Mul returns a vector of z*v.
 func (v Vector) Mul(z complex128) Vector {
 	out := make(Vector, 0, len(v))
 	for i := range v {
@@ -59,6 +67,7 @@ func (v Vector) Mul(z complex128) Vector {
 	return out
 }
 
+// TensorProduct returns a vector of v⊗w.
 func (v Vector) TensorProduct(w Vector) Vector {
 	out := make(Vector, 0, len(v)*len(w))
 	for i := 0; i < len(v); i++ {
@@ -70,6 +79,7 @@ func (v Vector) TensorProduct(w Vector) Vector {
 	return out
 }
 
+// InnerProduct returns the inner product of v and w.
 func (v Vector) InnerProduct(w Vector) complex128 {
 	dual := w.Dual()
 
@@ -81,6 +91,7 @@ func (v Vector) InnerProduct(w Vector) complex128 {
 	return out
 }
 
+// OuterProduct returns the outer product of v and w.
 func (v Vector) OuterProduct(w Vector) matrix.Matrix {
 	dual := w.Dual()
 
@@ -97,18 +108,22 @@ func (v Vector) OuterProduct(w Vector) matrix.Matrix {
 	return out
 }
 
+// IsOrthogonal returns true if v and w are orthogonal.
 func (v Vector) IsOrthogonal(w Vector) bool {
 	return v.InnerProduct(w) == 0
 }
 
+// Norm returns a norm of vector.
 func (v Vector) Norm() complex128 {
 	return cmplx.Sqrt(v.InnerProduct(v))
 }
 
+// IsUnit returns true if v is unit vector.
 func (v Vector) IsUnit() bool {
 	return v.Norm() == 1
 }
 
+// Apply returns a matrix product of v and m.
 func (v Vector) Apply(m matrix.Matrix) Vector {
 	p, q := m.Dimension()
 
@@ -125,6 +140,8 @@ func (v Vector) Apply(m matrix.Matrix) Vector {
 	return out
 }
 
+// Equals returns true if v and w are equal.
+// If eps is not given, epsilon.E13 is used.
 func (v Vector) Equals(w Vector, eps ...float64) bool {
 	if len(v) != len(w) {
 		return false
@@ -140,10 +157,12 @@ func (v Vector) Equals(w Vector, eps ...float64) bool {
 	return true
 }
 
+// Dimension returns a dimension of vector.
 func (v Vector) Dimension() int {
 	return len(v)
 }
 
+// Real returns a slice of real part.
 func (v Vector) Real() []float64 {
 	out := make([]float64, 0, len(v))
 	for i := range v {
@@ -153,6 +172,7 @@ func (v Vector) Real() []float64 {
 	return out
 }
 
+// Imag returns a slice of imaginary part.
 func (v Vector) Imag() []float64 {
 	out := make([]float64, 0, len(v))
 	for i := range v {

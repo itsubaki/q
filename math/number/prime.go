@@ -2,6 +2,7 @@ package number
 
 import "math"
 
+// IsPrime returns true if N is prime number.
 func IsPrime(N int) bool {
 	if N < 2 {
 		return false
@@ -24,6 +25,7 @@ func IsPrime(N int) bool {
 	return true
 }
 
+// IsTrivial returns true if factor is trivial factor of N.
 func IsTrivial(N int, factor ...int) bool {
 	for _, p := range factor {
 		if 1 < p && p < N && N%p == 0 {
@@ -34,10 +36,12 @@ func IsTrivial(N int, factor ...int) bool {
 	return true
 }
 
+// IsOdd returns true if v is odd number.
 func IsOdd(v int) bool {
 	return !IsEven(v)
 }
 
+// IsEven returns true if v is even number.
 func IsEven(v int) bool {
 	if v%2 == 0 {
 		return true
