@@ -67,17 +67,17 @@ func (q *Q) NewOf(binary string) []Qubit {
 	return qb
 }
 
-// Zero returns a |0> qubit.
+// Zero returns a qubit in the zero state.
 func (q *Q) Zero() Qubit {
 	return q.New(1, 0)
 }
 
-// One returns a |1> qubit.
+// One returns a qubit in the one state.
 func (q *Q) One() Qubit {
 	return q.New(0, 1)
 }
 
-// ZeroWith returns a |0> qubit with n qubits.
+// ZeroWith returns a qubit in the zero state with n qubits.
 func (q *Q) ZeroWith(n int) []Qubit {
 	qb := make([]Qubit, 0, n)
 	for i := 0; i < n; i++ {
@@ -87,7 +87,7 @@ func (q *Q) ZeroWith(n int) []Qubit {
 	return qb
 }
 
-// OneWith returns a |1> qubit with n qubits.
+// One returns a qubit in the one state with n qubits.
 func (q *Q) OneWith(n int) []Qubit {
 	qb := make([]Qubit, 0, n)
 	for i := 0; i < n; i++ {
@@ -97,7 +97,7 @@ func (q *Q) OneWith(n int) []Qubit {
 	return qb
 }
 
-// ZeroLog2 returns a |0> qubit with log2(N) qubits.
+// ZeroLog2 returns a qubit in the zero state with log2(N) qubits.
 func (q *Q) ZeroLog2(N int) []Qubit {
 	n := int(math.Log2(float64(N))) + 1
 	return q.ZeroWith(n)
@@ -118,7 +118,7 @@ func (q *Q) Probability() []float64 {
 	return q.qb.Probability()
 }
 
-// Reset resets qubits.
+// Reset sets qubits to the zero state.
 func (q *Q) Reset(qb ...Qubit) {
 	for i := range qb {
 		if q.Measure(qb[i]).IsOne() {
@@ -375,12 +375,12 @@ func (q *Q) IQFT(qb ...Qubit) *Q {
 	return q.InverseQFT(qb...)
 }
 
-// M returns the measured state of a qubit.
+// M returns the measured state of qubits.
 func (q *Q) M(qb ...Qubit) *qubit.Qubit {
 	return q.Measure(qb...)
 }
 
-// Measure returns the measured state of a qubit.
+// Measure returns the measured state of qubits.
 func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
 	if len(qb) < 1 {
 		n := q.NumberOfBit()
@@ -425,7 +425,7 @@ func (q *Q) String() string {
 	return q.qb.String()
 }
 
-// State returns the state of a qubit.
+// State returns the state of qubits.
 func (q *Q) State(reg ...any) []qubit.State {
 	index := make([][]int, 0)
 	for _, r := range reg {

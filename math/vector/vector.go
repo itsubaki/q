@@ -17,7 +17,7 @@ func New(z ...complex128) Vector {
 	return out
 }
 
-// Zero returns a zero vector of n.
+// Zero returns a vector of length n with all elements zero.
 func Zero(n int) Vector {
 	return make(Vector, n)
 }
@@ -79,6 +79,7 @@ func (v Vector) TensorProduct(w Vector) Vector {
 	return out
 }
 
+// InnerProduct returns the inner product of v and w.
 func (v Vector) InnerProduct(w Vector) complex128 {
 	dual := w.Dual()
 
@@ -90,6 +91,7 @@ func (v Vector) InnerProduct(w Vector) complex128 {
 	return out
 }
 
+// OuterProduct returns the outer product of v and w.
 func (v Vector) OuterProduct(w Vector) matrix.Matrix {
 	dual := w.Dual()
 

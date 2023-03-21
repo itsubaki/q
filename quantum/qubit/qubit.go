@@ -32,14 +32,14 @@ func New(z ...complex128) *Qubit {
 	return q
 }
 
-// Zero returns a |0> qubit.
+// Zero returns a qubit in the zero state.
 // n is the number of qubits.
 func Zero(n ...int) *Qubit {
 	v := vector.TensorProductN(vector.Vector{1, 0}, n...)
 	return New(v.Complex()...)
 }
 
-// One returns a |1> qubit.
+// One returns a qubit in the one state.
 // n is the number of qubits.
 func One(n ...int) *Qubit {
 	v := vector.TensorProductN(vector.Vector{0, 1}, n...)
