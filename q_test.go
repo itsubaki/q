@@ -1131,9 +1131,8 @@ func Example_shorFactoring85() {
 func Example_mathrand() {
 	qsim := q.New()
 	qsim.Rand = func() float64 {
-		return rand.Float64()
+		return rand.New(rand.NewSource(1)).Float64()
 	}
-	rand.Seed(1)
 
 	q0 := qsim.Zero()
 	qsim.H(q0)

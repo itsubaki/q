@@ -10,7 +10,6 @@ func Const(seed ...int) func() float64 {
 	}
 
 	return func() float64 {
-		rand.Seed(int64(s))
-		return rand.Float64()
+		return rand.New(rand.NewSource(int64(s))).Float64()
 	}
 }
