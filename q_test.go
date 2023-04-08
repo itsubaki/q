@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"sort"
 	"testing"
+	"time"
 
 	"github.com/itsubaki/q"
 	"github.com/itsubaki/q/math/epsilon"
@@ -813,6 +814,44 @@ func Example_errorCorrection() {
 	// q0(corrected):
 	// [0][  0]( 0.4472 0.0000i): 0.2000
 	// [1][  1]( 0.8944 0.0000i): 0.8000
+}
+
+func Example_deutschJozsa() {
+	type FuncType int
+	const (
+		Constant FuncType = iota
+		Balanced
+	)
+
+	oracle := func(qsim *q.Q, q0, q1 q.Qubit) FuncType {
+		r := rand.New(rand.NewSource(time.Now().UnixNano()))
+		if r.Float64() > 0.5 {
+			return Constant
+		}
+
+		qsim.CNOT(q0, q1)
+		return Balanced
+	}
+
+	qsim := q.New()
+	q0 := qsim.Zero()
+	q1 := qsim.One()
+
+	qsim.H(q0, q1)
+	ans := oracle(qsim, q0, q1)
+	qsim.H(q0)
+	m0 := qsim.M(q0)
+
+	if m0.IsZero() && ans == Constant {
+		fmt.Println("Correct!")
+	}
+
+	if m0.IsOne() && ans == Balanced {
+		fmt.Println("Correct!")
+	}
+
+	// Output:
+	// Correct!
 }
 
 func Example_grover3qubit() {
