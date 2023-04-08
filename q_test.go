@@ -843,15 +843,15 @@ func Example_deutschJozsa() {
 	m0 := qsim.M(q0)
 
 	if m0.IsZero() && ans == Constant {
-		fmt.Println("correct!")
+		fmt.Println("Correct!")
 	}
 
 	if m0.IsOne() && ans == Balanced {
-		fmt.Println("correct!")
+		fmt.Println("Correct!")
 	}
 
 	// Output:
-	// correct!
+	// Correct!
 }
 
 func Example_grover3qubit() {
