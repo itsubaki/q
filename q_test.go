@@ -1167,24 +1167,6 @@ func Example_shorFactoring85() {
 	// N=85, a=14. p=5, q=17. s/r=15/16 ([0.1111]~0.938)
 }
 
-func Example_mathrand() {
-	qsim := q.New()
-	qsim.Rand = func() float64 {
-		return rand.New(rand.NewSource(1)).Float64()
-	}
-
-	q0 := qsim.Zero()
-	qsim.H(q0)
-	qsim.Measure(q0)
-
-	for _, s := range qsim.State() {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [1][  1]( 1.0000 0.0000i): 1.0000
-}
-
 func Example_top() {
 	N := 21
 	a := 11

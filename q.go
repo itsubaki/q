@@ -35,7 +35,7 @@ type Q struct {
 func New() *Q {
 	return &Q{
 		qb:   nil,
-		Rand: rand.Crypto,
+		Rand: rand.Math(),
 	}
 }
 
