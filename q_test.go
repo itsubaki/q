@@ -11,6 +11,7 @@ import (
 
 	"github.com/itsubaki/q"
 	"github.com/itsubaki/q/math/epsilon"
+	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/math/number"
 	rnd "github.com/itsubaki/q/math/rand"
 	"github.com/itsubaki/q/quantum/gate"
@@ -756,6 +757,40 @@ func Example_quantumTeleportation2() {
 	// q1:
 	// [0][  0]( 0.4472 0.0000i): 0.2000
 	// [1][  1]( 0.8944 0.0000i): 0.8000
+}
+
+func Example_superDenseCoding() {
+	sdc := func(g matrix.Matrix) string {
+		qsim := q.New()
+
+		// initial state
+		q0 := qsim.Zero()
+		q1 := qsim.Zero()
+
+		qsim.H(q0)
+		qsim.CNOT(q0, q1)
+
+		// encode
+		qsim.Apply(g, q0)
+
+		// decode
+		qsim.CNOT(q0, q1)
+		qsim.H(q0)
+
+		// measure
+		return qsim.M(q0, q1).BinaryString()
+	}
+
+	fmt.Printf("I : %v\n", sdc(gate.I()))
+	fmt.Printf("X : %v\n", sdc(gate.X()))
+	fmt.Printf("Z : %v\n", sdc(gate.Z()))
+	fmt.Printf("ZX: %v\n", sdc(gate.Z().Apply(gate.X())))
+
+	// Output:
+	// I : 00
+	// X : 01
+	// Z : 10
+	// ZX: 11
 }
 
 func Example_errorCorrection() {
