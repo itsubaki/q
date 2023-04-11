@@ -231,6 +231,6 @@ for i := 0; i < 10; i++{
 
 - In general, See [`cmd/shor`](./cmd/shor/main.go)
 
-# Reference
+# References
 
 - Michael A. Nielsen, Issac L. Chuang. Quantum Computation and Quantum Information.
