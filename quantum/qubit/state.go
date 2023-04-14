@@ -31,6 +31,10 @@ func (s State) Value(index ...int) (int64, string) {
 	return s.Int[i], s.BinaryString[i]
 }
 
+func (s State) String() string {
+	return fmt.Sprintf("%v%3v(% .4f% .4fi): %.4f", s.BinaryString, s.Int, real(s.Amplitude), imag(s.Amplitude), s.Probability)
+}
+
 // Equals returns true if s equals v.
 // If eps is not given, epsilon.E13 is used.
 func (s State) Equals(v State, eps ...float64) bool {
@@ -55,10 +59,6 @@ func (s State) Equals(v State, eps ...float64) bool {
 	}
 
 	return cmplx.Abs(s.Amplitude-v.Amplitude) < epsilon.E13(eps...)
-}
-
-func (s State) String() string {
-	return fmt.Sprintf("%v%3v(% .4f% .4fi): %.4f", s.BinaryString, s.Int, real(s.Amplitude), imag(s.Amplitude), s.Probability)
 }
 
 // Equals returns true if s equals v.
