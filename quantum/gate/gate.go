@@ -98,7 +98,8 @@ func T(n ...int) matrix.Matrix {
 	}, n...)
 }
 
-// CNOT returns a CNOT gate.
+// R returns a rotation gate.
+// R(Theta(k)) = [[1, 0], [0, exp(2 * pi * i / 2**k)]].
 func R(theta float64) matrix.Matrix {
 	e := cmplx.Exp(complex(0, theta))
 	return matrix.Matrix{
