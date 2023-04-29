@@ -7,9 +7,11 @@ import (
 	"math/rand"
 	"sort"
 	"testing"
+	"time"
 
 	"github.com/itsubaki/q"
 	"github.com/itsubaki/q/math/epsilon"
+	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/math/number"
 	rnd "github.com/itsubaki/q/math/rand"
 	"github.com/itsubaki/q/quantum/gate"
@@ -757,6 +759,40 @@ func Example_quantumTeleportation2() {
 	// [1][  1]( 0.8944 0.0000i): 0.8000
 }
 
+func Example_superDenseCoding() {
+	sdc := func(g matrix.Matrix) string {
+		qsim := q.New()
+
+		// initial state
+		q0 := qsim.Zero()
+		q1 := qsim.Zero()
+
+		qsim.H(q0)
+		qsim.CNOT(q0, q1)
+
+		// encode
+		qsim.Apply(g, q0)
+
+		// decode
+		qsim.CNOT(q0, q1)
+		qsim.H(q0)
+
+		// measure
+		return qsim.M(q0, q1).BinaryString()
+	}
+
+	fmt.Printf("I : %v\n", sdc(gate.I()))
+	fmt.Printf("X : %v\n", sdc(gate.X()))
+	fmt.Printf("Z : %v\n", sdc(gate.Z()))
+	fmt.Printf("ZX: %v\n", sdc(gate.Z().Apply(gate.X())))
+
+	// Output:
+	// I : 00
+	// X : 01
+	// Z : 10
+	// ZX: 11
+}
+
 func Example_errorCorrection() {
 	qsim := q.New()
 
@@ -813,6 +849,44 @@ func Example_errorCorrection() {
 	// q0(corrected):
 	// [0][  0]( 0.4472 0.0000i): 0.2000
 	// [1][  1]( 0.8944 0.0000i): 0.8000
+}
+
+func Example_deutschJozsa() {
+	type FuncType int
+	const (
+		Constant FuncType = iota
+		Balanced
+	)
+
+	oracle := func(qsim *q.Q, q0, q1 q.Qubit) FuncType {
+		r := rand.New(rand.NewSource(time.Now().UnixNano()))
+		if r.Float64() > 0.5 {
+			return Constant
+		}
+
+		qsim.CNOT(q0, q1)
+		return Balanced
+	}
+
+	qsim := q.New()
+	q0 := qsim.Zero()
+	q1 := qsim.One()
+
+	qsim.H(q0, q1)
+	ans := oracle(qsim, q0, q1)
+	qsim.H(q0)
+	m0 := qsim.M(q0)
+
+	if m0.IsZero() && ans == Constant {
+		fmt.Println("Correct!")
+	}
+
+	if m0.IsOne() && ans == Balanced {
+		fmt.Println("Correct!")
+	}
+
+	// Output:
+	// Correct!
 }
 
 func Example_grover3qubit() {
@@ -1126,24 +1200,6 @@ func Example_shorFactoring85() {
 
 	// Output:
 	// N=85, a=14. p=5, q=17. s/r=15/16 ([0.1111]~0.938)
-}
-
-func Example_mathrand() {
-	qsim := q.New()
-	qsim.Rand = func() float64 {
-		return rand.New(rand.NewSource(1)).Float64()
-	}
-
-	q0 := qsim.Zero()
-	qsim.H(q0)
-	qsim.Measure(q0)
-
-	for _, s := range qsim.State() {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [1][  1]( 1.0000 0.0000i): 1.0000
 }
 
 func Example_top() {

@@ -12,10 +12,12 @@ import (
 // Qubit is a quantum bit.
 type Qubit int
 
+// Index returns the index of qubit.
 func (q Qubit) Index() int {
 	return int(q)
 }
 
+// Index returns the index list of qubits.
 func Index(qb ...Qubit) []int {
 	index := make([]int, 0, len(qb))
 	for i := range qb {
@@ -35,7 +37,7 @@ type Q struct {
 func New() *Q {
 	return &Q{
 		qb:   nil,
-		Rand: rand.Crypto,
+		Rand: rand.Math(),
 	}
 }
 
@@ -279,6 +281,7 @@ func (q *Q) ControlledR(theta float64, control []Qubit, target Qubit) *Q {
 	return q
 }
 
+// CR applies Controlled-R gate.
 func (q *Q) CR(theta float64, control, target Qubit) *Q {
 	return q.ControlledR(theta, []Qubit{control}, target)
 }
