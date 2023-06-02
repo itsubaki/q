@@ -16,7 +16,7 @@ func New(v ...[]complex128) Matrix {
 	return out
 }
 
-// Zero returns a zero matrix of nxn.
+// Zero returns a zero matrix.
 func Zero(n int) Matrix {
 	out := make(Matrix, n)
 	for i := 0; i < n; i++ {
@@ -26,7 +26,7 @@ func Zero(n int) Matrix {
 	return out
 }
 
-// Identity returns a identity matrix of nxn.
+// Identity returns a identity matrix.
 func Identity(n int) Matrix {
 	out := Zero(n)
 	for i := 0; i < n; i++ {
