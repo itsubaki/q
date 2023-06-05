@@ -27,13 +27,13 @@ func Index(qb ...Qubit) []int {
 	return index
 }
 
-// Q is a quantum computer simulator.
+// Q is a quantum computation simulator.
 type Q struct {
 	qb   *qubit.Qubit
 	Rand func() float64
 }
 
-// New returns a new quantum computer simulator.
+// New returns a new quantum computation simulator.
 func New() *Q {
 	return &Q{
 		qb:   nil,
@@ -403,7 +403,7 @@ func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
 	return qubit.TensorProduct(m...)
 }
 
-// Clone returns a clone of a quantum computer simulator.
+// Clone returns a clone of a quantum computation simulator.
 func (q *Q) Clone() *Q {
 	if q.qb == nil {
 		return &Q{
@@ -423,7 +423,7 @@ func (q *Q) Raw() *qubit.Qubit {
 	return q.qb
 }
 
-// String returns the string representation of a quantum computer simulator.
+// String returns the string representation of a quantum computation simulator.
 func (q *Q) String() string {
 	return q.qb.String()
 }
