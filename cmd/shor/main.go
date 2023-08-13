@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/itsubaki/q"
@@ -104,7 +105,7 @@ func main() {
 func print(desc string, qsim *q.Q, reg ...any) {
 	fmt.Println(desc)
 
-	max := number.Max(qsim.Probability())
+	max := slices.Max(qsim.Probability())
 	for _, s := range qsim.State(reg...) {
 		p := strings.Repeat("*", int(s.Probability/max*32))
 		fmt.Printf("%s: %s\n", s, p)
