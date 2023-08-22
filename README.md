@@ -6,7 +6,7 @@
 [![codecov](https://codecov.io/gh/itsubaki/q/branch/main/graph/badge.svg?token=iNccCs1Tez)](https://codecov.io/gh/itsubaki/q)
 
 - quantum computation simulator
-- pure golang implementation
+- pure Go implementation
 - using only the standard library
 
 # Example
