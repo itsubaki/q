@@ -303,8 +303,8 @@ func (q *Q) CModExp2(a, N int, control []Qubit, target []Qubit) *Q {
 	return q
 }
 
-// Condition applies m if condition is true.
-func (q *Q) Condition(condition bool, m matrix.Matrix, qb ...Qubit) *Q {
+// Cond applies m if condition is true.
+func (q *Q) Cond(condition bool, m matrix.Matrix, qb ...Qubit) *Q {
 	if condition {
 		return q.Apply(m, qb...)
 	}
@@ -312,14 +312,14 @@ func (q *Q) Condition(condition bool, m matrix.Matrix, qb ...Qubit) *Q {
 	return q
 }
 
-// ConditionX applies X gate if condition is true.
-func (q *Q) ConditionX(condition bool, qb ...Qubit) *Q {
-	return q.Condition(condition, gate.X(), qb...)
+// CondX applies X gate if condition is true.
+func (q *Q) CondX(condition bool, qb ...Qubit) *Q {
+	return q.Cond(condition, gate.X(), qb...)
 }
 
-// ConditionZ applies Z gate if condition is true.
-func (q *Q) ConditionZ(condition bool, qb ...Qubit) *Q {
-	return q.Condition(condition, gate.Z(), qb...)
+// CondZ applies Z gate if condition is true.
+func (q *Q) CondZ(condition bool, qb ...Qubit) *Q {
+	return q.Cond(condition, gate.Z(), qb...)
 }
 
 // Swap applies Swap gate.

@@ -508,17 +508,17 @@ func ExampleQ_C() {
 	// [11][  3]( 0.7071 0.0000i): 0.5000
 }
 
-func ExampleQ_ConditionX() {
+func ExampleQ_CondX() {
 	qsim := q.New()
 
 	q0 := qsim.Zero()
 
-	qsim.ConditionX(false, q0)
+	qsim.CondX(false, q0)
 	for _, s := range qsim.State() {
 		fmt.Println(s)
 	}
 
-	qsim.ConditionX(true, q0)
+	qsim.CondX(true, q0)
 	for _, s := range qsim.State() {
 		fmt.Println(s)
 	}
@@ -528,17 +528,17 @@ func ExampleQ_ConditionX() {
 	// [1][  1]( 1.0000 0.0000i): 1.0000
 }
 
-func ExampleQ_ConditionZ() {
+func ExampleQ_CondZ() {
 	qsim := q.New()
 
 	q0 := qsim.One()
 
-	qsim.ConditionZ(false, q0)
+	qsim.CondZ(false, q0)
 	for _, s := range qsim.State() {
 		fmt.Println(s)
 	}
 
-	qsim.ConditionZ(true, q0)
+	qsim.CondZ(true, q0)
 	for _, s := range qsim.State() {
 		fmt.Println(s)
 	}
@@ -742,8 +742,8 @@ func Example_quantumTeleportation2() {
 	mz := qsim.Measure(phi)
 	mx := qsim.Measure(q0)
 
-	qsim.ConditionX(mx.IsOne(), q1)
-	qsim.ConditionZ(mz.IsOne(), q1)
+	qsim.CondX(mx.IsOne(), q1)
+	qsim.CondZ(mz.IsOne(), q1)
 
 	fmt.Println("q1:")
 	for _, s := range qsim.State(q1) {
@@ -827,9 +827,9 @@ func Example_errorCorrection() {
 	m3 := qsim.Measure(q3)
 	m4 := qsim.Measure(q4)
 
-	qsim.ConditionX(m3.IsOne() && m4.IsZero(), q0)
-	qsim.ConditionX(m3.IsOne() && m4.IsOne(), q1)
-	qsim.ConditionX(m3.IsZero() && m4.IsOne(), q2)
+	qsim.CondX(m3.IsOne() && m4.IsZero(), q0)
+	qsim.CondX(m3.IsOne() && m4.IsOne(), q1)
+	qsim.CondX(m3.IsZero() && m4.IsOne(), q2)
 
 	// decoding
 	qsim.CNOT(q0, q2).CNOT(q0, q1)
