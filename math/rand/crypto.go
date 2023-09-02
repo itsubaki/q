@@ -9,9 +9,11 @@ import (
 )
 
 // Crypto returns a random float64 in [0, 1).
-func Crypto() float64 {
-	v := CryptoInt64(0, math.MaxInt64)
-	return float64(v) / math.MaxInt64
+func Crypto() func() float64 {
+	return func() float64 {
+		v := CryptoInt64(0, math.MaxInt64)
+		return float64(v) / math.MaxInt64
+	}
 }
 
 // Coprime returns a random coprime number in [2, N).

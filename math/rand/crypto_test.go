@@ -36,7 +36,7 @@ func ExampleCoprime() {
 }
 
 func TestCrypto(t *testing.T) {
-	r := rand.Crypto()
+	r := rand.Crypto()()
 	if r >= 0 && r < 1 {
 		return
 	}

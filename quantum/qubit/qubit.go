@@ -25,7 +25,7 @@ type Qubit struct {
 func New(z ...complex128) *Qubit {
 	q := &Qubit{
 		vector: vector.New(z...),
-		Rand:   rand.Crypto,
+		Rand:   rand.Crypto(),
 	}
 
 	q.Normalize()
