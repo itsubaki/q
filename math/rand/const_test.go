@@ -8,12 +8,17 @@ import (
 )
 
 func ExampleConst() {
-	fmt.Printf("%.13f\n", rand.Const()())
+	c := rand.Const()
+	fmt.Printf("%.13f\n", c())
+	fmt.Printf("%.13f\n", c())
+	fmt.Printf("%.13f\n", c())
 	fmt.Printf("%.13f\n", rand.Const(1)())
 	fmt.Printf("%.13f\n", rand.Const(2)())
 	fmt.Printf("%.13f\n", rand.Const(3)())
 
 	// Output:
+	// 0.6046602879796
+	// 0.6046602879796
 	// 0.6046602879796
 	// 0.6046602879796
 	// 0.1672966344259
