@@ -1100,106 +1100,114 @@ func Example_shorFactoring51() {
 	// NOTE: Michael R. Geller, Zhongyuan Zhou. Factoring 51 and 85 with 8 qubits.
 	N := 51
 	a := 5 // 5, 7, 10, 11, 14, 20, 22, 23, 28, 29, 31, 37, 40, 41, 44, 46
+	rng := rnd.Const()
 
-	qsim := q.New()
-	qsim.Rand = rnd.Const()
+	for {
+		qsim := q.New()
+		qsim.Rand = rng
 
-	q0 := qsim.Zero()
-	q1 := qsim.Zero()
-	q2 := qsim.Zero()
-	q3 := qsim.Zero()
+		q0 := qsim.Zero()
+		q1 := qsim.Zero()
+		q2 := qsim.Zero()
+		q3 := qsim.Zero()
 
-	q4 := qsim.Zero()
-	q5 := qsim.Zero()
-	q6 := qsim.Zero()
-	q7 := qsim.Zero()
+		q4 := qsim.Zero()
+		q5 := qsim.Zero()
+		q6 := qsim.Zero()
+		q7 := qsim.Zero()
 
-	qsim.H(q0, q1, q2, q3)
+		qsim.H(q0, q1, q2, q3)
 
-	qsim.CNOT(q0, q4)
-	qsim.CNOT(q1, q5)
-	qsim.CNOT(q2, q6)
-	qsim.CNOT(q3, q7)
+		qsim.CNOT(q0, q4)
+		qsim.CNOT(q1, q5)
+		qsim.CNOT(q2, q6)
+		qsim.CNOT(q3, q7)
 
-	// inverse QFT
-	qsim.Swap(q0, q1, q2, q3)
-	qsim.H(q3)
-	qsim.CR(-1*gate.Theta(2), q3, q2)
-	qsim.H(q2)
-	qsim.CR(-1*gate.Theta(3), q3, q1)
-	qsim.CR(-1*gate.Theta(2), q2, q1)
-	qsim.H(q1)
-	qsim.CR(-1*gate.Theta(4), q3, q0)
-	qsim.CR(-1*gate.Theta(3), q2, q0)
-	qsim.CR(-1*gate.Theta(2), q1, q0)
-	qsim.H(q0)
+		// inverse QFT
+		qsim.Swap(q0, q1, q2, q3)
+		qsim.H(q3)
+		qsim.CR(-1*gate.Theta(2), q3, q2)
+		qsim.H(q2)
+		qsim.CR(-1*gate.Theta(3), q3, q1)
+		qsim.CR(-1*gate.Theta(2), q2, q1)
+		qsim.H(q1)
+		qsim.CR(-1*gate.Theta(4), q3, q0)
+		qsim.CR(-1*gate.Theta(3), q2, q0)
+		qsim.CR(-1*gate.Theta(2), q1, q0)
+		qsim.H(q0)
 
-	m := qsim.Measure(q0, q1, q2, q3).BinaryString()
-	s, r, d, ok := number.FindOrder(a, N, fmt.Sprintf("0.%s", m))
-	if !ok || number.IsOdd(r) {
-		return
+		m := qsim.Measure(q0, q1, q2, q3).BinaryString()
+		s, r, d, ok := number.FindOrder(a, N, fmt.Sprintf("0.%s", m))
+		if !ok || number.IsOdd(r) {
+			continue
+		}
+
+		p0 := number.GCD(number.Pow(a, r/2)-1, N)
+		p1 := number.GCD(number.Pow(a, r/2)+1, N)
+		if number.IsTrivial(N, p0, p1) {
+			continue
+		}
+
+		fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d ([0.%v]~%.3f)\n", N, a, p0, p1, s, r, m, d)
+		break
 	}
-
-	p0 := number.GCD(number.Pow(a, r/2)-1, N)
-	p1 := number.GCD(number.Pow(a, r/2)+1, N)
-	if number.IsTrivial(N, p0, p1) {
-		return
-	}
-
-	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d ([0.%v]~%.3f)\n", N, a, p0, p1, s, r, m, d)
 
 	// Output:
-	// N=51, a=5. p=3, q=17. s/r=15/16 ([0.1111]~0.938)
+	// N=51, a=5. p=3, q=17. s/r=3/16 ([0.0011]~0.188)
 }
 
 func Example_shorFactoring85() {
 	// NOTE: Michael R. Geller, Zhongyuan Zhou. Factoring 51 and 85 with 8 qubits.
 	N := 85
 	a := 14
+	rng := rnd.Const()
 
-	qsim := q.New()
-	qsim.Rand = rnd.Const()
+	for {
+		qsim := q.New()
+		qsim.Rand = rng
 
-	q0 := qsim.Zero()
-	q1 := qsim.Zero()
-	q2 := qsim.Zero()
-	q3 := qsim.Zero()
+		q0 := qsim.Zero()
+		q1 := qsim.Zero()
+		q2 := qsim.Zero()
+		q3 := qsim.Zero()
 
-	q4 := qsim.Zero()
-	q5 := qsim.Zero()
-	q6 := qsim.Zero()
-	q7 := qsim.Zero()
+		q4 := qsim.Zero()
+		q5 := qsim.Zero()
+		q6 := qsim.Zero()
+		q7 := qsim.Zero()
 
-	qsim.H(q0, q1, q2, q3)
+		qsim.H(q0, q1, q2, q3)
 
-	qsim.CNOT(q0, q4)
-	qsim.CNOT(q1, q5)
-	qsim.CNOT(q2, q6)
-	qsim.CNOT(q3, q7)
+		qsim.CNOT(q0, q4)
+		qsim.CNOT(q1, q5)
+		qsim.CNOT(q2, q6)
+		qsim.CNOT(q3, q7)
 
-	// inverse QFT
-	qsim.Swap(q0, q1, q2, q3)
-	qsim.H(q3)
-	qsim.CR(-1*gate.Theta(2), q3, q2).H(q2)
-	qsim.CR(-1*gate.Theta(3), q3, q1).CR(-1*gate.Theta(2), q2, q1).H(q1)
-	qsim.CR(-1*gate.Theta(4), q3, q0).CR(-1*gate.Theta(3), q2, q0).CR(-1*gate.Theta(2), q1, q0).H(q0)
+		// inverse QFT
+		qsim.Swap(q0, q1, q2, q3)
+		qsim.H(q3)
+		qsim.CR(-1*gate.Theta(2), q3, q2).H(q2)
+		qsim.CR(-1*gate.Theta(3), q3, q1).CR(-1*gate.Theta(2), q2, q1).H(q1)
+		qsim.CR(-1*gate.Theta(4), q3, q0).CR(-1*gate.Theta(3), q2, q0).CR(-1*gate.Theta(2), q1, q0).H(q0)
 
-	m := qsim.Measure(q0, q1, q2, q3).BinaryString()
-	s, r, d, ok := number.FindOrder(a, N, fmt.Sprintf("0.%s", m))
-	if !ok || number.IsOdd(r) {
-		return
+		m := qsim.Measure(q0, q1, q2, q3).BinaryString()
+		s, r, d, ok := number.FindOrder(a, N, fmt.Sprintf("0.%s", m))
+		if !ok || number.IsOdd(r) {
+			continue
+		}
+
+		p0 := number.GCD(number.Pow(a, r/2)-1, N)
+		p1 := number.GCD(number.Pow(a, r/2)+1, N)
+		if number.IsTrivial(N, p0, p1) {
+			continue
+		}
+
+		fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d ([0.%v]~%.3f)\n", N, a, p0, p1, s, r, m, d)
+		break
 	}
-
-	p0 := number.GCD(number.Pow(a, r/2)-1, N)
-	p1 := number.GCD(number.Pow(a, r/2)+1, N)
-	if number.IsTrivial(N, p0, p1) {
-		return
-	}
-
-	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d ([0.%v]~%.3f)\n", N, a, p0, p1, s, r, m, d)
 
 	// Output:
-	// N=85, a=14. p=5, q=17. s/r=15/16 ([0.1111]~0.938)
+	// N=85, a=14. p=5, q=17. s/r=3/16 ([0.0011]~0.188)
 }
 
 func Example_top() {
@@ -1234,14 +1242,14 @@ func Example_top() {
 	// Output:
 	// [1000][  8](-0.4330 0.0000i): 0.1875
 	// [0000][  0]( 0.4330 0.0000i): 0.1875
-	// [1101][ 13](-0.1334 0.3219i): 0.1214
-	// [0101][  5]( 0.1334-0.3219i): 0.1214
-	// [1011][ 11]( 0.1334 0.3219i): 0.1214
-	// [0011][  3](-0.1334-0.3219i): 0.1214
-	// [0100][  4]( 0.0000-0.1443i): 0.0208
-	// [0110][  6](-0.1021 0.1021i): 0.0208
-	// [1010][ 10](-0.1021-0.1021i): 0.0208
-	// [0010][  2]( 0.1021 0.1021i): 0.0208
+	// [1011][ 11]( 0.1334-0.3219i): 0.1214
+	// [0011][  3](-0.1334 0.3219i): 0.1214
+	// [1101][ 13](-0.1334-0.3219i): 0.1214
+	// [0101][  5]( 0.1334 0.3219i): 0.1214
+	// [0100][  4]( 0.0000 0.1443i): 0.0208
+	// [0110][  6](-0.1021-0.1021i): 0.0208
+	// [1010][ 10](-0.1021 0.1021i): 0.0208
+	// [0010][  2]( 0.1021-0.1021i): 0.0208
 }
 
 func ExampleQ_Raw() {

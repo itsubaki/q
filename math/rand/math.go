@@ -6,6 +6,6 @@ import (
 )
 
 func Math() func() float64 {
-	s := time.Now().UnixNano()
-	return rand.New(rand.NewSource(s)).Float64
+	src := rand.NewSource(time.Now().UnixNano())
+	return rand.New(src).Float64
 }
