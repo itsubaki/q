@@ -17,18 +17,18 @@ func New(v ...[]complex128) Matrix {
 }
 
 // Zero returns a zero matrix.
-func Zero(n int) Matrix {
+func Zero(n, m int) Matrix {
 	out := make(Matrix, n)
 	for i := 0; i < n; i++ {
-		out[i] = make([]complex128, n)
+		out[i] = make([]complex128, m)
 	}
 
 	return out
 }
 
 // Identity returns a identity matrix.
-func Identity(n int) Matrix {
-	out := Zero(n)
+func Identity(n, m int) Matrix {
+	out := Zero(n, m)
 	for i := 0; i < n; i++ {
 		out[i][i] = 1
 	}
@@ -71,11 +71,7 @@ func (m Matrix) Dimension() (int, int) {
 func (m Matrix) Transpose() Matrix {
 	p, q := m.Dimension()
 
-	out := make(Matrix, q)
-	for i := range out {
-		out[i] = make([]complex128, p)
-	}
-
+	out := Zero(p, q)
 	for i := 0; i < q; i++ {
 		for j := 0; j < p; j++ {
 			out[i][j] = m[j][i]
@@ -89,9 +85,8 @@ func (m Matrix) Transpose() Matrix {
 func (m Matrix) Conjugate() Matrix {
 	p, q := m.Dimension()
 
-	out := make(Matrix, p)
+	out := Zero(p, q)
 	for i := 0; i < p; i++ {
-		out[i] = make([]complex128, q)
 		for j := 0; j < q; j++ {
 			out[i][j] = cmplx.Conj(m[i][j])
 		}
@@ -104,9 +99,8 @@ func (m Matrix) Conjugate() Matrix {
 func (m Matrix) Dagger() Matrix {
 	p, q := m.Dimension()
 
-	out := make(Matrix, p)
+	out := Zero(p, q)
 	for i := 0; i < p; i++ {
-		out[i] = make([]complex128, q)
 		for j := 0; j < q; j++ {
 			out[i][j] = cmplx.Conj(m[j][i])
 		}
@@ -136,8 +130,8 @@ func (m Matrix) IsUnitary(eps ...float64) bool {
 		return false
 	}
 
-	n, _ := m.Dimension()
-	return m.Apply(m.Dagger()).Equals(Identity(n), epsilon.E13(eps...))
+	p, q := m.Dimension()
+	return m.Apply(m.Dagger()).Equals(Identity(p, q), epsilon.E13(eps...))
 }
 
 // Apply returns a matrix product of m and n.
@@ -145,10 +139,8 @@ func (m Matrix) Apply(n Matrix) Matrix {
 	a, b := m.Dimension()
 	_, p := n.Dimension()
 
-	out := make(Matrix, a)
+	out := Zero(a, p)
 	for i := 0; i < a; i++ {
-		out[i] = make([]complex128, b)
-
 		for j := 0; j < p; j++ {
 			var c complex128
 			for k := 0; k < b; k++ {
@@ -166,9 +158,8 @@ func (m Matrix) Apply(n Matrix) Matrix {
 func (m Matrix) Mul(z complex128) Matrix {
 	p, q := m.Dimension()
 
-	out := make(Matrix, p)
+	out := Zero(p, q)
 	for i := 0; i < p; i++ {
-		out[i] = make([]complex128, q)
 		for j := 0; j < q; j++ {
 			out[i][j] = z * m[i][j]
 		}
@@ -181,9 +172,8 @@ func (m Matrix) Mul(z complex128) Matrix {
 func (m Matrix) Add(n Matrix) Matrix {
 	p, q := m.Dimension()
 
-	out := make(Matrix, p)
+	out := Zero(p, q)
 	for i := 0; i < p; i++ {
-		out[i] = make([]complex128, q)
 		for j := 0; j < q; j++ {
 			out[i][j] = m[i][j] + n[i][j]
 		}
@@ -196,9 +186,8 @@ func (m Matrix) Add(n Matrix) Matrix {
 func (m Matrix) Sub(n Matrix) Matrix {
 	p, q := m.Dimension()
 
-	out := make(Matrix, p)
+	out := Zero(p, q)
 	for i := 0; i < p; i++ {
-		out[i] = make([]complex128, q)
 		for j := 0; j < q; j++ {
 			out[i][j] = m[i][j] - n[i][j]
 		}
@@ -249,9 +238,8 @@ func (m Matrix) Imag() [][]float64 {
 func (m Matrix) Clone() Matrix {
 	p, q := m.Dimension()
 
-	out := make(Matrix, p)
+	out := Zero(p, q)
 	for i := 0; i < p; i++ {
-		out[i] = make([]complex128, q)
 		for j := 0; j < q; j++ {
 			out[i][j] = m[i][j]
 		}
@@ -265,14 +253,14 @@ func (m Matrix) Inverse() Matrix {
 	p, q := m.Dimension()
 	clone := m.Clone()
 
-	out := make(Matrix, p)
+	out := Zero(p, q)
 	for i := 0; i < p; i++ {
-		out[i] = make([]complex128, q)
 		for j := 0; j < q; j++ {
 			if i == j {
 				out[i][j] = 1
 				continue
 			}
+
 			out[i][j] = 0
 		}
 	}
@@ -283,6 +271,7 @@ func (m Matrix) Inverse() Matrix {
 			clone[i][j] = c * clone[i][j]
 			out[i][j] = c * out[i][j]
 		}
+
 		for j := 0; j < q; j++ {
 			if i == j {
 				continue

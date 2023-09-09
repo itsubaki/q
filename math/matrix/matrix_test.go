@@ -126,9 +126,9 @@ func BenchmarkTensorProductN8(b *testing.B) {
 }
 
 func ExampleZero() {
-	fmt.Println(matrix.Zero(0))
-	fmt.Println(matrix.Zero(1))
-	fmt.Println(matrix.Zero(2))
+	fmt.Println(matrix.Zero(0, 0))
+	fmt.Println(matrix.Zero(1, 1))
+	fmt.Println(matrix.Zero(2, 2))
 
 	// Output:
 	// []

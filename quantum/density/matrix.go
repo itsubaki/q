@@ -41,7 +41,7 @@ func (m *Matrix) Add(ensemble []State) error {
 
 		n := s.Qubit.Dimension()
 		if len(m.m) < 1 {
-			m.m = matrix.Zero(n)
+			m.m = matrix.Zero(n, n)
 		}
 
 		if len(m.m) != n {
@@ -107,7 +107,8 @@ func (m *Matrix) SquareTrace() float64 {
 func (m *Matrix) PartialTrace(index ...int) *Matrix {
 	n := m.NumberOfBit()
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
-	out := matrix.Zero(number.Pow(2, n-1))
+	d := number.Pow(2, n-1)
+	out := matrix.Zero(d, d)
 
 	p, q := m.Dimension()
 	for i := 0; i < p; i++ {
