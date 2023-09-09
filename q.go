@@ -27,6 +27,10 @@ func Index(qb ...Qubit) []int {
 	return idx
 }
 
+func Theta(k int) float64 {
+	return gate.Theta(k)
+}
+
 // Q is a quantum computation simulator.
 type Q struct {
 	qb   *qubit.Qubit
@@ -343,7 +347,7 @@ func (q *Q) QFT(qb ...Qubit) *Q {
 
 		k := 2
 		for j := i + 1; j < l; j++ {
-			q.CR(gate.Theta(k), qb[j], qb[i])
+			q.CR(Theta(k), qb[j], qb[i])
 			k++
 		}
 	}
@@ -357,7 +361,7 @@ func (q *Q) InverseQFT(qb ...Qubit) *Q {
 	for i := l - 1; i > -1; i-- {
 		k := l - i
 		for j := l - 1; j > i; j-- {
-			q.CR(-1*gate.Theta(k), qb[j], qb[i])
+			q.CR(-1*Theta(k), qb[j], qb[i])
 			k--
 		}
 

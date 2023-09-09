@@ -984,10 +984,10 @@ func Example_qFT() {
 	q2 := qsim.Zero()
 
 	qsim.H(q0)
-	qsim.CR(gate.Theta(2), q1, q0)
-	qsim.CR(gate.Theta(3), q2, q0)
+	qsim.CR(q.Theta(2), q1, q0)
+	qsim.CR(q.Theta(3), q2, q0)
 	qsim.H(q1)
-	qsim.CR(gate.Theta(2), q2, q1)
+	qsim.CR(q.Theta(2), q2, q1)
 	qsim.H(q2)
 	qsim.Swap(q0, q2)
 
@@ -1126,14 +1126,14 @@ func Example_shorFactoring51() {
 		// inverse QFT
 		qsim.Swap(q0, q1, q2, q3)
 		qsim.H(q3)
-		qsim.CR(-1*gate.Theta(2), q3, q2)
+		qsim.CR(-1*q.Theta(2), q3, q2)
 		qsim.H(q2)
-		qsim.CR(-1*gate.Theta(3), q3, q1)
-		qsim.CR(-1*gate.Theta(2), q2, q1)
+		qsim.CR(-1*q.Theta(3), q3, q1)
+		qsim.CR(-1*q.Theta(2), q2, q1)
 		qsim.H(q1)
-		qsim.CR(-1*gate.Theta(4), q3, q0)
-		qsim.CR(-1*gate.Theta(3), q2, q0)
-		qsim.CR(-1*gate.Theta(2), q1, q0)
+		qsim.CR(-1*q.Theta(4), q3, q0)
+		qsim.CR(-1*q.Theta(3), q2, q0)
+		qsim.CR(-1*q.Theta(2), q1, q0)
 		qsim.H(q0)
 
 		m := qsim.Measure(q0, q1, q2, q3).BinaryString()
@@ -1186,9 +1186,9 @@ func Example_shorFactoring85() {
 		// inverse QFT
 		qsim.Swap(q0, q1, q2, q3)
 		qsim.H(q3)
-		qsim.CR(-1*gate.Theta(2), q3, q2).H(q2)
-		qsim.CR(-1*gate.Theta(3), q3, q1).CR(-1*gate.Theta(2), q2, q1).H(q1)
-		qsim.CR(-1*gate.Theta(4), q3, q0).CR(-1*gate.Theta(3), q2, q0).CR(-1*gate.Theta(2), q1, q0).H(q0)
+		qsim.CR(-1*q.Theta(2), q3, q2).H(q2)
+		qsim.CR(-1*q.Theta(3), q3, q1).CR(-1*q.Theta(2), q2, q1).H(q1)
+		qsim.CR(-1*q.Theta(4), q3, q0).CR(-1*q.Theta(3), q2, q0).CR(-1*q.Theta(2), q1, q0).H(q0)
 
 		m := qsim.Measure(q0, q1, q2, q3).BinaryString()
 		s, r, d, ok := number.FindOrder(a, N, fmt.Sprintf("0.%s", m))
