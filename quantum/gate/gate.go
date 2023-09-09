@@ -207,7 +207,7 @@ func ControlledNot(n int, c []int, t int) matrix.Matrix {
 	d, _ := m.Dimension()
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 
-	index := make([]int64, 0, d)
+	idx := make([]int64, d)
 	for i := 0; i < d; i++ {
 		bits := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)))
 
@@ -227,12 +227,11 @@ func ControlledNot(n int, c []int, t int) matrix.Matrix {
 			}
 		}
 
-		v := number.Must(strconv.ParseInt(string(bits), 2, 0))
-		index = append(index, v)
+		idx[i] = number.Must(strconv.ParseInt(string(bits), 2, 0))
 	}
 
 	g := make(matrix.Matrix, d)
-	for i, ii := range index {
+	for i, ii := range idx {
 		g[ii] = m[i]
 	}
 
@@ -404,17 +403,17 @@ func ControlledModExp2(n, a, j, N, c int, t []int) matrix.Matrix {
 	bf := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 	tf := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(r1len), "s")
 
-	index := make([]int64, 0, d)
+	idx := make([]int64, d)
 	for i := 0; i < d; i++ {
 		bits := []rune(fmt.Sprintf(bf, strconv.FormatInt(int64(i), 2)))
 		if bits[c] == '0' {
-			index = append(index, int64(i))
+			idx[i] = int64(i)
 			continue
 		}
 
 		k := number.Must(strconv.ParseInt(string(bits[r0len:]), 2, 0))
 		if k > int64(N-1) {
-			index = append(index, int64(i))
+			idx[i] = int64(i)
 			continue
 		}
 
@@ -422,12 +421,11 @@ func ControlledModExp2(n, a, j, N, c int, t []int) matrix.Matrix {
 		a2jkmodNs := fmt.Sprintf(tf, strconv.FormatInt(a2jkmodN, 2))
 		newbits := append(bits[:r0len], []rune(a2jkmodNs)...)
 
-		v := number.Must(strconv.ParseInt(string(newbits), 2, 0))
-		index = append(index, v)
+		idx[i] = number.Must(strconv.ParseInt(string(newbits), 2, 0))
 	}
 
 	g := make(matrix.Matrix, d)
-	for i, ii := range index {
+	for i, ii := range idx {
 		g[ii] = m[i]
 	}
 

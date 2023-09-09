@@ -19,12 +19,12 @@ func (q Qubit) Index() int {
 
 // Index returns the index list of qubits.
 func Index(qb ...Qubit) []int {
-	index := make([]int, 0, len(qb))
+	idx := make([]int, len(qb))
 	for i := range qb {
-		index = append(index, qb[i].Index())
+		idx[i] = qb[i].Index()
 	}
 
-	return index
+	return idx
 }
 
 // Q is a quantum computation simulator.
@@ -50,8 +50,7 @@ func (q *Q) New(v ...complex128) Qubit {
 	}
 
 	q.qb.TensorProduct(qubit.New(v...))
-	index := q.NumberOfBit() - 1
-	return Qubit(index)
+	return Qubit(q.NumberOfBit() - 1)
 }
 
 // NewOf returns a new qubit from binary string.
@@ -196,18 +195,18 @@ func (q *Q) Apply(m matrix.Matrix, qb ...Qubit) *Q {
 		return q
 	}
 
-	index := make(map[int]bool)
+	idx := make(map[int]bool)
 	for _, i := range Index(qb...) {
-		index[i] = true
+		idx[i] = true
 	}
 
 	g := gate.I()
-	if _, ok := index[0]; ok {
+	if _, ok := idx[0]; ok {
 		g = m
 	}
 
 	for i := 1; i < q.NumberOfBit(); i++ {
-		if _, ok := index[i]; ok {
+		if _, ok := idx[i]; ok {
 			g = g.TensorProduct(m)
 			continue
 		}
@@ -430,15 +429,15 @@ func (q *Q) String() string {
 
 // State returns the state of qubits.
 func (q *Q) State(reg ...any) []qubit.State {
-	index := make([][]int, 0)
+	idx := make([][]int, 0)
 	for _, r := range reg {
 		switch r := r.(type) {
 		case Qubit:
-			index = append(index, []int{r.Index()})
+			idx = append(idx, []int{r.Index()})
 		case []Qubit:
-			index = append(index, Index(r...))
+			idx = append(idx, Index(r...))
 		}
 	}
 
-	return q.qb.State(index...)
+	return q.qb.State(idx...)
 }
