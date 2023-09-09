@@ -27,6 +27,7 @@ func Index(qb ...Qubit) []int {
 	return idx
 }
 
+// Theta returns 2 * pi / 2**k
 func Theta(k int) float64 {
 	return gate.Theta(k)
 }
