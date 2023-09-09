@@ -29,9 +29,9 @@ func (v Vector) Complex() []complex128 {
 
 // Clone returns a clone of vector.
 func (v Vector) Clone() Vector {
-	clone := make(Vector, 0, len(v))
+	clone := make(Vector, len(v))
 	for i := 0; i < len(v); i++ {
-		clone = append(clone, v[i])
+		clone[i] = v[i]
 	}
 
 	return clone
@@ -39,9 +39,9 @@ func (v Vector) Clone() Vector {
 
 // Dual returns a dual vector.
 func (v Vector) Dual() Vector {
-	out := make(Vector, 0, len(v))
+	out := make(Vector, len(v))
 	for i := 0; i < len(v); i++ {
-		out = append(out, cmplx.Conj(v[i]))
+		out[i] = cmplx.Conj(v[i])
 	}
 
 	return out
@@ -49,9 +49,9 @@ func (v Vector) Dual() Vector {
 
 // Add returns a vector of v+w.
 func (v Vector) Add(w Vector) Vector {
-	out := make(Vector, 0, len(v))
+	out := make(Vector, len(v))
 	for i := 0; i < len(v); i++ {
-		out = append(out, v[i]+w[i])
+		out[i] = v[i] + w[i]
 	}
 
 	return out
@@ -59,9 +59,9 @@ func (v Vector) Add(w Vector) Vector {
 
 // Mul returns a vector of z*v.
 func (v Vector) Mul(z complex128) Vector {
-	out := make(Vector, 0, len(v))
+	out := make(Vector, len(v))
 	for i := range v {
-		out = append(out, z*v[i])
+		out[i] = z * v[i]
 	}
 
 	return out
@@ -95,14 +95,12 @@ func (v Vector) InnerProduct(w Vector) complex128 {
 func (v Vector) OuterProduct(w Vector) matrix.Matrix {
 	dual := w.Dual()
 
-	out := make(matrix.Matrix, 0, len(v))
+	out := make(matrix.Matrix, len(v))
 	for i := 0; i < len(v); i++ {
-		vv := make([]complex128, 0, len(dual))
+		out[i] = make([]complex128, len(dual))
 		for j := 0; j < len(dual); j++ {
-			vv = append(vv, v[i]*dual[j])
+			out[i][j] = v[i] * dual[j]
 		}
-
-		out = append(out, vv)
 	}
 
 	return out
@@ -127,14 +125,14 @@ func (v Vector) IsUnit() bool {
 func (v Vector) Apply(m matrix.Matrix) Vector {
 	p, q := m.Dimension()
 
-	out := make(Vector, 0, p)
+	out := make(Vector, p)
 	for i := 0; i < p; i++ {
 		var c complex128
 		for j := 0; j < q; j++ {
 			c = c + m[i][j]*v[j]
 		}
 
-		out = append(out, c)
+		out[i] = c
 	}
 
 	return out
@@ -164,9 +162,9 @@ func (v Vector) Dimension() int {
 
 // Real returns a slice of real part.
 func (v Vector) Real() []float64 {
-	out := make([]float64, 0, len(v))
+	out := make([]float64, len(v))
 	for i := range v {
-		out = append(out, real(v[i]))
+		out[i] = real(v[i])
 	}
 
 	return out
@@ -174,9 +172,9 @@ func (v Vector) Real() []float64 {
 
 // Imag returns a slice of imaginary part.
 func (v Vector) Imag() []float64 {
-	out := make([]float64, 0, len(v))
+	out := make([]float64, len(v))
 	for i := range v {
-		out = append(out, imag(v[i]))
+		out[i] = imag(v[i])
 	}
 
 	return out
@@ -187,9 +185,9 @@ func TensorProductN(v Vector, n ...int) Vector {
 		return v
 	}
 
-	list := make([]Vector, 0, n[0])
+	list := make([]Vector, n[0])
 	for i := 0; i < n[0]; i++ {
-		list = append(list, v)
+		list[i] = v
 	}
 
 	return TensorProduct(list...)

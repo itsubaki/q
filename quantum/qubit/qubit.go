@@ -147,9 +147,9 @@ func (q *Qubit) Amplitude() []complex128 {
 
 // Probability returns the probability of q.
 func (q *Qubit) Probability() []float64 {
-	p := make([]float64, 0)
-	for _, a := range q.Amplitude() {
-		p = append(p, math.Pow(cmplx.Abs(a), 2))
+	p := make([]float64, len(q.Amplitude()))
+	for i, a := range q.Amplitude() {
+		p[i] = math.Pow(cmplx.Abs(a), 2)
 	}
 
 	return p
@@ -223,9 +223,9 @@ func (q *Qubit) String() string {
 func (q *Qubit) State(index ...[]int) []State {
 	if len(index) < 1 {
 		n := q.NumberOfBit()
-		idx := make([]int, 0, n)
+		idx := make([]int, n)
 		for i := 0; i < n; i++ {
-			idx = append(idx, i)
+			idx[i] = i
 		}
 
 		index = append(index, idx)

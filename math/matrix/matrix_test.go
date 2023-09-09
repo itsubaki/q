@@ -95,9 +95,9 @@ func BenchmarkDaggerConcurrencyN8(b *testing.B) {
 			go func(i int, out *matrix.Matrix) {
 				defer wg.Done()
 
-				v := make([]complex128, 0, q)
+				v := make([]complex128, q)
 				for j := 0; j < q; j++ {
-					v = append(v, cmplx.Conj(m[j][i]))
+					v[j] = cmplx.Conj(m[j][i])
 				}
 
 				(*out)[i] = v

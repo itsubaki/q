@@ -55,14 +55,14 @@ func (q *Q) New(v ...complex128) Qubit {
 
 // NewOf returns a new qubit from binary string.
 func (q *Q) NewOf(binary string) []Qubit {
-	qb := make([]Qubit, 0, len(binary))
-	for _, b := range binary {
+	qb := make([]Qubit, len(binary))
+	for i, b := range binary {
 		if b == '0' {
-			qb = append(qb, q.Zero())
+			qb[i] = q.Zero()
 			continue
 		}
 
-		qb = append(qb, q.One())
+		qb[i] = q.One()
 	}
 
 	return qb
@@ -80,9 +80,9 @@ func (q *Q) One() Qubit {
 
 // ZeroWith returns a qubit in the zero state with n qubits.
 func (q *Q) ZeroWith(n int) []Qubit {
-	qb := make([]Qubit, 0, n)
+	qb := make([]Qubit, n)
 	for i := 0; i < n; i++ {
-		qb = append(qb, q.Zero())
+		qb[i] = q.Zero()
 	}
 
 	return qb
@@ -90,9 +90,9 @@ func (q *Q) ZeroWith(n int) []Qubit {
 
 // One returns a qubit in the one state with n qubits.
 func (q *Q) OneWith(n int) []Qubit {
-	qb := make([]Qubit, 0, n)
+	qb := make([]Qubit, n)
 	for i := 0; i < n; i++ {
-		qb = append(qb, q.One())
+		qb[i] = q.One()
 	}
 
 	return qb
@@ -386,17 +386,17 @@ func (q *Q) M(qb ...Qubit) *qubit.Qubit {
 func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
 	if len(qb) < 1 {
 		n := q.NumberOfBit()
-		m := make([]*qubit.Qubit, 0, n)
+		m := make([]*qubit.Qubit, n)
 		for i := 0; i < n; i++ {
-			m = append(m, q.qb.Measure(i))
+			m[i] = q.qb.Measure(i)
 		}
 
 		return qubit.TensorProduct(m...)
 	}
 
-	m := make([]*qubit.Qubit, 0, len(qb))
+	m := make([]*qubit.Qubit, len(qb))
 	for i := 0; i < len(qb); i++ {
-		m = append(m, q.qb.Measure(qb[i].Index()))
+		m[i] = q.qb.Measure(qb[i].Index())
 	}
 
 	return qubit.TensorProduct(m...)
