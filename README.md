@@ -9,9 +9,9 @@
 - pure Go implementation
 - using only the standard library
 
-# Example
+## Example
 
-## Bell state
+### Bell state
 
 ```golang
 qsim := q.New()
@@ -41,7 +41,7 @@ for _, s := range qsim.State() {
 // [11][  3]( 1.0000 0.0000i): 1.0000
 ```
 
-## Quantum teleportation
+### Quantum teleportation
 
 ```golang
 qsim := q.New()
@@ -77,7 +77,7 @@ for _, s := range qsim.State(q1) {
 // [1][  1]( 0.8944 0.0000i): 0.8000
 ```
 
-## Error correction
+### Error correction
 
 ```golang
 qsim := q.New()
@@ -117,7 +117,7 @@ for _, s := range qsim.State(q0) {
 // [1][  1]( 0.8944 0.0000i): 0.8000
 ```
 
-## Grover's search algorithm
+### Grover's search algorithm
 
 ```golang
 qsim := q.New()
@@ -169,7 +169,7 @@ for _, s := range qsim.State() {
 // [1111][ 15]( 0.0508 0.0000i): 0.0026
 ```
 
-## Shor's factoring algorithm
+### Shor's factoring algorithm
 
 ```golang
 N := 15
@@ -228,6 +228,6 @@ for i := 0; i < 10; i++{
 
 - In general, See [`cmd/shor`](./cmd/shor/main.go)
 
-# References
+## References
 
 - Michael A. Nielsen, Issac L. Chuang. Quantum Computation and Quantum Information.
