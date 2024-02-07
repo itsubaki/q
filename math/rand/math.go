@@ -1,11 +1,7 @@
 package rand
 
-import (
-	"math/rand"
-	"time"
-)
+import "math/rand/v2"
 
-func Math() func() float64 {
-	src := rand.NewSource(time.Now().UnixNano())
-	return rand.New(src).Float64
+func Float64() func() float64 {
+	return rand.Float64
 }

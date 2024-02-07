@@ -6,8 +6,8 @@ import (
 	"github.com/itsubaki/q/math/rand"
 )
 
-func TestMath(t *testing.T) {
-	r := rand.Math()()
+func TestFloat64(t *testing.T) {
+	r := rand.Float64()()
 	if r >= 0 && r < 1 {
 		return
 	}

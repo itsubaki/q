@@ -13,11 +13,12 @@ import (
 
 // go run main.go --N 15
 func main() {
-	var N, t, a, seed int
+	var N, t, a int
+	var seed uint64
 	flag.IntVar(&N, "N", 15, "positive integer")
 	flag.IntVar(&t, "t", 3, "precision bits")
 	flag.IntVar(&a, "a", -1, "coprime number of N")
-	flag.IntVar(&seed, "seed", -1, "PRNG seed for measurements")
+	flag.Uint64Var(&seed, "seed", 0, "PRNG seed for measurements")
 	flag.Parse()
 
 	if N < 2 {
@@ -57,7 +58,7 @@ func main() {
 	fmt.Printf("N=%d, a=%d, t=%d, seed=%d.\n\n", N, a, t, seed)
 
 	qsim := q.New()
-	if seed > 0 {
+	if seed > 1 {
 		qsim.Rand = rand.Const(seed)
 	}
 

@@ -4,16 +4,14 @@ import (
 	"fmt"
 	"math"
 	"math/cmplx"
-	"math/rand"
 	"sort"
 	"testing"
-	"time"
 
 	"github.com/itsubaki/q"
 	"github.com/itsubaki/q/math/epsilon"
 	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/math/number"
-	rnd "github.com/itsubaki/q/math/rand"
+	"github.com/itsubaki/q/math/rand"
 	"github.com/itsubaki/q/quantum/gate"
 	"github.com/itsubaki/q/quantum/qubit"
 )
@@ -172,7 +170,7 @@ func ExampleQ_Probability() {
 
 func ExampleQ_Measure() {
 	qsim := q.New()
-	qsim.Rand = rnd.Const()
+	qsim.Rand = rand.Const()
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
@@ -191,7 +189,7 @@ func ExampleQ_Measure() {
 
 func ExampleQ_M() {
 	qsim := q.New()
-	qsim.Rand = rnd.Const()
+	qsim.Rand = rand.Const()
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
@@ -674,7 +672,7 @@ func Example_bellState() {
 
 func Example_bellState2() {
 	qsim := q.New()
-	qsim.Rand = rnd.Const()
+	qsim.Rand = rand.Const()
 
 	r := qsim.ZeroWith(2)
 
@@ -859,8 +857,7 @@ func Example_deutschJozsa() {
 	)
 
 	oracle := func(qsim *q.Q, q0, q1 q.Qubit) FuncType {
-		r := rand.New(rand.NewSource(time.Now().UnixNano()))
-		if r.Float64() > 0.5 {
+		if rand.Float64()() > 0.5 {
 			return Constant
 		}
 
@@ -1012,7 +1009,7 @@ func Example_shorFactoring15() {
 	a := 7
 
 	qsim := q.New()
-	qsim.Rand = rnd.Const()
+	qsim.Rand = rand.Const()
 
 	// initial state
 	q0 := qsim.Zero()
@@ -1068,7 +1065,7 @@ func Example_shorFactoring21() {
 	a := 8
 
 	qsim := q.New()
-	qsim.Rand = rnd.Const()
+	qsim.Rand = rand.Const()
 
 	r0 := qsim.ZeroWith(4)
 	r1 := qsim.ZeroLog2(N)
@@ -1100,7 +1097,7 @@ func Example_shorFactoring51() {
 	// NOTE: Michael R. Geller, Zhongyuan Zhou. Factoring 51 and 85 with 8 qubits.
 	N := 51
 	a := 5 // 5, 7, 10, 11, 14, 20, 22, 23, 28, 29, 31, 37, 40, 41, 44, 46
-	rng := rnd.Const()
+	rng := rand.Const()
 
 	for {
 		qsim := q.New()
@@ -1153,14 +1150,14 @@ func Example_shorFactoring51() {
 	}
 
 	// Output:
-	// N=51, a=5. p=3, q=17. s/r=3/16 ([0.0011]~0.188)
+	// N=51, a=5. p=3, q=17. s/r=7/16 ([0.0111]~0.438)
 }
 
 func Example_shorFactoring85() {
 	// NOTE: Michael R. Geller, Zhongyuan Zhou. Factoring 51 and 85 with 8 qubits.
 	N := 85
 	a := 14
-	rng := rnd.Const()
+	rng := rand.Const()
 
 	for {
 		qsim := q.New()
@@ -1207,7 +1204,7 @@ func Example_shorFactoring85() {
 	}
 
 	// Output:
-	// N=85, a=14. p=5, q=17. s/r=3/16 ([0.0011]~0.188)
+	// N=85, a=14. p=5, q=17. s/r=7/16 ([0.0111]~0.438)
 }
 
 func Example_top() {
@@ -1215,7 +1212,7 @@ func Example_top() {
 	a := 11
 
 	qsim := q.New()
-	qsim.Rand = rnd.Const()
+	qsim.Rand = rand.Const()
 
 	r0 := qsim.ZeroWith(4)
 	r1 := qsim.ZeroLog2(N)
@@ -1240,16 +1237,16 @@ func Example_top() {
 	}
 
 	// Output:
-	// [1000][  8](-0.4330 0.0000i): 0.1875
+	// [1000][  8]( 0.4330 0.0000i): 0.1875
 	// [0000][  0]( 0.4330 0.0000i): 0.1875
-	// [1011][ 11]( 0.1334-0.3219i): 0.1214
-	// [0011][  3](-0.1334 0.3219i): 0.1214
-	// [1101][ 13](-0.1334-0.3219i): 0.1214
-	// [0101][  5]( 0.1334 0.3219i): 0.1214
-	// [0100][  4]( 0.0000 0.1443i): 0.0208
-	// [0110][  6](-0.1021-0.1021i): 0.0208
-	// [1010][ 10](-0.1021 0.1021i): 0.0208
-	// [0010][  2]( 0.1021-0.1021i): 0.0208
+	// [1101][ 13](-0.3485 0.0000i): 0.1214
+	// [1011][ 11](-0.3485 0.0000i): 0.1214
+	// [0011][  3](-0.3485 0.0000i): 0.1214
+	// [0101][  5](-0.3485 0.0000i): 0.1214
+	// [0100][  4](-0.1443 0.0000i): 0.0208
+	// [0110][  6]( 0.1443 0.0000i): 0.0208
+	// [1010][ 10]( 0.1443 0.0000i): 0.0208
+	// [0010][  2]( 0.1443 0.0000i): 0.0208
 }
 
 func ExampleQ_Raw() {

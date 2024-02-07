@@ -1,14 +1,13 @@
 package rand
 
-import "math/rand"
+import "math/rand/v2"
 
 // Const returns a constant number in [0.0, 1.0).
-func Const(seed ...int) func() float64 {
-	s := 1
+func Const(seed ...uint64) func() float64 {
+	var s uint64
 	if len(seed) > 0 {
 		s = seed[0]
 	}
 
-	src := rand.NewSource(int64(s))
-	return rand.New(src).Float64
+	return rand.New(rand.NewPCG(s, s)).Float64
 }
