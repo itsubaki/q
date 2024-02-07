@@ -7,7 +7,7 @@ import (
 )
 
 func TestFloat64(t *testing.T) {
-	r := rand.Float64()()
+	r := rand.Float64()
 	if r >= 0 && r < 1 {
 		return
 	}

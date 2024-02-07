@@ -857,7 +857,7 @@ func Example_deutschJozsa() {
 	)
 
 	oracle := func(qsim *q.Q, q0, q1 q.Qubit) FuncType {
-		if rand.Float64()() > 0.5 {
+		if rand.Float64() > 0.5 {
 			return Constant
 		}
 

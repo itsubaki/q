@@ -42,7 +42,7 @@ type Q struct {
 func New() *Q {
 	return &Q{
 		qb:   nil,
-		Rand: rand.Float64(),
+		Rand: rand.Float64,
 	}
 }
 
