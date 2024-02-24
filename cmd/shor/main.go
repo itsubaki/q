@@ -58,7 +58,7 @@ func main() {
 	fmt.Printf("N=%d, a=%d, t=%d, seed=%d.\n\n", N, a, t, seed)
 
 	qsim := q.New()
-	if seed > 1 {
+	if seed > 0 {
 		qsim.Rand = rand.Const(seed)
 	}
 
