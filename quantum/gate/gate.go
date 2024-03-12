@@ -17,9 +17,9 @@ func Theta(k int) float64 {
 
 // New returns a new gate.
 func New(v ...[]complex128) matrix.Matrix {
-	g := make(matrix.Matrix, len(v))
-	copy(g, v)
-	return g
+	gate := make(matrix.Matrix, len(v))
+	copy(gate, v)
+	return gate
 }
 
 // Empty returns a list of empty gate.
@@ -137,11 +137,11 @@ func RZ(theta float64) matrix.Matrix {
 
 // Controlled returns a controlled-u gate.
 func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
-	g := I(n)
-	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
+	gate := I(n)
+	form := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 
-	for i := range g {
-		row := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)))
+	for i := range gate {
+		row := []rune(fmt.Sprintf(form, strconv.FormatInt(int64(i), 2)))
 
 		found := false
 		for _, j := range c {
@@ -155,8 +155,8 @@ func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
 			continue
 		}
 
-		for j := range g[i] {
-			col := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(j), 2)))
+		for j := range gate[i] {
+			col := []rune(fmt.Sprintf(form, strconv.FormatInt(int64(j), 2)))
 
 			found := false
 			for _, k := range c {
@@ -189,11 +189,11 @@ func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
 			r := number.Must(strconv.Atoi(string(row[t])))
 			c := number.Must(strconv.Atoi(string(col[t])))
 
-			g[j][i] = u[c][r]
+			gate[j][i] = u[c][r]
 		}
 	}
 
-	return g
+	return gate
 }
 
 // C returns a controlled-u gate.
@@ -205,11 +205,11 @@ func C(u matrix.Matrix, n int, c int, t int) matrix.Matrix {
 func ControlledNot(n int, c []int, t int) matrix.Matrix {
 	m := I(n)
 	d, _ := m.Dimension()
-	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
+	form := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 
 	idx := make([]int64, d)
 	for i := 0; i < d; i++ {
-		bits := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)))
+		bits := []rune(fmt.Sprintf(form, strconv.FormatInt(int64(i), 2)))
 
 		apply := true
 		for _, j := range c {
@@ -230,12 +230,12 @@ func ControlledNot(n int, c []int, t int) matrix.Matrix {
 		idx[i] = number.Must(strconv.ParseInt(string(bits), 2, 0))
 	}
 
-	g := make(matrix.Matrix, d)
+	gate := make(matrix.Matrix, d)
 	for i, ii := range idx {
-		g[ii] = m[i]
+		gate[ii] = m[i]
 	}
 
-	return g
+	return gate
 }
 
 // CNOT returns a controlled-not gate.
@@ -255,12 +255,12 @@ func Toffoli(n, c0, c1, t int) matrix.Matrix {
 
 // ControlledZ returns a controlled-z gate.
 func ControlledZ(n int, c []int, t int) matrix.Matrix {
-	g := I(n)
-	d, _ := g.Dimension()
-	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
+	gate := I(n)
+	d, _ := gate.Dimension()
+	form := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 
 	for i := 0; i < d; i++ {
-		bits := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)))
+		bits := []rune(fmt.Sprintf(form, strconv.FormatInt(int64(i), 2)))
 
 		apply := true
 		for _, j := range c {
@@ -271,11 +271,11 @@ func ControlledZ(n int, c []int, t int) matrix.Matrix {
 		}
 
 		if apply && bits[t] == '1' {
-			g[i][i] = -1 * g[i][i]
+			gate[i][i] = -1 * gate[i][i]
 		}
 	}
 
-	return g
+	return gate
 }
 
 // CZ returns a controlled-z gate.
@@ -285,12 +285,12 @@ func CZ(n, c, t int) matrix.Matrix {
 
 // ControlledS returns a controlled-s gate.
 func ControlledS(n int, c []int, t int) matrix.Matrix {
-	g := I(n)
-	d, _ := g.Dimension()
-	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
+	gate := I(n)
+	d, _ := gate.Dimension()
+	form := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 
 	for i := 0; i < d; i++ {
-		bits := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)))
+		bits := []rune(fmt.Sprintf(form, strconv.FormatInt(int64(i), 2)))
 
 		apply := true
 		for _, j := range c {
@@ -301,11 +301,11 @@ func ControlledS(n int, c []int, t int) matrix.Matrix {
 		}
 
 		if apply && bits[t] == '1' {
-			g[i][i] = 1i * g[i][i]
+			gate[i][i] = 1i * gate[i][i]
 		}
 	}
 
-	return g
+	return gate
 }
 
 // CS returns a controlled-s gate.
@@ -315,15 +315,15 @@ func CS(n, c, t int) matrix.Matrix {
 
 // ControlledR returns a controlled-r gate.
 func ControlledR(theta float64, n int, c []int, t int) matrix.Matrix {
-	g := I(n)
-	d, _ := g.Dimension()
-	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
+	gate := I(n)
+	d, _ := gate.Dimension()
+	form := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 
 	// exp(i * theta)
 	e := cmplx.Exp(complex(0, theta))
 
 	for i := 0; i < d; i++ {
-		bits := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)))
+		bits := []rune(fmt.Sprintf(form, strconv.FormatInt(int64(i), 2)))
 
 		// Apply R(k)
 		apply := true
@@ -335,11 +335,11 @@ func ControlledR(theta float64, n int, c []int, t int) matrix.Matrix {
 		}
 
 		if apply && bits[t] == '1' {
-			g[i][i] = e * g[i][i]
+			gate[i][i] = e * gate[i][i]
 		}
 	}
 
-	return g
+	return gate
 }
 
 // CR returns a controlled-r gate.
@@ -367,7 +367,7 @@ func Fredkin(n, c, t0, t1 int) matrix.Matrix {
 
 // QFT returns a gate of Quantum Fourier Transform operation.
 func QFT(n int) matrix.Matrix {
-	g := I(n)
+	gate := I(n)
 
 	for i := 0; i < n; i++ {
 		h := make([]matrix.Matrix, 0)
@@ -378,16 +378,16 @@ func QFT(n int) matrix.Matrix {
 			}
 			h = append(h, I())
 		}
-		g = g.Apply(matrix.TensorProduct(h...))
+		gate = gate.Apply(matrix.TensorProduct(h...))
 
 		k := 2
 		for j := i + 1; j < n; j++ {
-			g = g.Apply(CR(Theta(k), n, j, i))
+			gate = gate.Apply(CR(Theta(k), n, j, i))
 			k++
 		}
 	}
 
-	return g
+	return gate
 }
 
 // ControlledModExp2 returns gate of controlled modular exponentiation operation.
@@ -400,12 +400,12 @@ func ControlledModExp2(n, a, j, N, c int, t []int) matrix.Matrix {
 	r0len, r1len := n-len(t), len(t)
 	a2jmodN := number.ModExp2(a, j, N)
 
-	bf := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
-	tf := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(r1len), "s")
+	bForm := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
+	tForm := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(r1len), "s")
 
 	idx := make([]int64, d)
 	for i := 0; i < d; i++ {
-		bits := []rune(fmt.Sprintf(bf, strconv.FormatInt(int64(i), 2)))
+		bits := []rune(fmt.Sprintf(bForm, strconv.FormatInt(int64(i), 2)))
 		if bits[c] == '0' {
 			idx[i] = int64(i)
 			continue
@@ -418,16 +418,16 @@ func ControlledModExp2(n, a, j, N, c int, t []int) matrix.Matrix {
 		}
 
 		a2jkmodN := (int64(a2jmodN) * k) % int64(N)
-		a2jkmodNs := fmt.Sprintf(tf, strconv.FormatInt(a2jkmodN, 2))
+		a2jkmodNs := fmt.Sprintf(tForm, strconv.FormatInt(a2jkmodN, 2))
 		newbits := append(bits[:r0len], []rune(a2jkmodNs)...)
 
 		idx[i] = number.Must(strconv.ParseInt(string(newbits), 2, 0))
 	}
 
-	g := make(matrix.Matrix, d)
+	gate := make(matrix.Matrix, d)
 	for i, ii := range idx {
-		g[ii] = m[i]
+		gate[ii] = m[i]
 	}
 
-	return g
+	return gate
 }
