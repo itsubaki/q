@@ -8,7 +8,7 @@ import (
 
 var Float64 = rand.Float64
 
-// Const returns a constant number in [0.0, 1.0).
+// Const returns a sequence of numbers fixed by seeds.
 func Const(seed ...uint64) func() float64 {
 	var s0, s1 uint64
 	if len(seed) > 0 {
