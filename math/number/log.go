@@ -9,12 +9,12 @@ func Log2(N int) (int, error) {
 		return 0, nil
 	}
 
-	if N%2 != 0 {
-		return -1, fmt.Errorf("N must be a power of 2. N=%v", N)
-	}
-
 	var n int = 1
 	for {
+		if N%2 != 0 {
+			return -1, fmt.Errorf("N must be a power of 2")
+		}
+
 		if N/2 == 1 {
 			break
 		}

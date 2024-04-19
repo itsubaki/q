@@ -9,11 +9,15 @@ import (
 
 func ExampleLog2() {
 	fmt.Println(number.Log2(8))
+	fmt.Println(number.Log2(32))
 	fmt.Println(number.Log2(15))
+	fmt.Println(number.Log2(20))
 
 	// Output:
 	// 3 <nil>
-	// -1 N must be a power of 2. N=15
+	// 5 <nil>
+	// -1 N must be a power of 2
+	// -1 N must be a power of 2
 }
 
 func TestLog2(t *testing.T) {
