@@ -73,8 +73,7 @@ func (m *Matrix) Dimension() (int, int) {
 // NumberOfBit returns the number of qubits.
 func (m *Matrix) NumberOfBit() int {
 	p, _ := m.Dimension()
-	log := math.Log2(float64(p))
-	return int(log)
+	return number.Must(number.Log2(p))
 }
 
 // Apply applies a unitary matrix to the density matrix.
@@ -166,7 +165,7 @@ func Flip(p float64, m matrix.Matrix) (matrix.Matrix, matrix.Matrix, error) {
 	}
 
 	d, _ := m.Dimension()
-	n := int(math.Log2(float64(d)))
+	n := number.Must(number.Log2(d))
 
 	e0 := gate.I(n).Mul(complex(math.Sqrt(p), 0))
 	e1 := m.Mul(complex(math.Sqrt(1-p), 0))

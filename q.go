@@ -83,7 +83,7 @@ func (q *Q) One() Qubit {
 	return q.New(0, 1)
 }
 
-// ZeroWith returns a qubit in the zero state with n qubits.
+// ZeroWith returns n qubits in the zero state.
 func (q *Q) ZeroWith(n int) []Qubit {
 	qb := make([]Qubit, n)
 	for i := 0; i < n; i++ {
@@ -93,7 +93,7 @@ func (q *Q) ZeroWith(n int) []Qubit {
 	return qb
 }
 
-// One returns a qubit in the one state with n qubits.
+// One returns n qubit in the one state.
 func (q *Q) OneWith(n int) []Qubit {
 	qb := make([]Qubit, n)
 	for i := 0; i < n; i++ {
@@ -103,7 +103,8 @@ func (q *Q) OneWith(n int) []Qubit {
 	return qb
 }
 
-// ZeroLog2 returns a qubit in the zero state with log2(N) qubits.
+// ZeroLog2 returns n qubit in the zero state.
+// n is greater than or equal to log2(N).
 func (q *Q) ZeroLog2(N int) []Qubit {
 	n := int(math.Log2(float64(N))) + 1
 	return q.ZeroWith(n)
