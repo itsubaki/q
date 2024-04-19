@@ -32,8 +32,8 @@ jobs:
 
       - name: Codecov
         uses: codecov/codecov-action@v4
-        with:
-          use_oidc: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Benchmark
         run: |
