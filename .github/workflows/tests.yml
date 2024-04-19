@@ -32,6 +32,8 @@ jobs:
 
       - name: Codecov
         uses: codecov/codecov-action@v4
+        with:
+          use_oidc: true
 
       - name: Benchmark
         run: |
