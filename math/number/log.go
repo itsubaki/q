@@ -2,13 +2,15 @@ package number
 
 import "fmt"
 
+// Log2 returns the base 2 logarithm of N.
+// N must be a power of 2.
 func Log2(N int) (int, error) {
 	if N == 1 {
 		return 0, nil
 	}
 
 	if N%2 != 0 {
-		return 0, fmt.Errorf("N must be a power of 2. N=%v", N)
+		return -1, fmt.Errorf("N must be a power of 2. N=%v", N)
 	}
 
 	var n int = 1

@@ -1,10 +1,20 @@
 package number_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/itsubaki/q/math/number"
 )
+
+func ExampleLog2() {
+	fmt.Println(number.Log2(8))
+	fmt.Println(number.Log2(15))
+
+	// Output:
+	// 3 <nil>
+	// -1 N must be a power of 2. N=15
+}
 
 func TestLog2(t *testing.T) {
 	cases := []struct {
