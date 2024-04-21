@@ -11,12 +11,6 @@ import (
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
-// State is a quantum state.
-type State struct {
-	Probability float64
-	Qubit       *qubit.Qubit
-}
-
 // Matrix is a density matrix.
 type Matrix struct {
 	m matrix.Matrix
@@ -25,27 +19,15 @@ type Matrix struct {
 // New returns a new density matrix.
 func New(ensemble []State) (*Matrix, error) {
 	m := &Matrix{matrix.New()}
-	if err := m.Add(ensemble); err != nil {
-		return nil, fmt.Errorf("add: %v", err)
-	}
 
-	return m, nil
-}
-
-// Add adds a quantum state to the density matrix.
-func (m *Matrix) Add(ensemble []State) error {
-	for _, s := range ensemble {
-		if s.Probability < 0 || s.Probability > 1 {
-			return fmt.Errorf("p must be 0 <= p =< 1. p=%v", s.Probability)
-		}
-
+	for _, s := range Normalize(ensemble) {
 		n := s.Qubit.Dimension()
 		if len(m.m) < 1 {
 			m.m = matrix.Zero(n, n)
 		}
 
 		if len(m.m) != n {
-			return fmt.Errorf("invalid dimension. m=%d n=%d", len(m.m), n)
+			return nil, fmt.Errorf("invalid dimension. m=%d n=%d", len(m.m), n)
 		}
 
 		op := s.Qubit.OuterProduct(s.Qubit).Mul(complex(s.Probability, 0))
@@ -54,10 +36,9 @@ func (m *Matrix) Add(ensemble []State) error {
 				m.m[i][j] = m.m[i][j] + op[i][j]
 			}
 		}
-
 	}
 
-	return nil
+	return m, nil
 }
 
 // Raw returns the raw matrix.

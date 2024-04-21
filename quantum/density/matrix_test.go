@@ -473,31 +473,15 @@ func TestMatrixNew(t *testing.T) {
 		in     []density.State
 		hasErr bool
 	}{
-		{[]density.State{{1.5, qubit.Zero()}}, true},
+		{[]density.State{
+			{1.5, qubit.New(1, 0)},
+			{1.0, qubit.New(1, 0, 0, 0)},
+		}, true},
 	}
 
 	for _, c := range cases {
 		_, err := density.New(c.in)
 		if (err != nil) != c.hasErr {
-			t.Errorf("err: %v", err)
-			continue
-		}
-	}
-}
-
-func TestMatrixAdd(t *testing.T) {
-	rho, _ := density.New([]density.State{{0.5, qubit.Zero()}})
-
-	cases := []struct {
-		in     []density.State
-		hasErr bool
-	}{
-		{[]density.State{{0.5, qubit.One()}}, false},
-		{[]density.State{{0.5, qubit.One(2)}}, true},
-	}
-
-	for _, c := range cases {
-		if err := rho.Add(c.in); (err != nil) != c.hasErr {
 			t.Errorf("err: %v", err)
 			continue
 		}
