@@ -1207,6 +1207,26 @@ func Example_shorFactoring85() {
 	// N=85, a=14. p=5, q=17. s/r=7/16 ([0.0111]~0.438)
 }
 
+func Example_any() {
+	h := gate.U(math.Pi/2, 0, math.Pi)
+	x := gate.U(math.Pi, 0, math.Pi)
+
+	qsim := q.New()
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+
+	qsim.Apply(h, q0)
+	qsim.C(x, q0, q1)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00][  0]( 0.7071 0.0000i): 0.5000
+	// [11][  3]( 0.7071 0.0000i): 0.5000
+}
+
 func Example_top() {
 	N := 21
 	a := 11
