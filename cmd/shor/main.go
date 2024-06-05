@@ -26,11 +26,6 @@ func main() {
 		return
 	}
 
-	if number.IsPrime(N) {
-		fmt.Printf("N=%d is prime.\n", N)
-		return
-	}
-
 	if number.IsEven(N) {
 		fmt.Printf("N=%d is even. p=%d, q=%d.\n", N, 2, N/2)
 		return
@@ -38,6 +33,11 @@ func main() {
 
 	if a, b, ok := number.BaseExp(N); ok {
 		fmt.Printf("N=%d. N is exponentiation. %d^%d.\n", N, a, b)
+		return
+	}
+
+	if number.IsPrime(N) {
+		fmt.Printf("N=%d is prime.\n", N)
 		return
 	}
 
