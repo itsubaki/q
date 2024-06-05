@@ -13,7 +13,7 @@
 
 ### Bell state
 
-```golang
+```go
 qsim := q.New()
 
 // generate qubits of |0>|0>
@@ -43,7 +43,7 @@ for _, s := range qsim.State() {
 
 ### Quantum teleportation
 
-```golang
+```go
 qsim := q.New()
 
 // generate qubits of |phi>|0>|0>
@@ -79,7 +79,7 @@ for _, s := range qsim.State(q1) {
 
 ### Error correction
 
-```golang
+```go
 qsim := q.New()
 
 q0 := qsim.New(1, 2) // (0.2, 0.8)
@@ -119,7 +119,7 @@ for _, s := range qsim.State(q0) {
 
 ### Grover's search algorithm
 
-```golang
+```go
 qsim := q.New()
 
 // initial state
@@ -171,7 +171,7 @@ for _, s := range qsim.State() {
 
 ### Shor's factoring algorithm
 
-```golang
+```go
 N := 15
 a := 7 // co-prime
 
@@ -227,6 +227,26 @@ for i := 0; i < 10; i++{
 ```
 
 - In general, See [`cmd/shor`](./cmd/shor/main.go)
+
+### Any quantum gate and its controlled gate
+
+```go
+h := gate.U(math.Pi/2, 0, math.Pi)
+x := gate.U(math.Pi, 0, math.Pi)
+
+qsim := q.New()
+q0 := qsim.Zero()
+q1 := qsim.Zero()
+
+qsim.Apply(h, q0)
+qsim.C(x, q0, q1)
+
+for _, s := range qsim.State() {
+  fmt.Println(s)
+}
+// [00][  0]( 0.7071 0.0000i): 0.5000
+// [11][  3]( 0.7071 0.0000i): 0.5000
+```
 
 ## References
 

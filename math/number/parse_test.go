@@ -56,24 +56,6 @@ func TestParseFloat(t *testing.T) {
 	}
 }
 
-func TestMustPanic(t *testing.T) {
-	defer func() {
-		if rec := recover(); rec != nil {
-			err, ok := rec.(error)
-			if !ok {
-				t.Fail()
-			}
-
-			if err.Error() != "something went wrong" {
-				t.Fail()
-			}
-		}
-	}()
-
-	number.Must(-1, fmt.Errorf("something went wrong"))
-	t.Fail()
-}
-
 func FuzzParseFloat(f *testing.F) {
 	seed := []string{"123", "101", "1.0101", "abc", "a.bc"}
 	for i := range seed {

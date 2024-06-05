@@ -2,7 +2,6 @@ package density
 
 import (
 	"fmt"
-	"math"
 	"strconv"
 
 	"github.com/itsubaki/q/math/matrix"
@@ -11,41 +10,19 @@ import (
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
-// State is a quantum state.
-type State struct {
-	Probability float64
-	Qubit       *qubit.Qubit
-}
-
 // Matrix is a density matrix.
 type Matrix struct {
 	m matrix.Matrix
 }
 
 // New returns a new density matrix.
-func New(ensemble []State) (*Matrix, error) {
+func New(ensemble []State) *Matrix {
 	m := &Matrix{matrix.New()}
-	if err := m.Add(ensemble); err != nil {
-		return nil, fmt.Errorf("add: %v", err)
-	}
 
-	return m, nil
-}
-
-// Add adds a quantum state to the density matrix.
-func (m *Matrix) Add(ensemble []State) error {
-	for _, s := range ensemble {
-		if s.Probability < 0 || s.Probability > 1 {
-			return fmt.Errorf("p must be 0 <= p =< 1. p=%v", s.Probability)
-		}
-
+	for _, s := range Normalize(ensemble) {
 		n := s.Qubit.Dimension()
 		if len(m.m) < 1 {
 			m.m = matrix.Zero(n, n)
-		}
-
-		if len(m.m) != n {
-			return fmt.Errorf("invalid dimension. m=%d n=%d", len(m.m), n)
 		}
 
 		op := s.Qubit.OuterProduct(s.Qubit).Mul(complex(s.Probability, 0))
@@ -54,10 +31,9 @@ func (m *Matrix) Add(ensemble []State) error {
 				m.m[i][j] = m.m[i][j] + op[i][j]
 			}
 		}
-
 	}
 
-	return nil
+	return m
 }
 
 // Raw returns the raw matrix.
@@ -73,8 +49,7 @@ func (m *Matrix) Dimension() (int, int) {
 // NumberOfBit returns the number of qubits.
 func (m *Matrix) NumberOfBit() int {
 	p, _ := m.Dimension()
-	log := math.Log2(float64(p))
-	return int(log)
+	return number.Must(number.Log2(p))
 }
 
 // Apply applies a unitary matrix to the density matrix.
@@ -157,35 +132,6 @@ func (m *Matrix) Depolarizing(p float64) (*Matrix, error) {
 	r := m.m.Mul(complex(1-p, 0))
 
 	return &Matrix{i.Add(r)}, nil
-}
-
-// Flip returns the flip channel.
-func Flip(p float64, m matrix.Matrix) (matrix.Matrix, matrix.Matrix, error) {
-	if p < 0 || p > 1 {
-		return nil, nil, fmt.Errorf("p must be 0 <= p =< 1. p=%v", p)
-	}
-
-	d, _ := m.Dimension()
-	n := int(math.Log2(float64(d)))
-
-	e0 := gate.I(n).Mul(complex(math.Sqrt(p), 0))
-	e1 := m.Mul(complex(math.Sqrt(1-p), 0))
-	return e0, e1, nil
-}
-
-// BitFlip returns the bit flip channel.
-func BitFlip(p float64) (matrix.Matrix, matrix.Matrix, error) {
-	return Flip(p, gate.X())
-}
-
-// PhaseFlip returns the phase flip channel.
-func PhaseFlip(p float64) (matrix.Matrix, matrix.Matrix, error) {
-	return Flip(p, gate.Z())
-}
-
-// BitPhaseFlip returns the bit-phase flip channel.
-func BitPhaseFlip(p float64) (matrix.Matrix, matrix.Matrix, error) {
-	return Flip(p, gate.Y())
 }
 
 func take(binary string, index []int) (string, string) {
