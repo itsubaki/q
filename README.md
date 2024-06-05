@@ -31,7 +31,7 @@ for _, s := range qsim.State() {
 
 m0 := qsim.Measure(q0)
 m1 := qsim.Measure(q1)
-fmt.Println(m0.IsZero() == m1.IsZero()) // always true
+fmt.Println(m0.Equals(m1)) // always true
 
 for _, s := range qsim.State() {
   fmt.Println(s)
