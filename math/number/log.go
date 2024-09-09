@@ -1,8 +1,8 @@
 package number
 
-import "fmt"
+import "errors"
 
-var ErrNotPowerOf2 = fmt.Errorf("N must be a power of 2")
+var ErrNotPowerOf2 = errors.New("N must be a power of 2")
 
 // Log2 returns the base 2 logarithm of N.
 // N must be a power of 2.

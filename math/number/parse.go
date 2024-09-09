@@ -1,13 +1,13 @@
 package number
 
 import (
-	"fmt"
+	"errors"
 	"math"
 	"strconv"
 	"strings"
 )
 
-var ErrInvalidParameter = fmt.Errorf("invalid parameter")
+var ErrInvalidParameter = errors.New("invalid parameter")
 
 // ParseFloat returns float64 from binary string.
 func ParseFloat(binary string) (float64, error) {

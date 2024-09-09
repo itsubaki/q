@@ -1,6 +1,7 @@
 package density
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -10,7 +11,7 @@ import (
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
-var ErrInvalidProbability = fmt.Errorf("p must be 0 <= p =< 1")
+var ErrInvalidProbability = errors.New("p must be 0 <= p =< 1")
 
 // Matrix is a density matrix.
 type Matrix struct {
