@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+var ErrInvalidParameter = fmt.Errorf("invalid parameter")
+
 // ParseFloat returns float64 from binary string.
 func ParseFloat(binary string) (float64, error) {
 	for _, b := range binary {
@@ -14,7 +16,7 @@ func ParseFloat(binary string) (float64, error) {
 			continue
 		}
 
-		return 0, fmt.Errorf("invalid parameter. binary=%v", binary)
+		return 0, ErrInvalidParameter
 	}
 
 	if !strings.Contains(binary, ".") {
@@ -24,7 +26,7 @@ func ParseFloat(binary string) (float64, error) {
 
 	bin := strings.Split(binary, ".")
 	if len(bin) != 2 {
-		return 0, fmt.Errorf("invalid parameter. binary=%v", binary)
+		return 0, ErrInvalidParameter
 	}
 
 	p := Must(strconv.ParseInt(bin[0], 2, 0))

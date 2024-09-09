@@ -1,11 +1,13 @@
 package number_test
 
 import (
-	"fmt"
+	"errors"
 	"testing"
 
 	"github.com/itsubaki/q/math/number"
 )
+
+var ErrSomtingWentWrong = errors.New("something went wrong")
 
 func TestMustPanic(t *testing.T) {
 	defer func() {
@@ -15,12 +17,12 @@ func TestMustPanic(t *testing.T) {
 				t.Fail()
 			}
 
-			if err.Error() != "something went wrong" {
+			if !errors.Is(err, ErrSomtingWentWrong) {
 				t.Fail()
 			}
 		}
 	}()
 
-	number.Must(-1, fmt.Errorf("something went wrong"))
+	number.Must(-1, ErrSomtingWentWrong)
 	t.Fail()
 }

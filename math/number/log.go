@@ -2,6 +2,8 @@ package number
 
 import "fmt"
 
+var ErrNotPowerOf2 = fmt.Errorf("N must be a power of 2")
+
 // Log2 returns the base 2 logarithm of N.
 // N must be a power of 2.
 func Log2(N int) (int, error) {
@@ -12,7 +14,7 @@ func Log2(N int) (int, error) {
 	var n int = 1
 	for {
 		if N%2 != 0 {
-			return -1, fmt.Errorf("N must be a power of 2")
+			return -1, ErrNotPowerOf2
 		}
 
 		if N/2 == 1 {

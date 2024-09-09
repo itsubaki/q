@@ -1,6 +1,7 @@
 package number_test
 
 import (
+	"errors"
 	"fmt"
 	"testing"
 
@@ -35,16 +36,16 @@ func TestParseFloat(t *testing.T) {
 		{"111", 7.0, nil},
 		{"0.01101010101", 0.41650390625, nil},
 		{"0.001010101010101", 0.166656494140625, nil},
-		{"a.bbb.ccc", 0, fmt.Errorf("invalid parameter. binary=a.bbb.ccc")},
-		{"a.bbb", 0, fmt.Errorf("invalid parameter. binary=a.bbb")},
-		{"a.001", 0, fmt.Errorf("invalid parameter. binary=a.001")},
-		{"0.bbb", 0, fmt.Errorf("invalid parameter. binary=0.bbb")},
-		{"0.1.0", 0, fmt.Errorf("invalid parameter. binary=0.1.0")},
+		{"a.bbb.ccc", 0, number.ErrInvalidParameter},
+		{"a.bbb", 0, number.ErrInvalidParameter},
+		{"a.001", 0, number.ErrInvalidParameter},
+		{"0.bbb", 0, number.ErrInvalidParameter},
+		{"0.1.0", 0, number.ErrInvalidParameter},
 	}
 
 	for _, c := range cases {
 		got, err := number.ParseFloat(c.in)
-		if err != nil && err.Error() != c.err.Error() {
+		if err != nil && !errors.Is(err, c.err) {
 			t.Errorf("parse float: %v", err)
 		}
 

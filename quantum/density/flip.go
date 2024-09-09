@@ -1,7 +1,6 @@
 package density
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/itsubaki/q/math/matrix"
@@ -12,7 +11,7 @@ import (
 // Flip returns the flip channel.
 func Flip(p float64, m matrix.Matrix) (matrix.Matrix, matrix.Matrix, error) {
 	if p < 0 || p > 1 {
-		return nil, nil, fmt.Errorf("p must be 0 <= p =< 1. p=%v", p)
+		return nil, nil, ErrInvalidProbability
 	}
 
 	d, _ := m.Dimension()

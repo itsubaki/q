@@ -10,6 +10,8 @@ import (
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
+var ErrInvalidProbability = fmt.Errorf("p must be 0 <= p =< 1")
+
 // Matrix is a density matrix.
 type Matrix struct {
 	m matrix.Matrix
@@ -124,7 +126,7 @@ func (m *Matrix) PartialTrace(index ...int) *Matrix {
 // Depolarizing returns the depolarizing channel.
 func (m *Matrix) Depolarizing(p float64) (*Matrix, error) {
 	if p < 0 || p > 1 {
-		return nil, fmt.Errorf("p must be 0 <= p =< 1. p=%v", p)
+		return nil, ErrInvalidProbability
 	}
 
 	n := m.NumberOfBit()
