@@ -8,13 +8,14 @@ import (
 )
 
 func ExampleState() {
-	s := qubit.NewState(1, []string{"0100", "1010", "1000"}...)
+	s := qubit.NewState(complex(1, 0), []string{"0100", "1010", "1000"}...)
 
 	fmt.Println(s.Int(), s.BinaryString())
 	fmt.Println(s.Int(0), s.BinaryString(0))
 	fmt.Println(s.Int(1), s.BinaryString(1))
 	fmt.Println(s.Int(2), s.BinaryString(2))
 	fmt.Println(s.String())
+	fmt.Println(s.Amplitude(), s.Probability())
 
 	// Output:
 	// 4 0100
@@ -22,6 +23,7 @@ func ExampleState() {
 	// 10 1010
 	// 8 1000
 	// [0100 1010 1000][  4  10   8]( 1.0000 0.0000i): 1.0000
+	// (1+0i) 1
 }
 
 func TestState_Equals(t *testing.T) {
