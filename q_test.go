@@ -1249,7 +1249,7 @@ func Example_top() {
 	qsim.M(r1...)
 
 	top := func(s []qubit.State, n int) []qubit.State {
-		sort.Slice(s, func(i, j int) bool { return s[i].Probability > s[j].Probability })
+		sort.Slice(s, func(i, j int) bool { return s[i].Probability() > s[j].Probability() })
 		if len(s) < n {
 			return s
 		}
@@ -1318,13 +1318,13 @@ func TestEigenVector(t *testing.T) {
 
 		us := make(map[string]complex128)
 		for _, s := range qsim.State(r1) {
-			_, m := s.Value()
+			m := s.BinaryString()
 			if v, ok := us[m]; ok {
-				us[m] = v + s.Amplitude
+				us[m] = v + s.Amplitude()
 				continue
 			}
 
-			us[m] = s.Amplitude
+			us[m] = s.Amplitude()
 		}
 
 		if len(us) != len(c.bin) {

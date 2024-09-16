@@ -237,17 +237,13 @@ func (q *Qubit) State(index ...[]int) []State {
 			continue
 		}
 
-		s := State{
-			Amplitude:   amp,
-			Probability: math.Pow(cmplx.Abs(amp), 2),
-		}
-
 		b := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
+		var bin []string
 		for _, idx := range index {
-			s.Add(take(b, idx))
+			bin = append(bin, take(b, idx))
 		}
 
-		state = append(state, s)
+		state = append(state, NewState(amp, bin...))
 	}
 
 	return state

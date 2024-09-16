@@ -2,6 +2,7 @@ package qubit
 
 import (
 	"fmt"
+	"math"
 	"math/cmplx"
 	"strconv"
 
@@ -11,54 +12,77 @@ import (
 
 // State is a quantum state.
 type State struct {
-	Amplitude    complex128
-	Probability  float64
-	Int          []int64
-	BinaryString []string
+	amp          complex128
+	prob         float64
+	binaryString []string
+	intValue     []int64
 }
 
-func (s *State) Add(binary string) {
-	s.Int = append(s.Int, number.Must(strconv.ParseInt(binary, 2, 0)))
-	s.BinaryString = append(s.BinaryString, binary)
+// NewState returns a new State.
+func NewState(amp complex128, binary ...string) State {
+	var intv []int64
+	for _, bin := range binary {
+		intv = append(intv, number.Must(strconv.ParseInt(bin, 2, 0)))
+	}
+
+	return State{
+		amp:          amp,
+		prob:         math.Pow(cmplx.Abs(amp), 2),
+		binaryString: binary,
+		intValue:     intv,
+	}
 }
 
-func (s State) Value(index ...int) (int64, string) {
+func (s State) Probability() float64 {
+	return s.prob
+}
+
+func (s State) Amplitude() complex128 {
+	return s.amp
+}
+
+func (s State) BinaryString(index ...int) string {
 	var i int
 	if len(index) > 0 {
 		i = index[0]
 	}
 
-	return s.Int[i], s.BinaryString[i]
+	return s.binaryString[i]
+}
+
+func (s State) Int(index ...int) int64 {
+	var i int
+	if len(index) > 0 {
+		i = index[0]
+	}
+
+	return s.intValue[i]
 }
 
 func (s State) String() string {
-	return fmt.Sprintf("%v%3v(% .4f% .4fi): %.4f", s.BinaryString, s.Int, real(s.Amplitude), imag(s.Amplitude), s.Probability)
+	return fmt.Sprintf("%v%3v(% .4f% .4fi): %.4f",
+		s.binaryString,
+		s.intValue,
+		real(s.amp),
+		imag(s.amp),
+		s.prob,
+	)
 }
 
 // Equals returns true if s equals v.
 // If eps is not given, epsilon.E13 is used.
 func (s State) Equals(v State, eps ...float64) bool {
-	if len(s.Int) != len(v.Int) {
+	if len(s.binaryString) != len(v.binaryString) {
 		return false
 	}
 
-	if len(s.BinaryString) != len(v.BinaryString) {
-		return false
-	}
-
-	for i := range s.Int {
-		if s.Int[i] != v.Int[i] {
+	for i := range s.binaryString {
+		if s.binaryString[i] != v.binaryString[i] {
 			return false
 		}
 	}
 
-	for i := range s.BinaryString {
-		if s.BinaryString[i] != v.BinaryString[i] {
-			return false
-		}
-	}
-
-	return cmplx.Abs(s.Amplitude-v.Amplitude) < epsilon.E13(eps...)
+	return cmplx.Abs(s.amp-v.amp) < epsilon.E13(eps...)
 }
 
 // Equals returns true if s equals v.

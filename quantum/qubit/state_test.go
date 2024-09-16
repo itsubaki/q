@@ -8,17 +8,12 @@ import (
 )
 
 func ExampleState() {
-	s := qubit.State{
-		Amplitude:    1,
-		Probability:  1,
-		Int:          []int64{4, 10, 8},
-		BinaryString: []string{"0100", "1010", "1000"},
-	}
+	s := qubit.NewState(1, []string{"0100", "1010", "1000"}...)
 
-	fmt.Println(s.Value())
-	fmt.Println(s.Value(0))
-	fmt.Println(s.Value(1))
-	fmt.Println(s.Value(2))
+	fmt.Println(s.Int(), s.BinaryString())
+	fmt.Println(s.Int(0), s.BinaryString(0))
+	fmt.Println(s.Int(1), s.BinaryString(1))
+	fmt.Println(s.Int(2), s.BinaryString(2))
 	fmt.Println(s.String())
 
 	// Output:
@@ -36,35 +31,29 @@ func TestState_Equals(t *testing.T) {
 		want bool
 	}{
 		{
-			qubit.State{Int: []int64{1}},
+			qubit.NewState(complex(1, 0)),
 			qubit.State{},
 			false,
 		},
 		{
-			qubit.State{Int: []int64{1}},
-			qubit.State{Int: []int64{1}, BinaryString: []string{"001"}},
+			qubit.NewState(complex(1, 0), "001"),
+			qubit.NewState(complex(1, 0), "100"),
 			false,
 		},
 		{
-			qubit.State{Int: []int64{1}, BinaryString: []string{"001"}, Amplitude: complex(1, 1)},
-			qubit.State{Int: []int64{1}, BinaryString: []string{"001"}, Amplitude: complex(1, 2)},
+			qubit.NewState(complex(0, 1), "001"),
+			qubit.NewState(complex(1, 0), "001"),
 			false,
 		},
 		{
-			qubit.State{Int: []int64{1}, BinaryString: []string{"001"}, Amplitude: complex(1, 1)},
-			qubit.State{Int: []int64{1}, BinaryString: []string{"001"}, Amplitude: complex(1, 1)},
+			qubit.NewState(complex(1, 0), "001", "010"),
+			qubit.NewState(complex(1, 0), "001"),
+			false,
+		},
+		{
+			qubit.NewState(complex(1, 0), "001", "010"),
+			qubit.NewState(complex(1, 0), "001", "010"),
 			true,
-		},
-		{
-			qubit.State{Int: []int64{1}, BinaryString: []string{"001"}, Amplitude: complex(1, 1)},
-			qubit.State{Int: []int64{1}, BinaryString: []string{"002"}, Amplitude: complex(1, 1)},
-			false,
-		},
-
-		{
-			qubit.State{Int: []int64{1}, BinaryString: []string{"001"}, Amplitude: complex(1, 1)},
-			qubit.State{Int: []int64{2}, BinaryString: []string{"001"}, Amplitude: complex(1, 1)},
-			false,
 		},
 	}
 
@@ -93,8 +82,8 @@ func TestEquals(t *testing.T) {
 			false,
 		},
 		{
-			[]qubit.State{{Amplitude: complex(1, 0)}},
-			[]qubit.State{{Amplitude: complex(0, 1)}},
+			[]qubit.State{qubit.NewState(complex(1, 0))},
+			[]qubit.State{qubit.NewState(complex(0, 1))},
 			false,
 		},
 	}

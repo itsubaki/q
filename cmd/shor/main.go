@@ -84,8 +84,8 @@ func main() {
 	qsim.Measure(r1...)
 	print("measure reg1", qsim, r0, r1)
 
-	for _, state := range qsim.State(r0) {
-		i, m := state.Value()
+	for _, st := range qsim.State(r0) {
+		i, m := st.Int(), st.BinaryString()
 		s, r, d, ok := number.FindOrder(a, N, fmt.Sprintf("0.%s", m))
 		if !ok || number.IsOdd(r) {
 			fmt.Printf("  i=%3d: N=%d, a=%d, t=%d; s/r=%2d/%2d ([0.%v]~%.4f);\n", i, N, a, t, s, r, m, d)
@@ -107,9 +107,9 @@ func print(desc string, qsim *q.Q, reg ...any) {
 	fmt.Println(desc)
 
 	max := slices.Max(qsim.Probability())
-	for _, s := range qsim.State(reg...) {
-		p := strings.Repeat("*", int(s.Probability/max*32))
-		fmt.Printf("%s: %s\n", s, p)
+	for _, st := range qsim.State(reg...) {
+		p := strings.Repeat("*", int(st.Probability()/max*32))
+		fmt.Printf("%s: %s\n", st, p)
 	}
 
 	fmt.Println()
