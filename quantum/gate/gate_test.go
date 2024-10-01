@@ -333,93 +333,89 @@ func TestTrace(t *testing.T) {
 	}
 }
 
-func TestCZ(t *testing.T) {
-	want := gate.New(
-		[]complex128{1, 0, 0, 0, 0, 0, 0, 0},
-		[]complex128{0, 1, 0, 0, 0, 0, 0, 0},
-		[]complex128{0, 0, 1, 0, 0, 0, 0, 0},
-		[]complex128{0, 0, 0, 1, 0, 0, 0, 0},
-		[]complex128{0, 0, 0, 0, 1, 0, 0, 0},
-		[]complex128{0, 0, 0, 0, 0, -1, 0, 0},
-		[]complex128{0, 0, 0, 0, 0, 0, 1, 0},
-		[]complex128{0, 0, 0, 0, 0, 0, 0, -1},
-	)
+func TestMultiQubitGate(t *testing.T) {
+	cases := []struct {
+		in   matrix.Matrix
+		want matrix.Matrix
+	}{
+		{
+			in: gate.CZ(3, 0, 2),
+			want: gate.New(
+				[]complex128{1, 0, 0, 0, 0, 0, 0, 0},
+				[]complex128{0, 1, 0, 0, 0, 0, 0, 0},
+				[]complex128{0, 0, 1, 0, 0, 0, 0, 0},
+				[]complex128{0, 0, 0, 1, 0, 0, 0, 0},
+				[]complex128{0, 0, 0, 0, 1, 0, 0, 0},
+				[]complex128{0, 0, 0, 0, 0, -1, 0, 0},
+				[]complex128{0, 0, 0, 0, 0, 0, 1, 0},
+				[]complex128{0, 0, 0, 0, 0, 0, 0, -1},
+			),
+		},
+		{
+			in: gate.CNOT(3, 0, 2),
+			want: gate.New(
+				[]complex128{1, 0, 0, 0, 0, 0, 0, 0},
+				[]complex128{0, 1, 0, 0, 0, 0, 0, 0},
+				[]complex128{0, 0, 1, 0, 0, 0, 0, 0},
+				[]complex128{0, 0, 0, 1, 0, 0, 0, 0},
+				[]complex128{0, 0, 0, 0, 0, 1, 0, 0},
+				[]complex128{0, 0, 0, 0, 1, 0, 0, 0},
+				[]complex128{0, 0, 0, 0, 0, 0, 0, 1},
+				[]complex128{0, 0, 0, 0, 0, 0, 1, 0},
+			),
+		},
+		{
+			in: gate.ControlledNot(2, []int{0}, 1),
+			want: func() matrix.Matrix {
+				g0 := gate.I().Add(gate.Z()).TensorProduct(gate.I())
+				g1 := gate.I().Sub(gate.Z()).TensorProduct(gate.X())
+				return g0.Add(g1).Mul(0.5)
+			}(),
+		},
+		{
+			in: gate.Toffoli(3, 0, 1, 2),
+			want: func() matrix.Matrix {
+				g := gate.Empty(13)
+				g[0] = gate.I(2).TensorProduct(gate.H())
+				g[1] = gate.I(1).TensorProduct(gate.CNOT(2, 0, 1))
+				g[2] = gate.I(2).TensorProduct(gate.T().Dagger())
+				g[3] = gate.CNOT(3, 0, 2)
+				g[4] = gate.I(2).TensorProduct(gate.T())
+				g[5] = gate.I(1).TensorProduct(gate.CNOT(2, 0, 1))
+				g[6] = gate.I(2).TensorProduct(gate.T().Dagger())
+				g[7] = gate.CNOT(3, 0, 2)
+				g[8] = gate.I(1).TensorProduct(gate.T().Dagger()).TensorProduct(gate.T())
+				g[9] = gate.CNOT(2, 0, 1).TensorProduct(gate.H())
+				g[10] = gate.I(1).TensorProduct(gate.T().Dagger()).TensorProduct(gate.I())
+				g[11] = gate.CNOT(2, 0, 1).TensorProduct(gate.I())
+				g[12] = gate.T().TensorProduct(gate.S()).TensorProduct(gate.I())
 
-	got := gate.CZ(3, 0, 2)
-	if !got.Equals(want) {
-		t.Fail()
+				w := gate.I(3)
+				for _, v := range g {
+					w = w.Apply(v)
+				}
+
+				return w
+			}(),
+		},
+		{
+			in: gate.Fredkin(3, 0, 1, 2),
+			want: gate.New(
+				[]complex128{1, 0, 0, 0, 0, 0, 0, 0},
+				[]complex128{0, 1, 0, 0, 0, 0, 0, 0},
+				[]complex128{0, 0, 1, 0, 0, 0, 0, 0},
+				[]complex128{0, 0, 0, 1, 0, 0, 0, 0},
+				[]complex128{0, 0, 0, 0, 1, 0, 0, 0},
+				[]complex128{0, 0, 0, 0, 0, 0, 1, 0},
+				[]complex128{0, 0, 0, 0, 0, 1, 0, 0},
+				[]complex128{0, 0, 0, 0, 0, 0, 0, 1},
+			),
+		},
 	}
-}
 
-func TestCNOT(t *testing.T) {
-	want := gate.New(
-		[]complex128{1, 0, 0, 0, 0, 0, 0, 0},
-		[]complex128{0, 1, 0, 0, 0, 0, 0, 0},
-		[]complex128{0, 0, 1, 0, 0, 0, 0, 0},
-		[]complex128{0, 0, 0, 1, 0, 0, 0, 0},
-		[]complex128{0, 0, 0, 0, 0, 1, 0, 0},
-		[]complex128{0, 0, 0, 0, 1, 0, 0, 0},
-		[]complex128{0, 0, 0, 0, 0, 0, 0, 1},
-		[]complex128{0, 0, 0, 0, 0, 0, 1, 0},
-	)
-
-	got := gate.CNOT(3, 0, 2)
-	if !got.Equals(want) {
-		t.Fail()
-	}
-}
-
-func TestControlledNot(t *testing.T) {
-	g0 := gate.I().Add(gate.Z()).TensorProduct(gate.I())
-	g1 := gate.I().Sub(gate.Z()).TensorProduct(gate.X())
-	want := g0.Add(g1).Mul(0.5)
-
-	got := gate.ControlledNot(2, []int{0}, 1)
-	if !got.Equals(want) {
-		t.Fail()
-	}
-}
-
-func TestToffoli(t *testing.T) {
-	g := gate.Empty(13)
-	g[0] = gate.I(2).TensorProduct(gate.H())
-	g[1] = gate.I(1).TensorProduct(gate.CNOT(2, 0, 1))
-	g[2] = gate.I(2).TensorProduct(gate.T().Dagger())
-	g[3] = gate.CNOT(3, 0, 2)
-	g[4] = gate.I(2).TensorProduct(gate.T())
-	g[5] = gate.I(1).TensorProduct(gate.CNOT(2, 0, 1))
-	g[6] = gate.I(2).TensorProduct(gate.T().Dagger())
-	g[7] = gate.CNOT(3, 0, 2)
-	g[8] = gate.I(1).TensorProduct(gate.T().Dagger()).TensorProduct(gate.T())
-	g[9] = gate.CNOT(2, 0, 1).TensorProduct(gate.H())
-	g[10] = gate.I(1).TensorProduct(gate.T().Dagger()).TensorProduct(gate.I())
-	g[11] = gate.CNOT(2, 0, 1).TensorProduct(gate.I())
-	g[12] = gate.T().TensorProduct(gate.S()).TensorProduct(gate.I())
-
-	want := gate.I(3)
-	for _, gate := range g {
-		want = want.Apply(gate)
-	}
-
-	got := gate.Toffoli(3, 0, 1, 2)
-	if !got.Equals(want) {
-		t.Fail()
-	}
-}
-
-func TestFredkin(t *testing.T) {
-	want := make(matrix.Matrix, 8)
-	want[0] = []complex128{1, 0, 0, 0, 0, 0, 0, 0}
-	want[1] = []complex128{0, 1, 0, 0, 0, 0, 0, 0}
-	want[2] = []complex128{0, 0, 1, 0, 0, 0, 0, 0}
-	want[3] = []complex128{0, 0, 0, 1, 0, 0, 0, 0}
-	want[4] = []complex128{0, 0, 0, 0, 1, 0, 0, 0}
-	want[5] = []complex128{0, 0, 0, 0, 0, 0, 1, 0}
-	want[6] = []complex128{0, 0, 0, 0, 0, 1, 0, 0}
-	want[7] = []complex128{0, 0, 0, 0, 0, 0, 0, 1}
-
-	got := gate.Fredkin(3, 0, 1, 2)
-	if !got.Equals(want) {
-		t.Fail()
+	for _, c := range cases {
+		if !c.in.Equals(c.want) {
+			t.Errorf("got=%v, want=%v", c.in, c.want)
+		}
 	}
 }
