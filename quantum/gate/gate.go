@@ -137,7 +137,7 @@ func RZ(theta float64) matrix.Matrix {
 
 // Controlled returns a controlled-u gate.
 func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
-	g := I([]int{n}...)
+	g := I(n)
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 
 	for i := range g {
@@ -203,7 +203,7 @@ func C(u matrix.Matrix, n int, c int, t int) matrix.Matrix {
 
 // ControlledNot returns a controlled-not gate.
 func ControlledNot(n int, c []int, t int) matrix.Matrix {
-	m := I([]int{n}...)
+	m := I(n)
 	d, _ := m.Dimension()
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 
@@ -255,7 +255,7 @@ func Toffoli(n, c0, c1, t int) matrix.Matrix {
 
 // ControlledZ returns a controlled-z gate.
 func ControlledZ(n int, c []int, t int) matrix.Matrix {
-	g := I([]int{n}...)
+	g := I(n)
 	d, _ := g.Dimension()
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 
@@ -285,7 +285,7 @@ func CZ(n, c, t int) matrix.Matrix {
 
 // ControlledS returns a controlled-s gate.
 func ControlledS(n int, c []int, t int) matrix.Matrix {
-	g := I([]int{n}...)
+	g := I(n)
 	d, _ := g.Dimension()
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 
@@ -315,7 +315,7 @@ func CS(n, c, t int) matrix.Matrix {
 
 // ControlledR returns a controlled-r gate.
 func ControlledR(theta float64, n int, c []int, t int) matrix.Matrix {
-	g := I([]int{n}...)
+	g := I(n)
 	d, _ := g.Dimension()
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 
@@ -394,7 +394,7 @@ func QFT(n int) matrix.Matrix {
 // |j>|k> -> |j>|a**(2**j) * k mod N>.
 // len(t) must be larger than log2(N).
 func ControlledModExp2(n, a, j, N, c int, t []int) matrix.Matrix {
-	m := I([]int{n}...)
+	m := I(n)
 	d, _ := m.Dimension()
 
 	r0len, r1len := n-len(t), len(t)
