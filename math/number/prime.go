@@ -38,14 +38,10 @@ func IsTrivial(N int, factor ...int) bool {
 
 // IsOdd returns true if v is odd number.
 func IsOdd(v int) bool {
-	return !IsEven(v)
+	return v%2 != 0
 }
 
 // IsEven returns true if v is even number.
 func IsEven(v int) bool {
-	if v%2 == 0 {
-		return true
-	}
-
-	return false
+	return v%2 == 0
 }

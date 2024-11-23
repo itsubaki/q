@@ -48,7 +48,7 @@ func One(n ...int) *Qubit {
 
 // NumberOfBit returns the number of qubits.
 func (q *Qubit) NumberOfBit() int {
-	return number.Must(number.Log2(q.Dimension()))
+	return number.Log2(q.Dimension())
 }
 
 // IsZero returns true if q is zero qubit.

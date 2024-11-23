@@ -11,7 +11,7 @@ import (
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
-var ErrInvalidProbability = errors.New("p must be 0 <= p =< 1")
+var ErrInvalidRange = errors.New("p must be 0 <= p =< 1")
 
 // Matrix is a density matrix.
 type Matrix struct {
@@ -52,7 +52,7 @@ func (m *Matrix) Dimension() (int, int) {
 // NumberOfBit returns the number of qubits.
 func (m *Matrix) NumberOfBit() int {
 	p, _ := m.Dimension()
-	return number.Must(number.Log2(p))
+	return number.Log2(p)
 }
 
 // Apply applies a unitary matrix to the density matrix.
@@ -127,7 +127,7 @@ func (m *Matrix) PartialTrace(index ...int) *Matrix {
 // Depolarizing returns the depolarizing channel.
 func (m *Matrix) Depolarizing(p float64) (*Matrix, error) {
 	if p < 0 || p > 1 {
-		return nil, ErrInvalidProbability
+		return nil, ErrInvalidRange
 	}
 
 	n := m.NumberOfBit()

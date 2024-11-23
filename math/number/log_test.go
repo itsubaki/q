@@ -14,10 +14,10 @@ func ExampleLog2() {
 	fmt.Println(number.Log2(20))
 
 	// Output:
-	// 3 <nil>
-	// 5 <nil>
-	// -1 N must be a power of 2
-	// -1 N must be a power of 2
+	// 3
+	// 5
+	// -1
+	// -1
 }
 
 func TestLog2(t *testing.T) {
@@ -42,7 +42,7 @@ func TestLog2(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := number.Must(number.Log2(c.n))
+		got := number.Log2(c.n)
 		if got != c.want {
 			t.Errorf("got=%v want=%d", got, c.want)
 		}
