@@ -90,7 +90,7 @@ func (q *Qubit) Fidelity(qb *Qubit) float64 {
 	p1 := q.Probability()
 
 	var sum float64
-	for i := 0; i < len(p0); i++ {
+	for i := range p0 {
 		sum = sum + math.Sqrt(p0[i]*p1[i])
 	}
 
@@ -103,7 +103,7 @@ func (q *Qubit) TraceDistance(qb *Qubit) float64 {
 	p1 := q.Probability()
 
 	var sum float64
-	for i := 0; i < len(p0); i++ {
+	for i := range p0 {
 		sum = sum + math.Abs(p0[i]-p1[i])
 	}
 
@@ -200,7 +200,7 @@ func (q *Qubit) BinaryString() string {
 	c := q.Clone()
 
 	var sb strings.Builder
-	for i := 0; i < q.NumberOfBit(); i++ {
+	for i := range q.NumberOfBit() {
 		if c.Measure(i).IsZero() {
 			sb.WriteString("0")
 			continue
@@ -222,7 +222,7 @@ func (q *Qubit) State(index ...[]int) []State {
 	if len(index) < 1 {
 		n := q.NumberOfBit()
 		idx := make([]int, n)
-		for i := 0; i < n; i++ {
+		for i := range n {
 			idx[i] = i
 		}
 

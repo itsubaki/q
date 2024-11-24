@@ -29,18 +29,15 @@ func (v Vector) Complex() []complex128 {
 
 // Clone returns a clone of vector.
 func (v Vector) Clone() Vector {
-	clone := make(Vector, len(v))
-	for i := 0; i < len(v); i++ {
-		clone[i] = v[i]
-	}
-
-	return clone
+	out := make(Vector, len(v))
+	copy(out, v)
+	return out
 }
 
 // Dual returns a dual vector.
 func (v Vector) Dual() Vector {
 	out := make(Vector, len(v))
-	for i := 0; i < len(v); i++ {
+	for i := range v {
 		out[i] = cmplx.Conj(v[i])
 	}
 
@@ -50,7 +47,7 @@ func (v Vector) Dual() Vector {
 // Add returns a vector of v+w.
 func (v Vector) Add(w Vector) Vector {
 	out := make(Vector, len(v))
-	for i := 0; i < len(v); i++ {
+	for i := range v {
 		out[i] = v[i] + w[i]
 	}
 
@@ -70,8 +67,8 @@ func (v Vector) Mul(z complex128) Vector {
 // TensorProduct returns the tensor product of v and w.
 func (v Vector) TensorProduct(w Vector) Vector {
 	out := make(Vector, 0, len(v)*len(w))
-	for i := 0; i < len(v); i++ {
-		for j := 0; j < len(w); j++ {
+	for i := range v {
+		for j := range w {
 			out = append(out, v[i]*w[j])
 		}
 	}
@@ -84,7 +81,7 @@ func (v Vector) InnerProduct(w Vector) complex128 {
 	dual := w.Dual()
 
 	var out complex128
-	for i := 0; i < len(v); i++ {
+	for i := range v {
 		out = out + v[i]*dual[i]
 	}
 
@@ -96,9 +93,9 @@ func (v Vector) OuterProduct(w Vector) matrix.Matrix {
 	dual := w.Dual()
 
 	out := make(matrix.Matrix, len(v))
-	for i := 0; i < len(v); i++ {
+	for i := range v {
 		out[i] = make([]complex128, len(dual))
-		for j := 0; j < len(dual); j++ {
+		for j := range dual {
 			out[i][j] = v[i] * dual[j]
 		}
 	}
@@ -146,7 +143,7 @@ func (v Vector) Equals(w Vector, eps ...float64) bool {
 	}
 
 	e := epsilon.E13(eps...)
-	for i := 0; i < len(v); i++ {
+	for i := range v {
 		if cmplx.Abs(v[i]-w[i]) > e {
 			return false
 		}
@@ -186,7 +183,7 @@ func TensorProductN(v Vector, n ...int) Vector {
 	}
 
 	list := make([]Vector, n[0])
-	for i := 0; i < n[0]; i++ {
+	for i := range n[0] {
 		list[i] = v
 	}
 

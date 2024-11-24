@@ -30,7 +30,7 @@ func BenchmarkApplyConcurrencyN12(b *testing.B) {
 
 		wg := sync.WaitGroup{}
 		out := make(vector.Vector, p)
-		for i := 0; i < p; i++ {
+		for i := range p {
 			wg.Add(1)
 
 			go func(i int, out *vector.Vector) {

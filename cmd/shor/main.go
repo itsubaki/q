@@ -73,7 +73,7 @@ func main() {
 
 	// qsim.CModExp2(a, N, r0, r1)
 	// print("apply controlled-U", qsim, r0, r1)
-	for i := 0; i < len(r0); i++ {
+	for i := range r0 {
 		qsim.ControlledModExp2(a, i, N, r0[i], r1)
 		print(fmt.Sprintf("apply controlled-U[%d]", i), qsim, r0, r1)
 	}

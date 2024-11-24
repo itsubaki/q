@@ -208,7 +208,7 @@ func ControlledNot(n int, c []int, t int) matrix.Matrix {
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 
 	idx := make([]int64, d)
-	for i := 0; i < d; i++ {
+	for i := range d {
 		bits := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)))
 
 		apply := true
@@ -259,7 +259,7 @@ func ControlledZ(n int, c []int, t int) matrix.Matrix {
 	d, _ := g.Dimension()
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 
-	for i := 0; i < d; i++ {
+	for i := range d {
 		bits := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)))
 
 		apply := true
@@ -289,7 +289,7 @@ func ControlledS(n int, c []int, t int) matrix.Matrix {
 	d, _ := g.Dimension()
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 
-	for i := 0; i < d; i++ {
+	for i := range d {
 		bits := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)))
 
 		apply := true
@@ -322,7 +322,7 @@ func ControlledR(theta float64, n int, c []int, t int) matrix.Matrix {
 	// exp(i * theta)
 	e := cmplx.Exp(complex(0, theta))
 
-	for i := 0; i < d; i++ {
+	for i := range d {
 		bits := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)))
 
 		// Apply R(k)
@@ -369,7 +369,7 @@ func Fredkin(n, c, t0, t1 int) matrix.Matrix {
 func QFT(n int) matrix.Matrix {
 	g := I(n)
 
-	for i := 0; i < n; i++ {
+	for i := range n {
 		h := make([]matrix.Matrix, 0)
 		for j := 0; j < n; j++ {
 			if i == j {
@@ -404,7 +404,7 @@ func ControlledModExp2(n, a, j, N, c int, t []int) matrix.Matrix {
 	tf := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(r1len), "s")
 
 	idx := make([]int64, d)
-	for i := 0; i < d; i++ {
+	for i := range d {
 		bits := []rune(fmt.Sprintf(bf, strconv.FormatInt(int64(i), 2)))
 		if bits[c] == '0' {
 			idx[i] = int64(i)

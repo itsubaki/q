@@ -299,8 +299,8 @@ func (q *Q) ControlledModExp2(a, j, N int, control Qubit, target []Qubit) *Q {
 
 // CModExp2 applies Controlled-ModExp2 gate.
 func (q *Q) CModExp2(a, N int, control []Qubit, target []Qubit) *Q {
-	for i := 0; i < len(control); i++ {
-		q.ControlledModExp2(a, i, N, control[i], target)
+	for i, c := range control {
+		q.ControlledModExp2(a, i, N, c, target)
 	}
 
 	return q
@@ -330,7 +330,7 @@ func (q *Q) Swap(qb ...Qubit) *Q {
 	n := q.NumberOfBit()
 	l := len(qb)
 
-	for i := 0; i < l/2; i++ {
+	for i := range l / 2 {
 		q0, q1 := qb[i], qb[(l-1)-i]
 		g := gate.Swap(n, q0.Index(), q1.Index())
 		q.qb.Apply(g)
@@ -342,7 +342,7 @@ func (q *Q) Swap(qb ...Qubit) *Q {
 // QFT applies Quantum Fourier Transform.
 func (q *Q) QFT(qb ...Qubit) *Q {
 	l := len(qb)
-	for i := 0; i < l; i++ {
+	for i := range l {
 		q.H(qb[i])
 
 		k := 2
@@ -391,7 +391,7 @@ func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
 	if len(qb) < 1 {
 		n := q.NumberOfBit()
 		m := make([]*qubit.Qubit, n)
-		for i := 0; i < n; i++ {
+		for i := range n {
 			m[i] = q.qb.Measure(i)
 		}
 
@@ -399,7 +399,7 @@ func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
 	}
 
 	m := make([]*qubit.Qubit, len(qb))
-	for i := 0; i < len(qb); i++ {
+	for i := range qb {
 		m[i] = q.qb.Measure(qb[i].Index())
 	}
 
