@@ -11,7 +11,10 @@ import (
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
-var ErrInvalidRange = errors.New("p must be 0 <= p =< 1")
+var (
+	ErrInvalidRange     = errors.New("p must be 0 <= p =< 1")
+	ErrInvalidDimension = errors.New("invalid dimension")
+)
 
 // Matrix is a density matrix.
 type Matrix struct {

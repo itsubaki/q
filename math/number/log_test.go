@@ -16,8 +16,21 @@ func ExampleLog2() {
 	// Output:
 	// 3
 	// 5
-	// -1
-	// -1
+	// 3
+	// 4
+}
+
+func ExampleIsPowOf2() {
+	fmt.Println(number.IsPowOf2(8))
+	fmt.Println(number.IsPowOf2(32))
+	fmt.Println(number.IsPowOf2(15))
+	fmt.Println(number.IsPowOf2(20))
+
+	// Output:
+	// true
+	// true
+	// false
+	// false
 }
 
 func TestLog2(t *testing.T) {

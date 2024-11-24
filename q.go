@@ -1,9 +1,8 @@
 package q
 
 import (
-	"math"
-
 	"github.com/itsubaki/q/math/matrix"
+	"github.com/itsubaki/q/math/number"
 	"github.com/itsubaki/q/math/rand"
 	"github.com/itsubaki/q/quantum/gate"
 	"github.com/itsubaki/q/quantum/qubit"
@@ -106,8 +105,7 @@ func (q *Q) OneWith(n int) []Qubit {
 // ZeroLog2 returns n qubits in the zero state.
 // n is greater than or equal to log2(N).
 func (q *Q) ZeroLog2(N int) []Qubit {
-	n := int(math.Log2(float64(N))) + 1
-	return q.ZeroWith(n)
+	return q.ZeroWith(number.Log2(N) + 1)
 }
 
 // NumberOfBit returns the number of qubits.

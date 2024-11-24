@@ -15,8 +15,11 @@ func Flip(p float64, m matrix.Matrix) (matrix.Matrix, matrix.Matrix, error) {
 	}
 
 	d, _ := m.Dimension()
-	n := number.Log2(d)
+	if !number.IsPowOf2(d) {
+		return nil, nil, ErrInvalidDimension
+	}
 
+	n := number.Log2(d)
 	e0 := gate.I(n).Mul(complex(math.Sqrt(p), 0))
 	e1 := m.Mul(complex(math.Sqrt(1-p), 0))
 	return e0, e1, nil
