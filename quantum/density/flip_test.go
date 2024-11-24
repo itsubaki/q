@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/quantum/density"
 )
 
-func TestFlip(t *testing.T) {
+func TestBitPhaseFlip(t *testing.T) {
 	cases := []struct {
 		in     float64
 		hasErr bool
@@ -22,6 +23,28 @@ func TestFlip(t *testing.T) {
 			continue
 		}
 	}
+}
+
+func ExampleFlip() {
+	if _, _, err := density.Flip(1, matrix.New(
+		[]complex128{1, 1},
+		[]complex128{1, 1},
+		[]complex128{1, 1},
+	)); err != nil {
+		fmt.Println(err)
+	}
+
+	if _, _, err := density.Flip(1, matrix.New(
+		[]complex128{1, 1, 1},
+		[]complex128{1, 1, 1},
+		[]complex128{1, 1, 1},
+	)); err != nil {
+		fmt.Println(err)
+	}
+
+	// Output:
+	// matrix must be square: invalid dimension
+	// matrix dimension must be a power of 2: invalid dimension
 }
 
 func ExampleBitFlip() {

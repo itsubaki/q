@@ -1,6 +1,7 @@
 package density
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/itsubaki/q/math/matrix"
@@ -14,9 +15,13 @@ func Flip(p float64, m matrix.Matrix) (matrix.Matrix, matrix.Matrix, error) {
 		return nil, nil, ErrInvalidRange
 	}
 
-	d, _ := m.Dimension()
+	d, d2 := m.Dimension()
+	if d != d2 {
+		return nil, nil, fmt.Errorf("matrix must be square: %w", ErrInvalidDimension)
+	}
+
 	if !number.IsPowOf2(d) {
-		return nil, nil, ErrInvalidDimension
+		return nil, nil, fmt.Errorf("matrix dimension must be a power of 2: %w", ErrInvalidDimension)
 	}
 
 	n := number.Log2(d)
