@@ -175,7 +175,7 @@ for _, s := range qsim.State() {
 N := 15
 a := 7 // co-prime
 
-for i := 0; i < 10; i++{
+for i := range 10 {
   qsim := q.New()
 
   // initial state
