@@ -19,7 +19,7 @@ func New(v ...[]complex128) Matrix {
 // Zero returns a zero matrix.
 func Zero(n, m int) Matrix {
 	out := make(Matrix, n)
-	for i := 0; i < n; i++ {
+	for i := range n {
 		out[i] = make([]complex128, m)
 	}
 
@@ -29,7 +29,7 @@ func Zero(n, m int) Matrix {
 // Identity returns a identity matrix.
 func Identity(n, m int) Matrix {
 	out := Zero(n, m)
-	for i := 0; i < n; i++ {
+	for i := range n {
 		out[i][i] = 1
 	}
 
@@ -51,8 +51,8 @@ func (m Matrix) Equals(n Matrix, eps ...float64) bool {
 	}
 
 	e := epsilon.E13(eps...)
-	for i := 0; i < p; i++ {
-		for j := 0; j < q; j++ {
+	for i := range p {
+		for j := range q {
 			if cmplx.Abs(m[i][j]-n[i][j]) > e {
 				return false
 			}
@@ -72,8 +72,8 @@ func (m Matrix) Transpose() Matrix {
 	p, q := m.Dimension()
 
 	out := Zero(p, q)
-	for i := 0; i < q; i++ {
-		for j := 0; j < p; j++ {
+	for i := range q {
+		for j := range p {
 			out[i][j] = m[j][i]
 		}
 	}
@@ -86,8 +86,8 @@ func (m Matrix) Conjugate() Matrix {
 	p, q := m.Dimension()
 
 	out := Zero(p, q)
-	for i := 0; i < p; i++ {
-		for j := 0; j < q; j++ {
+	for i := range p {
+		for j := range q {
 			out[i][j] = cmplx.Conj(m[i][j])
 		}
 	}
@@ -100,8 +100,8 @@ func (m Matrix) Dagger() Matrix {
 	p, q := m.Dimension()
 
 	out := Zero(p, q)
-	for i := 0; i < p; i++ {
-		for j := 0; j < q; j++ {
+	for i := range p {
+		for j := range q {
 			out[i][j] = cmplx.Conj(m[j][i])
 		}
 	}
@@ -140,8 +140,8 @@ func (m Matrix) Apply(n Matrix) Matrix {
 	_, p := n.Dimension()
 
 	out := Zero(a, p)
-	for i := 0; i < a; i++ {
-		for j := 0; j < p; j++ {
+	for i := range a {
+		for j := range p {
 			var c complex128
 			for k := 0; k < b; k++ {
 				c = c + n[i][k]*m[k][j]
@@ -159,8 +159,8 @@ func (m Matrix) Mul(z complex128) Matrix {
 	p, q := m.Dimension()
 
 	out := Zero(p, q)
-	for i := 0; i < p; i++ {
-		for j := 0; j < q; j++ {
+	for i := range p {
+		for j := range q {
 			out[i][j] = z * m[i][j]
 		}
 	}
@@ -173,8 +173,8 @@ func (m Matrix) Add(n Matrix) Matrix {
 	p, q := m.Dimension()
 
 	out := Zero(p, q)
-	for i := 0; i < p; i++ {
-		for j := 0; j < q; j++ {
+	for i := range p {
+		for j := range q {
 			out[i][j] = m[i][j] + n[i][j]
 		}
 	}
@@ -187,8 +187,8 @@ func (m Matrix) Sub(n Matrix) Matrix {
 	p, q := m.Dimension()
 
 	out := Zero(p, q)
-	for i := 0; i < p; i++ {
-		for j := 0; j < q; j++ {
+	for i := range p {
+		for j := range q {
 			out[i][j] = m[i][j] - n[i][j]
 		}
 	}
@@ -201,7 +201,7 @@ func (m Matrix) Trace() complex128 {
 	p, _ := m.Dimension()
 
 	var sum complex128
-	for i := 0; i < p; i++ {
+	for i := range p {
 		sum = sum + m[i][i]
 	}
 
@@ -239,8 +239,8 @@ func (m Matrix) Clone() Matrix {
 	p, q := m.Dimension()
 
 	out := Zero(p, q)
-	for i := 0; i < p; i++ {
-		for j := 0; j < q; j++ {
+	for i := range p {
+		for j := range q {
 			out[i][j] = m[i][j]
 		}
 	}
@@ -254,8 +254,8 @@ func (m Matrix) Inverse() Matrix {
 	clone := m.Clone()
 
 	out := Zero(p, q)
-	for i := 0; i < p; i++ {
-		for j := 0; j < q; j++ {
+	for i := range p {
+		for j := range q {
 			if i == j {
 				out[i][j] = 1
 				continue
@@ -265,14 +265,14 @@ func (m Matrix) Inverse() Matrix {
 		}
 	}
 
-	for i := 0; i < p; i++ {
+	for i := range p {
 		c := 1 / clone[i][i]
-		for j := 0; j < q; j++ {
+		for j := range q {
 			clone[i][j] = c * clone[i][j]
 			out[i][j] = c * out[i][j]
 		}
 
-		for j := 0; j < q; j++ {
+		for j := range q {
 			if i == j {
 				continue
 			}
@@ -294,10 +294,10 @@ func (m Matrix) TensorProduct(n Matrix) Matrix {
 	a, b := n.Dimension()
 
 	out := make(Matrix, 0, p*a)
-	for i := 0; i < p; i++ {
+	for i := range p {
 		for k := 0; k < a; k++ {
 			r := make([]complex128, 0, q*b)
-			for j := 0; j < q; j++ {
+			for j := range q {
 				for l := 0; l < b; l++ {
 					r = append(r, m[i][j]*n[k][l])
 				}
@@ -325,7 +325,7 @@ func ApplyN(m Matrix, n ...int) Matrix {
 	}
 
 	list := make([]Matrix, n[0])
-	for i := 0; i < n[0]; i++ {
+	for i := range n[0] {
 		list[i] = m
 	}
 
@@ -338,7 +338,7 @@ func TensorProductN(m Matrix, n ...int) Matrix {
 	}
 
 	list := make([]Matrix, n[0])
-	for i := 0; i < n[0]; i++ {
+	for i := range n[0] {
 		list[i] = m
 	}
 

@@ -23,7 +23,7 @@ func ExampleConvergent() {
 	fmt.Printf("%v=%v %v\n", m, v, err)
 
 	c := number.ContinuedFraction(v)
-	for i := 0; i < len(c); i++ {
+	for i := range c {
 		s, r, d := number.Convergent(c[:i+1])
 		fmt.Printf("%v: %v/%v=%v\n", c[:i+1], s, r, d)
 	}
@@ -64,6 +64,7 @@ func TestContinuedFraction(t *testing.T) {
 			if f[i] == c.cf[i] {
 				continue
 			}
+
 			t.Errorf("%v %v", f, c.cf)
 		}
 

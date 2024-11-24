@@ -32,8 +32,8 @@ func New(ensemble []State) *Matrix {
 		}
 
 		op := s.Qubit.OuterProduct(s.Qubit).Mul(complex(s.Probability, 0))
-		for i := 0; i < n; i++ {
-			for j := 0; j < n; j++ {
+		for i := range n {
+			for j := range n {
 				m.m[i][j] = m.m[i][j] + op[i][j]
 			}
 		}
@@ -92,10 +92,10 @@ func (m *Matrix) PartialTrace(index ...int) *Matrix {
 	out := matrix.Zero(d, d)
 
 	p, q := m.Dimension()
-	for i := 0; i < p; i++ {
+	for i := range p {
 		k, kr := take(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)), index)
 
-		for j := 0; j < q; j++ {
+		for j := range q {
 			l, lr := take(fmt.Sprintf(f, strconv.FormatInt(int64(j), 2)), index)
 
 			if k != l {
