@@ -2,6 +2,7 @@ package number
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"strconv"
 	"strings"
@@ -20,8 +21,12 @@ func ParseFloat(binary string) (float64, error) {
 	}
 
 	bin := strings.Split(binary, ".")
-	v := float64(Must(strconv.ParseInt(bin[0], 2, 0)))
+	p, err := strconv.ParseInt(bin[0], 2, 0)
+	if err != nil {
+		return 0, fmt.Errorf("parse int: %w", err)
+	}
 
+	v := float64(p)
 	if !strings.Contains(binary, ".") {
 		return v, nil
 	}
