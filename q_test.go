@@ -488,6 +488,15 @@ func ExampleQ_String() {
 	// [(0+0i) (0+0i) (1+0i) (0+0i)]
 }
 
+func ExampleQ_State() {
+	qsim := q.New()
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+}
+
 func ExampleQ_C() {
 	qsim := q.New()
 
