@@ -433,7 +433,7 @@ func (q *Q) String() string {
 
 // State returns the state of qubits.
 func (q *Q) State(reg ...any) []qubit.State {
-	if q.qb == nil{
+	if q.qb == nil {
 		return nil
 	}
 
