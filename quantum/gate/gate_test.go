@@ -146,6 +146,18 @@ func ExampleControlledModExp2() {
 	// 1:1110=14 1:1000= 8  8
 }
 
+func ExampleTensorProduct() {
+	for _, r := range gate.TensorProduct(gate.X(), 2, []int{1}) {
+		fmt.Printf("%.4v\n", r)
+	}
+
+	// Output:
+	// [(0+0i) (1+0i) (0+0i) (0+0i)]
+	// [(1+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (1+0i)]
+	// [(0+0i) (0+0i) (1+0i) (0+0i)]
+}
+
 func TestControlledModExp2(t *testing.T) {
 	g1 := matrix.Apply(
 		gate.CNOT(7, 3, 5),

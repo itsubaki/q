@@ -431,3 +431,26 @@ func ControlledModExp2(n, a, j, N, c int, t []int) matrix.Matrix {
 
 	return g
 }
+
+func TensorProduct(u matrix.Matrix, n int, index []int) matrix.Matrix {
+	idx := make(map[int]bool)
+	for _, i := range index {
+		idx[i] = true
+	}
+
+	g := I()
+	if _, ok := idx[0]; ok {
+		g = u
+	}
+
+	for i := 1; i < n; i++ {
+		if _, ok := idx[i]; ok {
+			g = g.TensorProduct(u)
+			continue
+		}
+
+		g = g.TensorProduct(I())
+	}
+
+	return g
+}

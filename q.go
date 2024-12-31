@@ -199,25 +199,8 @@ func (q *Q) Apply(m matrix.Matrix, qb ...Qubit) *Q {
 		return q
 	}
 
-	idx := make(map[int]bool)
-	for _, i := range Index(qb...) {
-		idx[i] = true
-	}
-
-	g := gate.I()
-	if _, ok := idx[0]; ok {
-		g = m
-	}
-
-	for i := 1; i < q.NumberOfBit(); i++ {
-		if _, ok := idx[i]; ok {
-			g = g.TensorProduct(m)
-			continue
-		}
-
-		g = g.TensorProduct(gate.I())
-	}
-
+	n := q.NumberOfBit()
+	g := gate.TensorProduct(m, n, Index(qb...))
 	q.qb.Apply(g)
 	return q
 }
