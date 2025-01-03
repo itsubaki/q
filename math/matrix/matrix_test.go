@@ -255,6 +255,27 @@ func ExampleApply() {
 	// [(0+0i) (1+0i)]
 }
 
+func ExampleApply_xy() {
+	x := matrix.New(
+		[]complex128{0, 1},
+		[]complex128{1, 0},
+	)
+
+	y := matrix.New(
+		[]complex128{0, -1 * complex(0, 1)},
+		[]complex128{complex(0, 1), 0},
+	)
+
+	// x.Apply(y) is yx
+	for _, r := range x.Apply(y) {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [(0-1i) (0+0i)]
+	// [(0+0i) (0+1i)]
+}
+
 func ExampleApplyN() {
 	x := matrix.New(
 		[]complex128{0, 1},

@@ -135,6 +135,7 @@ func (m Matrix) IsUnitary(eps ...float64) bool {
 }
 
 // Apply returns a matrix product of m and n.
+// A.Apply(B) is BA.
 func (m Matrix) Apply(n Matrix) Matrix {
 	a, b := m.Dimension()
 	_, p := n.Dimension()
@@ -310,6 +311,8 @@ func (m Matrix) TensorProduct(n Matrix) Matrix {
 	return out
 }
 
+// Apply rerurns a matrix product of m1, m2, ..., mn.
+// Apply(A, B, C, D, ...) is ...DCBA.
 func Apply(m ...Matrix) Matrix {
 	out := m[0]
 	for i := 1; i < len(m); i++ {
