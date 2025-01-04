@@ -143,52 +143,47 @@ func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
 	for i := range g {
 		row := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)))
 
-		found := false
+		active := true
 		for _, j := range c {
 			if row[j] == '0' {
-				found = true
+				active = false
 				break
 			}
 		}
 
-		if found {
+		if !active {
 			continue
 		}
 
 		for j := range g[i] {
 			col := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(j), 2)))
 
-			found := false
+			active := true
 			for _, k := range c {
 				if col[k] == '0' {
-					found = true
+					active = false
 					break
 				}
 			}
 
-			if found {
+			if !active {
 				continue
 			}
 
-			diff := false
+			same := true
 			for i := range row {
-				if i == t {
-					continue
-				}
-
-				if row[i] != col[i] {
-					diff = true
+				if i != t && row[i] != col[i] {
+					same = false
 					break
 				}
 			}
 
-			if diff {
+			if !same {
 				continue
 			}
 
 			r := number.Must(strconv.Atoi(string(row[t])))
 			c := number.Must(strconv.Atoi(string(col[t])))
-
 			g[j][i] = u[c][r]
 		}
 	}
