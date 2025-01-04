@@ -99,9 +99,12 @@ func ExampleEmpty() {
 
 func ExampleControlled() {
 	x := gate.X(2)
-	cu := gate.Controlled(x, 3, []int{0}, []int{1, 2})
+	for _, r := range gate.Controlled(x, 3, []int{0}, []int{1, 2}) {
+		fmt.Println(r)
+	}
+	fmt.Println()
 
-	for _, r := range cu {
+	for _, r := range gate.Controlled(x, 3, []int{1}, []int{0, 2}) {
 		fmt.Println(r)
 	}
 
@@ -114,6 +117,15 @@ func ExampleControlled() {
 	// [(0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (1+0i) (0+0i)]
 	// [(0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (1+0i) (0+0i) (0+0i)]
 	// [(0+0i) (0+0i) (0+0i) (0+0i) (1+0i) (0+0i) (0+0i) (0+0i)]
+	//
+	// [(1+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (1+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (1+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (1+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i) (1+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (1+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (1+0i) (0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (1+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i)]
 }
 
 func ExampleControlledModExp2() {
