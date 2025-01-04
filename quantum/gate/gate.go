@@ -182,8 +182,7 @@ func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
 				continue
 			}
 
-			r := number.Must(strconv.Atoi(string(row[t])))
-			c := number.Must(strconv.Atoi(string(col[t])))
+			c, r := col[t]-'0', row[t]-'0'
 			g[j][i] = u[c][r]
 		}
 	}
