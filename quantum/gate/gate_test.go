@@ -97,6 +97,25 @@ func ExampleEmpty() {
 	// [[] [] []]
 }
 
+func ExampleControlled() {
+	x := gate.X(2)
+	cu := gate.Controlled(x, 3, []int{0}, []int{1, 2})
+
+	for _, r := range cu {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [(1+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (1+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (1+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (1+0i) (0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (1+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (1+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (1+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i) (1+0i) (0+0i) (0+0i) (0+0i)]
+}
+
 func ExampleControlledModExp2() {
 	n, a, j, N := 5, 7, 0, 15
 	g := gate.ControlledModExp2(n, a, j, N, 0, []int{1, 2, 3, 4})
@@ -249,13 +268,13 @@ func TestControlled(t *testing.T) {
 	cases := []struct {
 		in, want matrix.Matrix
 	}{
-		{gate.Controlled(gate.I(), 2, []int{0}, 1), gate.I(2)},
-		{gate.Controlled(gate.X(), 3, []int{1, 2}, 0), gate.CCNOT(3, 1, 2, 0)},
-		{gate.Controlled(gate.X(), 3, []int{2, 1}, 0), gate.CCNOT(3, 2, 1, 0)},
-		{gate.Controlled(gate.X(), 3, []int{0, 2}, 1), gate.CCNOT(3, 0, 2, 1)},
-		{gate.Controlled(gate.X(), 3, []int{2, 0}, 1), gate.CCNOT(3, 2, 0, 1)},
-		{gate.Controlled(gate.X(), 3, []int{0, 1}, 2), gate.CCNOT(3, 0, 1, 2)},
-		{gate.Controlled(gate.X(), 3, []int{1, 0}, 2), gate.CCNOT(3, 1, 0, 2)},
+		{gate.Controlled(gate.I(), 2, []int{0}, []int{1}), gate.I(2)},
+		{gate.Controlled(gate.X(), 3, []int{1, 2}, []int{0}), gate.CCNOT(3, 1, 2, 0)},
+		{gate.Controlled(gate.X(), 3, []int{2, 1}, []int{0}), gate.CCNOT(3, 2, 1, 0)},
+		{gate.Controlled(gate.X(), 3, []int{0, 2}, []int{1}), gate.CCNOT(3, 0, 2, 1)},
+		{gate.Controlled(gate.X(), 3, []int{2, 0}, []int{1}), gate.CCNOT(3, 2, 0, 1)},
+		{gate.Controlled(gate.X(), 3, []int{0, 1}, []int{2}), gate.CCNOT(3, 0, 1, 2)},
+		{gate.Controlled(gate.X(), 3, []int{1, 0}, []int{2}), gate.CCNOT(3, 1, 0, 2)},
 	}
 
 	for _, c := range cases {

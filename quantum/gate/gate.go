@@ -136,7 +136,12 @@ func RZ(theta float64) matrix.Matrix {
 }
 
 // Controlled returns a controlled-u gate.
-func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
+func Controlled(u matrix.Matrix, n int, c, t []int) matrix.Matrix {
+	d0, _ := u.Dimension()
+	if number.Log2(d0) != len(t) {
+		panic("len(t) must be equal to log2(len(u))")
+	}
+
 	g := I(n)
 	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 
@@ -172,7 +177,15 @@ func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
 
 			same := true
 			for i := range row {
-				if i != t && row[i] != col[i] {
+				var contains bool
+				for _, v := range t {
+					if v == i {
+						contains = true
+						break
+					}
+				}
+
+				if !contains && row[i] != col[i] {
 					same = false
 					break
 				}
@@ -182,7 +195,12 @@ func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
 				continue
 			}
 
-			c, r := col[t]-'0', row[t]-'0'
+			var r, c int
+			for _, bit := range t {
+				r = r<<1 | int(row[bit]-'0')
+				c = c<<1 | int(col[bit]-'0')
+			}
+
 			g[j][i] = u[c][r]
 		}
 	}
@@ -191,8 +209,8 @@ func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
 }
 
 // C returns a controlled-u gate.
-func C(u matrix.Matrix, n int, c int, t int) matrix.Matrix {
-	return Controlled(u, n, []int{c}, t)
+func C(u matrix.Matrix, n, c, t int) matrix.Matrix {
+	return Controlled(u, n, []int{c}, []int{t})
 }
 
 // ControlledNot returns a controlled-not gate.
