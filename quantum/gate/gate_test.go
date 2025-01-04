@@ -143,6 +143,18 @@ func ExampleControlled() {
 	// [(0+0i) (1+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i)]
 }
 
+func TestControlled_panic(t *testing.T) {
+	defer func() {
+		if rec := recover(); rec != nil {
+			if rec.(string) != "len(t) must be equal to log2(len(u))" {
+				t.Fail()
+			}
+		}
+	}()
+
+	gate.Controlled(gate.X(2), 3, []int{3}, []int{0})
+}
+
 func ExampleControlledModExp2() {
 	n, a, j, N := 5, 7, 0, 15
 	g := gate.ControlledModExp2(n, a, j, N, 0, []int{1, 2, 3, 4})
