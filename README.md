@@ -228,7 +228,7 @@ for i := range 10 {
 
 - In general, See [`cmd/shor`](./cmd/shor/main.go)
 
-### Any quantum gate and its controlled gate
+### Any 1-qubit quantum gate and its controlled gate
 
 ```go
 h := gate.U(math.Pi/2, 0, math.Pi)
