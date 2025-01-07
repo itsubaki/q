@@ -197,35 +197,23 @@ func C(u matrix.Matrix, n int, c int, t int) matrix.Matrix {
 
 // ControlledNot returns a controlled-not gate.
 func ControlledNot(n int, c []int, t int) matrix.Matrix {
-	m := I(n)
-	d, _ := m.Dimension()
-
-	idx := make([]int64, d)
-	for i := range d {
-		bits := []rune(fmt.Sprintf("%0*b", n, i))
-
-		apply := true
-		for _, j := range c {
-			if bits[j] == '0' {
-				apply = false
-				break
-			}
-		}
-
-		if apply {
-			if bits[t] == '0' {
-				bits[t] = '1'
-			} else {
-				bits[t] = '0'
-			}
-		}
-
-		idx[i] = number.Must(strconv.ParseInt(string(bits), 2, 0))
+	var mask int
+	for _, bit := range c {
+		mask |= (1 << (n - 1 - bit))
 	}
 
-	g := make(matrix.Matrix, d)
-	for i, ii := range idx {
-		g[ii] = m[i]
+	s := 1 << n
+	perm := make([]int, s)
+	for i := range s {
+		perm[i] = i
+		if (i & mask) == mask {
+			perm[i] = i ^ (1 << (n - 1 - t))
+		}
+	}
+
+	g, id := make(matrix.Matrix, s), I(n)
+	for i, j := range perm {
+		g[j] = id[i]
 	}
 
 	return g
