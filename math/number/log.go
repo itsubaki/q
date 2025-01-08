@@ -12,9 +12,5 @@ func Log2(N int) int {
 }
 
 func IsPowOf2(N int) bool {
-	if N > 0 && (N&(N-1) == 0) {
-		return true
-	}
-
-	return false
+	return N > 0 && N&(N-1) == 0
 }
