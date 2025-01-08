@@ -113,13 +113,13 @@ func ExampleControlledModExp2() {
 			continue
 		}
 
-		for ii, e := range r {
+		for l, e := range r {
 			if e == complex(0, 0) {
 				continue
 			}
 
 			// decimal number representation of a^2^j * k mod N
-			a2jkmodNs := fmt.Sprintf("%0*s", n, strconv.FormatInt(int64(ii), 2)[1:])
+			a2jkmodNs := fmt.Sprintf("%0*s", n, strconv.FormatInt(int64(l), 2)[1:])
 			a2jkmodN := number.Must(strconv.ParseInt(a2jkmodNs, 2, 64))
 			got := (int64(number.ModExp2(a, j, N)) * k) % int64(N)
 

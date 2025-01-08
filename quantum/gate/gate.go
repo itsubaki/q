@@ -1,10 +1,8 @@
 package gate
 
 import (
-	"fmt"
 	"math"
 	"math/cmplx"
-	"strconv"
 
 	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/math/number"
@@ -329,36 +327,34 @@ func QFT(n int) matrix.Matrix {
 // len(t) must be larger than log2(N).
 func ControlledModExp2(n, a, j, N, c int, t []int) matrix.Matrix {
 	m := I(n)
-	d, _ := m.Dimension()
-
-	r0len, r1len := n-len(t), len(t)
+	r1len := len(t)
 	a2jmodN := number.ModExp2(a, j, N)
 
-	idx := make([]int64, d)
+	d, _ := m.Dimension()
+	idx := make([]int, d)
 	for i := range d {
-		bits := []rune(fmt.Sprintf("%0*b", n, i))
-
-		if bits[c] == '0' {
-			idx[i] = int64(i)
+		if (i>>(n-1-c))&1 == 0 {
+			// control bit is 0, then do nothing
+			idx[i] = i
 			continue
 		}
 
-		k := number.Must(strconv.ParseInt(string(bits[r0len:]), 2, 0))
-		if k > int64(N-1) {
-			idx[i] = int64(i)
+		// r1len bits of i
+		mask := (1 << r1len) - 1
+		k := i & mask
+		if k > N-1 {
+			idx[i] = i
 			continue
 		}
 
-		a2jkmodN := (int64(a2jmodN) * k) % int64(N)
-		a2jkmodNs := []rune(fmt.Sprintf("%0*b", r1len, a2jkmodN))
-		newbits := append(bits[:r0len], []rune(a2jkmodNs)...)
-
-		idx[i] = number.Must(strconv.ParseInt(string(newbits), 2, 0))
+		// r0len bits of i + a2jkmodN bits
+		a2jkmodN := a2jmodN * k % N
+		idx[i] = (i >> r1len << r1len) | a2jkmodN
 	}
 
 	g := make(matrix.Matrix, d)
-	for i, ii := range idx {
-		g[ii] = m[i]
+	for i, j := range idx {
+		g[j] = m[i]
 	}
 
 	return g

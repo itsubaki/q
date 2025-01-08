@@ -156,12 +156,12 @@ func (q *Qubit) Probability() []float64 {
 // Measure returns a measured qubit.
 func (q *Qubit) Measure(index int) *Qubit {
 	n := q.NumberOfBit()
+	mask := 1 << (n - 1 - index)
 
-	zidx, oidx := make([]int, 0), make([]int, 0)
-	zprop := make([]float64, 0)
+	zidx, zprop := make([]int, 0), make([]float64, 0)
+	oidx := make([]int, 0)
 	for i, p := range q.Probability() {
-		bits := []rune(fmt.Sprintf("%0*b", n, i))
-		if bits[index] == '0' {
+		if i&mask == 0 {
 			zidx, zprop = append(zidx, i), append(zprop, p)
 			continue
 		}
@@ -235,10 +235,9 @@ func (q *Qubit) State(index ...[]int) []State {
 			continue
 		}
 
-		bit := fmt.Sprintf("%0*b", n, i)
 		var bin []string
 		for _, idx := range index {
-			bin = append(bin, take(bit, idx))
+			bin = append(bin, take(n, i, idx))
 		}
 
 		state = append(state, NewState(amp, bin...))
@@ -261,10 +260,12 @@ func round(a complex128, eps ...float64) complex128 {
 	return a
 }
 
-func take(binary string, index []int) string {
+func take(n, i int, index []int) string {
+	s := fmt.Sprintf("%0*b", n, i)
+
 	var sb strings.Builder
 	for _, i := range index {
-		sb.WriteString(binary[i : i+1])
+		sb.WriteString(s[i : i+1])
 	}
 
 	return sb.String()
