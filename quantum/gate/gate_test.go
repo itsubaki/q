@@ -101,9 +101,8 @@ func ExampleControlledModExp2() {
 	n, a, j, N := 5, 7, 0, 15
 	g := gate.ControlledModExp2(n, a, j, N, 0, []int{1, 2, 3, 4})
 
-	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 	for i, r := range g.Transpose() {
-		bin := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
+		bin := fmt.Sprintf("%0*b", n, i)
 		if bin[:1] == "0" { // control qubit is |0>
 			continue
 		}
@@ -120,7 +119,7 @@ func ExampleControlledModExp2() {
 			}
 
 			// decimal number representation of a^2^j * k mod N
-			a2jkmodNs := fmt.Sprintf(f, strconv.FormatInt(int64(ii), 2)[1:])
+			a2jkmodNs := fmt.Sprintf("%0*s", n, strconv.FormatInt(int64(ii), 2)[1:])
 			a2jkmodN := number.Must(strconv.ParseInt(a2jkmodNs, 2, 64))
 			got := (int64(number.ModExp2(a, j, N)) * k) % int64(N)
 

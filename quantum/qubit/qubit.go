@@ -156,13 +156,11 @@ func (q *Qubit) Probability() []float64 {
 // Measure returns a measured qubit.
 func (q *Qubit) Measure(index int) *Qubit {
 	n := q.NumberOfBit()
-	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
 
 	zidx, oidx := make([]int, 0), make([]int, 0)
 	zprop := make([]float64, 0)
 	for i, p := range q.Probability() {
-		bits := []rune(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)))
-
+		bits := []rune(fmt.Sprintf("%0*b", n, i))
 		if bits[index] == '0' {
 			zidx, zprop = append(zidx, i), append(zprop, p)
 			continue
@@ -228,8 +226,8 @@ func (q *Qubit) State(index ...[]int) []State {
 
 		index = append(index, idx)
 	}
-	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(q.NumberOfBit()), "s")
 
+	n := q.NumberOfBit()
 	state := make([]State, 0)
 	for i, a := range q.Amplitude() {
 		amp := round(a)
@@ -237,10 +235,10 @@ func (q *Qubit) State(index ...[]int) []State {
 			continue
 		}
 
-		b := fmt.Sprintf(f, strconv.FormatInt(int64(i), 2))
+		bit := fmt.Sprintf("%0*b", n, i)
 		var bin []string
 		for _, idx := range index {
-			bin = append(bin, take(b, idx))
+			bin = append(bin, take(bit, idx))
 		}
 
 		state = append(state, NewState(amp, bin...))

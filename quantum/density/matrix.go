@@ -87,16 +87,15 @@ func (m *Matrix) SquareTrace() float64 {
 // PartialTrace returns the partial trace of the density matrix.
 func (m *Matrix) PartialTrace(index ...int) *Matrix {
 	n := m.NumberOfBit()
-	f := fmt.Sprintf("%s%s%s", "%0", strconv.Itoa(n), "s")
+	p, q := m.Dimension()
+
 	d := number.Pow(2, n-1)
 	out := matrix.Zero(d, d)
-
-	p, q := m.Dimension()
 	for i := range p {
-		k, kr := take(fmt.Sprintf(f, strconv.FormatInt(int64(i), 2)), index)
+		k, kr := take(fmt.Sprintf("%0*b", n, i), index)
 
 		for j := range q {
-			l, lr := take(fmt.Sprintf(f, strconv.FormatInt(int64(j), 2)), index)
+			l, lr := take(fmt.Sprintf("%0*b", n, j), index)
 
 			if k != l {
 				continue
@@ -104,7 +103,6 @@ func (m *Matrix) PartialTrace(index ...int) *Matrix {
 
 			r := number.Must(strconv.ParseInt(kr, 2, 0))
 			c := number.Must(strconv.ParseInt(lr, 2, 0))
-
 			out[r][c] = out[r][c] + m.m[i][j]
 
 			// fmt.Printf("[%v][%v] = [%v][%v] + [%v][%v]\n", r, c, r, c, i, j)
@@ -136,28 +134,24 @@ func (m *Matrix) Depolarizing(p float64) (*Matrix, error) {
 	n := m.NumberOfBit()
 	i := gate.I(n).Mul(complex(p/2, 0))
 	r := m.m.Mul(complex(1-p, 0))
-
 	return &Matrix{i.Add(r)}, nil
 }
 
 func take(binary string, index []int) (string, string) {
-	var out, remain string
-	for i, v := range binary {
-		found := false
-		for _, j := range index {
-			if i == j {
-				out = out + string(v)
-				found = true
-				break
-			}
-		}
+	idx := make(map[int]struct{})
+	for _, i := range index {
+		idx[i] = struct{}{}
+	}
 
-		if found {
+	var out, remain []rune
+	for i, v := range binary {
+		if _, ok := idx[i]; ok {
+			out = append(out, v)
 			continue
 		}
 
-		remain = remain + string(v)
+		remain = append(remain, v)
 	}
 
-	return out, remain
+	return string(out), string(remain)
 }

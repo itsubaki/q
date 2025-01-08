@@ -137,52 +137,30 @@ func RZ(theta float64) matrix.Matrix {
 
 // Controlled returns a controlled-u gate.
 func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
+	var mask int
+	for _, bit := range c {
+		mask |= (1 << (n - 1 - bit))
+	}
+
+	s := (1 << n)
 	g := I(n)
-
-	for i := range g {
-		row := []rune(fmt.Sprintf("%0*b", n, i))
-
-		active := true
-		for _, j := range c {
-			if row[j] == '0' {
-				active = false
-				break
-			}
-		}
-
-		if !active {
+	for i := 0; i < s; i++ {
+		if (i & mask) != mask {
 			continue
 		}
 
-		for j := range g[i] {
-			col := []rune(fmt.Sprintf("%0*b", n, j))
-
-			active := true
-			for _, k := range c {
-				if col[k] == '0' {
-					active = false
-					break
-				}
-			}
-
-			if !active {
+		for j := 0; j < s; j++ {
+			if (j & mask) != mask {
 				continue
 			}
 
-			same := true
-			for i := range row {
-				if i != t && row[i] != col[i] {
-					same = false
-					break
-				}
-			}
-
-			if !same {
+			// modify only the target qubit
+			if (i & ^(1 << (n - 1 - t))) != (j & ^(1 << (n - 1 - t))) {
 				continue
 			}
 
-			r := number.Must(strconv.Atoi(string(row[t])))
-			c := number.Must(strconv.Atoi(string(col[t])))
+			c := (j >> (n - 1 - t)) & 1
+			r := (i >> (n - 1 - t)) & 1
 			g[j][i] = u[c][r]
 		}
 	}
@@ -236,21 +214,14 @@ func Toffoli(n, c0, c1, t int) matrix.Matrix {
 
 // ControlledZ returns a controlled-z gate.
 func ControlledZ(n int, c []int, t int) matrix.Matrix {
+	var mask int
+	for _, bit := range c {
+		mask |= (1 << (n - 1 - bit))
+	}
+
 	g := I(n)
-	d, _ := g.Dimension()
-
-	for i := range d {
-		bits := []rune(fmt.Sprintf("%0*b", n, i))
-
-		apply := true
-		for _, j := range c {
-			if bits[j] == '0' {
-				apply = false
-				break
-			}
-		}
-
-		if apply && bits[t] == '1' {
+	for i := 0; i < (1 << n); i++ {
+		if (i&mask) == mask && (i&(1<<(n-1-t))) != 0 {
 			g[i][i] = -1 * g[i][i]
 		}
 	}
@@ -265,21 +236,14 @@ func CZ(n, c, t int) matrix.Matrix {
 
 // ControlledS returns a controlled-s gate.
 func ControlledS(n int, c []int, t int) matrix.Matrix {
+	var mask int
+	for _, bit := range c {
+		mask |= (1 << (n - 1 - bit))
+	}
+
 	g := I(n)
-	d, _ := g.Dimension()
-
-	for i := range d {
-		bits := []rune(fmt.Sprintf("%0*b", n, i))
-
-		apply := true
-		for _, j := range c {
-			if bits[j] == '0' {
-				apply = false
-				break
-			}
-		}
-
-		if apply && bits[t] == '1' {
+	for i := 0; i < (1 << n); i++ {
+		if (i&mask) == mask && (i&(1<<(n-1-t))) != 0 {
 			g[i][i] = 1i * g[i][i]
 		}
 	}
@@ -297,22 +261,14 @@ func ControlledR(theta float64, n int, c []int, t int) matrix.Matrix {
 	// exp(i * theta)
 	e := cmplx.Exp(complex(0, theta))
 
+	var mask int
+	for _, bit := range c {
+		mask |= (1 << (n - 1 - bit))
+	}
+
 	g := I(n)
-	d, _ := g.Dimension()
-
-	for i := range d {
-		bits := []rune(fmt.Sprintf("%0*b", n, i))
-
-		// Apply R(k)
-		apply := true
-		for _, j := range c {
-			if bits[j] == '0' {
-				apply = false
-				break
-			}
-		}
-
-		if apply && bits[t] == '1' {
+	for i := 0; i < (1 << n); i++ {
+		if (i&mask) == mask && (i&(1<<(n-1-t))) != 0 {
 			g[i][i] = e * g[i][i]
 		}
 	}
