@@ -92,10 +92,10 @@ func (m *Matrix) PartialTrace(index ...int) *Matrix {
 	d := number.Pow(2, n-1)
 	out := matrix.Zero(d, d)
 	for i := range p {
-		k, kr := take(fmt.Sprintf("%0*b", n, i), index)
+		k, kr := take(n, i, index)
 
 		for j := range q {
-			l, lr := take(fmt.Sprintf("%0*b", n, j), index)
+			l, lr := take(n, j, index)
 
 			if k != l {
 				continue
@@ -137,20 +137,20 @@ func (m *Matrix) Depolarizing(p float64) (*Matrix, error) {
 	return &Matrix{i.Add(r)}, nil
 }
 
-func take(binary string, index []int) (string, string) {
+func take(n, i int, index []int) (string, string) {
 	idx := make(map[int]struct{})
 	for _, i := range index {
 		idx[i] = struct{}{}
 	}
 
 	var out, remain []rune
-	for i, v := range binary {
+	for i, bit := range fmt.Sprintf("%0*b", n, i) {
 		if _, ok := idx[i]; ok {
-			out = append(out, v)
+			out = append(out, bit)
 			continue
 		}
 
-		remain = append(remain, v)
+		remain = append(remain, bit)
 	}
 
 	return string(out), string(remain)
