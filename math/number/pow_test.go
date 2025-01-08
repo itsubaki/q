@@ -40,6 +40,7 @@ func TestModExp(t *testing.T) {
 	}{
 		{0, 15, 1, 0},
 		{15, 0, 1, 1},
+		{15, 3, 1, 0},
 	}
 
 	for _, c := range cases {
