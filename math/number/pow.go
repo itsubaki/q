@@ -17,9 +17,14 @@ func Pow(a, r int) int {
 		return 1
 	}
 
-	p := a
-	for i := 1; i < r; i++ {
-		p = p * a
+	p := 1
+	for r > 0 {
+		if r&1 == 1 {
+			p = p * a
+		}
+
+		a = a * a
+		r >>= 1
 	}
 
 	return p
@@ -35,9 +40,19 @@ func ModExp(a, r, N int) int {
 		return 1
 	}
 
-	p := a
-	for i := 1; i < r; i++ {
-		p = (p * a) % N
+	if N == 1 {
+		return 0
+	}
+
+	// exponentiation by squaring
+	p := 1
+	for r > 0 {
+		if r&1 == 1 {
+			p = (p * a) % N
+		}
+
+		a = (a * a) % N
+		r >>= 1
 	}
 
 	return p
