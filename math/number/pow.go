@@ -17,6 +17,7 @@ func Pow(a, r int) int {
 		return 1
 	}
 
+	// exponentiation by squaring
 	p := 1
 	for r > 0 {
 		if r&1 == 1 {
