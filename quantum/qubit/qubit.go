@@ -188,12 +188,12 @@ func (q *Qubit) Measure(index int) *Qubit {
 	return Zero()
 }
 
-// Int returns the integer representation of q.
+// Int measures the quantum state and returns its int representation.
 func (q *Qubit) Int() int64 {
 	return number.Must(strconv.ParseInt(q.BinaryString(), 2, 0))
 }
 
-// BinaryString returns the binary string representation of q.
+// BinaryString measures the quantum state and returns its binary string representation.
 func (q *Qubit) BinaryString() string {
 	c := q.Clone()
 
