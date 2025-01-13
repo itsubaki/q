@@ -134,6 +134,7 @@ func RZ(theta float64) matrix.Matrix {
 }
 
 // Controlled returns a controlled-u gate.
+// u is a (2x2) unitary matrix and returns a (2**n x 2**n) matrix.
 func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
 	var mask int
 	for _, bit := range c {
