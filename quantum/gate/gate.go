@@ -361,6 +361,7 @@ func ControlledModExp2(n, a, j, N, c int, t []int) matrix.Matrix {
 	return g
 }
 
+// TensorProduct returns the tensor product of 'u' at specified indices over 'n' qubits.
 func TensorProduct(u matrix.Matrix, n int, index []int) matrix.Matrix {
 	idx := make(map[int]bool)
 	for _, i := range index {
