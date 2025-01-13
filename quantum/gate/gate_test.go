@@ -172,68 +172,59 @@ func TestAddControlled(t *testing.T) {
 	u := gate.U(rand.Float64(), rand.Float64(), rand.Float64())
 
 	cases := []struct {
-		in     matrix.Matrix
-		want   matrix.Matrix
-		n, bit int
+		in   matrix.Matrix
+		want matrix.Matrix
+		bit  int
 	}{
 		{
 			in:   gate.TensorProduct(gate.X(), 2, []int{1}),
 			want: gate.ControlledNot(2, []int{0}, 1),
-			n:    2,
 			bit:  0,
 		},
 		{
 			in:   gate.ControlledNot(3, []int{0}, 2),
 			want: gate.ControlledNot(3, []int{0, 1}, 2),
-			n:    3,
 			bit:  1,
 		},
 		{
 			in:   gate.ControlledNot(3, []int{0}, 2),
 			want: gate.ControlledNot(3, []int{0}, 2),
-			n:    3,
 			bit:  0,
 		},
 		{
 			in:   gate.Controlled(u, 3, []int{0}, 1),
 			want: gate.Controlled(u, 3, []int{0, 2}, 1),
-			n:    3,
 			bit:  2,
 		},
 		{
 			in:   gate.Controlled(u, 3, []int{0}, 2),
 			want: gate.Controlled(u, 3, []int{0, 1}, 2),
-			n:    3,
 			bit:  1,
 		},
 		{
 			in:   gate.Controlled(u, 3, []int{1}, 2),
 			want: gate.Controlled(u, 3, []int{0, 1}, 2),
-			n:    3,
 			bit:  0,
 		},
 		{
 			in:   gate.Controlled(u, 3, []int{1}, 0),
 			want: gate.Controlled(u, 3, []int{1, 2}, 0),
-			n:    3,
 			bit:  2,
 		},
 		{
 			in:   gate.Controlled(u, 3, []int{2}, 0),
 			want: gate.Controlled(u, 3, []int{2, 1}, 0),
-			n:    3,
 			bit:  1,
 		},
 		{
 			in:   gate.Controlled(u, 3, []int{2}, 1),
 			want: gate.Controlled(u, 3, []int{0, 2}, 1),
-			n:    3,
 			bit:  0,
 		},
 	}
 
 	for _, c := range cases {
-		got := gate.AddControlled(c.in, c.n, c.bit)
+		got := gate.AddControlled(c.in, c.bit)
 		if !got.Equals(c.want) {
 			t.Fail()
 		}
