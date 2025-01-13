@@ -182,6 +182,11 @@ func TestAddControlled(t *testing.T) {
 			bit:  0,
 		},
 		{
+			in:   gate.TensorProduct(gate.X(), 2, []int{0}),
+			want: gate.ControlledNot(2, []int{1}, 0),
+			bit:  1,
+		},
+		{
 			in:   gate.ControlledNot(3, []int{0}, 2),
 			want: gate.ControlledNot(3, []int{0, 1}, 2),
 			bit:  1,
