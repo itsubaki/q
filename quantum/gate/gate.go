@@ -133,7 +133,27 @@ func RZ(theta float64) matrix.Matrix {
 	}
 }
 
+// AddControlled returns a controlled-u gate with control bit.
+// u is a (2**n x 2**n) unitary matrix and returns a (2**n x 2**n) matrix.
+func AddControlled(u matrix.Matrix, n int, c int) matrix.Matrix {
+	s := 1 << n
+	g := I(n)
+
+	for i := 0; i < s; i++ {
+		if (i>>(n-1-c))&1 == 0 {
+			continue
+		}
+
+		for j := 0; j < s; j++ {
+			g[i][j] = u[i][j]
+		}
+	}
+
+	return g
+}
+
 // Controlled returns a controlled-u gate.
+// u is a (2x2) unitary matrix and returns a (2**n x 2**n) matrix.
 func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
 	var mask int
 	for _, bit := range c {
@@ -360,6 +380,7 @@ func ControlledModExp2(n, a, j, N, c int, t []int) matrix.Matrix {
 	return g
 }
 
+// TensorProduct returns the tensor product of 'u' at specified indices over 'n' qubits.
 func TensorProduct(u matrix.Matrix, n int, index []int) matrix.Matrix {
 	idx := make(map[int]bool)
 	for _, i := range index {
