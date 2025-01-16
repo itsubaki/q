@@ -252,24 +252,13 @@ func (m Matrix) Clone() Matrix {
 // Inverse returns a inverse matrix of m.
 func (m Matrix) Inverse() Matrix {
 	p, q := m.Dimension()
-	clone := m.Clone()
+	mm := m.Clone()
 
-	out := Zero(p, q)
+	out := Identity(p, q)
 	for i := range p {
+		c := 1 / mm[i][i]
 		for j := range q {
-			if i == j {
-				out[i][j] = 1
-				continue
-			}
-
-			out[i][j] = 0
-		}
-	}
-
-	for i := range p {
-		c := 1 / clone[i][i]
-		for j := range q {
-			clone[i][j] = c * clone[i][j]
+			mm[i][j] = c * mm[i][j]
 			out[i][j] = c * out[i][j]
 		}
 
@@ -278,9 +267,9 @@ func (m Matrix) Inverse() Matrix {
 				continue
 			}
 
-			c := clone[j][i]
+			c := mm[j][i]
 			for k := 0; k < q; k++ {
-				clone[j][k] = clone[j][k] - c*clone[i][k]
+				mm[j][k] = mm[j][k] - c*mm[i][k]
 				out[j][k] = out[j][k] - c*out[i][k]
 			}
 		}
