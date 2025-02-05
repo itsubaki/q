@@ -400,12 +400,12 @@ func (q *Q) Clone() *Q {
 
 	return &Q{
 		qb:   q.qb.Clone(),
-		Rand: q.qb.Rand,
+		Rand: q.Rand,
 	}
 }
 
-// Raw returns the internal qubit.
-func (q *Q) Raw() *qubit.Qubit {
+// Underlying returns the internal qubit.
+func (q *Q) Underlying() *qubit.Qubit {
 	return q.qb
 }
 

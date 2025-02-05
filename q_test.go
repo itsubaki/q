@@ -1283,11 +1283,11 @@ func Example_top() {
 	// [0010][  2]( 0.1443 0.0000i): 0.0208
 }
 
-func ExampleQ_Raw() {
+func ExampleQ_Underlying() {
 	qsim := q.New()
 	qsim.Zero()
 
-	qb := qsim.Raw()
+	qb := qsim.Underlying()
 
 	d := qb.TraceDistance(qb)
 	fmt.Println(d)
