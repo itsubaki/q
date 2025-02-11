@@ -144,9 +144,9 @@ func take(n, i int, index []int) (string, string) {
 	}
 
 	var out, remain strings.Builder
-	for j := 0; j < n; j++ {
-		b := byte('0' + ((i >> (n - 1 - j)) & 1))
-		if _, ok := idx[j]; ok {
+	for bit := range n {
+		b := byte('0' + ((i >> (n - 1 - bit)) & 1))
+		if _, ok := idx[bit]; ok {
 			out.WriteByte(b)
 			continue
 		}

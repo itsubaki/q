@@ -262,8 +262,8 @@ func round(a complex128, eps ...float64) complex128 {
 
 func take(n, i int, index []int) string {
 	var sb strings.Builder
-	for _, j := range index {
-		if (i & (1 << (n - 1 - j))) == 0 {
+	for _, bit := range index {
+		if (i & (1 << (n - 1 - bit))) == 0 {
 			sb.WriteByte('0')
 			continue
 		}
