@@ -2,8 +2,8 @@ package density
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/math/number"
@@ -138,20 +138,21 @@ func (m *Matrix) Depolarizing(p float64) (*Matrix, error) {
 }
 
 func take(n, i int, index []int) (string, string) {
-	idx := make(map[int]struct{})
-	for _, i := range index {
-		idx[i] = struct{}{}
+	idx := make(map[int]struct{}, len(index))
+	for _, j := range index {
+		idx[j] = struct{}{}
 	}
 
-	var out, remain []rune
-	for i, bit := range fmt.Sprintf("%0*b", n, i) {
-		if _, ok := idx[i]; ok {
-			out = append(out, bit)
+	var out, remain strings.Builder
+	for j := 0; j < n; j++ {
+		b := byte('0' + ((i >> (n - 1 - j)) & 1))
+		if _, ok := idx[j]; ok {
+			out.WriteByte(b)
 			continue
 		}
 
-		remain = append(remain, bit)
+		remain.WriteByte(b)
 	}
 
-	return string(out), string(remain)
+	return out.String(), remain.String()
 }

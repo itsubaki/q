@@ -200,11 +200,11 @@ func (q *Qubit) BinaryString() string {
 	var sb strings.Builder
 	for i := range q.NumberOfBit() {
 		if c.Measure(i).IsZero() {
-			sb.WriteString("0")
+			sb.WriteByte('0')
 			continue
 		}
 
-		sb.WriteString("1")
+		sb.WriteByte('1')
 	}
 
 	return sb.String()
@@ -261,11 +261,14 @@ func round(a complex128, eps ...float64) complex128 {
 }
 
 func take(n, i int, index []int) string {
-	s := fmt.Sprintf("%0*b", n, i)
-
 	var sb strings.Builder
-	for _, i := range index {
-		sb.WriteString(s[i : i+1])
+	for _, j := range index {
+		if (i & (1 << (n - 1 - j))) == 0 {
+			sb.WriteByte('0')
+			continue
+		}
+
+		sb.WriteByte('1')
 	}
 
 	return sb.String()
