@@ -62,7 +62,7 @@ func main() {
 		qsim.Rand = rand.Const(seed)
 	}
 
-	r0 := qsim.ZeroWith(t)
+	r0 := qsim.Zeros(t)
 	r1 := qsim.ZeroLog2(N)
 
 	qsim.X(r1[len(r1)-1])

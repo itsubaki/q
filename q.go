@@ -57,21 +57,6 @@ func (q *Q) New(v ...complex128) Qubit {
 	return Qubit(q.NumberOfBit() - 1)
 }
 
-// NewOf returns a new qubit from binary string.
-func (q *Q) NewOf(binary string) []Qubit {
-	qb := make([]Qubit, len(binary))
-	for i, b := range binary {
-		if b == '0' {
-			qb[i] = q.Zero()
-			continue
-		}
-
-		qb[i] = q.One()
-	}
-
-	return qb
-}
-
 // Zero returns a qubit in the zero state.
 func (q *Q) Zero() Qubit {
 	return q.New(1, 0)
@@ -82,8 +67,8 @@ func (q *Q) One() Qubit {
 	return q.New(0, 1)
 }
 
-// ZeroWith returns n qubits in the zero state.
-func (q *Q) ZeroWith(n int) []Qubit {
+// Zeros returns n qubits in the zero state.
+func (q *Q) Zeros(n int) []Qubit {
 	qb := make([]Qubit, n)
 	for i := 0; i < n; i++ {
 		qb[i] = q.Zero()
@@ -92,8 +77,8 @@ func (q *Q) ZeroWith(n int) []Qubit {
 	return qb
 }
 
-// One returns n qubits in the one state.
-func (q *Q) OneWith(n int) []Qubit {
+// Ones returns n qubits in the one state.
+func (q *Q) Ones(n int) []Qubit {
 	qb := make([]Qubit, n)
 	for i := 0; i < n; i++ {
 		qb[i] = q.One()
@@ -105,7 +90,22 @@ func (q *Q) OneWith(n int) []Qubit {
 // ZeroLog2 returns n qubits in the zero state.
 // n is greater than or equal to log2(N).
 func (q *Q) ZeroLog2(N int) []Qubit {
-	return q.ZeroWith(number.Log2(N) + 1)
+	return q.Zeros(number.Log2(N) + 1)
+}
+
+// From returns a slice of qubits from binary string.
+func (q *Q) From(binary string) []Qubit {
+	qb := make([]Qubit, len(binary))
+	for i, b := range binary {
+		if b == '0' {
+			qb[i] = q.Zero()
+			continue
+		}
+
+		qb[i] = q.One()
+	}
+
+	return qb
 }
 
 // NumberOfBit returns the number of qubits.

@@ -34,10 +34,10 @@ func ExampleQ_Zero() {
 	// [11][  3]( 0.5000 0.0000i): 0.2500
 }
 
-func ExampleQ_ZeroWith() {
+func ExampleQ_Zeros() {
 	qsim := q.New()
 
-	r := qsim.ZeroWith(2)
+	r := qsim.Zeros(2)
 	qsim.H(r...)
 
 	for _, s := range qsim.State() {
@@ -68,10 +68,10 @@ func ExampleQ_ZeroLog2() {
 	// [11][  3]( 0.5000 0.0000i): 0.2500
 }
 
-func ExampleQ_OneWith() {
+func ExampleQ_Ones() {
 	qsim := q.New()
 
-	r := qsim.OneWith(2)
+	r := qsim.Ones(2)
 	qsim.H(r...)
 
 	for _, s := range qsim.State() {
@@ -85,10 +85,10 @@ func ExampleQ_OneWith() {
 	// [11][  3]( 0.5000 0.0000i): 0.2500
 }
 
-func ExampleQ_NewOf() {
+func ExampleQ_From() {
 	qsim := q.New()
 
-	qb := qsim.NewOf("0101")
+	qb := qsim.From("0101")
 	m0 := qsim.Measure(qb[0]) // 0
 	m1 := qsim.Measure(qb[1]) // 1
 	m2 := qsim.Measure(qb[2]) // 0
@@ -109,7 +109,7 @@ func ExampleQ_NewOf() {
 func ExampleQ_Reset() {
 	qsim := q.New()
 
-	r := qsim.ZeroWith(2)
+	r := qsim.Zeros(2)
 	qsim.Reset(r...)
 
 	for _, s := range qsim.State() {
@@ -558,7 +558,7 @@ func ExampleQ_CondZ() {
 func ExampleQ_CModExp2() {
 	qsim := q.New()
 
-	c := qsim.ZeroWith(3)
+	c := qsim.Zeros(3)
 	t := qsim.ZeroLog2(15)
 
 	qsim.X(c...)
@@ -688,7 +688,7 @@ func Example_bellState2() {
 	qsim := q.New()
 	qsim.Rand = rand.Const()
 
-	r := qsim.ZeroWith(2)
+	r := qsim.Zeros(2)
 
 	qsim.H(r[0])
 	qsim.CNOT(r[0], r[1])
@@ -905,7 +905,7 @@ func Example_grover3qubit() {
 	qsim := q.New()
 
 	// initial state
-	r := qsim.ZeroWith(3)
+	r := qsim.Zeros(3)
 	a := qsim.One()
 
 	// superposition
@@ -1081,7 +1081,7 @@ func Example_shorFactoring21() {
 	qsim := q.New()
 	qsim.Rand = rand.Const()
 
-	r0 := qsim.ZeroWith(4)
+	r0 := qsim.Zeros(4)
 	r1 := qsim.ZeroLog2(N)
 
 	qsim.X(r1[len(r1)-1])
@@ -1248,7 +1248,7 @@ func Example_top() {
 	qsim := q.New()
 	qsim.Rand = rand.Const()
 
-	r0 := qsim.ZeroWith(4)
+	r0 := qsim.Zeros(4)
 	r1 := qsim.ZeroLog2(N)
 
 	qsim.X(r1[len(r1)-1])
@@ -1317,7 +1317,7 @@ func TestEigenVector(t *testing.T) {
 
 	for _, c := range cases {
 		qsim := q.New()
-		r0 := qsim.ZeroWith(c.t)
+		r0 := qsim.Zeros(c.t)
 		r1 := qsim.ZeroLog2(c.N)
 
 		qsim.X(r1[len(r1)-1])
