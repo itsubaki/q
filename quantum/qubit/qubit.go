@@ -46,8 +46,8 @@ func One(n ...int) *Qubit {
 	return New(v.Complex()...)
 }
 
-// NumberOfBit returns the number of qubits.
-func (q *Qubit) NumberOfBit() int {
+// NumQubits returns the number of qubits.
+func (q *Qubit) NumQubits() int {
 	return number.Log2(q.Dimension())
 }
 
@@ -155,7 +155,7 @@ func (q *Qubit) Probability() []float64 {
 
 // Measure returns a measured qubit.
 func (q *Qubit) Measure(index int) *Qubit {
-	n := q.NumberOfBit()
+	n := q.NumQubits()
 	mask := 1 << (n - 1 - index)
 
 	zidx, zprop := make([]int, 0), make([]float64, 0)
@@ -198,7 +198,7 @@ func (q *Qubit) BinaryString() string {
 	c := q.Clone()
 
 	var sb strings.Builder
-	for i := range q.NumberOfBit() {
+	for i := range q.NumQubits() {
 		if c.Measure(i).IsZero() {
 			sb.WriteByte('0')
 			continue
@@ -218,7 +218,7 @@ func (q *Qubit) String() string {
 // State returns the state of q with index.
 func (q *Qubit) State(index ...[]int) []State {
 	if len(index) < 1 {
-		n := q.NumberOfBit()
+		n := q.NumQubits()
 		idx := make([]int, n)
 		for i := range n {
 			idx[i] = i
@@ -227,7 +227,7 @@ func (q *Qubit) State(index ...[]int) []State {
 		index = append(index, idx)
 	}
 
-	n := q.NumberOfBit()
+	n := q.NumQubits()
 	state := make([]State, 0)
 	for i, a := range q.Amplitude() {
 		amp := round(a)

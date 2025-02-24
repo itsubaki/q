@@ -54,7 +54,7 @@ func (q *Q) New(v ...complex128) Qubit {
 	}
 
 	q.qb.TensorProduct(qubit.New(v...))
-	return Qubit(q.NumberOfBit() - 1)
+	return Qubit(q.NumQubits() - 1)
 }
 
 // Zero returns a qubit in the zero state.
@@ -108,9 +108,9 @@ func (q *Q) From(binary string) []Qubit {
 	return qb
 }
 
-// NumberOfBit returns the number of qubits.
-func (q *Q) NumberOfBit() int {
-	return q.qb.NumberOfBit()
+// NumQubits returns the number of qubits.
+func (q *Q) NumQubits() int {
+	return q.qb.NumQubits()
 }
 
 // Amplitude returns the amplitude of qubits.
@@ -199,14 +199,14 @@ func (q *Q) Apply(m matrix.Matrix, qb ...Qubit) *Q {
 		return q
 	}
 
-	n := q.NumberOfBit()
+	n := q.NumQubits()
 	g := gate.TensorProduct(m, n, Index(qb...))
 	q.qb.Apply(g)
 	return q
 }
 
 func (q *Q) Controlled(m matrix.Matrix, control []Qubit, target Qubit) *Q {
-	n := q.NumberOfBit()
+	n := q.NumQubits()
 	g := gate.Controlled(m, n, Index(control...), target.Index())
 	q.qb.Apply(g)
 	return q
@@ -218,7 +218,7 @@ func (q *Q) C(m matrix.Matrix, control, target Qubit) *Q {
 
 // ControlledNot applies CNOT gate.
 func (q *Q) ControlledNot(control []Qubit, target Qubit) *Q {
-	n := q.NumberOfBit()
+	n := q.NumQubits()
 	g := gate.ControlledNot(n, Index(control...), target.Index())
 	q.qb.Apply(g)
 	return q
@@ -246,7 +246,7 @@ func (q *Q) Toffoli(control0, control1, target Qubit) *Q {
 
 // ControlledZ applies Controlled-Z gate.
 func (q *Q) ControlledZ(control []Qubit, target Qubit) *Q {
-	n := q.NumberOfBit()
+	n := q.NumQubits()
 	g := gate.ControlledZ(n, Index(control...), target.Index())
 	q.qb.Apply(g)
 	return q
@@ -261,7 +261,7 @@ func (q *Q) CCZ(control0, control1, target Qubit) *Q {
 }
 
 func (q *Q) ControlledR(theta float64, control []Qubit, target Qubit) *Q {
-	n := q.NumberOfBit()
+	n := q.NumQubits()
 	g := gate.ControlledR(theta, n, Index(control...), target.Index())
 	q.qb.Apply(g)
 	return q
@@ -274,7 +274,7 @@ func (q *Q) CR(theta float64, control, target Qubit) *Q {
 
 // ControlledModExp2 applies Controlled-ModExp2 gate.
 func (q *Q) ControlledModExp2(a, j, N int, control Qubit, target []Qubit) *Q {
-	n := q.NumberOfBit()
+	n := q.NumQubits()
 	g := gate.ControlledModExp2(n, a, j, N, control.Index(), Index(target...))
 	q.qb.Apply(g)
 	return q
@@ -310,7 +310,7 @@ func (q *Q) CondZ(condition bool, qb ...Qubit) *Q {
 
 // Swap applies Swap gate.
 func (q *Q) Swap(qb ...Qubit) *Q {
-	n := q.NumberOfBit()
+	n := q.NumQubits()
 	l := len(qb)
 
 	for i := range l / 2 {
@@ -372,7 +372,7 @@ func (q *Q) M(qb ...Qubit) *qubit.Qubit {
 // Measure returns the measured state of qubits.
 func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
 	if len(qb) < 1 {
-		n := q.NumberOfBit()
+		n := q.NumQubits()
 		m := make([]*qubit.Qubit, n)
 		for i := range n {
 			m[i] = q.qb.Measure(i)

@@ -211,7 +211,7 @@ func ExampleQ_Apply() {
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
-	n := qsim.NumberOfBit()
+	n := qsim.NumQubits()
 
 	qsim.Apply(gate.H(), q0)
 	qsim.Apply(gate.CNOT(n, q0.Index(), q1.Index()))
@@ -948,7 +948,7 @@ func Example_grover4qubit() {
 	qsim.H(q0, q1, q2, q3)
 
 	// iteration
-	N := number.Pow(2, qsim.NumberOfBit())
+	N := number.Pow(2, qsim.NumQubits())
 	r := math.Floor(math.Pi / 4 * math.Sqrt(float64(N)))
 	for i := 0; i < int(r); i++ {
 		// oracle for |110>|x>

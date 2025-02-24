@@ -11,10 +11,7 @@ import (
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
-var (
-	ErrInvalidRange     = errors.New("p must be 0 <= p =< 1")
-	ErrInvalidDimension = errors.New("invalid dimension")
-)
+var ErrInvalidRange = errors.New("p is out of range [0,1]")
 
 // Matrix is a density matrix.
 type Matrix struct {
@@ -52,8 +49,8 @@ func (m *Matrix) Dimension() (int, int) {
 	return len(m.m), len(m.m[0])
 }
 
-// NumberOfBit returns the number of qubits.
-func (m *Matrix) NumberOfBit() int {
+// NumQubits returns the number of qubits.
+func (m *Matrix) NumQubits() int {
 	p, _ := m.Dimension()
 	return number.Log2(p)
 }
@@ -86,7 +83,7 @@ func (m *Matrix) SquareTrace() float64 {
 
 // PartialTrace returns the partial trace of the density matrix.
 func (m *Matrix) PartialTrace(index ...int) *Matrix {
-	n := m.NumberOfBit()
+	n := m.NumQubits()
 	p, q := m.Dimension()
 
 	d := number.Pow(2, n-1)
@@ -131,7 +128,7 @@ func (m *Matrix) Depolarizing(p float64) (*Matrix, error) {
 		return nil, ErrInvalidRange
 	}
 
-	n := m.NumberOfBit()
+	n := m.NumQubits()
 	i := gate.I(n).Mul(complex(p/2, 0))
 	r := m.m.Mul(complex(1-p, 0))
 	return &Matrix{i.Add(r)}, nil

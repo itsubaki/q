@@ -1,12 +1,17 @@
 package density
 
 import (
-	"fmt"
+	"errors"
 	"math"
 
 	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/math/number"
 	"github.com/itsubaki/q/quantum/gate"
+)
+
+var (
+	ErrNotSquare        = errors.New("the matrix is not square")
+	ErrInvalidDimension = errors.New("the matrix dimensions is not a power of 2")
 )
 
 // Flip returns the flip channel.
@@ -17,11 +22,11 @@ func Flip(p float64, m matrix.Matrix) (matrix.Matrix, matrix.Matrix, error) {
 
 	d, d2 := m.Dimension()
 	if d != d2 {
-		return nil, nil, fmt.Errorf("matrix must be square: %w", ErrInvalidDimension)
+		return nil, nil, ErrNotSquare
 	}
 
 	if !number.IsPowOf2(d) {
-		return nil, nil, fmt.Errorf("matrix dimension must be a power of 2: %w", ErrInvalidDimension)
+		return nil, nil, ErrInvalidDimension
 	}
 
 	n := number.Log2(d)

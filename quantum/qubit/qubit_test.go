@@ -467,9 +467,9 @@ func ExampleQubit_State_order() {
 	// [111 1][  7   1]( 0.2500 0.0000i): 0.0625
 }
 
-func TestNumberOfBit(t *testing.T) {
+func TestNumQubits(t *testing.T) {
 	for i := 1; i < 10; i++ {
-		if qubit.Zero(i).NumberOfBit() != i {
+		if qubit.Zero(i).NumQubits() != i {
 			t.Fail()
 		}
 	}

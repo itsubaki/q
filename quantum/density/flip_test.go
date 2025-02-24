@@ -43,8 +43,8 @@ func ExampleFlip() {
 	}
 
 	// Output:
-	// matrix must be square: invalid dimension
-	// matrix dimension must be a power of 2: invalid dimension
+	// the matrix is not square
+	// the matrix dimensions is not a power of 2
 }
 
 func ExampleBitFlip() {
