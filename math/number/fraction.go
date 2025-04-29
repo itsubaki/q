@@ -6,7 +6,7 @@ import (
 	"github.com/itsubaki/q/math/epsilon"
 )
 
-// ContienuedFraction returns a continued fraction of real.
+// ContinuedFraction returns a continued fraction of real.
 // if eps is empty, epsilon.E3 is used.
 func ContinuedFraction(real float64, eps ...float64) []int {
 	e := epsilon.E3(eps...)

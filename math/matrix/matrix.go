@@ -26,7 +26,7 @@ func Zero(n, m int) Matrix {
 	return out
 }
 
-// Identity returns a identity matrix.
+// Identity returns an identity matrix.
 func Identity(n, m int) Matrix {
 	out := Zero(n, m)
 	for i := range n {
@@ -222,7 +222,7 @@ func (m Matrix) Real() [][]float64 {
 	return out
 }
 
-// Imag returns a imaginary part of matrix.
+// Imag returns an imaginary part of matrix.
 func (m Matrix) Imag() [][]float64 {
 	out := make([][]float64, len(m))
 	for i, r := range m {
@@ -249,7 +249,7 @@ func (m Matrix) Clone() Matrix {
 	return out
 }
 
-// Inverse returns a inverse matrix of m.
+// Inverse returns an inverse matrix of m.
 func (m Matrix) Inverse() Matrix {
 	p, q := m.Dimension()
 	mm := m.Clone()
@@ -300,7 +300,7 @@ func (m Matrix) TensorProduct(n Matrix) Matrix {
 	return out
 }
 
-// Apply rerurns a matrix product of m1, m2, ..., mn.
+// Apply returns a matrix product of m1, m2, ..., mn.
 // Apply(A, B, C, D, ...) is ...DCBA.
 func Apply(m ...Matrix) Matrix {
 	out := m[0]

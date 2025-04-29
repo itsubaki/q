@@ -38,7 +38,7 @@ func U(theta, phi, lambda float64) matrix.Matrix {
 	}
 }
 
-// I returns a identity gate.
+// I returns an identity gate.
 func I(n ...int) matrix.Matrix {
 	return matrix.TensorProductN(matrix.Matrix{
 		[]complex128{1, 0},
@@ -79,7 +79,7 @@ func H(n ...int) matrix.Matrix {
 	}, n...)
 }
 
-// S returns a S gate.
+// S returns an S gate.
 func S(n ...int) matrix.Matrix {
 	return matrix.TensorProductN(matrix.Matrix{
 		[]complex128{1, 0},
