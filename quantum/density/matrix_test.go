@@ -8,6 +8,7 @@ import (
 
 	"github.com/itsubaki/q/math/epsilon"
 	"github.com/itsubaki/q/math/matrix"
+	"github.com/itsubaki/q/math/number"
 	"github.com/itsubaki/q/quantum/density"
 	"github.com/itsubaki/q/quantum/gate"
 	"github.com/itsubaki/q/quantum/qubit"
@@ -73,8 +74,9 @@ func ExampleMatrix_PartialTrace() {
 		{0.5, qubit.One(2).Apply(gate.QFT(2))},
 	})
 
-	p0 := rho.PartialTrace(0)
-	p1 := rho.PartialTrace(1)
+	qb := rho.Qubits()
+	p0 := number.Must(rho.PartialTrace(qb[0]))
+	p1 := number.Must(rho.PartialTrace(qb[1]))
 
 	fmt.Printf("trace: %.2v, square_trace: %.2v\n", rho.Trace(), rho.SquareTrace())
 	fmt.Printf("trace: %.2v, square_trace: %.2v\n", p0.Trace(), p0.SquareTrace())
@@ -86,15 +88,31 @@ func ExampleMatrix_PartialTrace() {
 	// trace: 1, square_trace: 0.75
 }
 
+func ExampleMatrix_PartialTrace_invalid() {
+	rho := density.New([]density.State{
+		{0.5, qubit.Zero(2).Apply(gate.QFT(2))},
+		{0.5, qubit.One(2).Apply(gate.QFT(2))},
+	})
+
+	qb := rho.Qubits()
+	if _, err := rho.PartialTrace(qb[0], qb[1]); err != nil {
+		fmt.Println(err)
+	}
+
+	// Output:
+	// length of index must be less than 2
+}
+
 func ExampleMatrix_PartialTrace_x8() {
 	rho := density.New([]density.State{
 		{0.5, qubit.Zero(3).Apply(gate.QFT(3))},
 		{0.5, qubit.One(3).Apply(gate.QFT(3))},
 	})
 
-	p0 := rho.PartialTrace(0)
-	p1 := rho.PartialTrace(1)
-	p2 := rho.PartialTrace(2)
+	qb := rho.Qubits()
+	p0 := number.Must(rho.PartialTrace(qb[0]))
+	p1 := number.Must(rho.PartialTrace(qb[1]))
+	p2 := number.Must(rho.PartialTrace(qb[2]))
 
 	fmt.Printf("trace: %.2v, square_trace: %.2v\n", rho.Trace(), rho.SquareTrace())
 	fmt.Printf("trace: %.2v, square_trace: %.2v\n", p0.Trace(), p0.SquareTrace())
@@ -110,10 +128,20 @@ func ExampleMatrix_PartialTrace_x8() {
 
 func ExampleMatrix_PartialTrace_x16() {
 	rho := density.New([]density.State{
-		{1.0, qubit.Zero(4).Apply(matrix.TensorProduct(gate.H(2), gate.X(), gate.Z()).Apply(gate.CNOT(4, 1, 3)).Apply(gate.CNOT(4, 0, 2)))},
+		{1.0, qubit.Zero(4).Apply(matrix.TensorProduct(
+			gate.H(2),
+			gate.X(),
+			gate.Z(),
+		).Apply(
+			gate.CNOT(4, 1, 3),
+		).Apply(
+			gate.CNOT(4, 0, 2),
+		))},
 	})
 
-	p01 := rho.PartialTrace(0, 1)
+	qb := rho.Qubits()
+	p01 := number.Must(rho.PartialTrace(qb[0], qb[1]))
+
 	fmt.Printf("trace: %.2f\n", p01.Trace())
 	fmt.Printf("square_trace: %.2f\n", p01.SquareTrace())
 
@@ -206,7 +234,7 @@ func TestMeasure(t *testing.T) {
 
 func TestPartialTrace(t *testing.T) {
 	type Case struct {
-		index int
+		index density.Qubit
 		want  [][]complex128
 	}
 
@@ -275,7 +303,11 @@ func TestPartialTrace(t *testing.T) {
 
 	for _, c := range cases {
 		for _, cs := range c.cs {
-			got := density.New(c.s).PartialTrace(cs.index)
+			got, err := density.New(c.s).PartialTrace(cs.index)
+			if err != nil {
+				t.Errorf("partial trace: %v", err)
+			}
+
 			p, q := got.Dimension()
 			if p != len(cs.want) || q != len(cs.want) {
 				t.Errorf("got=%v, %v want=%v", p, q, cs.want)

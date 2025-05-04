@@ -2,6 +2,7 @@ package density
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -13,6 +14,14 @@ import (
 
 var ErrInvalidRange = errors.New("p is out of range [0,1]")
 
+// Qubit is a quantum bit.
+type Qubit int
+
+// Index returns the index of qubit.
+func (q Qubit) Index() int {
+	return int(q)
+}
+
 // Matrix is a density matrix.
 type Matrix struct {
 	m matrix.Matrix
@@ -20,23 +29,34 @@ type Matrix struct {
 
 // New returns a new density matrix.
 func New(ensemble []State) *Matrix {
-	m := &Matrix{matrix.New()}
-
+	m := matrix.New()
 	for _, s := range Normalize(ensemble) {
 		n := s.Qubit.Dimension()
-		if len(m.m) < 1 {
-			m.m = matrix.Zero(n, n)
+		if len(m) < 1 {
+			m = matrix.Zero(n, n)
 		}
 
 		op := s.Qubit.OuterProduct(s.Qubit).Mul(complex(s.Probability, 0))
 		for i := range n {
 			for j := range n {
-				m.m[i][j] = m.m[i][j] + op[i][j]
+				m[i][j] = m[i][j] + op[i][j]
 			}
 		}
 	}
 
-	return m
+	return &Matrix{
+		m: m,
+	}
+}
+
+// Qubits returns the qubits of the density matrix.
+func (m *Matrix) Qubits() []Qubit {
+	var qubits []Qubit
+	for i := range m.NumQubits() {
+		qubits = append(qubits, Qubit(i))
+	}
+
+	return qubits
 }
 
 // Raw returns the raw matrix.
@@ -82,11 +102,14 @@ func (m *Matrix) SquareTrace() float64 {
 }
 
 // PartialTrace returns the partial trace of the density matrix.
-func (m *Matrix) PartialTrace(index ...int) *Matrix {
+func (m *Matrix) PartialTrace(index ...Qubit) (*Matrix, error) {
 	n := m.NumQubits()
 	p, q := m.Dimension()
-
 	d := number.Pow(2, n-1)
+	if len(index) > n-1 {
+		return nil, fmt.Errorf("length of index must be less than %d", n)
+	}
+
 	out := matrix.Zero(d, d)
 	for i := range p {
 		k, kr := take(n, i, index)
@@ -119,7 +142,7 @@ func (m *Matrix) PartialTrace(index ...int) *Matrix {
 		}
 	}
 
-	return &Matrix{m: out}
+	return &Matrix{m: out}, nil
 }
 
 // Depolarizing returns the depolarizing channel.
@@ -134,10 +157,10 @@ func (m *Matrix) Depolarizing(p float64) (*Matrix, error) {
 	return &Matrix{i.Add(r)}, nil
 }
 
-func take(n, i int, index []int) (string, string) {
+func take(n, i int, index []Qubit) (string, string) {
 	idx := make(map[int]struct{}, len(index))
 	for _, j := range index {
-		idx[j] = struct{}{}
+		idx[j.Index()] = struct{}{}
 	}
 
 	var out, remain strings.Builder
