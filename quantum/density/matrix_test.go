@@ -100,7 +100,7 @@ func ExampleMatrix_PartialTrace_invalid() {
 	}
 
 	// Output:
-	// length of index must be less than 2
+	// length of index must be less than or equal to 1
 }
 
 func ExampleMatrix_PartialTrace_x8() {

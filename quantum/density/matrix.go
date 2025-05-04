@@ -107,7 +107,7 @@ func (m *Matrix) PartialTrace(index ...Qubit) (*Matrix, error) {
 	p, q := m.Dimension()
 	d := number.Pow(2, n-1)
 	if len(index) > n-1 {
-		return nil, fmt.Errorf("length of index must be less than %d", n)
+		return nil, fmt.Errorf("length of index must be less than or equal to %d", n-1)
 	}
 
 	out := matrix.Zero(d, d)
