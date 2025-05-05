@@ -176,3 +176,7 @@ func take(n, i int, index []Qubit) (string, string) {
 
 	return out.String(), remain.String()
 }
+
+func Must[T any](v T, err error) T {
+	return number.Must(v, err)
+}

@@ -8,7 +8,6 @@ import (
 
 	"github.com/itsubaki/q/math/epsilon"
 	"github.com/itsubaki/q/math/matrix"
-	"github.com/itsubaki/q/math/number"
 	"github.com/itsubaki/q/quantum/density"
 	"github.com/itsubaki/q/quantum/gate"
 	"github.com/itsubaki/q/quantum/qubit"
@@ -75,8 +74,8 @@ func ExampleMatrix_PartialTrace() {
 	})
 
 	qb := rho.Qubits()
-	p0 := number.Must(rho.PartialTrace(qb[0]))
-	p1 := number.Must(rho.PartialTrace(qb[1]))
+	p0 := density.Must(rho.PartialTrace(qb[0]))
+	p1 := density.Must(rho.PartialTrace(qb[1]))
 
 	fmt.Printf("trace: %.2v, square_trace: %.2v\n", rho.Trace(), rho.SquareTrace())
 	fmt.Printf("trace: %.2v, square_trace: %.2v\n", p0.Trace(), p0.SquareTrace())
@@ -99,8 +98,8 @@ func ExampleMatrix_PartialTrace_bell() {
 	})
 
 	qb := rho.Qubits()
-	p0 := number.Must(rho.PartialTrace(qb[0]))
-	p1 := number.Must(rho.PartialTrace(qb[1]))
+	p0 := density.Must(rho.PartialTrace(qb[0]))
+	p1 := density.Must(rho.PartialTrace(qb[1]))
 
 	fmt.Printf("trace: %.2v, square_trace: %.2v\n", rho.Trace(), rho.SquareTrace())
 	fmt.Printf("trace: %.2v, square_trace: %.2v\n", p0.Trace(), p0.SquareTrace())
@@ -123,9 +122,9 @@ func ExampleMatrix_PartialTrace_x8() {
 	})
 
 	qb := rho.Qubits()
-	p0 := number.Must(rho.PartialTrace(qb[0]))
-	p1 := number.Must(rho.PartialTrace(qb[1]))
-	p2 := number.Must(rho.PartialTrace(qb[2]))
+	p0 := density.Must(rho.PartialTrace(qb[0]))
+	p1 := density.Must(rho.PartialTrace(qb[1]))
+	p2 := density.Must(rho.PartialTrace(qb[2]))
 
 	fmt.Printf("trace: %.2v, square_trace: %.2v\n", rho.Trace(), rho.SquareTrace())
 	fmt.Printf("trace: %.2v, square_trace: %.2v\n", p0.Trace(), p0.SquareTrace())
