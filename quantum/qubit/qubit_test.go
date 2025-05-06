@@ -40,8 +40,7 @@ func Example_pOVM() {
 	E2 := gate.New(
 		[]complex128{1, -1},
 		[]complex128{-1, 1},
-	).Mul(complex(0.5, 0)).
-		Mul(complex(math.Sqrt(2)/(1.0+math.Sqrt(2)), 0))
+	).Mul(complex(math.Sqrt(2)/(1.0+math.Sqrt(2)), 0)).Mul(complex(0.5, 0))
 
 	E3 := gate.I().Sub(E1).Sub(E2)
 
@@ -49,37 +48,37 @@ func Example_pOVM() {
 	fmt.Println(add.Equals(gate.I()))
 
 	{
-		q0 := qubit.Zero()
-		q1 := qubit.Zero()
-		q2 := qubit.Zero()
+		q0 := qubit.Zero().Apply(E1) // E1|0>
+		q1 := qubit.Zero().Apply(E2) // E2|0>
+		q2 := qubit.Zero().Apply(E3) // E3|0>
 
 		fmt.Println("zero:")
-		fmt.Println(q0.Apply(E1).InnerProduct(q0))
-		fmt.Println(q1.Apply(E2).InnerProduct(q1))
-		fmt.Println(q2.Apply(E3).InnerProduct(q2))
+		fmt.Println(q0.InnerProduct(qubit.Zero())) // <0|E1|0>
+		fmt.Println(q1.InnerProduct(qubit.Zero())) // <0|E2|0>
+		fmt.Println(q2.InnerProduct(qubit.Zero())) // <0|E3|0>
 	}
 
 	{
-		q0 := qubit.Zero().Apply(gate.H())
-		q1 := qubit.Zero().Apply(gate.H())
-		q2 := qubit.Zero().Apply(gate.H())
+		q0 := qubit.Zero().Apply(gate.H()).Apply(E1) // E1|+>
+		q1 := qubit.Zero().Apply(gate.H()).Apply(E2) // E2|+>
+		q2 := qubit.Zero().Apply(gate.H()).Apply(E3) // E3|+>
 
 		fmt.Println("H(zero):")
-		fmt.Println(q0.Apply(E1).InnerProduct(q0))
-		fmt.Println(q1.Apply(E2).InnerProduct(q1))
-		fmt.Println(q2.Apply(E3).InnerProduct(q2))
+		fmt.Println(q0.InnerProduct(qubit.Zero().Apply(gate.H()))) // <+|E1|+>
+		fmt.Println(q1.InnerProduct(qubit.Zero().Apply(gate.H()))) // <+|E2|+>
+		fmt.Println(q2.InnerProduct(qubit.Zero().Apply(gate.H()))) // <+|E3|+>
 	}
 
 	// Output:
 	// true
 	// zero:
 	// (0+0i)
-	// (0.17157287525381+0i)
-	// (0.5857864376269049+0i)
+	// (0.29289321881345254+0i)
+	// (0.7071067811865475+0i)
 	// H(zero):
-	// (0.17157287525381+0i)
+	// (0.29289321881345254+0i)
 	// (0+0i)
-	// (0.5857864376269051+0i)
+	// (0.7071067811865477+0i)
 }
 
 func Example_bellState() {
