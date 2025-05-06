@@ -5,7 +5,7 @@
 [![tests](https://github.com/itsubaki/q/workflows/tests/badge.svg)](https://github.com/itsubaki/q/actions)
 [![codecov](https://codecov.io/gh/itsubaki/q/branch/main/graph/badge.svg?token=iNccCs1Tez)](https://codecov.io/gh/itsubaki/q)
 
-- quantum computation simulator
+- Quantum Computation Simulator for Go
 - pure Go implementation
 - using only the standard library
 

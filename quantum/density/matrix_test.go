@@ -73,8 +73,9 @@ func ExampleMatrix_PartialTrace() {
 		{0.5, qubit.One(2).Apply(gate.QFT(2))},
 	})
 
-	p0 := rho.PartialTrace(0)
-	p1 := rho.PartialTrace(1)
+	qb := rho.Qubits()
+	p0 := density.Must(rho.PartialTrace(qb[0]))
+	p1 := density.Must(rho.PartialTrace(qb[1]))
 
 	fmt.Printf("trace: %.2v, square_trace: %.2v\n", rho.Trace(), rho.SquareTrace())
 	fmt.Printf("trace: %.2v, square_trace: %.2v\n", p0.Trace(), p0.SquareTrace())
@@ -86,15 +87,44 @@ func ExampleMatrix_PartialTrace() {
 	// trace: 1, square_trace: 0.75
 }
 
-func ExampleMatrix_PartialTrace_x8() {
+func ExampleMatrix_PartialTrace_bell() {
+	phi := qubit.Zero(2).Apply(
+		gate.H().TensorProduct(gate.I()),
+		gate.CNOT(2, 0, 1),
+	)
+
 	rho := density.New([]density.State{
-		{0.5, qubit.Zero(3).Apply(gate.QFT(3))},
-		{0.5, qubit.One(3).Apply(gate.QFT(3))},
+		{1.0, phi},
 	})
 
-	p0 := rho.PartialTrace(0)
-	p1 := rho.PartialTrace(1)
-	p2 := rho.PartialTrace(2)
+	qb := rho.Qubits()
+	p0 := density.Must(rho.PartialTrace(qb[0]))
+	p1 := density.Must(rho.PartialTrace(qb[1]))
+
+	fmt.Printf("trace: %.2v, square_trace: %.2v\n", rho.Trace(), rho.SquareTrace())
+	fmt.Printf("trace: %.2v, square_trace: %.2v\n", p0.Trace(), p0.SquareTrace())
+	fmt.Printf("trace: %.2v, square_trace: %.2v\n", p1.Trace(), p1.SquareTrace())
+
+	// Output:
+	// trace: 1, square_trace: 1
+	// trace: 1, square_trace: 0.5
+	// trace: 1, square_trace: 0.5
+}
+
+func ExampleMatrix_PartialTrace_x8() {
+	phi := qubit.Zero(3).Apply(
+		matrix.TensorProduct(gate.H(), gate.I(), gate.I()),
+		gate.CNOT(3, 0, 1),
+	)
+
+	rho := density.New([]density.State{
+		{1.0, phi},
+	})
+
+	qb := rho.Qubits()
+	p0 := density.Must(rho.PartialTrace(qb[0]))
+	p1 := density.Must(rho.PartialTrace(qb[1]))
+	p2 := density.Must(rho.PartialTrace(qb[2]))
 
 	fmt.Printf("trace: %.2v, square_trace: %.2v\n", rho.Trace(), rho.SquareTrace())
 	fmt.Printf("trace: %.2v, square_trace: %.2v\n", p0.Trace(), p0.SquareTrace())
@@ -102,24 +132,25 @@ func ExampleMatrix_PartialTrace_x8() {
 	fmt.Printf("trace: %.2v, square_trace: %.2v\n", p2.Trace(), p2.SquareTrace())
 
 	// Output:
+	// trace: 1, square_trace: 1
 	// trace: 1, square_trace: 0.5
 	// trace: 1, square_trace: 0.5
-	// trace: 1, square_trace: 0.5
-	// trace: 1, square_trace: 0.71
+	// trace: 1, square_trace: 1
 }
 
-func ExampleMatrix_PartialTrace_x16() {
+func ExampleMatrix_PartialTrace_invalid() {
 	rho := density.New([]density.State{
-		{1.0, qubit.Zero(4).Apply(matrix.TensorProduct(gate.H(2), gate.X(), gate.Z()).Apply(gate.CNOT(4, 1, 3)).Apply(gate.CNOT(4, 0, 2)))},
+		{0.5, qubit.Zero(2).Apply(gate.QFT(2))},
+		{0.5, qubit.One(2).Apply(gate.QFT(2))},
 	})
 
-	p01 := rho.PartialTrace(0, 1)
-	fmt.Printf("trace: %.2f\n", p01.Trace())
-	fmt.Printf("square_trace: %.2f\n", p01.SquareTrace())
+	qb := rho.Qubits()
+	if _, err := rho.PartialTrace(qb[0], qb[1]); err != nil {
+		fmt.Println(err)
+	}
 
 	// Output:
-	// trace: 1.00
-	// square_trace: 0.25
+	// length of index must be less than or equal to 1
 }
 
 func ExampleMatrix_Depolarizing() {
@@ -206,7 +237,7 @@ func TestMeasure(t *testing.T) {
 
 func TestPartialTrace(t *testing.T) {
 	type Case struct {
-		index int
+		index density.Qubit
 		want  [][]complex128
 	}
 
@@ -275,7 +306,11 @@ func TestPartialTrace(t *testing.T) {
 
 	for _, c := range cases {
 		for _, cs := range c.cs {
-			got := density.New(c.s).PartialTrace(cs.index)
+			got, err := density.New(c.s).PartialTrace(cs.index)
+			if err != nil {
+				t.Errorf("partial trace: %v", err)
+			}
+
 			p, q := got.Dimension()
 			if p != len(cs.want) || q != len(cs.want) {
 				t.Errorf("got=%v, %v want=%v", p, q, cs.want)
