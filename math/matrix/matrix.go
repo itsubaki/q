@@ -304,9 +304,10 @@ func (m Matrix) Inverse() Matrix {
 func (m Matrix) TensorProduct(n Matrix) Matrix {
 	p, q := m.Dimension()
 	a, b := n.Dimension()
+	rows, cols := p*a, q*b
 
 	var idx int
-	data := make([]complex128, p*a*q*b)
+	data := make([]complex128, rows*cols)
 	for i := range p {
 		for k := range a {
 			for j := range q {
@@ -319,8 +320,8 @@ func (m Matrix) TensorProduct(n Matrix) Matrix {
 	}
 
 	return Matrix{
-		Rows: p * a,
-		Cols: q * b,
+		Rows: rows,
+		Cols: cols,
 		Data: data,
 	}
 }
