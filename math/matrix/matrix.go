@@ -167,9 +167,9 @@ func (m Matrix) IsUnitary(eps ...float64) bool {
 		return false
 	}
 
-	uud := m.Apply(m.Dagger())
+	mmd := m.Apply(m.Dagger())
 	id := Identity(m.Dimension())
-	return uud.Equals(id, epsilon.E13(eps...))
+	return mmd.Equals(id, epsilon.E13(eps...))
 }
 
 // Apply returns a matrix product of m and n.
