@@ -66,10 +66,14 @@ func (v Vector) Mul(z complex128) Vector {
 
 // TensorProduct returns the tensor product of v and w.
 func (v Vector) TensorProduct(w Vector) Vector {
-	out := make(Vector, 0, len(v)*len(w))
-	for i := range v {
-		for j := range w {
-			out = append(out, v[i]*w[j])
+	p, q := len(v), len(w)
+
+	var idx int
+	out := make(Vector, p*q)
+	for i := range p {
+		for j := range q {
+			out[idx] = v[i] * w[j]
+			idx++
 		}
 	}
 
@@ -90,18 +94,21 @@ func (v Vector) InnerProduct(w Vector) complex128 {
 
 // OuterProduct returns the outer product of v and w.
 func (v Vector) OuterProduct(w Vector) matrix.Matrix {
+	p, q := len(v), len(w)
 	dual := w.Dual()
 
-	data := make([]complex128, 0, len(v))
+	var idx int
+	data := make([]complex128, p*q)
 	for i := range v {
 		for j := range dual {
-			data = append(data, v[i]*dual[j])
+			data[idx] = v[i] * dual[j]
+			idx++
 		}
 	}
 
 	return matrix.Matrix{
-		Rows: len(v),
-		Cols: len(w),
+		Rows: p,
+		Cols: q,
 		Data: data,
 	}
 }

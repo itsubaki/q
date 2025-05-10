@@ -55,9 +55,11 @@ func (m *Matrix) At(i, j int) complex128 {
 
 // Qubits returns the qubits of the density matrix.
 func (m *Matrix) Qubits() []Qubit {
-	var qubits []Qubit
-	for i := range m.NumQubits() {
-		qubits = append(qubits, Qubit(i))
+	n := m.NumQubits()
+
+	qubits := make([]Qubit, n)
+	for i := range n {
+		qubits[i] = Qubit(i)
 	}
 
 	return qubits

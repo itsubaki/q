@@ -299,14 +299,14 @@ func QFT(n int) matrix.Matrix {
 	g := I(n)
 
 	for i := range n {
-		h := make([]matrix.Matrix, 0)
-		for j := 0; j < n; j++ {
+		h := make([]matrix.Matrix, n)
+		for j := range n {
 			if i == j {
-				h = append(h, H())
+				h[j] = H()
 				continue
 			}
 
-			h = append(h, I())
+			h[j] = I()
 		}
 
 		g = g.Apply(matrix.TensorProduct(h...))

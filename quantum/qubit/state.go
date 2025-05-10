@@ -20,9 +20,9 @@ type State struct {
 
 // NewState returns a new State.
 func NewState(amp complex128, binary ...string) State {
-	var intv []int64
-	for _, bin := range binary {
-		intv = append(intv, number.Must(strconv.ParseInt(bin, 2, 0)))
+	intv := make([]int64, len(binary))
+	for i, bin := range binary {
+		intv[i] = number.Must(strconv.ParseInt(bin, 2, 0))
 	}
 
 	return State{

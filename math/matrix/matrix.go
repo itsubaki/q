@@ -22,9 +22,9 @@ func New(v ...[]complex128) Matrix {
 		cols = len(v[0])
 	}
 
-	data := make([]complex128, 0, rows*cols)
+	data := make([]complex128, rows*cols)
 	for i := range rows {
-		data = append(data, v[i]...)
+		copy(data[i*cols:(i+1)*cols], v[i])
 	}
 
 	return Matrix{
@@ -115,7 +115,7 @@ func (m Matrix) Transpose() Matrix {
 	out := Zero(p, q)
 	for i := range p {
 		for j := range q {
-			out.Set(i, j, m.At(j, i))
+			out.Set(j, i, m.At(i, j))
 		}
 	}
 
@@ -305,12 +305,14 @@ func (m Matrix) TensorProduct(n Matrix) Matrix {
 	p, q := m.Dimension()
 	a, b := n.Dimension()
 
-	data := make([]complex128, 0, p*a*q*b)
+	var idx int
+	data := make([]complex128, p*a*q*b)
 	for i := range p {
 		for k := range a {
 			for j := range q {
 				for l := range b {
-					data = append(data, m.At(i, j)*n.At(k, l))
+					data[idx] = m.At(i, j) * n.At(k, l)
+					idx++
 				}
 			}
 		}
