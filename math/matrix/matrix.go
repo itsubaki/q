@@ -1,39 +1,82 @@
 package matrix
 
 import (
+	"iter"
 	"math/cmplx"
 
 	"github.com/itsubaki/q/math/epsilon"
 )
 
 // Matrix is a matrix of complex128.
-type Matrix [][]complex128
+type Matrix struct {
+	Rows int
+	Cols int
+	Data []complex128
+}
 
 // New returns a new matrix of complex128.
 func New(v ...[]complex128) Matrix {
-	out := make(Matrix, len(v))
-	copy(out, v)
-	return out
+	rows := len(v)
+	var cols int
+	if rows > 0 {
+		cols = len(v[0])
+	}
+
+	data := make([]complex128, 0, rows*cols)
+	for i := range rows {
+		data = append(data, v[i]...)
+	}
+
+	return Matrix{
+		Rows: rows,
+		Cols: cols,
+		Data: data,
+	}
 }
 
 // Zero returns a zero matrix.
-func Zero(n, m int) Matrix {
-	out := make(Matrix, n)
-	for i := range n {
-		out[i] = make([]complex128, m)
+func Zero(rows, cols int) Matrix {
+	return Matrix{
+		Rows: rows,
+		Cols: cols,
+		Data: make([]complex128, rows*cols),
 	}
-
-	return out
 }
 
 // Identity returns an identity matrix.
-func Identity(n, m int) Matrix {
-	out := Zero(n, m)
-	for i := range n {
-		out[i][i] = 1
+func Identity(rows, cols int) Matrix {
+	m := Zero(rows, cols)
+	for i := range rows {
+		m.Set(i, i, 1)
 	}
 
-	return out
+	return m
+}
+
+// At returns a value of matrix at (i,j).
+func (m Matrix) At(i, j int) complex128 {
+	return m.Data[i*m.Cols+j]
+}
+
+// Row returns a row of matrix at (i).
+func (m Matrix) Row(i int) []complex128 {
+	return row(m.Data, m.Cols, i)
+}
+
+// Set sets a value of matrix at (i,j).
+func (m Matrix) Set(i, j int, v complex128) {
+	m.Data[i*m.Cols+j] = v
+}
+
+// Seq2 returns a sequence of rows.
+func (m Matrix) Seq2() iter.Seq2[int, []complex128] {
+	return func(yield func(int, []complex128) bool) {
+		for i := range m.Rows {
+			if !yield(i, m.Row(i)) {
+				return
+			}
+		}
+	}
 }
 
 // Equals returns true if m equals n.
@@ -51,11 +94,9 @@ func (m Matrix) Equals(n Matrix, eps ...float64) bool {
 	}
 
 	e := epsilon.E13(eps...)
-	for i := range p {
-		for j := range q {
-			if cmplx.Abs(m[i][j]-n[i][j]) > e {
-				return false
-			}
+	for i := range m.Data {
+		if cmplx.Abs(m.Data[i]-n.Data[i]) > e {
+			return false
 		}
 	}
 
@@ -63,8 +104,8 @@ func (m Matrix) Equals(n Matrix, eps ...float64) bool {
 }
 
 // Dimension returns a dimension of matrix.
-func (m Matrix) Dimension() (int, int) {
-	return len(m), len(m[0])
+func (m Matrix) Dimension() (rows int, cols int) {
+	return m.Rows, m.Cols
 }
 
 // Transpose returns a transpose matrix.
@@ -72,9 +113,9 @@ func (m Matrix) Transpose() Matrix {
 	p, q := m.Dimension()
 
 	out := Zero(p, q)
-	for i := range q {
-		for j := range p {
-			out[i][j] = m[j][i]
+	for i := range p {
+		for j := range q {
+			out.Set(i, j, m.At(j, i))
 		}
 	}
 
@@ -86,10 +127,8 @@ func (m Matrix) Conjugate() Matrix {
 	p, q := m.Dimension()
 
 	out := Zero(p, q)
-	for i := range p {
-		for j := range q {
-			out[i][j] = cmplx.Conj(m[i][j])
-		}
+	for i := range out.Data {
+		out.Data[i] = cmplx.Conj(m.Data[i])
 	}
 
 	return out
@@ -102,7 +141,7 @@ func (m Matrix) Dagger() Matrix {
 	out := Zero(p, q)
 	for i := range p {
 		for j := range q {
-			out[i][j] = cmplx.Conj(m[j][i])
+			out.Set(i, j, cmplx.Conj(m.At(j, i)))
 		}
 	}
 
@@ -111,8 +150,7 @@ func (m Matrix) Dagger() Matrix {
 
 // IsSquare returns true if m is square matrix.
 func (m Matrix) IsSquare() bool {
-	p, q := m.Dimension()
-	return p == q
+	return m.Rows == m.Cols
 }
 
 // IsHermitian returns true if m is hermitian matrix.
@@ -130,8 +168,9 @@ func (m Matrix) IsUnitary(eps ...float64) bool {
 		return false
 	}
 
-	p, q := m.Dimension()
-	return m.Apply(m.Dagger()).Equals(Identity(p, q), epsilon.E13(eps...))
+	mmd := m.Apply(m.Dagger())
+	id := Identity(m.Dimension())
+	return mmd.Equals(id, epsilon.E13(eps...))
 }
 
 // Apply returns a matrix product of m and n.
@@ -144,11 +183,11 @@ func (m Matrix) Apply(n Matrix) Matrix {
 	for i := range a {
 		for j := range p {
 			var c complex128
-			for k := 0; k < b; k++ {
-				c = c + n[i][k]*m[k][j]
+			for k := range b {
+				c = c + n.At(i, k)*m.At(k, j)
 			}
 
-			out[i][j] = c
+			out.Set(i, j, c)
 		}
 	}
 
@@ -157,13 +196,9 @@ func (m Matrix) Apply(n Matrix) Matrix {
 
 // Mul returns a matrix of z*m.
 func (m Matrix) Mul(z complex128) Matrix {
-	p, q := m.Dimension()
-
-	out := Zero(p, q)
-	for i := range p {
-		for j := range q {
-			out[i][j] = z * m[i][j]
-		}
+	out := Zero(m.Dimension())
+	for i := range m.Data {
+		out.Data[i] = m.Data[i] * z
 	}
 
 	return out
@@ -171,13 +206,9 @@ func (m Matrix) Mul(z complex128) Matrix {
 
 // Add returns a matrix of m+n.
 func (m Matrix) Add(n Matrix) Matrix {
-	p, q := m.Dimension()
-
-	out := Zero(p, q)
-	for i := range p {
-		for j := range q {
-			out[i][j] = m[i][j] + n[i][j]
-		}
+	out := Zero(m.Dimension())
+	for i := range m.Data {
+		out.Data[i] = m.Data[i] + n.Data[i]
 	}
 
 	return out
@@ -185,13 +216,9 @@ func (m Matrix) Add(n Matrix) Matrix {
 
 // Sub returns a matrix of m-n.
 func (m Matrix) Sub(n Matrix) Matrix {
-	p, q := m.Dimension()
-
-	out := Zero(p, q)
-	for i := range p {
-		for j := range q {
-			out[i][j] = m[i][j] - n[i][j]
-		}
+	out := Zero(m.Dimension())
+	for i := range m.Data {
+		out.Data[i] = m.Data[i] - n.Data[i]
 	}
 
 	return out
@@ -199,11 +226,9 @@ func (m Matrix) Sub(n Matrix) Matrix {
 
 // Trace returns a trace of matrix.
 func (m Matrix) Trace() complex128 {
-	p, _ := m.Dimension()
-
 	var sum complex128
-	for i := range p {
-		sum = sum + m[i][i]
+	for i := range m.Rows {
+		sum = sum + m.At(i, i)
 	}
 
 	return sum
@@ -211,12 +236,14 @@ func (m Matrix) Trace() complex128 {
 
 // Real returns a real part of matrix.
 func (m Matrix) Real() [][]float64 {
-	out := make([][]float64, len(m))
-	for i, r := range m {
-		out[i] = make([]float64, len(m[i]))
-		for j := range r {
-			out[i][j] = real(m[i][j])
-		}
+	data := make([]float64, len(m.Data))
+	for i := range m.Data {
+		data[i] = real(m.Data[i])
+	}
+
+	out := make([][]float64, m.Rows)
+	for i := range m.Rows {
+		out[i] = row(data, m.Cols, i)
 	}
 
 	return out
@@ -224,12 +251,14 @@ func (m Matrix) Real() [][]float64 {
 
 // Imag returns an imaginary part of matrix.
 func (m Matrix) Imag() [][]float64 {
-	out := make([][]float64, len(m))
-	for i, r := range m {
-		out[i] = make([]float64, len(m[i]))
-		for j := range r {
-			out[i][j] = imag(m[i][j])
-		}
+	data := make([]float64, len(m.Data))
+	for i := range m.Data {
+		data[i] = imag(m.Data[i])
+	}
+
+	out := make([][]float64, m.Rows)
+	for i := range m.Rows {
+		out[i] = row(data, m.Cols, i)
 	}
 
 	return out
@@ -237,15 +266,8 @@ func (m Matrix) Imag() [][]float64 {
 
 // Clone returns a clone of matrix.
 func (m Matrix) Clone() Matrix {
-	p, q := m.Dimension()
-
-	out := Zero(p, q)
-	for i := range p {
-		for j := range q {
-			out[i][j] = m[i][j]
-		}
-	}
-
+	out := Zero(m.Dimension())
+	copy(out.Data, m.Data)
 	return out
 }
 
@@ -256,10 +278,10 @@ func (m Matrix) Inverse() Matrix {
 
 	out := Identity(p, q)
 	for i := range p {
-		c := 1 / mm[i][i]
+		c := 1 / mm.At(i, i)
 		for j := range q {
-			mm[i][j] = c * mm[i][j]
-			out[i][j] = c * out[i][j]
+			mm.Set(i, j, c*mm.At(i, j))
+			out.Set(i, j, c*out.At(i, j))
 		}
 
 		for j := range q {
@@ -267,10 +289,10 @@ func (m Matrix) Inverse() Matrix {
 				continue
 			}
 
-			c := mm[j][i]
-			for k := 0; k < q; k++ {
-				mm[j][k] = mm[j][k] - c*mm[i][k]
-				out[j][k] = out[j][k] - c*out[i][k]
+			c := mm.At(j, i)
+			for k := range q {
+				mm.Set(j, k, mm.At(j, k)-c*mm.At(i, k))
+				out.Set(j, k, out.At(j, k)-c*out.At(i, k))
 			}
 		}
 	}
@@ -283,21 +305,22 @@ func (m Matrix) TensorProduct(n Matrix) Matrix {
 	p, q := m.Dimension()
 	a, b := n.Dimension()
 
-	out := make(Matrix, 0, p*a)
+	data := make([]complex128, 0, p*a*q*b)
 	for i := range p {
-		for k := 0; k < a; k++ {
-			r := make([]complex128, 0, q*b)
+		for k := range a {
 			for j := range q {
-				for l := 0; l < b; l++ {
-					r = append(r, m[i][j]*n[k][l])
+				for l := range b {
+					data = append(data, m.At(i, j)*n.At(k, l))
 				}
 			}
-
-			out = append(out, r)
 		}
 	}
 
-	return out
+	return Matrix{
+		Rows: p * a,
+		Cols: q * b,
+		Data: data,
+	}
 }
 
 // Apply returns a matrix product of m1, m2, ..., mn.
@@ -348,14 +371,16 @@ func TensorProduct(m ...Matrix) Matrix {
 
 // Commutator returns a matrix of [m,n].
 func Commutator(m, n Matrix) Matrix {
-	mn := n.Apply(m)
-	nm := m.Apply(n)
+	mn, nm := n.Apply(m), m.Apply(n)
 	return mn.Sub(nm)
 }
 
 // AntiCommutator returns a matrix of {m,n}.
 func AntiCommutator(m, n Matrix) Matrix {
-	mn := n.Apply(m)
-	nm := m.Apply(n)
+	mn, nm := n.Apply(m), m.Apply(n)
 	return mn.Add(nm)
+}
+
+func row[T any](arr []T, cols, i int) []T {
+	return arr[i*cols : (i+1)*cols]
 }

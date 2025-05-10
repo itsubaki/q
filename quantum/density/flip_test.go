@@ -50,12 +50,12 @@ func ExampleFlip() {
 func ExampleBitFlip() {
 	m0, m1, _ := density.BitFlip(0.5)
 
-	for _, r := range m0 {
+	for _, r := range m0.Seq2() {
 		fmt.Println(r)
 	}
 	fmt.Println()
 
-	for _, r := range m1 {
+	for _, r := range m1.Seq2() {
 		fmt.Println(r)
 	}
 
@@ -70,12 +70,12 @@ func ExampleBitFlip() {
 func ExamplePhaseFlip() {
 	m0, m1, _ := density.PhaseFlip(0.5)
 
-	for _, r := range m0 {
+	for _, r := range m0.Seq2() {
 		fmt.Println(r)
 	}
 	fmt.Println()
 
-	for _, r := range m1 {
+	for _, r := range m1.Seq2() {
 		fmt.Println(r)
 	}
 
@@ -90,12 +90,12 @@ func ExamplePhaseFlip() {
 func ExampleBitPhaseFlip() {
 	m0, m1, _ := density.BitPhaseFlip(0.5)
 
-	for _, r := range m0 {
+	for _, r := range m0.Seq2() {
 		fmt.Println(r)
 	}
 	fmt.Println()
 
-	for _, r := range m1 {
+	for _, r := range m1.Seq2() {
 		fmt.Println(r)
 	}
 

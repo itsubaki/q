@@ -92,15 +92,18 @@ func (v Vector) InnerProduct(w Vector) complex128 {
 func (v Vector) OuterProduct(w Vector) matrix.Matrix {
 	dual := w.Dual()
 
-	out := make(matrix.Matrix, len(v))
+	data := make([]complex128, 0, len(v))
 	for i := range v {
-		out[i] = make([]complex128, len(dual))
 		for j := range dual {
-			out[i][j] = v[i] * dual[j]
+			data = append(data, v[i]*dual[j])
 		}
 	}
 
-	return out
+	return matrix.Matrix{
+		Rows: len(v),
+		Cols: len(w),
+		Data: data,
+	}
 }
 
 // IsOrthogonal returns true if v and w are orthogonal.
@@ -123,10 +126,10 @@ func (v Vector) Apply(m matrix.Matrix) Vector {
 	p, q := m.Dimension()
 
 	out := make(Vector, p)
-	for i := 0; i < p; i++ {
+	for i := range p {
 		var c complex128
-		for j := 0; j < q; j++ {
-			c = c + m[i][j]*v[j]
+		for j := range q {
+			c = c + m.At(i, j)*v[j]
 		}
 
 		out[i] = c

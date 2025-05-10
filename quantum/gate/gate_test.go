@@ -13,7 +13,7 @@ import (
 
 func ExampleX() {
 	g := gate.X()
-	for _, r := range g {
+	for _, r := range g.Seq2() {
 		fmt.Println(r)
 	}
 
@@ -24,7 +24,7 @@ func ExampleX() {
 
 func ExampleX_xX() {
 	g := gate.X(2)
-	for _, r := range g {
+	for _, r := range g.Seq2() {
 		fmt.Println(r)
 	}
 
@@ -37,7 +37,7 @@ func ExampleX_xX() {
 
 func ExampleH() {
 	g := gate.H()
-	for _, r := range g {
+	for _, r := range g.Seq2() {
 		fmt.Printf("%.4v\n", r)
 	}
 
@@ -48,7 +48,7 @@ func ExampleH() {
 
 func ExampleH_hH() {
 	g := gate.H(2)
-	for _, r := range g {
+	for _, r := range g.Seq2() {
 		fmt.Printf("%.4v\n", r)
 	}
 
@@ -61,7 +61,7 @@ func ExampleH_hH() {
 
 func ExampleCNOT() {
 	g := gate.CNOT(2, 0, 1)
-	for _, r := range g {
+	for _, r := range g.Seq2() {
 		fmt.Println(r)
 	}
 
@@ -74,7 +74,7 @@ func ExampleCNOT() {
 
 func ExampleSwap() {
 	g := gate.Swap(2, 0, 1)
-	for _, r := range g {
+	for _, r := range g.Seq2() {
 		fmt.Println(r)
 	}
 
@@ -90,18 +90,22 @@ func ExampleEmpty() {
 	fmt.Println(g0)
 
 	g1 := gate.Empty(3)
-	fmt.Println(g1)
+	for _, g := range g1 {
+		fmt.Println(g.Data)
+	}
 
 	// Output:
 	// []
-	// [[] [] []]
+	// []
+	// []
+	// []
 }
 
 func ExampleControlledModExp2() {
 	n, a, j, N := 5, 7, 0, 15
 	g := gate.ControlledModExp2(n, a, j, N, 0, []int{1, 2, 3, 4})
 
-	for i, r := range g.Transpose() {
+	for i, r := range g.Transpose().Seq2() {
 		bin := fmt.Sprintf("%0*b", n, i)
 		if bin[:1] == "0" { // control qubit is |0>
 			continue
@@ -146,12 +150,12 @@ func ExampleControlledModExp2() {
 }
 
 func ExampleTensorProduct() {
-	for _, r := range gate.TensorProduct(gate.X(), 2, []int{1}) {
+	for _, r := range gate.TensorProduct(gate.X(), 2, []int{1}).Seq2() {
 		fmt.Printf("%.4v\n", r)
 	}
 	fmt.Println()
 
-	for _, r := range gate.TensorProduct(gate.X(), 2, []int{0}) {
+	for _, r := range gate.TensorProduct(gate.X(), 2, []int{0}).Seq2() {
 		fmt.Printf("%.4v\n", r)
 	}
 

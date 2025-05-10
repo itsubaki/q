@@ -2,8 +2,6 @@ package matrix_test
 
 import (
 	"fmt"
-	"math/cmplx"
-	"sync"
 	"testing"
 
 	"github.com/itsubaki/q/math/matrix"
@@ -22,48 +20,6 @@ func BenchmarkApplyN8(b *testing.B) {
 	}
 }
 
-func BenchmarkApplyConcurrencyN8(b *testing.B) {
-	apply := func(n, m matrix.Matrix) matrix.Matrix {
-		p, _ := m.Dimension()
-		a, b := n.Dimension()
-
-		wg := sync.WaitGroup{}
-		out := make(matrix.Matrix, a)
-		for i := 0; i < a; i++ {
-			wg.Add(1)
-			go func(i int, out *matrix.Matrix) {
-				defer wg.Done()
-
-				v := make([]complex128, b)
-				for j := 0; j < b; j++ {
-					var c complex128
-					for k := 0; k < p; k++ {
-						c = c + n[i][k]*m[k][j]
-					}
-
-					v = append(v, c)
-				}
-
-				(*out)[i] = v
-			}(i, &out)
-		}
-
-		wg.Wait()
-		return out
-	}
-
-	n := 8
-	x := matrix.TensorProductN(matrix.New(
-		[]complex128{0, 1},
-		[]complex128{1, 0},
-	), n)
-
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		apply(x, x)
-	}
-}
-
 func BenchmarkDaggerN8(b *testing.B) {
 	n := 8
 	m := matrix.TensorProductN(matrix.New(
@@ -74,42 +30,6 @@ func BenchmarkDaggerN8(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		m.Dagger()
-	}
-}
-
-func BenchmarkDaggerConcurrencyN8(b *testing.B) {
-	n := 8
-	m := matrix.TensorProductN(matrix.New(
-		[]complex128{0, 1},
-		[]complex128{1, 0},
-	), n)
-
-	dagger := func(m matrix.Matrix) {
-		p, q := m.Dimension()
-
-		wg := sync.WaitGroup{}
-		out := make(matrix.Matrix, p)
-		for i := 0; i < p; i++ {
-			wg.Add(1)
-
-			go func(i int, out *matrix.Matrix) {
-				defer wg.Done()
-
-				v := make([]complex128, q)
-				for j := 0; j < q; j++ {
-					v[j] = cmplx.Conj(m[j][i])
-				}
-
-				(*out)[i] = v
-			}(i, &out)
-		}
-
-		wg.Wait()
-	}
-
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		dagger(m)
 	}
 }
 
@@ -126,14 +46,34 @@ func BenchmarkTensorProductN8(b *testing.B) {
 }
 
 func ExampleZero() {
-	fmt.Println(matrix.Zero(0, 0))
-	fmt.Println(matrix.Zero(1, 1))
-	fmt.Println(matrix.Zero(2, 2))
+	fmt.Println(matrix.Zero(0, 0).Data)
+	fmt.Println(matrix.Zero(1, 1).Data)
+	fmt.Println(matrix.Zero(2, 2).Data)
 
 	// Output:
 	// []
-	// [[(0+0i)]]
-	// [[(0+0i) (0+0i)] [(0+0i) (0+0i)]]
+	// [(0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+}
+
+func ExampleMatrix_Seq2() {
+	m := matrix.New(
+		[]complex128{1, 1},
+		[]complex128{2, 2},
+		[]complex128{3, 3},
+	)
+
+	for i, r := range m.Seq2() {
+		fmt.Println(r)
+
+		if i == 1 {
+			break
+		}
+	}
+
+	// Output:
+	// [(1+0i) (1+0i)]
+	// [(2+0i) (2+0i)]
 }
 
 func ExampleMatrix_Real() {
@@ -172,7 +112,7 @@ func ExampleMatrix_Mul() {
 		[]complex128{1 + 1i, 0},
 	)
 
-	for _, r := range m.Mul(3i) {
+	for _, r := range m.Mul(3i).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -188,12 +128,12 @@ func ExampleMatrix_Apply() {
 	)
 
 	fmt.Println("x:")
-	for _, r := range x {
+	for _, r := range x.Seq2() {
 		fmt.Println(r)
 	}
 
 	fmt.Println("xx:")
-	for _, r := range x.Apply(x) {
+	for _, r := range x.Apply(x).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -212,7 +152,7 @@ func ExampleTensorProduct() {
 		[]complex128{1, 0},
 	)
 
-	for _, r := range matrix.TensorProduct(x, x) {
+	for _, r := range matrix.TensorProduct(x, x).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -229,7 +169,7 @@ func ExampleTensorProductN() {
 		[]complex128{1, 0},
 	)
 
-	for _, r := range matrix.TensorProductN(x, 2) {
+	for _, r := range matrix.TensorProductN(x, 2).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -246,7 +186,7 @@ func ExampleApply() {
 		[]complex128{1, 0},
 	)
 
-	for _, r := range matrix.Apply(x, x) {
+	for _, r := range matrix.Apply(x, x).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -267,7 +207,7 @@ func ExampleApply_xy() {
 	)
 
 	// x.Apply(y) is yx
-	for _, r := range x.Apply(y) {
+	for _, r := range x.Apply(y).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -282,12 +222,12 @@ func ExampleApplyN() {
 		[]complex128{1, 0},
 	)
 
-	for _, r := range matrix.ApplyN(x) {
+	for _, r := range matrix.ApplyN(x).Seq2() {
 		fmt.Println(r)
 	}
 	fmt.Println()
 
-	for _, r := range matrix.ApplyN(x, 2) {
+	for _, r := range matrix.ApplyN(x, 2).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -306,12 +246,12 @@ func ExampleMatrix_TensorProduct() {
 	)
 
 	fmt.Println("x:")
-	for _, r := range x {
+	for _, r := range x.Seq2() {
 		fmt.Println(r)
 	}
 
 	fmt.Println("xx:")
-	for _, r := range x.TensorProduct(x) {
+	for _, r := range x.TensorProduct(x).Seq2() {
 		fmt.Println(r)
 	}
 
@@ -405,10 +345,7 @@ func TestAntiCommutator(t *testing.T) {
 				[]complex128{0, -1i},
 				[]complex128{1i, 0},
 			),
-			matrix.New(
-				[]complex128{0, 0},
-				[]complex128{0, 0},
-			),
+			matrix.Zero(2, 2),
 		},
 	}
 

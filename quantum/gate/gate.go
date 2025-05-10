@@ -15,9 +15,7 @@ func Theta(k int) float64 {
 
 // New returns a new gate.
 func New(v ...[]complex128) matrix.Matrix {
-	g := make(matrix.Matrix, len(v))
-	copy(g, v)
-	return g
+	return matrix.New(v...)
 }
 
 // Empty returns a list of empty gate.
@@ -32,105 +30,103 @@ func Empty(n ...int) []matrix.Matrix {
 // U returns a unitary gate.
 func U(theta, phi, lambda float64) matrix.Matrix {
 	v := complex(theta/2, 0)
-	return matrix.Matrix{
+	return matrix.New(
 		[]complex128{cmplx.Cos(v), -1 * cmplx.Exp(complex(0, lambda)) * cmplx.Sin(v)},
 		[]complex128{cmplx.Exp(complex(0, phi)) * cmplx.Sin(v), cmplx.Exp(complex(0, (phi+lambda))) * cmplx.Cos(v)},
-	}
+	)
 }
 
 // I returns an identity gate.
 func I(n ...int) matrix.Matrix {
-	return matrix.TensorProductN(matrix.Matrix{
+	return matrix.TensorProductN(matrix.New(
 		[]complex128{1, 0},
 		[]complex128{0, 1},
-	}, n...)
+	), n...)
 }
 
 // X returns a Pauli-X gate.
 func X(n ...int) matrix.Matrix {
-	return matrix.TensorProductN(matrix.Matrix{
+	return matrix.TensorProductN(matrix.New(
 		[]complex128{0, 1},
 		[]complex128{1, 0},
-	}, n...)
+	), n...)
 }
 
 // Y returns a Pauli-Y gate.
 func Y(n ...int) matrix.Matrix {
-	return matrix.TensorProductN(matrix.Matrix{
+	return matrix.TensorProductN(matrix.New(
 		[]complex128{0, -1i},
 		[]complex128{1i, 0},
-	}, n...)
+	), n...)
 }
 
 // Z returns a Pauli-Z gate.
 func Z(n ...int) matrix.Matrix {
-	return matrix.TensorProductN(matrix.Matrix{
+	return matrix.TensorProductN(matrix.New(
 		[]complex128{1, 0},
 		[]complex128{0, -1},
-	}, n...)
+	), n...)
 }
 
 // H returns a Hadamard gate.
 func H(n ...int) matrix.Matrix {
 	v := complex(1/math.Sqrt2, 0)
-	return matrix.TensorProductN(matrix.Matrix{
+	return matrix.TensorProductN(matrix.New(
 		[]complex128{v, v},
 		[]complex128{v, -1 * v},
-	}, n...)
+	), n...)
 }
 
 // S returns an S gate.
 func S(n ...int) matrix.Matrix {
-	return matrix.TensorProductN(matrix.Matrix{
+	return matrix.TensorProductN(matrix.New(
 		[]complex128{1, 0},
 		[]complex128{0, 1i},
-	}, n...)
+	), n...)
 }
 
 // T returns a T gate.
 func T(n ...int) matrix.Matrix {
-	v := cmplx.Exp(1i * math.Pi / 4)
-	return matrix.TensorProductN(matrix.Matrix{
+	return matrix.TensorProductN(matrix.New(
 		[]complex128{1, 0},
-		[]complex128{0, v},
-	}, n...)
+		[]complex128{0, cmplx.Exp(1i * math.Pi / 4)},
+	), n...)
 }
 
 // R returns a rotation gate.
 // R(Theta(k)) = [[1, 0], [0, exp(2 * pi * i / 2**k)]].
 func R(theta float64) matrix.Matrix {
-	e := cmplx.Exp(complex(0, theta))
-	return matrix.Matrix{
+	return matrix.New(
 		[]complex128{1, 0},
-		[]complex128{0, e},
-	}
+		[]complex128{0, cmplx.Exp(complex(0, theta))},
+	)
 }
 
 // RX returns a rotation gate around the X axis.
 func RX(theta float64) matrix.Matrix {
 	v := complex(theta/2, 0)
-	return matrix.Matrix{
+	return matrix.New(
 		[]complex128{cmplx.Cos(v), -1i * cmplx.Sin(v)},
 		[]complex128{-1i * cmplx.Sin(v), cmplx.Cos(v)},
-	}
+	)
 }
 
 // RY returns a rotation gate around the Y axis.
 func RY(theta float64) matrix.Matrix {
 	v := complex(theta/2, 0)
-	return matrix.Matrix{
+	return matrix.New(
 		[]complex128{cmplx.Cos(v), -1 * cmplx.Sin(v)},
 		[]complex128{cmplx.Sin(v), cmplx.Cos(v)},
-	}
+	)
 }
 
 // RZ returns a rotation gate around the Z axis.
 func RZ(theta float64) matrix.Matrix {
 	v := complex(0, theta/2)
-	return matrix.Matrix{
+	return matrix.New(
 		[]complex128{cmplx.Exp(-1 * v), 0},
 		[]complex128{0, cmplx.Exp(v)},
-	}
+	)
 }
 
 // Controlled returns a controlled-u gate.
@@ -160,7 +156,7 @@ func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
 
 			c := (j >> (n - 1 - t)) & 1
 			r := (i >> (n - 1 - t)) & 1
-			g[j][i] = u[c][r]
+			g.Set(i, j, u.At(c, r))
 		}
 	}
 
@@ -188,12 +184,12 @@ func ControlledNot(n int, c []int, t int) matrix.Matrix {
 		}
 	}
 
-	g, id := make(matrix.Matrix, s), I(n)
+	data, id := make([][]complex128, s), I(n)
 	for i, j := range perm {
-		g[j] = id[i]
+		data[j] = id.Row(i)
 	}
 
-	return g
+	return matrix.New(data...)
 }
 
 // CNOT returns a controlled-not gate.
@@ -221,7 +217,7 @@ func ControlledZ(n int, c []int, t int) matrix.Matrix {
 	g := I(n)
 	for i := 0; i < (1 << n); i++ {
 		if (i&mask) == mask && (i&(1<<(n-1-t))) != 0 {
-			g[i][i] = -1 * g[i][i]
+			g.Set(i, i, -1*g.At(i, i))
 		}
 	}
 
@@ -243,7 +239,7 @@ func ControlledS(n int, c []int, t int) matrix.Matrix {
 	g := I(n)
 	for i := 0; i < (1 << n); i++ {
 		if (i&mask) == mask && (i&(1<<(n-1-t))) != 0 {
-			g[i][i] = 1i * g[i][i]
+			g.Set(i, i, 1i*g.At(i, i))
 		}
 	}
 
@@ -268,7 +264,7 @@ func ControlledR(theta float64, n int, c []int, t int) matrix.Matrix {
 	g := I(n)
 	for i := 0; i < (1 << n); i++ {
 		if (i&mask) == mask && (i&(1<<(n-1-t))) != 0 {
-			g[i][i] = e * g[i][i]
+			g.Set(i, i, e*g.At(i, i))
 		}
 	}
 
@@ -309,8 +305,10 @@ func QFT(n int) matrix.Matrix {
 				h = append(h, H())
 				continue
 			}
+
 			h = append(h, I())
 		}
+
 		g = g.Apply(matrix.TensorProduct(h...))
 
 		k := 2
@@ -353,12 +351,12 @@ func ControlledModExp2(n, a, j, N, c int, t []int) matrix.Matrix {
 		idx[i] = (i >> r1len << r1len) | a2jkmodN
 	}
 
-	g := make(matrix.Matrix, d)
+	data := make([][]complex128, d)
 	for i, j := range idx {
-		g[j] = m[i]
+		data[j] = m.Row(i)
 	}
 
-	return g
+	return matrix.New(data...)
 }
 
 // TensorProduct returns the tensor product of 'u' at specified indices over 'n' qubits.

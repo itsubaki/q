@@ -29,17 +29,17 @@ type Matrix struct {
 
 // New returns a new density matrix.
 func New(ensemble []State) *Matrix {
-	m := matrix.New()
+	var m matrix.Matrix
 	for _, s := range Normalize(ensemble) {
 		n := s.Qubit.Dimension()
-		if len(m) < 1 {
+		if len(m.Data) == 0 {
 			m = matrix.Zero(n, n)
 		}
 
 		op := s.Qubit.OuterProduct(s.Qubit).Mul(complex(s.Probability, 0))
 		for i := range n {
 			for j := range n {
-				m[i][j] = m[i][j] + op[i][j]
+				m.Set(i, j, m.At(i, j)+op.At(i, j))
 			}
 		}
 	}
@@ -47,6 +47,10 @@ func New(ensemble []State) *Matrix {
 	return &Matrix{
 		m: m,
 	}
+}
+
+func (m *Matrix) At(i, j int) complex128 {
+	return m.m.At(i, j)
 }
 
 // Qubits returns the qubits of the density matrix.
@@ -59,14 +63,14 @@ func (m *Matrix) Qubits() []Qubit {
 	return qubits
 }
 
-// Raw returns the raw matrix.
-func (m *Matrix) Raw() matrix.Matrix {
+// Underlying returns the internal matrix.
+func (m *Matrix) Underlying() matrix.Matrix {
 	return m.m
 }
 
 // Dimension returns the dimension of the density matrix.
-func (m *Matrix) Dimension() (int, int) {
-	return len(m.m), len(m.m[0])
+func (m *Matrix) Dimension() (rows int, cols int) {
+	return m.m.Dimension()
 }
 
 // NumQubits returns the number of qubits.
@@ -121,9 +125,9 @@ func (m *Matrix) PartialTrace(index ...Qubit) (*Matrix, error) {
 				continue
 			}
 
-			r := number.Must(strconv.ParseInt(kr, 2, 0))
-			c := number.Must(strconv.ParseInt(lr, 2, 0))
-			out[r][c] = out[r][c] + m.m[i][j]
+			r := int(number.Must(strconv.ParseInt(kr, 2, 0)))
+			c := int(number.Must(strconv.ParseInt(lr, 2, 0)))
+			out.Set(r, c, out.At(r, c)+m.m.At(i, j))
 
 			// fmt.Printf("[%v][%v] = [%v][%v] + [%v][%v]\n", r, c, r, c, i, j)
 			//

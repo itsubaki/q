@@ -17,16 +17,16 @@ var (
 // Flip returns the flip channel.
 func Flip(p float64, m matrix.Matrix) (matrix.Matrix, matrix.Matrix, error) {
 	if p < 0 || p > 1 {
-		return nil, nil, ErrInvalidRange
+		return matrix.Matrix{}, matrix.Matrix{}, ErrInvalidRange
 	}
 
 	d, d2 := m.Dimension()
 	if d != d2 {
-		return nil, nil, ErrNotSquare
+		return matrix.Matrix{}, matrix.Matrix{}, ErrNotSquare
 	}
 
 	if !number.IsPowOf2(d) {
-		return nil, nil, ErrInvalidDimension
+		return matrix.Matrix{}, matrix.Matrix{}, ErrInvalidDimension
 	}
 
 	n := number.Log2(d)

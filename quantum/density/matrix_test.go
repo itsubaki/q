@@ -29,6 +29,21 @@ func ExampleMatrix_ExpectedValue() {
 	// Z: 0.1
 }
 
+func ExampleMatrix_Underlying() {
+	rho := density.New([]density.State{
+		{0.1, qubit.Zero()},
+		{0.9, qubit.One()},
+	})
+
+	for _, r := range rho.Underlying().Seq2() {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [(0.1+0i) (0+0i)]
+	// [(0+0i) (0.9+0i)]
+}
+
 func ExampleMatrix_Measure() {
 	rho := density.New([]density.State{
 		{0.1, qubit.Zero()},
@@ -318,8 +333,8 @@ func TestPartialTrace(t *testing.T) {
 
 			for i := range cs.want {
 				for j := range cs.want[0] {
-					if cmplx.Abs(got.Raw()[i][j]-cs.want[i][j]) > c.eps {
-						t.Errorf("%v:%v, got=%v, want=%v", i, j, got.Raw()[i][j], cs.want[i][j])
+					if cmplx.Abs(got.At(i, j)-cs.want[i][j]) > c.eps {
+						t.Errorf("%v:%v, got=%v, want=%v", i, j, got.At(i, j), cs.want[i][j])
 					}
 				}
 			}
