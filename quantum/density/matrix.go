@@ -69,7 +69,7 @@ func (m *Matrix) Underlying() matrix.Matrix {
 }
 
 // Dimension returns the dimension of the density matrix.
-func (m *Matrix) Dimension() (int, int) {
+func (m *Matrix) Dimension() (rows int, cols int) {
 	return m.m.Dimension()
 }
 
