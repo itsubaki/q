@@ -184,7 +184,7 @@ func (m Matrix) Apply(n Matrix) Matrix {
 		for j := range p {
 			var c complex128
 			for k := range b {
-				c = c + m.At(k, j)*n.At(i, k)
+				c = c + n.At(i, k)*m.At(k, j)
 			}
 
 			out.Set(i, j, c)
