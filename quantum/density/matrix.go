@@ -29,10 +29,10 @@ type Matrix struct {
 
 // New returns a new density matrix.
 func New(ensemble []State) *Matrix {
-	m := matrix.New()
+	var m matrix.Matrix
 	for _, s := range Normalize(ensemble) {
 		n := s.Qubit.Dimension()
-		if len(m.Data) < 1 {
+		if len(m.Data) == 0 {
 			m = matrix.Zero(n, n)
 		}
 
