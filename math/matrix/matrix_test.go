@@ -56,6 +56,26 @@ func ExampleZero() {
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
 }
 
+func ExampleMatrix_Seq2() {
+	m := matrix.New(
+		[]complex128{1, 1},
+		[]complex128{2, 2},
+		[]complex128{3, 3},
+	)
+
+	for i, r := range m.Seq2() {
+		fmt.Println(r)
+
+		if i == 1 {
+			break
+		}
+	}
+
+	// Output:
+	// [(1+0i) (1+0i)]
+	// [(2+0i) (2+0i)]
+}
+
 func ExampleMatrix_Real() {
 	m := matrix.New(
 		[]complex128{1 + 1i, 2 + 3i},
