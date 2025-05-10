@@ -141,7 +141,7 @@ func (m Matrix) Dagger() Matrix {
 	out := Zero(p, q)
 	for i := range p {
 		for j := range q {
-			out.Set(i, j, cmplx.Conj(m.At(j, i)))
+			out.Set(j, i, cmplx.Conj(m.At(i, j)))
 		}
 	}
 
