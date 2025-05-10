@@ -68,6 +68,7 @@ func (m Matrix) Set(i, j int, v complex128) {
 	m.Data[i*m.Cols+j] = v
 }
 
+// Seq2 returns a sequence of rows.
 func (m Matrix) Seq2() iter.Seq2[int, []complex128] {
 	return func(yield func(int, []complex128) bool) {
 		for i := range m.Rows {
