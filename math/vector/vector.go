@@ -29,9 +29,7 @@ func (v Vector) Complex() []complex128 {
 
 // Clone returns a clone of vector.
 func (v Vector) Clone() Vector {
-	out := make(Vector, len(v))
-	copy(out, v)
-	return out
+	return New(v...)
 }
 
 // Dual returns a dual vector.
