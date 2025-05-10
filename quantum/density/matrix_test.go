@@ -318,8 +318,8 @@ func TestPartialTrace(t *testing.T) {
 
 			for i := range cs.want {
 				for j := range cs.want[0] {
-					if cmplx.Abs(got.Raw()[i][j]-cs.want[i][j]) > c.eps {
-						t.Errorf("%v:%v, got=%v, want=%v", i, j, got.Raw()[i][j], cs.want[i][j])
+					if cmplx.Abs(got.Underlying().Data[i][j]-cs.want[i][j]) > c.eps {
+						t.Errorf("%v:%v, got=%v, want=%v", i, j, got.Underlying().Data[i][j], cs.want[i][j])
 					}
 				}
 			}

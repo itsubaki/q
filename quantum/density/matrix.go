@@ -32,14 +32,14 @@ func New(ensemble []State) *Matrix {
 	m := matrix.New()
 	for _, s := range Normalize(ensemble) {
 		n := s.Qubit.Dimension()
-		if len(m) < 1 {
+		if len(m.Data) < 1 {
 			m = matrix.Zero(n, n)
 		}
 
 		op := s.Qubit.OuterProduct(s.Qubit).Mul(complex(s.Probability, 0))
 		for i := range n {
 			for j := range n {
-				m[i][j] = m[i][j] + op[i][j]
+				m.Data[i][j] = m.Data[i][j] + op.Data[i][j]
 			}
 		}
 	}
@@ -59,14 +59,14 @@ func (m *Matrix) Qubits() []Qubit {
 	return qubits
 }
 
-// Raw returns the raw matrix.
-func (m *Matrix) Raw() matrix.Matrix {
+// Underlying returns the internal matrix.
+func (m *Matrix) Underlying() matrix.Matrix {
 	return m.m
 }
 
 // Dimension returns the dimension of the density matrix.
 func (m *Matrix) Dimension() (int, int) {
-	return len(m.m), len(m.m[0])
+	return len(m.m.Data), len(m.m.Data[0])
 }
 
 // NumQubits returns the number of qubits.
@@ -123,7 +123,7 @@ func (m *Matrix) PartialTrace(index ...Qubit) (*Matrix, error) {
 
 			r := number.Must(strconv.ParseInt(kr, 2, 0))
 			c := number.Must(strconv.ParseInt(lr, 2, 0))
-			out[r][c] = out[r][c] + m.m[i][j]
+			out.Data[r][c] = out.Data[r][c] + m.m.Data[i][j]
 
 			// fmt.Printf("[%v][%v] = [%v][%v] + [%v][%v]\n", r, c, r, c, i, j)
 			//

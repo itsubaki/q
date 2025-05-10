@@ -38,7 +38,7 @@ func BenchmarkApplyConcurrencyN12(b *testing.B) {
 
 				var c complex128
 				for j := 0; j < q; j++ {
-					c = c + m[i][j]*v[j]
+					c = c + m.Data[i][j]*v[j]
 				}
 
 				(*out)[i] = c
@@ -126,7 +126,7 @@ func ExampleVector_InnerProduct() {
 func ExampleVector_OuterProduct() {
 	v := vector.New(1, 0)
 	vv := v.OuterProduct(v)
-	fmt.Println(vv)
+	fmt.Println(vv.Data)
 
 	// Output:
 	// [[(1+0i) (0+0i)] [(0+0i) (0+0i)]]
