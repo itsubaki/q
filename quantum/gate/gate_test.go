@@ -90,11 +90,15 @@ func ExampleEmpty() {
 	fmt.Println(g0)
 
 	g1 := gate.Empty(3)
-	fmt.Println(g1)
+	for _, g := range g1 {
+		fmt.Println(g.Data)
+	}
 
 	// Output:
 	// []
-	// [{[]} {[]} {[]}]
+	// []
+	// []
+	// []
 }
 
 func ExampleControlledModExp2() {

@@ -39,7 +39,7 @@ func New(ensemble []State) *Matrix {
 		op := s.Qubit.OuterProduct(s.Qubit).Mul(complex(s.Probability, 0))
 		for i := range n {
 			for j := range n {
-				m.Data[i][j] = m.Data[i][j] + op.Data[i][j]
+				m.Set(i, j, m.At(i, j)+op.At(i, j))
 			}
 		}
 	}
@@ -47,6 +47,10 @@ func New(ensemble []State) *Matrix {
 	return &Matrix{
 		m: m,
 	}
+}
+
+func (m *Matrix) At(i, j int) complex128 {
+	return m.m.At(i, j)
 }
 
 // Qubits returns the qubits of the density matrix.
@@ -66,7 +70,7 @@ func (m *Matrix) Underlying() matrix.Matrix {
 
 // Dimension returns the dimension of the density matrix.
 func (m *Matrix) Dimension() (int, int) {
-	return len(m.m.Data), len(m.m.Data[0])
+	return m.m.Dimension()
 }
 
 // NumQubits returns the number of qubits.
@@ -121,9 +125,9 @@ func (m *Matrix) PartialTrace(index ...Qubit) (*Matrix, error) {
 				continue
 			}
 
-			r := number.Must(strconv.ParseInt(kr, 2, 0))
-			c := number.Must(strconv.ParseInt(lr, 2, 0))
-			out.Data[r][c] = out.Data[r][c] + m.m.Data[i][j]
+			r := int(number.Must(strconv.ParseInt(kr, 2, 0)))
+			c := int(number.Must(strconv.ParseInt(lr, 2, 0)))
+			out.Set(r, c, out.At(r, c)+m.m.At(i, j))
 
 			// fmt.Printf("[%v][%v] = [%v][%v] + [%v][%v]\n", r, c, r, c, i, j)
 			//

@@ -2,8 +2,6 @@ package matrix_test
 
 import (
 	"fmt"
-	"math/cmplx"
-	"sync"
 	"testing"
 
 	"github.com/itsubaki/q/math/matrix"
@@ -22,50 +20,6 @@ func BenchmarkApplyN8(b *testing.B) {
 	}
 }
 
-func BenchmarkApplyConcurrencyN8(b *testing.B) {
-	apply := func(n, m matrix.Matrix) matrix.Matrix {
-		p, _ := m.Dimension()
-		a, b := n.Dimension()
-
-		wg := sync.WaitGroup{}
-		out := make([][]complex128, a)
-		for i := 0; i < a; i++ {
-			wg.Add(1)
-			go func(i int, out [][]complex128) {
-				defer wg.Done()
-
-				v := make([]complex128, b)
-				for j := 0; j < b; j++ {
-					var c complex128
-					for k := 0; k < p; k++ {
-						c = c + n.Data[i][k]*m.Data[k][j]
-					}
-
-					v = append(v, c)
-				}
-
-				(out)[i] = v
-			}(i, out)
-		}
-
-		wg.Wait()
-		return matrix.Matrix{
-			Data: out,
-		}
-	}
-
-	n := 8
-	x := matrix.TensorProductN(matrix.New(
-		[]complex128{0, 1},
-		[]complex128{1, 0},
-	), n)
-
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		apply(x, x)
-	}
-}
-
 func BenchmarkDaggerN8(b *testing.B) {
 	n := 8
 	m := matrix.TensorProductN(matrix.New(
@@ -76,42 +30,6 @@ func BenchmarkDaggerN8(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		m.Dagger()
-	}
-}
-
-func BenchmarkDaggerConcurrencyN8(b *testing.B) {
-	n := 8
-	m := matrix.TensorProductN(matrix.New(
-		[]complex128{0, 1},
-		[]complex128{1, 0},
-	), n)
-
-	dagger := func(m matrix.Matrix) {
-		p, q := m.Dimension()
-
-		wg := sync.WaitGroup{}
-		out := make([][]complex128, p)
-		for i := 0; i < p; i++ {
-			wg.Add(1)
-
-			go func(i int, out [][]complex128) {
-				defer wg.Done()
-
-				v := make([]complex128, q)
-				for j := 0; j < q; j++ {
-					v[j] = cmplx.Conj(m.Data[j][i])
-				}
-
-				(out)[i] = v
-			}(i, out)
-		}
-
-		wg.Wait()
-	}
-
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		dagger(m)
 	}
 }
 
@@ -134,8 +52,8 @@ func ExampleZero() {
 
 	// Output:
 	// []
-	// [[(0+0i)]]
-	// [[(0+0i) (0+0i)] [(0+0i) (0+0i)]]
+	// [(0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
 }
 
 func ExampleMatrix_Real() {
@@ -407,10 +325,7 @@ func TestAntiCommutator(t *testing.T) {
 				[]complex128{0, -1i},
 				[]complex128{1i, 0},
 			),
-			matrix.New(
-				[]complex128{0, 0},
-				[]complex128{0, 0},
-			),
+			matrix.Zero(2, 2),
 		},
 	}
 

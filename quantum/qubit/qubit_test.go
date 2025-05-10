@@ -377,10 +377,14 @@ func Example_quantumTeleportation2() {
 func ExampleQubit_OuterProduct() {
 	v := qubit.New(1, 0)
 	op := v.OuterProduct(v)
-	fmt.Println(op.Data)
+
+	for _, r := range op.Seq2() {
+		fmt.Println(r)
+	}
 
 	// Output:
-	// [[(1+0i) (0+0i)] [(0+0i) (0+0i)]]
+	// [(1+0i) (0+0i)]
+	// [(0+0i) (0+0i)]
 }
 
 func ExampleQubit_OuterProduct_operatorSum() {
@@ -388,10 +392,13 @@ func ExampleQubit_OuterProduct_operatorSum() {
 	q := v.OuterProduct(v)
 	e := gate.X().Dagger().Apply(q.Apply(gate.X()))
 
-	fmt.Println(e.Data)
+	for _, r := range e.Seq2() {
+		fmt.Println(r)
+	}
 
 	// Output:
-	// [[(0+0i) (0+0i)] [(0+0i) (1+0i)]]
+	// [(0+0i) (0+0i)]
+	// [(0+0i) (1+0i)]
 }
 
 func ExampleQubit_State() {
