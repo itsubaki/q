@@ -106,9 +106,11 @@ func (m Matrix) Dimension() (rows int, cols int) {
 
 // Transpose returns a transpose matrix.
 func (m Matrix) Transpose() Matrix {
-	out := ZeroLike(m)
-	for i := range m.Rows {
-		for j := range m.Cols {
+	rows, cols := m.Dimension()
+
+	out := Zero(cols, rows)
+	for i := range rows {
+		for j := range cols {
 			out.Set(j, i, m.At(i, j))
 		}
 	}

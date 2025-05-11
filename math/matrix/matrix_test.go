@@ -146,6 +146,22 @@ func ExampleMatrix_Apply() {
 	// [(0+0i) (1+0i)]
 }
 
+func ExampleMatrix_Transpose() {
+	x := matrix.New(
+		[]complex128{0, 1},
+		[]complex128{2, 0},
+		[]complex128{1, 3},
+	)
+
+	for _, r := range x.Transpose().Seq2() {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [(0+0i) (2+0i) (1+0i)]
+	// [(1+0i) (0+0i) (3+0i)]
+}
+
 func ExampleTensorProduct() {
 	x := matrix.New(
 		[]complex128{0, 1},
