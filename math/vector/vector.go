@@ -128,12 +128,9 @@ func (v Vector) Apply(m matrix.Matrix) Vector {
 
 	out := make(Vector, p)
 	for i := range p {
-		var c complex128
 		for j := range q {
-			c = c + m.At(i, j)*v[j]
+			out[i] += m.At(i, j) * v[j]
 		}
-
-		out[i] = c
 	}
 
 	return out

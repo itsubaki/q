@@ -12,11 +12,10 @@ import (
 func BenchmarkApplyN12(b *testing.B) {
 	n := 12
 	v := vector.TensorProductN(vector.New(1, 2), n)
-	x := matrix.TensorProductN(
-		matrix.New(
-			[]complex128{0, 1},
-			[]complex128{1, 0},
-		), n)
+	x := matrix.TensorProductN(matrix.New(
+		[]complex128{0, 1},
+		[]complex128{1, 0},
+	), n)
 
 	b.ResetTimer()
 	for range b.N {
@@ -36,12 +35,9 @@ func BenchmarkApplyConcurrencyN12(b *testing.B) {
 			go func(i int, out *vector.Vector) {
 				defer wg.Done()
 
-				var c complex128
 				for j := range q {
-					c = c + m.At(i, j)*v[j]
+					(*out)[i] += m.At(i, j) * v[j]
 				}
-
-				(*out)[i] = c
 			}(i, &out)
 		}
 

@@ -15,16 +15,16 @@ type Matrix struct {
 }
 
 // New returns a new matrix of complex128.
-func New(v ...[]complex128) Matrix {
-	rows := len(v)
+func New(z ...[]complex128) Matrix {
+	rows := len(z)
 	var cols int
 	if rows > 0 {
-		cols = len(v[0])
+		cols = len(z[0])
 	}
 
 	data := make([]complex128, rows*cols)
 	for i := range rows {
-		copy(data[i*cols:(i+1)*cols], v[i])
+		copy(data[i*cols:(i+1)*cols], z[i])
 	}
 
 	return Matrix{
@@ -64,18 +64,18 @@ func (m Matrix) Row(i int) []complex128 {
 }
 
 // Set sets a value of matrix at (i,j).
-func (m Matrix) Set(i, j int, v complex128) {
-	m.Data[i*m.Cols+j] = v
+func (m Matrix) Set(i, j int, z complex128) {
+	m.Data[i*m.Cols+j] = z
 }
 
 // AddAt adds a value of matrix at (i,j).
-func (m Matrix) AddAt(i, j int, v complex128) {
-	m.Data[i*m.Cols+j] += v
+func (m Matrix) AddAt(i, j int, z complex128) {
+	m.Data[i*m.Cols+j] += z
 }
 
 // MulAt multiplies a value of matrix at (i,j).
-func (m Matrix) MulAt(i, j int, v complex128) {
-	m.Data[i*m.Cols+j] *= v
+func (m Matrix) MulAt(i, j int, z complex128) {
+	m.Data[i*m.Cols+j] *= z
 }
 
 // Seq2 returns a sequence of rows.
@@ -87,30 +87,6 @@ func (m Matrix) Seq2() iter.Seq2[int, []complex128] {
 			}
 		}
 	}
-}
-
-// Equals returns true if m equals n.
-// If eps is not given, epsilon.E13 is used.
-func (m Matrix) Equals(n Matrix, eps ...float64) bool {
-	p, q := m.Dimension()
-	a, b := n.Dimension()
-
-	if a != p {
-		return false
-	}
-
-	if b != q {
-		return false
-	}
-
-	e := epsilon.E13(eps...)
-	for i := range m.Data {
-		if cmplx.Abs(m.Data[i]-n.Data[i]) > e {
-			return false
-		}
-	}
-
-	return true
 }
 
 // Dimension returns a dimension of matrix.
@@ -156,6 +132,30 @@ func (m Matrix) Dagger() Matrix {
 	}
 
 	return out
+}
+
+// Equals returns true if m equals n.
+// If eps is not given, epsilon.E13 is used.
+func (m Matrix) Equals(n Matrix, eps ...float64) bool {
+	p, q := m.Dimension()
+	a, b := n.Dimension()
+
+	if a != p {
+		return false
+	}
+
+	if b != q {
+		return false
+	}
+
+	e := epsilon.E13(eps...)
+	for i := range m.Data {
+		if cmplx.Abs(m.Data[i]-n.Data[i]) > e {
+			return false
+		}
+	}
+
+	return true
 }
 
 // IsSquare returns true if m is square matrix.
