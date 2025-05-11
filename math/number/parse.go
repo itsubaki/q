@@ -27,7 +27,7 @@ func ParseFloat(binary string) (float64, error) {
 	}
 
 	v := float64(p)
-	if !strings.Contains(binary, ".") {
+	if len(bin) == 1 {
 		return v, nil
 	}
 
