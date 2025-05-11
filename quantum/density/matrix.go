@@ -39,7 +39,7 @@ func New(ensemble []State) *Matrix {
 		op := s.Qubit.OuterProduct(s.Qubit).Mul(complex(s.Probability, 0))
 		for i := range n {
 			for j := range n {
-				m.Set(i, j, m.At(i, j)+op.At(i, j))
+				m.AddAt(i, j, op.At(i, j))
 			}
 		}
 	}
@@ -129,7 +129,7 @@ func (m *Matrix) PartialTrace(index ...Qubit) (*Matrix, error) {
 
 			r := int(number.Must(strconv.ParseInt(kr, 2, 0)))
 			c := int(number.Must(strconv.ParseInt(lr, 2, 0)))
-			out.Set(r, c, out.At(r, c)+m.m.At(i, j))
+			out.AddAt(r, c, m.m.At(i, j))
 
 			// fmt.Printf("[%v][%v] = [%v][%v] + [%v][%v]\n", r, c, r, c, i, j)
 			//
@@ -160,7 +160,9 @@ func (m *Matrix) Depolarizing(p float64) (*Matrix, error) {
 	n := m.NumQubits()
 	i := gate.I(n).Mul(complex(p/2, 0))
 	r := m.m.Mul(complex(1-p, 0))
-	return &Matrix{i.Add(r)}, nil
+	return &Matrix{
+		m: i.Add(r),
+	}, nil
 }
 
 func take(n, i int, index []Qubit) (string, string) {

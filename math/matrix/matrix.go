@@ -44,9 +44,9 @@ func Zero(rows, cols int) Matrix {
 }
 
 // Identity returns an identity matrix.
-func Identity(rows, cols int) Matrix {
-	m := Zero(rows, cols)
-	for i := range rows {
+func Identity(size int) Matrix {
+	m := Zero(size, size)
+	for i := range size {
 		m.Set(i, i, 1)
 	}
 
@@ -66,6 +66,16 @@ func (m Matrix) Row(i int) []complex128 {
 // Set sets a value of matrix at (i,j).
 func (m Matrix) Set(i, j int, v complex128) {
 	m.Data[i*m.Cols+j] = v
+}
+
+// AddAt adds a value of matrix at (i,j).
+func (m Matrix) AddAt(i, j int, v complex128) {
+	m.Data[i*m.Cols+j] += v
+}
+
+// MulAt multiplies a value of matrix at (i,j).
+func (m Matrix) MulAt(i, j int, v complex128) {
+	m.Data[i*m.Cols+j] *= v
 }
 
 // Seq2 returns a sequence of rows.
@@ -169,7 +179,7 @@ func (m Matrix) IsUnitary(eps ...float64) bool {
 	}
 
 	mmd := m.Apply(m.Dagger())
-	id := Identity(m.Dimension())
+	id := Identity(m.Rows)
 	return mmd.Equals(id, epsilon.E13(eps...))
 }
 
@@ -181,13 +191,11 @@ func (m Matrix) Apply(n Matrix) Matrix {
 
 	out := Zero(a, p)
 	for i := range a {
-		for j := range p {
-			var c complex128
-			for k := range b {
-				c = c + n.At(i, k)*m.At(k, j)
+		for k := range b {
+			nik := n.At(i, k)
+			for j := range p {
+				out.AddAt(i, j, nik*m.At(k, j))
 			}
-
-			out.Set(i, j, c)
 		}
 	}
 
@@ -276,12 +284,12 @@ func (m Matrix) Inverse() Matrix {
 	p, q := m.Dimension()
 	mm := m.Clone()
 
-	out := Identity(p, q)
+	out := Identity(p)
 	for i := range p {
 		c := 1 / mm.At(i, i)
 		for j := range q {
-			mm.Set(i, j, c*mm.At(i, j))
-			out.Set(i, j, c*out.At(i, j))
+			mm.MulAt(i, j, c)
+			out.MulAt(i, j, c)
 		}
 
 		for j := range q {
@@ -291,8 +299,8 @@ func (m Matrix) Inverse() Matrix {
 
 			c := mm.At(j, i)
 			for k := range q {
-				mm.Set(j, k, mm.At(j, k)-c*mm.At(i, k))
-				out.Set(j, k, out.At(j, k)-c*out.At(i, k))
+				mm.AddAt(j, k, -c*mm.At(i, k))
+				out.AddAt(j, k, -c*out.At(i, k))
 			}
 		}
 	}
@@ -306,14 +314,14 @@ func (m Matrix) TensorProduct(n Matrix) Matrix {
 	a, b := n.Dimension()
 	rows, cols := p*a, q*b
 
-	var idx int
 	data := make([]complex128, rows*cols)
 	for i := range p {
-		for k := range a {
-			for j := range q {
+		for j := range q {
+			mij := m.At(i, j)
+			for k := range a {
 				for l := range b {
-					data[idx] = m.At(i, j) * n.At(k, l)
-					idx++
+					row, col := i*a+k, j*b+l
+					data[row*cols+col] = mij * n.At(k, l)
 				}
 			}
 		}

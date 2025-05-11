@@ -139,12 +139,12 @@ func Controlled(u matrix.Matrix, n int, c []int, t int) matrix.Matrix {
 
 	s := (1 << n)
 	g := I(n)
-	for i := 0; i < s; i++ {
+	for i := range s {
 		if (i & mask) != mask {
 			continue
 		}
 
-		for j := 0; j < s; j++ {
+		for j := range s {
 			if (j & mask) != mask {
 				continue
 			}
@@ -215,9 +215,9 @@ func ControlledZ(n int, c []int, t int) matrix.Matrix {
 	}
 
 	g := I(n)
-	for i := 0; i < (1 << n); i++ {
+	for i := range 1 << n {
 		if (i&mask) == mask && (i&(1<<(n-1-t))) != 0 {
-			g.Set(i, i, -1*g.At(i, i))
+			g.MulAt(i, i, -1)
 		}
 	}
 
@@ -237,9 +237,9 @@ func ControlledS(n int, c []int, t int) matrix.Matrix {
 	}
 
 	g := I(n)
-	for i := 0; i < (1 << n); i++ {
+	for i := range 1 << n {
 		if (i&mask) == mask && (i&(1<<(n-1-t))) != 0 {
-			g.Set(i, i, 1i*g.At(i, i))
+			g.MulAt(i, i, 1i)
 		}
 	}
 
@@ -262,9 +262,9 @@ func ControlledR(theta float64, n int, c []int, t int) matrix.Matrix {
 	}
 
 	g := I(n)
-	for i := 0; i < (1 << n); i++ {
+	for i := range 1 << n {
 		if (i&mask) == mask && (i&(1<<(n-1-t))) != 0 {
-			g.Set(i, i, e*g.At(i, i))
+			g.MulAt(i, i, e)
 		}
 	}
 
