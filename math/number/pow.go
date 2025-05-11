@@ -1,12 +1,5 @@
 package number
 
-import (
-	"math"
-	"strconv"
-
-	"github.com/itsubaki/q/math/epsilon"
-)
-
 // Pow returns a**r, the base-a exponential of r.
 func Pow(a, r int) int {
 	if a == 0 {
@@ -78,22 +71,28 @@ func ModExp2(a, j, N int) int {
 }
 
 // BaseExp returns a and b such that a**b == N. If N is not a power of a, return false.
-func BaseExp(N int, eps ...float64) (int, int, bool) {
-	e := epsilon.E13(eps...)
+func BaseExp(N int) (int, int, bool) {
+	if N < 2 {
+		// 0**1 == 0, 1**1 == 1
+		return N, 1, true
+	}
 
-	l := len(strconv.FormatInt(int64(N), 2))
-	for i := l; 1 < i; i-- {
-		a := math.Pow(float64(N), 1.0/float64(i))
-		if a-math.Trunc(a) < e {
-			if Pow(int(a), i) == N {
-				return int(a), i, true
-			}
-		}
+	for b := Log2(N); b >= 2; b-- {
+		lo, hi := 2, N
+		for lo < hi+1 {
+			mid := (lo + hi) / 2
+			p := Pow(mid, b)
 
-		if 1-(a-math.Trunc(a)) < e {
-			if Pow(int(a)+1, i) == N {
-				return int(a) + 1, i, true
+			if p == N {
+				return mid, b, true
 			}
+
+			if p < 0 || p > N {
+				hi = mid - 1
+				continue
+			}
+
+			lo = mid + 1
 		}
 	}
 
