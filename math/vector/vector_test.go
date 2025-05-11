@@ -19,7 +19,7 @@ func BenchmarkApplyN12(b *testing.B) {
 		), n)
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		v.Apply(x)
 	}
 }
@@ -37,7 +37,7 @@ func BenchmarkApplyConcurrencyN12(b *testing.B) {
 				defer wg.Done()
 
 				var c complex128
-				for j := 0; j < q; j++ {
+				for j := range q {
 					c = c + m.At(i, j)*v[j]
 				}
 
@@ -51,14 +51,13 @@ func BenchmarkApplyConcurrencyN12(b *testing.B) {
 
 	n := 12
 	v := vector.TensorProductN(vector.New(1, 2), n)
-	x := matrix.TensorProductN(
-		matrix.New(
-			[]complex128{0, 1},
-			[]complex128{1, 0},
-		), n)
+	x := matrix.TensorProductN(matrix.New(
+		[]complex128{0, 1},
+		[]complex128{1, 0},
+	), n)
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		apply(v, x)
 	}
 }

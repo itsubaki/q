@@ -70,7 +70,7 @@ func (q *Q) One() Qubit {
 // Zeros returns n qubits in the zero state.
 func (q *Q) Zeros(n int) []Qubit {
 	qb := make([]Qubit, n)
-	for i := 0; i < n; i++ {
+	for i := range n {
 		qb[i] = q.Zero()
 	}
 
@@ -80,7 +80,7 @@ func (q *Q) Zeros(n int) []Qubit {
 // Ones returns n qubits in the one state.
 func (q *Q) Ones(n int) []Qubit {
 	qb := make([]Qubit, n)
-	for i := 0; i < n; i++ {
+	for i := range n {
 		qb[i] = q.One()
 	}
 

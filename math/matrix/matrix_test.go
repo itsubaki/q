@@ -15,7 +15,7 @@ func BenchmarkApplyN8(b *testing.B) {
 	), n)
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		x.Apply(x)
 	}
 }
@@ -28,7 +28,7 @@ func BenchmarkDaggerN8(b *testing.B) {
 	), n)
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		m.Dagger()
 	}
 }
@@ -40,7 +40,7 @@ func BenchmarkTensorProductN8(b *testing.B) {
 		[]complex128{1, 0},
 	)
 
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		matrix.TensorProductN(m, n)
 	}
 }

@@ -950,7 +950,7 @@ func Example_grover4qubit() {
 	// iteration
 	N := number.Pow(2, qsim.NumQubits())
 	r := math.Floor(math.Pi / 4 * math.Sqrt(float64(N)))
-	for i := 0; i < int(r); i++ {
+	for range int(r) {
 		// oracle for |110>|x>
 		qsim.X(q2, q3)
 		qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)

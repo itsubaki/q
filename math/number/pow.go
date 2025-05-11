@@ -70,7 +70,7 @@ func ModExp2(a, j, N int) int {
 	}
 
 	p := a
-	for i := 0; i < j; i++ {
+	for range j {
 		p = (p * p) % N
 	}
 
