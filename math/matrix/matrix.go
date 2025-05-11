@@ -43,6 +43,16 @@ func Zero(rows, cols int) Matrix {
 	}
 }
 
+// ZeroLike returns a zero matrix of same size as m.
+func ZeroLike(m Matrix) Matrix {
+	rows, cols := m.Dimension()
+	return Matrix{
+		Rows: rows,
+		Cols: cols,
+		Data: make([]complex128, rows*cols),
+	}
+}
+
 // Identity returns an identity matrix.
 func Identity(size int) Matrix {
 	m := Zero(size, size)
@@ -96,11 +106,9 @@ func (m Matrix) Dimension() (rows int, cols int) {
 
 // Transpose returns a transpose matrix.
 func (m Matrix) Transpose() Matrix {
-	p, q := m.Dimension()
-
-	out := Zero(p, q)
-	for i := range p {
-		for j := range q {
+	out := ZeroLike(m)
+	for i := range m.Rows {
+		for j := range m.Cols {
 			out.Set(j, i, m.At(i, j))
 		}
 	}
@@ -110,9 +118,7 @@ func (m Matrix) Transpose() Matrix {
 
 // Conjugate returns a conjugate matrix.
 func (m Matrix) Conjugate() Matrix {
-	p, q := m.Dimension()
-
-	out := Zero(p, q)
+	out := ZeroLike(m)
 	for i := range out.Data {
 		out.Data[i] = cmplx.Conj(m.Data[i])
 	}
@@ -122,11 +128,9 @@ func (m Matrix) Conjugate() Matrix {
 
 // Dagger returns conjugate transpose matrix.
 func (m Matrix) Dagger() Matrix {
-	p, q := m.Dimension()
-
-	out := Zero(p, q)
-	for i := range p {
-		for j := range q {
+	out := ZeroLike(m)
+	for i := range m.Rows {
+		for j := range m.Cols {
 			out.Set(j, i, cmplx.Conj(m.At(i, j)))
 		}
 	}
@@ -140,11 +144,7 @@ func (m Matrix) Equals(n Matrix, eps ...float64) bool {
 	p, q := m.Dimension()
 	a, b := n.Dimension()
 
-	if a != p {
-		return false
-	}
-
-	if b != q {
+	if a != p || b != q {
 		return false
 	}
 
@@ -204,7 +204,7 @@ func (m Matrix) Apply(n Matrix) Matrix {
 
 // Mul returns a matrix of z*m.
 func (m Matrix) Mul(z complex128) Matrix {
-	out := Zero(m.Dimension())
+	out := ZeroLike(m)
 	for i := range m.Data {
 		out.Data[i] = m.Data[i] * z
 	}
@@ -214,7 +214,7 @@ func (m Matrix) Mul(z complex128) Matrix {
 
 // Add returns a matrix of m+n.
 func (m Matrix) Add(n Matrix) Matrix {
-	out := Zero(m.Dimension())
+	out := ZeroLike(m)
 	for i := range m.Data {
 		out.Data[i] = m.Data[i] + n.Data[i]
 	}
@@ -224,7 +224,7 @@ func (m Matrix) Add(n Matrix) Matrix {
 
 // Sub returns a matrix of m-n.
 func (m Matrix) Sub(n Matrix) Matrix {
-	out := Zero(m.Dimension())
+	out := ZeroLike(m)
 	for i := range m.Data {
 		out.Data[i] = m.Data[i] - n.Data[i]
 	}
@@ -234,12 +234,12 @@ func (m Matrix) Sub(n Matrix) Matrix {
 
 // Trace returns a trace of matrix.
 func (m Matrix) Trace() complex128 {
-	var sum complex128
+	var z complex128
 	for i := range m.Rows {
-		sum = sum + m.At(i, i)
+		z = z + m.At(i, i)
 	}
 
-	return sum
+	return z
 }
 
 // Real returns a real part of matrix.
@@ -274,7 +274,7 @@ func (m Matrix) Imag() [][]float64 {
 
 // Clone returns a clone of matrix.
 func (m Matrix) Clone() Matrix {
-	out := Zero(m.Dimension())
+	out := ZeroLike(m)
 	copy(out.Data, m.Data)
 	return out
 }
