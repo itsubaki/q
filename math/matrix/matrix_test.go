@@ -284,8 +284,8 @@ func ExampleMatrix_TensorProduct() {
 
 func TestInverse(t *testing.T) {
 	cases := []struct {
-		in   matrix.Matrix
-		want matrix.Matrix
+		in   *matrix.Matrix
+		want *matrix.Matrix
 	}{
 		{
 			matrix.New(
@@ -323,7 +323,8 @@ func TestInverse(t *testing.T) {
 
 func TestCommutator(t *testing.T) {
 	cases := []struct {
-		x, y, want matrix.Matrix
+		x, y *matrix.Matrix
+		want *matrix.Matrix
 	}{
 		{
 			matrix.New(
@@ -350,7 +351,8 @@ func TestCommutator(t *testing.T) {
 
 func TestAntiCommutator(t *testing.T) {
 	cases := []struct {
-		x, y, want matrix.Matrix
+		x, y *matrix.Matrix
+		want *matrix.Matrix
 	}{
 		{
 			matrix.New(
@@ -374,7 +376,7 @@ func TestAntiCommutator(t *testing.T) {
 
 func TestTrace(t *testing.T) {
 	cases := []struct {
-		in   matrix.Matrix
+		in   *matrix.Matrix
 		want complex128
 	}{
 		{
@@ -409,7 +411,7 @@ func TestTrace(t *testing.T) {
 
 func TestDagger(t *testing.T) {
 	cases := []struct {
-		in matrix.Matrix
+		in *matrix.Matrix
 	}{
 		{
 			matrix.New(
@@ -428,7 +430,7 @@ func TestDagger(t *testing.T) {
 
 func TestEquals(t *testing.T) {
 	cases := []struct {
-		m0, m1 matrix.Matrix
+		m0, m1 *matrix.Matrix
 		want   bool
 	}{
 		{
@@ -485,7 +487,7 @@ func TestEquals(t *testing.T) {
 
 func TestIsSquare(t *testing.T) {
 	cases := []struct {
-		in   matrix.Matrix
+		in   *matrix.Matrix
 		want bool
 	}{
 		{
@@ -513,7 +515,7 @@ func TestIsSquare(t *testing.T) {
 
 func TestIsHermite(t *testing.T) {
 	cases := []struct {
-		in   matrix.Matrix
+		in   *matrix.Matrix
 		want bool
 	}{
 		{
@@ -562,7 +564,7 @@ func TestIsHermite(t *testing.T) {
 
 func TestIsUnitary(t *testing.T) {
 	cases := []struct {
-		in   matrix.Matrix
+		in   *matrix.Matrix
 		want bool
 	}{
 		{
@@ -611,7 +613,7 @@ func TestIsUnitary(t *testing.T) {
 
 func TestTensorProductN(t *testing.T) {
 	cases := []struct {
-		in matrix.Matrix
+		in *matrix.Matrix
 	}{
 		{
 			matrix.New(

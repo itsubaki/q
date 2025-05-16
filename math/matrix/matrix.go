@@ -15,7 +15,7 @@ type Matrix struct {
 }
 
 // New returns a new matrix of complex128.
-func New(z ...[]complex128) Matrix {
+func New(z ...[]complex128) *Matrix {
 	rows := len(z)
 	var cols int
 	if rows > 0 {
@@ -27,7 +27,7 @@ func New(z ...[]complex128) Matrix {
 		copy(data[i*cols:(i+1)*cols], z[i])
 	}
 
-	return Matrix{
+	return &Matrix{
 		Rows: rows,
 		Cols: cols,
 		Data: data,
@@ -35,8 +35,8 @@ func New(z ...[]complex128) Matrix {
 }
 
 // Zero returns a zero matrix.
-func Zero(rows, cols int) Matrix {
-	return Matrix{
+func Zero(rows, cols int) *Matrix {
+	return &Matrix{
 		Rows: rows,
 		Cols: cols,
 		Data: make([]complex128, rows*cols),
@@ -44,9 +44,9 @@ func Zero(rows, cols int) Matrix {
 }
 
 // ZeroLike returns a zero matrix of same size as m.
-func ZeroLike(m Matrix) Matrix {
+func ZeroLike(m *Matrix) *Matrix {
 	rows, cols := m.Dimension()
-	return Matrix{
+	return &Matrix{
 		Rows: rows,
 		Cols: cols,
 		Data: make([]complex128, rows*cols),
@@ -54,7 +54,7 @@ func ZeroLike(m Matrix) Matrix {
 }
 
 // Identity returns an identity matrix.
-func Identity(size int) Matrix {
+func Identity(size int) *Matrix {
 	m := Zero(size, size)
 	for i := range size {
 		m.Set(i, i, 1)
@@ -64,32 +64,32 @@ func Identity(size int) Matrix {
 }
 
 // At returns a value of matrix at (i,j).
-func (m Matrix) At(i, j int) complex128 {
+func (m *Matrix) At(i, j int) complex128 {
 	return m.Data[i*m.Cols+j]
 }
 
 // Row returns a row of matrix at (i).
-func (m Matrix) Row(i int) []complex128 {
+func (m *Matrix) Row(i int) []complex128 {
 	return row(m.Data, m.Cols, i)
 }
 
 // Set sets a value of matrix at (i,j).
-func (m Matrix) Set(i, j int, z complex128) {
+func (m *Matrix) Set(i, j int, z complex128) {
 	m.Data[i*m.Cols+j] = z
 }
 
 // AddAt adds a value of matrix at (i,j).
-func (m Matrix) AddAt(i, j int, z complex128) {
+func (m *Matrix) AddAt(i, j int, z complex128) {
 	m.Data[i*m.Cols+j] += z
 }
 
 // MulAt multiplies a value of matrix at (i,j).
-func (m Matrix) MulAt(i, j int, z complex128) {
+func (m *Matrix) MulAt(i, j int, z complex128) {
 	m.Data[i*m.Cols+j] *= z
 }
 
 // Seq2 returns a sequence of rows.
-func (m Matrix) Seq2() iter.Seq2[int, []complex128] {
+func (m *Matrix) Seq2() iter.Seq2[int, []complex128] {
 	return func(yield func(int, []complex128) bool) {
 		for i := range m.Rows {
 			if !yield(i, m.Row(i)) {
@@ -100,12 +100,12 @@ func (m Matrix) Seq2() iter.Seq2[int, []complex128] {
 }
 
 // Dimension returns a dimension of matrix.
-func (m Matrix) Dimension() (rows int, cols int) {
+func (m *Matrix) Dimension() (rows int, cols int) {
 	return m.Rows, m.Cols
 }
 
 // Transpose returns a transpose matrix.
-func (m Matrix) Transpose() Matrix {
+func (m *Matrix) Transpose() *Matrix {
 	rows, cols := m.Dimension()
 
 	out := Zero(cols, rows)
@@ -119,7 +119,7 @@ func (m Matrix) Transpose() Matrix {
 }
 
 // Conjugate returns a conjugate matrix.
-func (m Matrix) Conjugate() Matrix {
+func (m *Matrix) Conjugate() *Matrix {
 	out := ZeroLike(m)
 	for i := range out.Data {
 		out.Data[i] = cmplx.Conj(m.Data[i])
@@ -129,7 +129,7 @@ func (m Matrix) Conjugate() Matrix {
 }
 
 // Dagger returns conjugate transpose matrix.
-func (m Matrix) Dagger() Matrix {
+func (m *Matrix) Dagger() *Matrix {
 	out := ZeroLike(m)
 	for i := range m.Rows {
 		for j := range m.Cols {
@@ -142,7 +142,7 @@ func (m Matrix) Dagger() Matrix {
 
 // Equals returns true if m equals n.
 // If eps is not given, epsilon.E13 is used.
-func (m Matrix) Equals(n Matrix, eps ...float64) bool {
+func (m *Matrix) Equals(n *Matrix, eps ...float64) bool {
 	p, q := m.Dimension()
 	a, b := n.Dimension()
 
@@ -161,12 +161,12 @@ func (m Matrix) Equals(n Matrix, eps ...float64) bool {
 }
 
 // IsSquare returns true if m is square matrix.
-func (m Matrix) IsSquare() bool {
+func (m *Matrix) IsSquare() bool {
 	return m.Rows == m.Cols
 }
 
 // IsHermitian returns true if m is hermitian matrix.
-func (m Matrix) IsHermite(eps ...float64) bool {
+func (m *Matrix) IsHermite(eps ...float64) bool {
 	if !m.IsSquare() {
 		return false
 	}
@@ -175,7 +175,7 @@ func (m Matrix) IsHermite(eps ...float64) bool {
 }
 
 // IsUnitary returns true if m is unitary matrix.
-func (m Matrix) IsUnitary(eps ...float64) bool {
+func (m *Matrix) IsUnitary(eps ...float64) bool {
 	if !m.IsSquare() {
 		return false
 	}
@@ -187,7 +187,7 @@ func (m Matrix) IsUnitary(eps ...float64) bool {
 
 // Apply returns a matrix product of m and n.
 // A.Apply(B) is BA.
-func (m Matrix) Apply(n Matrix) Matrix {
+func (m *Matrix) Apply(n *Matrix) *Matrix {
 	a, b := m.Dimension()
 	_, p := n.Dimension()
 
@@ -205,7 +205,7 @@ func (m Matrix) Apply(n Matrix) Matrix {
 }
 
 // Mul returns a matrix of z*m.
-func (m Matrix) Mul(z complex128) Matrix {
+func (m *Matrix) Mul(z complex128) *Matrix {
 	out := ZeroLike(m)
 	for i := range m.Data {
 		out.Data[i] = m.Data[i] * z
@@ -215,7 +215,7 @@ func (m Matrix) Mul(z complex128) Matrix {
 }
 
 // Add returns a matrix of m+n.
-func (m Matrix) Add(n Matrix) Matrix {
+func (m *Matrix) Add(n *Matrix) *Matrix {
 	out := ZeroLike(m)
 	for i := range m.Data {
 		out.Data[i] = m.Data[i] + n.Data[i]
@@ -225,7 +225,7 @@ func (m Matrix) Add(n Matrix) Matrix {
 }
 
 // Sub returns a matrix of m-n.
-func (m Matrix) Sub(n Matrix) Matrix {
+func (m *Matrix) Sub(n *Matrix) *Matrix {
 	out := ZeroLike(m)
 	for i := range m.Data {
 		out.Data[i] = m.Data[i] - n.Data[i]
@@ -235,7 +235,7 @@ func (m Matrix) Sub(n Matrix) Matrix {
 }
 
 // Trace returns a trace of matrix.
-func (m Matrix) Trace() complex128 {
+func (m *Matrix) Trace() complex128 {
 	var z complex128
 	for i := range m.Rows {
 		z = z + m.At(i, i)
@@ -245,7 +245,7 @@ func (m Matrix) Trace() complex128 {
 }
 
 // Real returns a real part of matrix.
-func (m Matrix) Real() [][]float64 {
+func (m *Matrix) Real() [][]float64 {
 	data := make([]float64, len(m.Data))
 	for i := range m.Data {
 		data[i] = real(m.Data[i])
@@ -260,7 +260,7 @@ func (m Matrix) Real() [][]float64 {
 }
 
 // Imag returns an imaginary part of matrix.
-func (m Matrix) Imag() [][]float64 {
+func (m *Matrix) Imag() [][]float64 {
 	data := make([]float64, len(m.Data))
 	for i := range m.Data {
 		data[i] = imag(m.Data[i])
@@ -275,14 +275,14 @@ func (m Matrix) Imag() [][]float64 {
 }
 
 // Clone returns a clone of matrix.
-func (m Matrix) Clone() Matrix {
+func (m *Matrix) Clone() *Matrix {
 	out := ZeroLike(m)
 	copy(out.Data, m.Data)
 	return out
 }
 
 // Inverse returns an inverse matrix of m.
-func (m Matrix) Inverse() Matrix {
+func (m *Matrix) Inverse() *Matrix {
 	p, q := m.Dimension()
 	mm := m.Clone()
 
@@ -311,7 +311,7 @@ func (m Matrix) Inverse() Matrix {
 }
 
 // TensorProduct returns a tensor product of m and n.
-func (m Matrix) TensorProduct(n Matrix) Matrix {
+func (m *Matrix) TensorProduct(n *Matrix) *Matrix {
 	p, q := m.Dimension()
 	a, b := n.Dimension()
 	rows, cols := p*a, q*b
@@ -329,7 +329,7 @@ func (m Matrix) TensorProduct(n Matrix) Matrix {
 		}
 	}
 
-	return Matrix{
+	return &Matrix{
 		Rows: rows,
 		Cols: cols,
 		Data: data,
@@ -338,7 +338,7 @@ func (m Matrix) TensorProduct(n Matrix) Matrix {
 
 // Apply returns a matrix product of m1, m2, ..., mn.
 // Apply(A, B, C, D, ...) is ...DCBA.
-func Apply(m ...Matrix) Matrix {
+func Apply(m ...*Matrix) *Matrix {
 	out := m[0]
 	for i := 1; i < len(m); i++ {
 		out = out.Apply(m[i])
@@ -347,12 +347,12 @@ func Apply(m ...Matrix) Matrix {
 	return out
 }
 
-func ApplyN(m Matrix, n ...int) Matrix {
+func ApplyN(m *Matrix, n ...int) *Matrix {
 	if len(n) < 1 {
 		return m
 	}
 
-	list := make([]Matrix, n[0])
+	list := make([]*Matrix, n[0])
 	for i := range n[0] {
 		list[i] = m
 	}
@@ -360,12 +360,12 @@ func ApplyN(m Matrix, n ...int) Matrix {
 	return Apply(list...)
 }
 
-func TensorProductN(m Matrix, n ...int) Matrix {
+func TensorProductN(m *Matrix, n ...int) *Matrix {
 	if len(n) < 1 {
 		return m
 	}
 
-	list := make([]Matrix, n[0])
+	list := make([]*Matrix, n[0])
 	for i := range n[0] {
 		list[i] = m
 	}
@@ -373,7 +373,7 @@ func TensorProductN(m Matrix, n ...int) Matrix {
 	return TensorProduct(list...)
 }
 
-func TensorProduct(m ...Matrix) Matrix {
+func TensorProduct(m ...*Matrix) *Matrix {
 	out := m[0]
 	for i := 1; i < len(m); i++ {
 		out = out.TensorProduct(m[i])
@@ -383,13 +383,13 @@ func TensorProduct(m ...Matrix) Matrix {
 }
 
 // Commutator returns a matrix of [m,n].
-func Commutator(m, n Matrix) Matrix {
+func Commutator(m, n *Matrix) *Matrix {
 	mn, nm := n.Apply(m), m.Apply(n)
 	return mn.Sub(nm)
 }
 
 // AntiCommutator returns a matrix of {m,n}.
-func AntiCommutator(m, n Matrix) Matrix {
+func AntiCommutator(m, n *Matrix) *Matrix {
 	mn, nm := n.Apply(m), m.Apply(n)
 	return mn.Add(nm)
 }

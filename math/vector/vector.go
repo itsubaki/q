@@ -89,7 +89,7 @@ func (v Vector) InnerProduct(w Vector) complex128 {
 }
 
 // OuterProduct returns the outer product of v and w.
-func (v Vector) OuterProduct(w Vector) matrix.Matrix {
+func (v Vector) OuterProduct(w Vector) *matrix.Matrix {
 	rows, cols := len(v), len(w)
 	dual := w.Dual()
 
@@ -100,7 +100,7 @@ func (v Vector) OuterProduct(w Vector) matrix.Matrix {
 		}
 	}
 
-	return matrix.Matrix{
+	return &matrix.Matrix{
 		Rows: rows,
 		Cols: cols,
 		Data: data,
@@ -123,7 +123,7 @@ func (v Vector) IsUnit() bool {
 }
 
 // Apply returns a matrix product of v and m.
-func (v Vector) Apply(m matrix.Matrix) Vector {
+func (v Vector) Apply(m *matrix.Matrix) Vector {
 	p, q := m.Dimension()
 
 	out := make(Vector, p)

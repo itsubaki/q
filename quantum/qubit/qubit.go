@@ -67,7 +67,7 @@ func (q *Qubit) InnerProduct(qb *Qubit) complex128 {
 }
 
 // OuterProduct returns the outer product of q and qb.
-func (q *Qubit) OuterProduct(qb *Qubit) matrix.Matrix {
+func (q *Qubit) OuterProduct(qb *Qubit) *matrix.Matrix {
 	return q.vector.OuterProduct(qb.vector)
 }
 
@@ -122,7 +122,7 @@ func (q *Qubit) TensorProduct(qb *Qubit) *Qubit {
 }
 
 // Apply returns a qubit that is applied m.
-func (q *Qubit) Apply(m ...matrix.Matrix) *Qubit {
+func (q *Qubit) Apply(m ...*matrix.Matrix) *Qubit {
 	for _, mm := range m {
 		q.vector = q.vector.Apply(mm)
 	}

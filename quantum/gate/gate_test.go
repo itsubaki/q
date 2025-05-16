@@ -85,22 +85,6 @@ func ExampleSwap() {
 	// [(0+0i) (0+0i) (0+0i) (1+0i)]
 }
 
-func ExampleEmpty() {
-	g0 := gate.Empty()
-	fmt.Println(g0)
-
-	g1 := gate.Empty(3)
-	for _, g := range g1 {
-		fmt.Println(g.Data)
-	}
-
-	// Output:
-	// []
-	// []
-	// []
-	// []
-}
-
 func ExampleControlledModExp2() {
 	n, a, j, N := 5, 7, 0, 15
 	g := gate.ControlledModExp2(n, a, j, N, 0, []int{1, 2, 3, 4})
@@ -188,7 +172,7 @@ func TestControlledModExp2(t *testing.T) {
 		n, a, j, N int
 		c          int
 		t          []int
-		want       matrix.Matrix
+		want       *matrix.Matrix
 	}{
 		{7, 7, 1, 15, 1, []int{4, 5, 6, 7}, matrix.Apply(g1, g2)},
 		{7, 7, 2, 15, 0, []int{4, 5, 6, 7}, g3},
@@ -208,7 +192,7 @@ func TestControlledModExp2(t *testing.T) {
 
 func TestU(t *testing.T) {
 	cases := []struct {
-		in, want matrix.Matrix
+		in, want *matrix.Matrix
 	}{
 		{gate.U(0, 0, 0), gate.I()},
 		{gate.U(math.Pi, 0, math.Pi), gate.X()},
@@ -228,7 +212,7 @@ func TestU(t *testing.T) {
 
 func TestC(t *testing.T) {
 	cases := []struct {
-		in, want matrix.Matrix
+		in, want *matrix.Matrix
 	}{
 		{gate.C(gate.I(), 2, 0, 1), gate.I(2)},
 		{gate.C(gate.X(), 2, 0, 1), gate.CNOT(2, 0, 1)},
@@ -250,7 +234,7 @@ func TestC(t *testing.T) {
 
 func TestControlled(t *testing.T) {
 	cases := []struct {
-		in, want matrix.Matrix
+		in, want *matrix.Matrix
 	}{
 		{gate.Controlled(gate.I(), 2, []int{0}, 1), gate.I(2)},
 		{gate.Controlled(gate.X(), 3, []int{1, 2}, 0), gate.CCNOT(3, 1, 2, 0)},
@@ -270,7 +254,7 @@ func TestControlled(t *testing.T) {
 
 func TestInverse(t *testing.T) {
 	cases := []struct {
-		in, want matrix.Matrix
+		in, want *matrix.Matrix
 	}{
 		{gate.U(1, 2, 3), gate.I()},
 		{gate.X(2), gate.I(2)},
@@ -286,7 +270,7 @@ func TestInverse(t *testing.T) {
 
 func TestIsHermite(t *testing.T) {
 	cases := []struct {
-		in   matrix.Matrix
+		in   *matrix.Matrix
 		want bool
 	}{
 		{gate.H(), true},
@@ -308,7 +292,7 @@ func TestIsHermite(t *testing.T) {
 
 func TestIsUnitary(t *testing.T) {
 	cases := []struct {
-		in   matrix.Matrix
+		in   *matrix.Matrix
 		want bool
 	}{
 		{gate.I(), true},
@@ -341,7 +325,7 @@ func TestIsUnitary(t *testing.T) {
 
 func TestTrace(t *testing.T) {
 	cases := []struct {
-		in   matrix.Matrix
+		in   *matrix.Matrix
 		want complex128
 	}{
 		{gate.I(), complex(2, 0)},
@@ -361,8 +345,8 @@ func TestTrace(t *testing.T) {
 
 func TestMultiQubitGate(t *testing.T) {
 	cases := []struct {
-		in   matrix.Matrix
-		want matrix.Matrix
+		in   *matrix.Matrix
+		want *matrix.Matrix
 	}{
 		{
 			in: gate.CZ(3, 0, 2),
@@ -392,7 +376,7 @@ func TestMultiQubitGate(t *testing.T) {
 		},
 		{
 			in: gate.ControlledNot(2, []int{0}, 1),
-			want: func() matrix.Matrix {
+			want: func() *matrix.Matrix {
 				g0 := gate.I().Add(gate.Z()).TensorProduct(gate.I())
 				g1 := gate.I().Sub(gate.Z()).TensorProduct(gate.X())
 				return g0.Add(g1).Mul(0.5)
@@ -400,8 +384,8 @@ func TestMultiQubitGate(t *testing.T) {
 		},
 		{
 			in: gate.Toffoli(3, 0, 1, 2),
-			want: func() matrix.Matrix {
-				g := gate.Empty(13)
+			want: func() *matrix.Matrix {
+				g := make([]*matrix.Matrix, 13)
 				g[0] = gate.I(2).TensorProduct(gate.H())
 				g[1] = gate.I(1).TensorProduct(gate.CNOT(2, 0, 1))
 				g[2] = gate.I(2).TensorProduct(gate.T().Dagger())

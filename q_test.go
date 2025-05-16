@@ -772,7 +772,7 @@ func Example_quantumTeleportation2() {
 }
 
 func Example_superDenseCoding() {
-	sdc := func(g matrix.Matrix) string {
+	sdc := func(g *matrix.Matrix) string {
 		qsim := q.New()
 
 		// initial state
