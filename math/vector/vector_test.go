@@ -24,25 +24,27 @@ func BenchmarkApplyN12(b *testing.B) {
 }
 
 func BenchmarkApplyConcurrencyN12(b *testing.B) {
-	apply := func(v vector.Vector, m *matrix.Matrix) vector.Vector {
+	apply := func(v *vector.Vector, m *matrix.Matrix) *vector.Vector {
 		p, q := m.Dimension()
 
 		wg := sync.WaitGroup{}
-		out := make(vector.Vector, p)
+		data := make([]complex128, p)
 		for i := range p {
 			wg.Add(1)
 
-			go func(i int, out *vector.Vector) {
+			go func(i int) {
 				defer wg.Done()
 
 				for j := range q {
-					(*out)[i] += m.At(i, j) * v[j]
+					data[i] += m.At(i, j) * v.Data[j]
 				}
-			}(i, &out)
+			}(i)
 		}
 
 		wg.Wait()
-		return out
+		return &vector.Vector{
+			Data: data,
+		}
 	}
 
 	n := 12
@@ -188,17 +190,9 @@ func ExampleVector_Complex() {
 	// [(1+2i) (3+4i)]
 }
 
-func ExampleVector_Dimension() {
-	v := vector.New(1+2i, 3+4i)
-	fmt.Println(v.Dimension())
-
-	// Output:
-	// 2
-}
-
 func TestVector(t *testing.T) {
 	cases := []struct {
-		v0, v1       vector.Vector
+		v0, v1       *vector.Vector
 		innerProduct complex128
 		isOrthogonal bool
 		isUnit       bool
@@ -230,8 +224,8 @@ func TestVector(t *testing.T) {
 
 func TestAdd(t *testing.T) {
 	cases := []struct {
-		v0, v1 vector.Vector
-		want   vector.Vector
+		v0, v1 *vector.Vector
+		want   *vector.Vector
 	}{
 		{vector.New(1, 2, 3, 4, 5), vector.New(6, 7, 8, 9, 10), vector.New(7, 9, 11, 13, 15)},
 	}
@@ -245,9 +239,9 @@ func TestAdd(t *testing.T) {
 
 func TestMul(t *testing.T) {
 	cases := []struct {
-		v    vector.Vector
+		v    *vector.Vector
 		c    complex128
-		want vector.Vector
+		want *vector.Vector
 	}{
 		{vector.New(1, 2, 3, 4, 5), 3, vector.New(3, 6, 9, 12, 15)},
 	}
@@ -270,7 +264,7 @@ func TestClone(t *testing.T) {
 
 func TestTensorProductN(t *testing.T) {
 	cases := []struct {
-		in vector.Vector
+		in *vector.Vector
 	}{
 		{vector.New(1, 2, 3, 4, 5, 6)},
 	}
@@ -284,7 +278,7 @@ func TestTensorProductN(t *testing.T) {
 
 func TestEquals(t *testing.T) {
 	cases := []struct {
-		v0, v1 vector.Vector
+		v0, v1 *vector.Vector
 		want   bool
 	}{
 		{vector.New(1, 2), vector.New(1, 2), true},

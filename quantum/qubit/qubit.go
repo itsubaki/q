@@ -1,7 +1,6 @@
 package qubit
 
 import (
-	"fmt"
 	"math"
 	"math/cmplx"
 	"strconv"
@@ -16,16 +15,16 @@ import (
 
 // Qubit is a qubit.
 type Qubit struct {
-	vector vector.Vector
-	Rand   func() float64 // Random number generator
+	vec  *vector.Vector
+	Rand func() float64 // Random number generator
 }
 
 // New returns a new qubit.
 // z is a vector of complex128.
 func New(z ...complex128) *Qubit {
 	q := &Qubit{
-		vector: vector.New(z...),
-		Rand:   rand.Float64,
+		vec:  vector.New(z...),
+		Rand: rand.Float64,
 	}
 
 	q.Normalize()
@@ -35,14 +34,16 @@ func New(z ...complex128) *Qubit {
 // Zero returns a qubit in the zero state.
 // n is the number of qubits.
 func Zero(n ...int) *Qubit {
-	v := vector.TensorProductN(vector.Vector{1, 0}, n...)
+	z := &vector.Vector{Data: []complex128{1, 0}}
+	v := vector.TensorProductN(z, n...)
 	return New(v.Complex()...)
 }
 
 // One returns a qubit in the one state.
 // n is the number of qubits.
 func One(n ...int) *Qubit {
-	v := vector.TensorProductN(vector.Vector{0, 1}, n...)
+	o := &vector.Vector{Data: []complex128{0, 1}}
+	v := vector.TensorProductN(o, n...)
 	return New(v.Complex()...)
 }
 
@@ -63,24 +64,24 @@ func (q *Qubit) IsOne(eps ...float64) bool {
 
 // InnerProduct returns the inner product of q and qb.
 func (q *Qubit) InnerProduct(qb *Qubit) complex128 {
-	return q.vector.InnerProduct(qb.vector)
+	return q.vec.InnerProduct(qb.vec)
 }
 
 // OuterProduct returns the outer product of q and qb.
 func (q *Qubit) OuterProduct(qb *Qubit) *matrix.Matrix {
-	return q.vector.OuterProduct(qb.vector)
+	return q.vec.OuterProduct(qb.vec)
 }
 
 // Dimension returns the dimension of q.
 func (q *Qubit) Dimension() int {
-	return q.vector.Dimension()
+	return len(q.vec.Data)
 }
 
 // Clone returns a clone of q.
 func (q *Qubit) Clone() *Qubit {
 	return &Qubit{
-		vector: q.vector.Clone(),
-		Rand:   q.Rand,
+		vec:  q.vec.Clone(),
+		Rand: q.Rand,
 	}
 }
 
@@ -112,19 +113,19 @@ func (q *Qubit) TraceDistance(qb *Qubit) float64 {
 
 // Equals returns true if q and qb are equal.
 func (q *Qubit) Equals(qb *Qubit, eps ...float64) bool {
-	return q.vector.Equals(qb.vector, eps...)
+	return q.vec.Equals(qb.vec, eps...)
 }
 
 // TensorProduct returns the tensor product of q and qb.
 func (q *Qubit) TensorProduct(qb *Qubit) *Qubit {
-	q.vector = q.vector.TensorProduct(qb.vector)
+	q.vec = q.vec.TensorProduct(qb.vec)
 	return q
 }
 
 // Apply returns a qubit that is applied m.
 func (q *Qubit) Apply(m ...*matrix.Matrix) *Qubit {
 	for _, mm := range m {
-		q.vector = q.vector.Apply(mm)
+		q.vec = q.vec.Apply(mm)
 	}
 
 	return q
@@ -134,13 +135,13 @@ func (q *Qubit) Apply(m ...*matrix.Matrix) *Qubit {
 func (q *Qubit) Normalize() *Qubit {
 	sum := number.Sum(q.Probability())
 	z := 1 / math.Sqrt(sum)
-	q.vector = q.vector.Mul(complex(z, 0))
+	q.vec = q.vec.Mul(complex(z, 0))
 	return q
 }
 
 // Amplitude returns the amplitude of q.
 func (q *Qubit) Amplitude() []complex128 {
-	return q.vector.Complex()
+	return q.vec.Complex()
 }
 
 // Probability returns the probability of q.
@@ -172,7 +173,7 @@ func (q *Qubit) Measure(index int) *Qubit {
 	// One()
 	if q.Rand() > number.Sum(zprop) {
 		for _, i := range zidx {
-			q.vector[i] = complex(0, 0)
+			q.vec.Data[i] = complex(0, 0)
 		}
 
 		q.Normalize()
@@ -181,7 +182,7 @@ func (q *Qubit) Measure(index int) *Qubit {
 
 	// Zero()
 	for _, i := range oidx {
-		q.vector[i] = complex(0, 0)
+		q.vec.Data[i] = complex(0, 0)
 	}
 
 	q.Normalize()
@@ -212,7 +213,7 @@ func (q *Qubit) BinaryString() string {
 
 // String returns the string representation of q.
 func (q *Qubit) String() string {
-	return fmt.Sprintf("%v", q.vector)
+	return q.vec.String()
 }
 
 // State returns the state of q with index.
