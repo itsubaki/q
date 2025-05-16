@@ -171,7 +171,7 @@ func (m *Matrix) IsHermite(eps ...float64) bool {
 		return false
 	}
 
-	return m.Equals(m.Dagger(), epsilon.E13(eps...))
+	return m.Equals(m.Dagger(), eps...)
 }
 
 // IsUnitary returns true if m is unitary matrix.
@@ -182,7 +182,7 @@ func (m *Matrix) IsUnitary(eps ...float64) bool {
 
 	mmd := m.Apply(m.Dagger())
 	id := Identity(m.Rows)
-	return mmd.Equals(id, epsilon.E13(eps...))
+	return mmd.Equals(id, eps...)
 }
 
 // Apply returns a matrix product of m and n.
