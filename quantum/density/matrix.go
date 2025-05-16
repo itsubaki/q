@@ -24,15 +24,15 @@ func (q Qubit) Index() int {
 
 // Matrix is a density matrix.
 type Matrix struct {
-	m matrix.Matrix
+	m *matrix.Matrix
 }
 
 // New returns a new density matrix.
 func New(ensemble []State) *Matrix {
-	var m matrix.Matrix
+	var m *matrix.Matrix
 	for _, s := range Normalize(ensemble) {
 		n := s.Qubit.Dimension()
-		if len(m.Data) == 0 {
+		if m == nil {
 			m = matrix.Zero(n, n)
 		}
 
@@ -66,7 +66,7 @@ func (m *Matrix) Qubits() []Qubit {
 }
 
 // Underlying returns the internal matrix.
-func (m *Matrix) Underlying() matrix.Matrix {
+func (m *Matrix) Underlying() *matrix.Matrix {
 	return m.m
 }
 
@@ -82,7 +82,7 @@ func (m *Matrix) NumQubits() int {
 }
 
 // Apply applies a unitary matrix to the density matrix.
-func (m *Matrix) Apply(u matrix.Matrix) *Matrix {
+func (m *Matrix) Apply(u *matrix.Matrix) *Matrix {
 	m.m = u.Dagger().Apply(m.m).Apply(u)
 	return m
 }
@@ -93,7 +93,7 @@ func (m *Matrix) Measure(q *qubit.Qubit) float64 {
 }
 
 // ExpectationValue returns the expectation value of the given operator.
-func (m *Matrix) ExpectedValue(u matrix.Matrix) float64 {
+func (m *Matrix) ExpectedValue(u *matrix.Matrix) float64 {
 	return real(m.m.Apply(u).Trace())
 }
 

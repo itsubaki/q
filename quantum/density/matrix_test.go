@@ -190,7 +190,7 @@ func TestExpectedValue(t *testing.T) {
 	cases := []struct {
 		s        []density.State
 		tr, sqtr float64
-		m        matrix.Matrix
+		m        *matrix.Matrix
 		v        float64
 		eps      float64
 	}{
@@ -353,7 +353,7 @@ func TestPartialTrace(t *testing.T) {
 func TestApply(t *testing.T) {
 	cases := []struct {
 		s    []density.State
-		g    matrix.Matrix
+		g    *matrix.Matrix
 		m    *qubit.Qubit
 		want float64
 	}{

@@ -193,7 +193,7 @@ func (q *Q) RZ(theta float64, qb ...Qubit) *Q {
 }
 
 // Apply applies matrix to qubits.
-func (q *Q) Apply(m matrix.Matrix, qb ...Qubit) *Q {
+func (q *Q) Apply(m *matrix.Matrix, qb ...Qubit) *Q {
 	if len(qb) < 1 {
 		q.qb.Apply(m)
 		return q
@@ -205,14 +205,14 @@ func (q *Q) Apply(m matrix.Matrix, qb ...Qubit) *Q {
 	return q
 }
 
-func (q *Q) Controlled(m matrix.Matrix, control []Qubit, target Qubit) *Q {
+func (q *Q) Controlled(m *matrix.Matrix, control []Qubit, target Qubit) *Q {
 	n := q.NumQubits()
 	g := gate.Controlled(m, n, Index(control...), target.Index())
 	q.qb.Apply(g)
 	return q
 }
 
-func (q *Q) C(m matrix.Matrix, control, target Qubit) *Q {
+func (q *Q) C(m *matrix.Matrix, control, target Qubit) *Q {
 	return q.Controlled(m, []Qubit{control}, target)
 }
 
@@ -290,7 +290,7 @@ func (q *Q) CModExp2(a, N int, control []Qubit, target []Qubit) *Q {
 }
 
 // Cond applies m if condition is true.
-func (q *Q) Cond(condition bool, m matrix.Matrix, qb ...Qubit) *Q {
+func (q *Q) Cond(condition bool, m *matrix.Matrix, qb ...Qubit) *Q {
 	if condition {
 		return q.Apply(m, qb...)
 	}

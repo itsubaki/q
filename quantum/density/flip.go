@@ -15,18 +15,18 @@ var (
 )
 
 // Flip returns the flip channel.
-func Flip(p float64, m matrix.Matrix) (matrix.Matrix, matrix.Matrix, error) {
+func Flip(p float64, m *matrix.Matrix) (*matrix.Matrix, *matrix.Matrix, error) {
 	if p < 0 || p > 1 {
-		return matrix.Matrix{}, matrix.Matrix{}, ErrInvalidRange
+		return nil, nil, ErrInvalidRange
 	}
 
 	d, d2 := m.Dimension()
 	if d != d2 {
-		return matrix.Matrix{}, matrix.Matrix{}, ErrNotSquare
+		return nil, nil, ErrNotSquare
 	}
 
 	if !number.IsPowOf2(d) {
-		return matrix.Matrix{}, matrix.Matrix{}, ErrInvalidDimension
+		return nil, nil, ErrInvalidDimension
 	}
 
 	n := number.Log2(d)
@@ -36,16 +36,16 @@ func Flip(p float64, m matrix.Matrix) (matrix.Matrix, matrix.Matrix, error) {
 }
 
 // BitFlip returns the bit flip channel.
-func BitFlip(p float64) (matrix.Matrix, matrix.Matrix, error) {
+func BitFlip(p float64) (*matrix.Matrix, *matrix.Matrix, error) {
 	return Flip(p, gate.X())
 }
 
 // PhaseFlip returns the phase flip channel.
-func PhaseFlip(p float64) (matrix.Matrix, matrix.Matrix, error) {
+func PhaseFlip(p float64) (*matrix.Matrix, *matrix.Matrix, error) {
 	return Flip(p, gate.Z())
 }
 
 // BitPhaseFlip returns the bit-phase flip channel.
-func BitPhaseFlip(p float64) (matrix.Matrix, matrix.Matrix, error) {
+func BitPhaseFlip(p float64) (*matrix.Matrix, *matrix.Matrix, error) {
 	return Flip(p, gate.Y())
 }
