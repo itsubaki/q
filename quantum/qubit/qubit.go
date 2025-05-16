@@ -36,7 +36,7 @@ func New(z ...complex128) *Qubit {
 func Zero(n ...int) *Qubit {
 	z := &vector.Vector{Data: []complex128{1, 0}}
 	v := vector.TensorProductN(z, n...)
-	return New(v.Complex()...)
+	return New(v.Data...)
 }
 
 // One returns a qubit in the one state.
@@ -44,7 +44,7 @@ func Zero(n ...int) *Qubit {
 func One(n ...int) *Qubit {
 	o := &vector.Vector{Data: []complex128{0, 1}}
 	v := vector.TensorProductN(o, n...)
-	return New(v.Complex()...)
+	return New(v.Data...)
 }
 
 // NumQubits returns the number of qubits.
@@ -141,7 +141,7 @@ func (q *Qubit) Normalize() *Qubit {
 
 // Amplitude returns the amplitude of q.
 func (q *Qubit) Amplitude() []complex128 {
-	return q.vec.Complex()
+	return q.vec.Data
 }
 
 // Probability returns the probability of q.

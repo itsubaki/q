@@ -182,14 +182,6 @@ func ExampleVector_Imag() {
 	// 4
 }
 
-func ExampleVector_Complex() {
-	v := vector.New(1+2i, 3+4i)
-	fmt.Println(v.Complex())
-
-	// Output:
-	// [(1+2i) (3+4i)]
-}
-
 func TestVector(t *testing.T) {
 	cases := []struct {
 		v0, v1       *vector.Vector

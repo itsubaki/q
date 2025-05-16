@@ -27,11 +27,6 @@ func Zero(n int) *Vector {
 	}
 }
 
-// Complex returns a slice of complex128.
-func (v *Vector) Complex() []complex128 {
-	return v.Data
-}
-
 // Clone returns a clone of vector.
 func (v *Vector) Clone() *Vector {
 	data := make([]complex128, len(v.Data))
