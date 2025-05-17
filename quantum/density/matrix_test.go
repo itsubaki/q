@@ -126,7 +126,7 @@ func ExampleMatrix_PartialTrace() {
 
 	qb := rho.Qubits()
 	p0 := density.Must(rho.PartialTrace(qb[0])) // Partial trace over qubit 0: returns the reduced density matrix for qubit 1
-	p1 := density.Must(rho.PartialTrace(qb[1])) // Partial trace over qubit 1: reduced density matrix for qubit 0
+	p1 := density.Must(rho.PartialTrace(qb[1])) // Partial trace over qubit 1: returns the reduced density matrix for qubit 0
 
 	fmt.Printf("trace: %.2v, purity: %.2v\n", rho.Trace(), rho.Purity())
 	fmt.Printf("trace: %.2v, purity: %.2v\n", p0.Trace(), p0.Purity()) // qubit 1: pure |0⟩
