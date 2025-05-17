@@ -13,6 +13,37 @@ import (
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
+func ExampleMatrix_bell() {
+	phi := qubit.Zero(2).Apply(
+		gate.H().TensorProduct(gate.I()),
+		gate.CNOT(2, 0, 1),
+	)
+
+	rho := density.New([]density.State{
+		{1.0, phi}, // pure state
+	})
+
+	qb := rho.Qubits()
+	p0 := density.Must(rho.PartialTrace(qb[0]))
+	p1 := density.Must(rho.PartialTrace(qb[1]))
+
+	fmt.Printf("trace: %.2v, square_trace: %.2v\n", rho.Trace(), rho.SquareTrace())
+	fmt.Printf("trace: %.2v, square_trace: %.2v\n", p0.Trace(), p0.SquareTrace())
+	fmt.Printf("trace: %.2v, square_trace: %.2v\n", p1.Trace(), p1.SquareTrace())
+
+	m00 := rho.ProbabilityOf(qubit.Zero(2))
+	m01 := rho.ProbabilityOf(qubit.Zero().TensorProduct(qubit.One()))
+	m10 := rho.ProbabilityOf(qubit.One().TensorProduct(qubit.Zero()))
+	m11 := rho.ProbabilityOf(qubit.One(2))
+	fmt.Printf("%.2f, %.2f, %.2f, %.2f\n", m00, m01, m10, m11)
+
+	// Output:
+	// trace: 1, square_trace: 1
+	// trace: 1, square_trace: 0.5
+	// trace: 1, square_trace: 0.5
+	// 0.50, 0.00, 0.00, 0.50
+}
+
 func ExampleMatrix_ExpectedValue() {
 	rho := density.New([]density.State{
 		{0.1, qubit.Zero()},
@@ -44,14 +75,14 @@ func ExampleMatrix_Underlying() {
 	// [(0+0i) (0.9+0i)]
 }
 
-func ExampleMatrix_Measure() {
+func ExampleMatrix_ProbabilityOf() {
 	rho := density.New([]density.State{
 		{0.1, qubit.Zero()},
 		{0.9, qubit.One()},
 	})
 
-	fmt.Printf("0: %.2v\n", rho.Measure(qubit.Zero()))
-	fmt.Printf("1: %.2v\n", rho.Measure(qubit.One()))
+	fmt.Printf("0: %.2v\n", rho.ProbabilityOf(qubit.Zero()))
+	fmt.Printf("1: %.2v\n", rho.ProbabilityOf(qubit.One()))
 
 	// Output:
 	// 0: 0.1
@@ -102,30 +133,6 @@ func ExampleMatrix_PartialTrace() {
 	// trace: 1, square_trace: 0.75
 }
 
-func ExampleMatrix_PartialTrace_bell() {
-	phi := qubit.Zero(2).Apply(
-		gate.H().TensorProduct(gate.I()),
-		gate.CNOT(2, 0, 1),
-	)
-
-	rho := density.New([]density.State{
-		{1.0, phi},
-	})
-
-	qb := rho.Qubits()
-	p0 := density.Must(rho.PartialTrace(qb[0]))
-	p1 := density.Must(rho.PartialTrace(qb[1]))
-
-	fmt.Printf("trace: %.2v, square_trace: %.2v\n", rho.Trace(), rho.SquareTrace())
-	fmt.Printf("trace: %.2v, square_trace: %.2v\n", p0.Trace(), p0.SquareTrace())
-	fmt.Printf("trace: %.2v, square_trace: %.2v\n", p1.Trace(), p1.SquareTrace())
-
-	// Output:
-	// trace: 1, square_trace: 1
-	// trace: 1, square_trace: 0.5
-	// trace: 1, square_trace: 0.5
-}
-
 func ExampleMatrix_PartialTrace_x8() {
 	phi := qubit.Zero(3).Apply(
 		matrix.TensorProduct(gate.H(), gate.I(), gate.I()),
@@ -170,13 +177,13 @@ func ExampleMatrix_PartialTrace_invalid() {
 
 func ExampleMatrix_Depolarizing() {
 	rho := density.New([]density.State{{1.0, qubit.Zero()}})
-	fmt.Printf("0: %.2f\n", rho.Measure(qubit.Zero()))
-	fmt.Printf("1: %.2f\n", rho.Measure(qubit.One()))
+	fmt.Printf("0: %.2f\n", rho.ProbabilityOf(qubit.Zero()))
+	fmt.Printf("1: %.2f\n", rho.ProbabilityOf(qubit.One()))
 	fmt.Println()
 
 	dep, _ := rho.Depolarizing(1)
-	fmt.Printf("0: %.2f\n", dep.Measure(qubit.Zero()))
-	fmt.Printf("1: %.2f\n", dep.Measure(qubit.One()))
+	fmt.Printf("0: %.2f\n", dep.ProbabilityOf(qubit.Zero()))
+	fmt.Printf("1: %.2f\n", dep.ProbabilityOf(qubit.One()))
 
 	// Output:
 	// 0: 1.00
@@ -225,7 +232,7 @@ func TestExpectedValue(t *testing.T) {
 	}
 }
 
-func TestMeasure(t *testing.T) {
+func TestProbabilityOf(t *testing.T) {
 	cases := []struct {
 		s    []density.State
 		m    *qubit.Qubit
@@ -244,7 +251,7 @@ func TestMeasure(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if density.New(c.s).Measure(c.m) != c.want {
+		if density.New(c.s).ProbabilityOf(c.m) != c.want {
 			t.Fail()
 		}
 	}
@@ -372,7 +379,7 @@ func TestApply(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if density.New(c.s).Apply(c.g).Measure(c.m) != c.want {
+		if density.New(c.s).Apply(c.g).ProbabilityOf(c.m) != c.want {
 			t.Fail()
 		}
 	}

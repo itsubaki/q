@@ -87,8 +87,8 @@ func (m *Matrix) Apply(u *matrix.Matrix) *Matrix {
 	return m
 }
 
-// Measure returns the probability of measuring the qubit in the given state.
-func (m *Matrix) Measure(q *qubit.Qubit) float64 {
+// ProbabilityOf returns the probability of the qubit in the given state.
+func (m *Matrix) ProbabilityOf(q *qubit.Qubit) float64 {
 	return real(m.m.Apply(q.OuterProduct(q)).Trace())
 }
 
