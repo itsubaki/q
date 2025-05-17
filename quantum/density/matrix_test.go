@@ -115,22 +115,32 @@ func ExampleMatrix_Purity() {
 
 func ExampleMatrix_PartialTrace() {
 	rho := density.New([]density.State{
-		{0.5, qubit.Zero(2).Apply(gate.QFT(2))},
-		{0.5, qubit.One(2).Apply(gate.QFT(2))},
+		{0.5, qubit.Zero(2)},
+		{0.5, qubit.One().TensorProduct(qubit.Zero())},
 	})
 
+	for _, r := range rho.Underlying().Seq2() {
+		fmt.Println(r)
+	}
+	fmt.Println()
+
 	qb := rho.Qubits()
-	p0 := density.Must(rho.PartialTrace(qb[0]))
-	p1 := density.Must(rho.PartialTrace(qb[1]))
+	p0 := density.Must(rho.PartialTrace(qb[0])) // Partial trace over qubit 0: returns the reduced density matrix for qubit 1
+	p1 := density.Must(rho.PartialTrace(qb[1])) // Partial trace over qubit 1: reduced density matrix for qubit 0
 
 	fmt.Printf("trace: %.2v, purity: %.2v\n", rho.Trace(), rho.Purity())
-	fmt.Printf("trace: %.2v, purity: %.2v\n", p0.Trace(), p0.Purity())
-	fmt.Printf("trace: %.2v, purity: %.2v\n", p1.Trace(), p1.Purity())
+	fmt.Printf("trace: %.2v, purity: %.2v\n", p0.Trace(), p0.Purity()) // qubit 1: pure |0⟩
+	fmt.Printf("trace: %.2v, purity: %.2v\n", p1.Trace(), p1.Purity()) // qubit 0: maximally mixed
 
 	// Output:
+	// [(0.5+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0.5+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	//
 	// trace: 1, purity: 0.5
+	// trace: 1, purity: 1
 	// trace: 1, purity: 0.5
-	// trace: 1, purity: 0.75
 }
 
 func ExampleMatrix_PartialTrace_x8() {
