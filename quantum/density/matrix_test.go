@@ -27,9 +27,9 @@ func ExampleMatrix_bell() {
 	p0 := density.Must(rho.PartialTrace(qb[0]))
 	p1 := density.Must(rho.PartialTrace(qb[1]))
 
-	fmt.Printf("trace: %.2v, square_trace: %.2v\n", rho.Trace(), rho.SquareTrace())
-	fmt.Printf("trace: %.2v, square_trace: %.2v\n", p0.Trace(), p0.SquareTrace())
-	fmt.Printf("trace: %.2v, square_trace: %.2v\n", p1.Trace(), p1.SquareTrace())
+	fmt.Printf("trace: %.2v, purity: %.2v\n", rho.Trace(), rho.Purity())
+	fmt.Printf("trace: %.2v, purity: %.2v\n", p0.Trace(), p0.Purity())
+	fmt.Printf("trace: %.2v, purity: %.2v\n", p1.Trace(), p1.Purity())
 
 	m00 := rho.ProbabilityOf(qubit.Zero(2))
 	m01 := rho.ProbabilityOf(qubit.Zero().TensorProduct(qubit.One()))
@@ -38,9 +38,9 @@ func ExampleMatrix_bell() {
 	fmt.Printf("%.2f, %.2f, %.2f, %.2f\n", m00, m01, m10, m11)
 
 	// Output:
-	// trace: 1, square_trace: 1
-	// trace: 1, square_trace: 0.5
-	// trace: 1, square_trace: 0.5
+	// trace: 1, purity: 1
+	// trace: 1, purity: 0.5
+	// trace: 1, purity: 0.5
 	// 0.50, 0.00, 0.00, 0.50
 }
 
@@ -101,12 +101,12 @@ func ExampleMatrix_Trace() {
 	// mixed: 1.00
 }
 
-func ExampleMatrix_SquareTrace() {
+func ExampleMatrix_Purity() {
 	pure := density.New([]density.State{{1.0, qubit.Zero()}})
 	mixed := density.New([]density.State{{0.1, qubit.Zero()}, {0.9, qubit.One()}})
 
-	fmt.Printf("pure:  %.2f\n", pure.SquareTrace())
-	fmt.Printf("mixed: %.2f\n", mixed.SquareTrace())
+	fmt.Printf("pure:  %.2f\n", pure.Purity())
+	fmt.Printf("mixed: %.2f\n", mixed.Purity())
 
 	// Output:
 	// pure:  1.00
@@ -123,14 +123,14 @@ func ExampleMatrix_PartialTrace() {
 	p0 := density.Must(rho.PartialTrace(qb[0]))
 	p1 := density.Must(rho.PartialTrace(qb[1]))
 
-	fmt.Printf("trace: %.2v, square_trace: %.2v\n", rho.Trace(), rho.SquareTrace())
-	fmt.Printf("trace: %.2v, square_trace: %.2v\n", p0.Trace(), p0.SquareTrace())
-	fmt.Printf("trace: %.2v, square_trace: %.2v\n", p1.Trace(), p1.SquareTrace())
+	fmt.Printf("trace: %.2v, purity: %.2v\n", rho.Trace(), rho.Purity())
+	fmt.Printf("trace: %.2v, purity: %.2v\n", p0.Trace(), p0.Purity())
+	fmt.Printf("trace: %.2v, purity: %.2v\n", p1.Trace(), p1.Purity())
 
 	// Output:
-	// trace: 1, square_trace: 0.5
-	// trace: 1, square_trace: 0.5
-	// trace: 1, square_trace: 0.75
+	// trace: 1, purity: 0.5
+	// trace: 1, purity: 0.5
+	// trace: 1, purity: 0.75
 }
 
 func ExampleMatrix_PartialTrace_x8() {
@@ -148,16 +148,16 @@ func ExampleMatrix_PartialTrace_x8() {
 	p1 := density.Must(rho.PartialTrace(qb[1]))
 	p2 := density.Must(rho.PartialTrace(qb[2]))
 
-	fmt.Printf("trace: %.2v, square_trace: %.2v\n", rho.Trace(), rho.SquareTrace())
-	fmt.Printf("trace: %.2v, square_trace: %.2v\n", p0.Trace(), p0.SquareTrace())
-	fmt.Printf("trace: %.2v, square_trace: %.2v\n", p1.Trace(), p1.SquareTrace())
-	fmt.Printf("trace: %.2v, square_trace: %.2v\n", p2.Trace(), p2.SquareTrace())
+	fmt.Printf("trace: %.2v, purity: %.2v\n", rho.Trace(), rho.Purity())
+	fmt.Printf("trace: %.2v, purity: %.2v\n", p0.Trace(), p0.Purity())
+	fmt.Printf("trace: %.2v, purity: %.2v\n", p1.Trace(), p1.Purity())
+	fmt.Printf("trace: %.2v, purity: %.2v\n", p2.Trace(), p2.Purity())
 
 	// Output:
-	// trace: 1, square_trace: 1
-	// trace: 1, square_trace: 0.5
-	// trace: 1, square_trace: 0.5
-	// trace: 1, square_trace: 1
+	// trace: 1, purity: 1
+	// trace: 1, purity: 0.5
+	// trace: 1, purity: 0.5
+	// trace: 1, purity: 1
 }
 
 func ExampleMatrix_PartialTrace_invalid() {
@@ -222,8 +222,8 @@ func TestExpectedValue(t *testing.T) {
 			t.Errorf("trace=%v", rho.Trace())
 		}
 
-		if math.Abs(rho.SquareTrace()-c.sqtr) > c.eps {
-			t.Errorf("squared_trace=%v", rho.SquareTrace())
+		if math.Abs(rho.Purity()-c.sqtr) > c.eps {
+			t.Errorf("purity=%v", rho.Purity())
 		}
 
 		if math.Abs(rho.ExpectedValue(c.m)-c.v) > c.eps {
@@ -350,8 +350,8 @@ func TestPartialTrace(t *testing.T) {
 				t.Errorf("trace: got=%v, want=%v", got.Trace(), 1)
 			}
 
-			if got.SquareTrace() > 1+c.eps {
-				t.Errorf("square_trace: got=%v > 1", got.SquareTrace())
+			if got.Purity() > 1+c.eps {
+				t.Errorf("purity: got=%v > 1", got.Purity())
 			}
 		}
 	}

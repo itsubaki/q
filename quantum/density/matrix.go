@@ -102,8 +102,8 @@ func (m *Matrix) Trace() float64 {
 	return real(m.m.Trace())
 }
 
-// SquareTrace returns the square trace of the density matrix.
-func (m *Matrix) SquareTrace() float64 {
+// Purity returns the purity of the density matrix, defined as Tr(rho^2).
+func (m *Matrix) Purity() float64 {
 	return real(m.m.Apply(m.m).Trace())
 }
 
