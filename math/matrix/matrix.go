@@ -201,15 +201,21 @@ func (m *Matrix) IsUnitary(eps ...float64) bool {
 // A.Apply(B) is BA.
 // For example, to compute XHZ|v>, you can write v.Apply(Z).Apply(H).Apply(X).
 func (m *Matrix) Apply(n *Matrix) *Matrix {
+	return Dot(n, m)
+}
+
+// Dot returns the dot product of m and n.
+// A.Dot(B) is AB.
+func Dot(m, n *Matrix) *Matrix {
 	a, b := m.Dimension()
 	_, p := n.Dimension()
 
 	out := Zero(a, p)
 	for i := range a {
 		for k := range b {
-			nik := n.At(i, k)
+			mik := m.At(i, k)
 			for j := range p {
-				out.AddAt(i, j, nik*m.At(k, j))
+				out.AddAt(i, j, mik*n.At(k, j))
 			}
 		}
 	}
