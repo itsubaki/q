@@ -3,9 +3,11 @@ package density
 import (
 	"errors"
 	"fmt"
+	"math/cmplx"
 	"strconv"
 	"strings"
 
+	"github.com/itsubaki/q/math/epsilon"
 	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/math/number"
 	"github.com/itsubaki/q/quantum/gate"
@@ -75,6 +77,11 @@ func (m *Matrix) Dimension() (rows int, cols int) {
 	return m.m.Dimension()
 }
 
+// IsZero returns true if the density matrix is zero.
+func (m *Matrix) IsZero(eps ...float64) bool {
+	return m.m.IsZero(eps...)
+}
+
 // NumQubits returns the number of qubits.
 func (m *Matrix) NumQubits() int {
 	p, _ := m.Dimension()
@@ -87,9 +94,27 @@ func (m *Matrix) Apply(u *matrix.Matrix) *Matrix {
 	return m
 }
 
-// ProbabilityOf returns the probability of the qubit in the given state.
-func (m *Matrix) ProbabilityOf(q *qubit.Qubit) float64 {
-	return real(m.m.Apply(q.OuterProduct(q)).Trace())
+// Probability returns the probability of the qubit in the given state.
+func (m *Matrix) Probability(q *qubit.Qubit) float64 {
+	p := q.OuterProduct(q)
+	return real(m.m.Apply(p).Trace())
+}
+
+// Project returns the projection of the density matrix onto the given qubit.
+func (m *Matrix) Project(q *qubit.Qubit, eps ...float64) *Matrix {
+	p := q.OuterProduct(q)
+	tr := m.m.Apply(p).Trace()
+
+	if cmplx.Abs(tr) < epsilon.E13(eps...) {
+		return &Matrix{
+			m: matrix.ZeroLike(m.m),
+		}
+	}
+
+	pmp := matrix.Apply(p, m.m, p)
+	return &Matrix{
+		m: pmp.Mul(1.0 / tr),
+	}
 }
 
 // ExpectationValue returns the expectation value of the given operator.

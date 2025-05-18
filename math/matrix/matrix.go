@@ -160,6 +160,18 @@ func (m *Matrix) Equals(n *Matrix, eps ...float64) bool {
 	return true
 }
 
+// IsZero returns true if m is zero matrix.
+func (m *Matrix) IsZero(eps ...float64) bool {
+	e := epsilon.E13(eps...)
+	for i := range m.Data {
+		if cmplx.Abs(m.Data[i]) > e {
+			return false
+		}
+	}
+
+	return true
+}
+
 // IsSquare returns true if m is square matrix.
 func (m *Matrix) IsSquare() bool {
 	return m.Rows == m.Cols

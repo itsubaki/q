@@ -31,10 +31,15 @@ func ExampleMatrix_bell() {
 	fmt.Printf("trace: %.2v, purity: %.2v\n", p0.Trace(), p0.Purity())
 	fmt.Printf("trace: %.2v, purity: %.2v\n", p1.Trace(), p1.Purity())
 
-	m00 := rho.ProbabilityOf(qubit.Zero(2))
-	m01 := rho.ProbabilityOf(qubit.Zero().TensorProduct(qubit.One()))
-	m10 := rho.ProbabilityOf(qubit.One().TensorProduct(qubit.Zero()))
-	m11 := rho.ProbabilityOf(qubit.One(2))
+	q00 := qubit.TensorProduct(qubit.Zero(), qubit.Zero())
+	q01 := qubit.TensorProduct(qubit.Zero(), qubit.One())
+	q10 := qubit.TensorProduct(qubit.One(), qubit.Zero())
+	q11 := qubit.TensorProduct(qubit.One(), qubit.One())
+
+	m00 := rho.Probability(q00)
+	m01 := rho.Probability(q01)
+	m10 := rho.Probability(q10)
+	m11 := rho.Probability(q11)
 	fmt.Printf("%.2f, %.2f, %.2f, %.2f\n", m00, m01, m10, m11)
 
 	// Output:
@@ -75,18 +80,43 @@ func ExampleMatrix_Underlying() {
 	// [(0+0i) (0.9+0i)]
 }
 
-func ExampleMatrix_ProbabilityOf() {
+func ExampleMatrix_Probability() {
 	rho := density.New([]density.State{
 		{0.1, qubit.Zero()},
 		{0.9, qubit.One()},
 	})
 
-	fmt.Printf("0: %.2v\n", rho.ProbabilityOf(qubit.Zero()))
-	fmt.Printf("1: %.2v\n", rho.ProbabilityOf(qubit.One()))
+	fmt.Printf("0: %.2v\n", rho.Probability(qubit.Zero()))
+	fmt.Printf("1: %.2v\n", rho.Probability(qubit.One()))
 
 	// Output:
 	// 0: 0.1
 	// 1: 0.9
+}
+
+func ExampleMatrix_Project() {
+	rho := density.New([]density.State{
+		{1.0, qubit.Zero(2).Apply(
+			gate.H().TensorProduct(gate.I()),
+			gate.CNOT(2, 0, 1),
+		)},
+	})
+
+	q00 := qubit.TensorProduct(qubit.Zero(), qubit.Zero())
+	q01 := qubit.TensorProduct(qubit.Zero(), qubit.One())
+	q10 := qubit.TensorProduct(qubit.One(), qubit.Zero())
+	q11 := qubit.TensorProduct(qubit.One(), qubit.One())
+
+	fmt.Println(rho.Project(q01).IsZero())
+	fmt.Println(rho.Project(q10).IsZero())
+	fmt.Println(rho.Project(q00).Underlying().Data)
+	fmt.Println(rho.Project(q11).Underlying().Data)
+
+	// Output:
+	// true
+	// true
+	// [(1+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (1+0i)]
 }
 
 func ExampleMatrix_Trace() {
@@ -187,13 +217,13 @@ func ExampleMatrix_PartialTrace_invalid() {
 
 func ExampleMatrix_Depolarizing() {
 	rho := density.New([]density.State{{1.0, qubit.Zero()}})
-	fmt.Printf("0: %.2f\n", rho.ProbabilityOf(qubit.Zero()))
-	fmt.Printf("1: %.2f\n", rho.ProbabilityOf(qubit.One()))
+	fmt.Printf("0: %.2f\n", rho.Probability(qubit.Zero()))
+	fmt.Printf("1: %.2f\n", rho.Probability(qubit.One()))
 	fmt.Println()
 
 	dep, _ := rho.Depolarizing(1)
-	fmt.Printf("0: %.2f\n", dep.ProbabilityOf(qubit.Zero()))
-	fmt.Printf("1: %.2f\n", dep.ProbabilityOf(qubit.One()))
+	fmt.Printf("0: %.2f\n", dep.Probability(qubit.Zero()))
+	fmt.Printf("1: %.2f\n", dep.Probability(qubit.One()))
 
 	// Output:
 	// 0: 1.00
@@ -261,7 +291,7 @@ func TestProbabilityOf(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if density.New(c.s).ProbabilityOf(c.m) != c.want {
+		if density.New(c.s).Probability(c.m) != c.want {
 			t.Fail()
 		}
 	}
@@ -389,7 +419,7 @@ func TestApply(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if density.New(c.s).Apply(c.g).ProbabilityOf(c.m) != c.want {
+		if density.New(c.s).Apply(c.g).Probability(c.m) != c.want {
 			t.Fail()
 		}
 	}
