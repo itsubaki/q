@@ -85,10 +85,10 @@ func ExampleQ_Ones() {
 	// [11][  3]( 0.5000 0.0000i): 0.2500
 }
 
-func ExampleQ_From() {
+func ExampleQ_NewFrom() {
 	qsim := q.New()
 
-	qb := qsim.From("0101")
+	qb := qsim.NewFrom("0101")
 	m0 := qsim.Measure(qb[0]) // 0
 	m1 := qsim.Measure(qb[1]) // 1
 	m2 := qsim.Measure(qb[2]) // 0
