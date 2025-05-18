@@ -379,6 +379,16 @@ func ApplyN(m *Matrix, n ...int) *Matrix {
 	return Apply(list...)
 }
 
+// TensorProduct returns a tensor product of m1, m2, ..., mn.
+func TensorProduct(m ...*Matrix) *Matrix {
+	out := m[0]
+	for i := 1; i < len(m); i++ {
+		out = out.TensorProduct(m[i])
+	}
+
+	return out
+}
+
 func TensorProductN(m *Matrix, n ...int) *Matrix {
 	if len(n) < 1 {
 		return m
@@ -390,15 +400,6 @@ func TensorProductN(m *Matrix, n ...int) *Matrix {
 	}
 
 	return TensorProduct(list...)
-}
-
-func TensorProduct(m ...*Matrix) *Matrix {
-	out := m[0]
-	for i := 1; i < len(m); i++ {
-		out = out.TensorProduct(m[i])
-	}
-
-	return out
 }
 
 // Commutator returns a matrix of [m,n].
