@@ -57,21 +57,6 @@ func (q *Q) New(v ...complex128) Qubit {
 	return Qubit(q.NumQubits() - 1)
 }
 
-// NewFrom returns a slice of qubits from binary string.
-func (q *Q) NewFrom(binary string) []Qubit {
-	qb := make([]Qubit, len(binary))
-	for i, b := range binary {
-		if b == '0' {
-			qb[i] = q.Zero()
-			continue
-		}
-
-		qb[i] = q.One()
-	}
-
-	return qb
-}
-
 // Zero returns a qubit in the zero state.
 func (q *Q) Zero() Qubit {
 	return q.New(1, 0)

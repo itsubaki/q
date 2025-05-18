@@ -24,8 +24,8 @@ func ExampleMatrix_bell() {
 	})
 
 	qb := rho.Qubits()
-	p0 := density.Must(rho.PartialTrace(qb[0]))
-	p1 := density.Must(rho.PartialTrace(qb[1]))
+	p0 := density.Must(rho.PartialTrace(qb[0])) // Partial trace over qubit 0: returns the reduced density matrix for qubit 1
+	p1 := density.Must(rho.PartialTrace(qb[1])) // Partial trace over qubit 1: returns the reduced density matrix for qubit 0
 
 	fmt.Printf("trace: %.2v, purity: %.2v\n", rho.Trace(), rho.Purity())
 	fmt.Printf("trace: %.2v, purity: %.2v\n", p0.Trace(), p0.Purity())
@@ -36,17 +36,26 @@ func ExampleMatrix_bell() {
 	q10 := qubit.TensorProduct(qubit.One(), qubit.Zero())
 	q11 := qubit.TensorProduct(qubit.One(), qubit.One())
 
-	m00 := rho.Probability(q00)
-	m01 := rho.Probability(q01)
-	m10 := rho.Probability(q10)
-	m11 := rho.Probability(q11)
+	m00 := rho.Probability(q00) // 0.5
+	m01 := rho.Probability(q01) // zero
+	m10 := rho.Probability(q10) // zero
+	m11 := rho.Probability(q11) // 0.5
 	fmt.Printf("%.2f, %.2f, %.2f, %.2f\n", m00, m01, m10, m11)
+
+	fmt.Println(rho.Project(q00).Underlying().Data)
+	fmt.Println(rho.Project(q01).IsZero())
+	fmt.Println(rho.Project(q10).IsZero())
+	fmt.Println(rho.Project(q11).Underlying().Data)
 
 	// Output:
 	// trace: 1, purity: 1
 	// trace: 1, purity: 0.5
 	// trace: 1, purity: 0.5
 	// 0.50, 0.00, 0.00, 0.50
+	// [(1+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i)]
+	// true
+	// true
+	// [(0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (1+0i)]
 }
 
 func ExampleMatrix_ExpectedValue() {
@@ -92,31 +101,6 @@ func ExampleMatrix_Probability() {
 	// Output:
 	// 0: 0.1
 	// 1: 0.9
-}
-
-func ExampleMatrix_Project() {
-	rho := density.New([]density.State{
-		{1.0, qubit.Zero(2).Apply(
-			gate.H().TensorProduct(gate.I()),
-			gate.CNOT(2, 0, 1),
-		)},
-	})
-
-	q00 := qubit.TensorProduct(qubit.Zero(), qubit.Zero())
-	q01 := qubit.TensorProduct(qubit.Zero(), qubit.One())
-	q10 := qubit.TensorProduct(qubit.One(), qubit.Zero())
-	q11 := qubit.TensorProduct(qubit.One(), qubit.One())
-
-	fmt.Println(rho.Project(q01).IsZero())
-	fmt.Println(rho.Project(q10).IsZero())
-	fmt.Println(rho.Project(q00).Underlying().Data)
-	fmt.Println(rho.Project(q11).Underlying().Data)
-
-	// Output:
-	// true
-	// true
-	// [(1+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (1+0i)]
 }
 
 func ExampleMatrix_Trace() {
