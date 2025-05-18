@@ -135,6 +135,7 @@ func (v *Vector) IsUnit() bool {
 }
 
 // Apply returns a matrix product of v and m.
+// v.Apply(X) -> X|v>
 func (v *Vector) Apply(m *matrix.Matrix) *Vector {
 	p, q := m.Dimension()
 

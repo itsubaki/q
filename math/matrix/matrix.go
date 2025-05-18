@@ -201,26 +201,7 @@ func (m *Matrix) IsUnitary(eps ...float64) bool {
 // A.Apply(B) is BA.
 // For example, to compute XHZ|v>, you can write v.Apply(Z).Apply(H).Apply(X).
 func (m *Matrix) Apply(n *Matrix) *Matrix {
-	return Dot(n, m)
-}
-
-// Dot returns the dot product of m and n.
-// A.Dot(B) is AB.
-func Dot(m, n *Matrix) *Matrix {
-	a, b := m.Dimension()
-	_, p := n.Dimension()
-
-	out := Zero(a, p)
-	for i := range a {
-		for k := range b {
-			mik := m.At(i, k)
-			for j := range p {
-				out.AddAt(i, j, mik*n.At(k, j))
-			}
-		}
-	}
-
-	return out
+	return MatMul(n, m)
 }
 
 // Mul returns a matrix of z*m.
@@ -355,6 +336,25 @@ func (m *Matrix) TensorProduct(n *Matrix) *Matrix {
 	}
 }
 
+// MatMul returns the matrix product of m and n.
+// A.MatMul(B) is AB.
+func MatMul(m, n *Matrix) *Matrix {
+	a, b := m.Dimension()
+	_, p := n.Dimension()
+
+	out := Zero(a, p)
+	for i := range a {
+		for k := range b {
+			mik := m.At(i, k)
+			for j := range p {
+				out.AddAt(i, j, mik*n.At(k, j))
+			}
+		}
+	}
+
+	return out
+}
+
 // Apply returns a matrix product of m1, m2, ..., mn.
 // Apply(A, B, C, D, ...) is ...DCBA.
 func Apply(m ...*Matrix) *Matrix {
@@ -403,13 +403,13 @@ func TensorProduct(m ...*Matrix) *Matrix {
 
 // Commutator returns a matrix of [m,n].
 func Commutator(m, n *Matrix) *Matrix {
-	mn, nm := n.Apply(m), m.Apply(n)
+	mn, nm := MatMul(m, n), MatMul(n, m)
 	return mn.Sub(nm)
 }
 
 // AntiCommutator returns a matrix of {m,n}.
 func AntiCommutator(m, n *Matrix) *Matrix {
-	mn, nm := n.Apply(m), m.Apply(n)
+	mn, nm := MatMul(m, n), MatMul(n, m)
 	return mn.Add(nm)
 }
 
