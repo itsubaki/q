@@ -199,6 +199,7 @@ func (m *Matrix) IsUnitary(eps ...float64) bool {
 
 // Apply returns a matrix product of m and n.
 // A.Apply(B) is BA.
+// For example, to compute XHZ|v>, you can write v.Apply(Z).Apply(H).Apply(X).
 func (m *Matrix) Apply(n *Matrix) *Matrix {
 	a, b := m.Dimension()
 	_, p := n.Dimension()
