@@ -179,22 +179,12 @@ func (m *Matrix) IsSquare() bool {
 
 // IsHermitian returns true if m is hermitian matrix.
 func (m *Matrix) IsHermite(eps ...float64) bool {
-	if !m.IsSquare() {
-		return false
-	}
-
-	return m.Equals(m.Dagger(), eps...)
+	return m.IsSquare() && m.Equals(m.Dagger(), eps...)
 }
 
 // IsUnitary returns true if m is unitary matrix.
 func (m *Matrix) IsUnitary(eps ...float64) bool {
-	if !m.IsSquare() {
-		return false
-	}
-
-	mmd := m.Apply(m.Dagger())
-	id := Identity(m.Rows)
-	return mmd.Equals(id, eps...)
+	return m.IsSquare() && m.Apply(m.Dagger()).Equals(Identity(m.Rows), eps...)
 }
 
 // Apply returns a matrix product of m and n.
