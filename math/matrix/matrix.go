@@ -318,10 +318,13 @@ func (m *Matrix) Swap(i, j int) *Matrix {
 	data := make([]complex128, len(m.Data))
 	copy(data, m.Data)
 
+	i0, i1 := i*m.Cols, (i+1)*m.Cols
+	j0, j1 := j*m.Cols, (j+1)*m.Cols
+
 	tmp := make([]complex128, m.Cols)
-	copy(tmp, data[i*m.Cols:i*m.Cols+m.Cols])
-	copy(data[i*m.Cols:i*m.Cols+m.Cols], data[j*m.Cols:j*m.Cols+m.Cols])
-	copy(data[j*m.Cols:j*m.Cols+m.Cols], tmp)
+	copy(tmp, data[i0:i1])
+	copy(data[i0:i1], data[j0:j1])
+	copy(data[j0:j1], tmp)
 
 	return &Matrix{
 		Rows: m.Rows,
