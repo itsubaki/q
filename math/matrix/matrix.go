@@ -309,11 +309,11 @@ func (m *Matrix) TensorProduct(n *Matrix) *Matrix {
 	data := make([]complex128, rows*cols)
 	for i := range p {
 		for j := range q {
-			mij := m.At(i, j)
+			mij := m.Data[i*q+j]
 			for k := range a {
 				for l := range b {
 					row, col := i*a+k, j*b+l
-					data[row*cols+col] = mij * n.At(k, l)
+					data[row*cols+col] = mij * n.Data[k*b+l]
 				}
 			}
 		}
@@ -335,9 +335,9 @@ func MatMul(m, n *Matrix) *Matrix {
 	out := Zero(a, p)
 	for i := range a {
 		for k := range b {
-			mik := m.At(i, k)
+			mik := m.Data[i*b+k]
 			for j := range p {
-				out.AddAt(i, j, mik*n.At(k, j))
+				out.Data[i*p+j] += mik * n.Data[k*p+j]
 			}
 		}
 	}
