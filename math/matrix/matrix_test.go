@@ -303,18 +303,45 @@ func TestInverse(t *testing.T) {
 		},
 		{
 			matrix.New(
-				[]complex128{0, 1},
-				[]complex128{1, 0},
+				[]complex128{0, 1, 0},
+				[]complex128{0, 0, 1},
+				[]complex128{1, 0, 0},
 			),
 			matrix.New(
-				[]complex128{1, 0},
-				[]complex128{0, 1},
+				[]complex128{1, 0, 0},
+				[]complex128{0, 1, 0},
+				[]complex128{0, 0, 1},
 			),
 		},
 	}
 
 	for _, c := range cases {
 		got := c.in.Apply(c.in.Inverse())
+		if !got.Equals(c.want) {
+			t.Fail()
+		}
+	}
+}
+
+func TestSwap(t *testing.T) {
+	cases := []struct {
+		in   *matrix.Matrix
+		want *matrix.Matrix
+	}{
+		{
+			matrix.New(
+				[]complex128{1, 2, 3},
+				[]complex128{4, 5, 6},
+			),
+			matrix.New(
+				[]complex128{4, 5, 6},
+				[]complex128{1, 2, 3},
+			),
+		},
+	}
+
+	for _, c := range cases {
+		got := c.in.Swap(0, 1)
 		if !got.Equals(c.want) {
 			t.Fail()
 		}

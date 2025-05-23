@@ -278,6 +278,19 @@ func (m *Matrix) Inverse() *Matrix {
 
 	out := Identity(p)
 	for i := range p {
+		if mm.At(i, i) == 0 {
+			// swap rows
+			for r := i + 1; r < p; r++ {
+				if mm.At(r, i) == 0 {
+					continue
+				}
+
+				mm = mm.Swap(i, r)
+				out = out.Swap(i, r)
+				break
+			}
+		}
+
 		c := 1 / mm.At(i, i)
 		for j := range q {
 			mm.MulAt(i, j, c)
@@ -298,6 +311,23 @@ func (m *Matrix) Inverse() *Matrix {
 	}
 
 	return out
+}
+
+// Swap returns a matrix of m with i-th and j-th rows swapped.
+func (m *Matrix) Swap(i, j int) *Matrix {
+	data := make([]complex128, len(m.Data))
+	copy(data, m.Data)
+
+	tmp := make([]complex128, m.Cols)
+	copy(tmp, data[i*m.Cols:i*m.Cols+m.Cols])
+	copy(data[i*m.Cols:i*m.Cols+m.Cols], data[j*m.Cols:j*m.Cols+m.Cols])
+	copy(data[j*m.Cols:j*m.Cols+m.Cols], tmp)
+
+	return &Matrix{
+		Rows: m.Rows,
+		Cols: m.Cols,
+		Data: data,
+	}
 }
 
 // TensorProduct returns a tensor product of m and n.
