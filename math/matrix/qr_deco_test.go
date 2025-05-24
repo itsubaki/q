@@ -27,8 +27,8 @@ func ExampleQR() {
 	}
 	fmt.Println()
 
-	// q^dagger * q = I
 	fmt.Println(matrix.MatMul(q.Dagger(), q).IsUnitary())
+	fmt.Println(matrix.MatMul(q, r).Equals(a))
 
 	// Output:
 	// [(0.316+0.000i) (0.949+0.000i)]
@@ -37,6 +37,7 @@ func ExampleQR() {
 	// [(3.162+0.000i) (4.427+0.000i)]
 	// [(0.000+0.000i) (0.632+0.000i)]
 	//
+	// true
 	// true
 }
 
@@ -58,8 +59,8 @@ func ExampleQR_x3() {
 	}
 	fmt.Println()
 
-	// q^dagger * q = I
 	fmt.Println(matrix.MatMul(q.Dagger(), q).IsUnitary())
+	fmt.Println(matrix.MatMul(q, r).Equals(a))
 
 	// Output:
 	// [(0.130+0.000i) (0.835+0.000i) (0.535+0.000i)]
@@ -70,6 +71,7 @@ func ExampleQR_x3() {
 	// [(0.000+0.000i) (0.974+0.000i) (1.635+0.000i)]
 	// [(0.000+0.000i) (0.000+0.000i) (0.267+0.000i)]
 	//
+	// true
 	// true
 }
 
