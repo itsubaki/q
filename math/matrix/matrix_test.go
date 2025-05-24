@@ -282,7 +282,7 @@ func ExampleMatrix_TensorProduct() {
 	// [(1+0i) (0+0i) (0+0i) (0+0i)]
 }
 
-func TestInverse(t *testing.T) {
+func TestMatrix_Inverse(t *testing.T) {
 	cases := []struct {
 		in   *matrix.Matrix
 		want *matrix.Matrix
@@ -323,7 +323,7 @@ func TestInverse(t *testing.T) {
 	}
 }
 
-func TestSwap(t *testing.T) {
+func TestMatrix_Swap(t *testing.T) {
 	cases := []struct {
 		in   *matrix.Matrix
 		want *matrix.Matrix
@@ -348,60 +348,7 @@ func TestSwap(t *testing.T) {
 	}
 }
 
-func TestCommutator(t *testing.T) {
-	cases := []struct {
-		x, y *matrix.Matrix
-		want *matrix.Matrix
-	}{
-		{
-			matrix.New(
-				[]complex128{0, 1},
-				[]complex128{1, 0},
-			),
-			matrix.New(
-				[]complex128{0, -1i},
-				[]complex128{1i, 0},
-			),
-			matrix.New(
-				[]complex128{2i, 0},
-				[]complex128{0, -2i},
-			),
-		},
-	}
-
-	for _, c := range cases {
-		if !matrix.Commutator(c.x, c.y).Equals(c.want) {
-			t.Fail()
-		}
-	}
-}
-
-func TestAntiCommutator(t *testing.T) {
-	cases := []struct {
-		x, y *matrix.Matrix
-		want *matrix.Matrix
-	}{
-		{
-			matrix.New(
-				[]complex128{0, 1},
-				[]complex128{1, 0},
-			),
-			matrix.New(
-				[]complex128{0, -1i},
-				[]complex128{1i, 0},
-			),
-			matrix.Zero(2, 2),
-		},
-	}
-
-	for _, c := range cases {
-		if !matrix.AntiCommutator(c.x, c.y).Equals(c.want) {
-			t.Fail()
-		}
-	}
-}
-
-func TestTrace(t *testing.T) {
+func TestMatrix_Trace(t *testing.T) {
 	cases := []struct {
 		in   *matrix.Matrix
 		want complex128
@@ -436,7 +383,7 @@ func TestTrace(t *testing.T) {
 	}
 }
 
-func TestDagger(t *testing.T) {
+func TestMatrix_Dagger(t *testing.T) {
 	cases := []struct {
 		in *matrix.Matrix
 	}{
@@ -455,7 +402,7 @@ func TestDagger(t *testing.T) {
 	}
 }
 
-func TestEquals(t *testing.T) {
+func TestMatrix_Equals(t *testing.T) {
 	cases := []struct {
 		m0, m1 *matrix.Matrix
 		want   bool
@@ -512,7 +459,7 @@ func TestEquals(t *testing.T) {
 	}
 }
 
-func TestIsZero(t *testing.T) {
+func TestMatrix_IsZero(t *testing.T) {
 	cases := []struct {
 		in   *matrix.Matrix
 		want bool
@@ -540,7 +487,7 @@ func TestIsZero(t *testing.T) {
 	}
 }
 
-func TestIsSquare(t *testing.T) {
+func TestMatrix_IsSquare(t *testing.T) {
 	cases := []struct {
 		in   *matrix.Matrix
 		want bool
@@ -568,7 +515,7 @@ func TestIsSquare(t *testing.T) {
 	}
 }
 
-func TestIsHermite(t *testing.T) {
+func TestMatrix_IsHermite(t *testing.T) {
 	cases := []struct {
 		in   *matrix.Matrix
 		want bool
@@ -617,7 +564,7 @@ func TestIsHermite(t *testing.T) {
 	}
 }
 
-func TestIsUnitary(t *testing.T) {
+func TestMatrix_IsUnitary(t *testing.T) {
 	cases := []struct {
 		in   *matrix.Matrix
 		want bool
@@ -666,6 +613,71 @@ func TestIsUnitary(t *testing.T) {
 	}
 }
 
+func TestMatrix_IsUpperTriangular(t *testing.T) {
+	cases := []struct {
+		in   *matrix.Matrix
+		want bool
+	}{
+		{
+			matrix.New(
+				[]complex128{1, 2},
+				[]complex128{0, 3},
+			),
+			true,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 2, 3},
+				[]complex128{0, 4, 5},
+				[]complex128{0, 0, 6},
+			),
+			true,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 2},
+				[]complex128{3, 4},
+			),
+			false,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 2},
+				[]complex128{0, 4},
+				[]complex128{0, 6},
+			),
+			false,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 2, 3},
+				[]complex128{0, 4, 5},
+			),
+			false,
+		},
+		{
+			matrix.New(
+				[]complex128{complex(1, 1), complex(2, 2)},
+				[]complex128{0, complex(3, -1)},
+			),
+			true,
+		},
+		{
+			matrix.New(
+				[]complex128{complex(1, 0), complex(2, 0)},
+				[]complex128{complex(1, 1), complex(3, 0)},
+			),
+			false,
+		},
+	}
+
+	for _, c := range cases {
+		if c.in.IsUpperTriangular() != c.want {
+			t.Fail()
+		}
+	}
+}
+
 func TestTensorProductN(t *testing.T) {
 	cases := []struct {
 		in *matrix.Matrix
@@ -680,6 +692,59 @@ func TestTensorProductN(t *testing.T) {
 
 	for _, c := range cases {
 		if !matrix.TensorProductN(c.in).Equals(c.in) {
+			t.Fail()
+		}
+	}
+}
+
+func TestCommutator(t *testing.T) {
+	cases := []struct {
+		x, y *matrix.Matrix
+		want *matrix.Matrix
+	}{
+		{
+			matrix.New(
+				[]complex128{0, 1},
+				[]complex128{1, 0},
+			),
+			matrix.New(
+				[]complex128{0, -1i},
+				[]complex128{1i, 0},
+			),
+			matrix.New(
+				[]complex128{2i, 0},
+				[]complex128{0, -2i},
+			),
+		},
+	}
+
+	for _, c := range cases {
+		if !matrix.Commutator(c.x, c.y).Equals(c.want) {
+			t.Fail()
+		}
+	}
+}
+
+func TestAntiCommutator(t *testing.T) {
+	cases := []struct {
+		x, y *matrix.Matrix
+		want *matrix.Matrix
+	}{
+		{
+			matrix.New(
+				[]complex128{0, 1},
+				[]complex128{1, 0},
+			),
+			matrix.New(
+				[]complex128{0, -1i},
+				[]complex128{1i, 0},
+			),
+			matrix.Zero(2, 2),
+		},
+	}
+
+	for _, c := range cases {
+		if !matrix.AntiCommutator(c.x, c.y).Equals(c.want) {
 			t.Fail()
 		}
 	}
