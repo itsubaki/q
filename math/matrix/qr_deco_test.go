@@ -102,14 +102,6 @@ func ExampleQR_orthogonal() {
 }
 
 func ExampleQR_rankdeficient() {
-	a := matrix.New(
-		[]complex128{1, 2, 3},
-		[]complex128{2, 4, 6},
-		[]complex128{3, 6, 9},
-	)
-
-	_, r := matrix.QR(a)
-
 	isZero := func(row []complex128) bool {
 		for _, v := range row {
 			if cmplx.Abs(v) < epsilon.E13() {
@@ -122,6 +114,13 @@ func ExampleQR_rankdeficient() {
 		return true
 	}
 
+	a := matrix.New(
+		[]complex128{1, 2, 3},
+		[]complex128{2, 4, 6},
+		[]complex128{3, 6, 9},
+	)
+
+	_, r := matrix.QR(a)
 	for i := range r.Rows {
 		fmt.Println(i, ":", isZero(r.Row(i)))
 	}
