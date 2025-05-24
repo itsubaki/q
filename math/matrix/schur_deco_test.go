@@ -10,6 +10,7 @@ import (
 func TestShur(t *testing.T) {
 	cases := []struct {
 		a    *matrix.Matrix
+		qr   func(*matrix.Matrix, ...float64) (*matrix.Matrix, *matrix.Matrix)
 		iter int
 		eps  float64
 	}{
@@ -18,6 +19,7 @@ func TestShur(t *testing.T) {
 				[]complex128{1, 2},
 				[]complex128{3, 4},
 			),
+			qr:   matrix.QR,
 			iter: 20,
 			eps:  epsilon.E13(),
 		},
@@ -27,6 +29,7 @@ func TestShur(t *testing.T) {
 				[]complex128{3, 4, 5},
 				[]complex128{7, 8, 10},
 			),
+			qr:   matrix.QR,
 			iter: 20,
 			eps:  epsilon.E13(),
 		},
@@ -35,6 +38,7 @@ func TestShur(t *testing.T) {
 				[]complex128{1, 2},
 				[]complex128{2, 3},
 			),
+			qr:   matrix.QR,
 			iter: 20,
 			eps:  epsilon.E13(),
 		},
@@ -43,6 +47,7 @@ func TestShur(t *testing.T) {
 				[]complex128{complex(1, 0), complex(0, 1)},
 				[]complex128{complex(0, -1), complex(3, 0)},
 			),
+			qr:   matrix.QR,
 			iter: 20,
 			eps:  epsilon.E13(),
 		},
@@ -52,13 +57,14 @@ func TestShur(t *testing.T) {
 				[]complex128{0, 4, 5},
 				[]complex128{0, 0, 6},
 			),
+			qr:   matrix.QR,
 			iter: 10,
 			eps:  epsilon.E13(),
 		},
 	}
 
 	for _, c := range cases {
-		Q, T := matrix.Schur(c.a, c.iter, c.eps)
+		Q, T := matrix.Schur(c.a, c.qr, c.iter, c.eps)
 
 		// check Q^dagger * Q = I
 		if !matrix.MatMul(Q.Dagger(), Q).IsUnitary() {
