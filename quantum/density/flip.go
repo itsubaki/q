@@ -10,6 +10,7 @@ import (
 )
 
 var (
+	ErrInvalidRange     = errors.New("the probabikity is out of range [0, 1]")
 	ErrNotSquare        = errors.New("the matrix is not square")
 	ErrInvalidDimension = errors.New("the matrix dimensions is not a power of 2")
 )

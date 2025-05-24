@@ -1,8 +1,6 @@
 package density
 
 import (
-	"errors"
-	"fmt"
 	"math/cmplx"
 	"strconv"
 	"strings"
@@ -13,8 +11,6 @@ import (
 	"github.com/itsubaki/q/quantum/gate"
 	"github.com/itsubaki/q/quantum/qubit"
 )
-
-var ErrInvalidRange = errors.New("p is out of range [0,1]")
 
 // Qubit is a quantum bit.
 type Qubit int
@@ -133,13 +129,12 @@ func (m *Matrix) Purity() float64 {
 }
 
 // PartialTrace returns the partial trace of the density matrix.
-func (m *Matrix) PartialTrace(index ...Qubit) (*Matrix, error) {
+// The length of index must be less than or equal to n - 1,
+// where n is the number of qubits in the matrix.
+func (m *Matrix) PartialTrace(index ...Qubit) *Matrix {
 	n := m.NumQubits()
 	p, q := m.Dimension()
 	d := number.Pow(2, n-1)
-	if len(index) > n-1 {
-		return nil, fmt.Errorf("length of index must be less than or equal to %d", n-1)
-	}
 
 	out := matrix.Zero(d, d)
 	for i := range p {
@@ -173,21 +168,19 @@ func (m *Matrix) PartialTrace(index ...Qubit) (*Matrix, error) {
 		}
 	}
 
-	return &Matrix{m: out}, nil
+	return &Matrix{m: out}
 }
 
 // Depolarizing returns the depolarizing channel.
-func (m *Matrix) Depolarizing(p float64) (*Matrix, error) {
-	if p < 0 || p > 1 {
-		return nil, ErrInvalidRange
-	}
-
+// p should be between 0 and 1, representing the probability of depolarization.
+func (m *Matrix) Depolarizing(p float64) *Matrix {
 	n := m.NumQubits()
 	i := gate.I(n).Mul(complex(p/2, 0))
 	r := m.m.Mul(complex(1-p, 0))
+
 	return &Matrix{
 		m: i.Add(r),
-	}, nil
+	}
 }
 
 func take(n, i int, index []Qubit) (string, string) {
@@ -208,8 +201,4 @@ func take(n, i int, index []Qubit) (string, string) {
 	}
 
 	return out.String(), remain.String()
-}
-
-func Must[T any](v T, err error) T {
-	return number.Must(v, err)
 }
