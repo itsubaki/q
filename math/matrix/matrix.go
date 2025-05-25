@@ -83,9 +83,19 @@ func (m *Matrix) AddAt(i, j int, z complex128) {
 	m.Data[i*m.Cols+j] += z
 }
 
+// SubAt subtracts a value of matrix at (i,j).
+func (m *Matrix) SubAt(i, j int, z complex128) {
+	m.Data[i*m.Cols+j] -= z
+}
+
 // MulAt multiplies a value of matrix at (i,j).
 func (m *Matrix) MulAt(i, j int, z complex128) {
 	m.Data[i*m.Cols+j] *= z
+}
+
+// DivAt divides a value of matrix at (i,j).
+func (m *Matrix) DivAt(i, j int, z complex128) {
+	m.Data[i*m.Cols+j] /= z
 }
 
 // Seq2 returns a sequence of rows.
@@ -187,11 +197,48 @@ func (m *Matrix) IsUnitary(eps ...float64) bool {
 	return m.IsSquare() && m.Apply(m.Dagger()).Equals(Identity(m.Rows), eps...)
 }
 
+// IsUpperTriangular returns true if m is upper triangular matrix.
+func (m *Matrix) IsUpperTriangular(eps ...float64) bool {
+	if !m.IsSquare() {
+		return false
+	}
+
+	e := epsilon.E13(eps...)
+	for i := 1; i < m.Rows; i++ {
+		for j := range i {
+			if cmplx.Abs(m.At(i, j)) > e {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
 // Apply returns a matrix product of m and n.
 // A.Apply(B) is BA.
 // For example, to compute XHZ|v>, you can write v.Apply(Z).Apply(H).Apply(X).
 func (m *Matrix) Apply(n *Matrix) *Matrix {
-	return MatMul(n, m)
+	return n.MatMul(m)
+}
+
+// MatMul returns the matrix product of m and n.
+// A.MatMul(B) is AB.
+func (m *Matrix) MatMul(n *Matrix) *Matrix {
+	a, b := m.Dimension()
+	_, p := n.Dimension()
+
+	out := Zero(a, p)
+	for i := range a {
+		for k := range b {
+			mik := m.Data[i*b+k]
+			for j := range p {
+				out.Data[i*p+j] += mik * n.Data[k*p+j]
+			}
+		}
+	}
+
+	return out
 }
 
 // Mul returns a matrix of z*m.
@@ -359,20 +406,12 @@ func (m *Matrix) TensorProduct(n *Matrix) *Matrix {
 	}
 }
 
-// MatMul returns the matrix product of m and n.
-// A.MatMul(B) is AB.
-func MatMul(m, n *Matrix) *Matrix {
-	a, b := m.Dimension()
-	_, p := n.Dimension()
-
-	out := Zero(a, p)
-	for i := range a {
-		for k := range b {
-			mik := m.Data[i*b+k]
-			for j := range p {
-				out.Data[i*p+j] += mik * n.Data[k*p+j]
-			}
-		}
+// MatMul returns a matrix product of m1, m2, ..., mn.
+// MatMul(A, B, C, D, ...) is ABCD....
+func MatMul(m ...*Matrix) *Matrix {
+	out := m[0]
+	for i := 1; i < len(m); i++ {
+		out = out.MatMul(m[i])
 	}
 
 	return out
