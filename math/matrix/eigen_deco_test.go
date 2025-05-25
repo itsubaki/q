@@ -11,6 +11,64 @@ import (
 	"github.com/itsubaki/q/math/matrix"
 )
 
+func Example_pow0p5() {
+	a := matrix.New(
+		[]complex128{0, 1},
+		[]complex128{1, 0},
+	)
+
+	iter := 10
+	V, D := matrix.Eigen(a, iter)
+
+	for i := range D.Rows {
+		D.Set(i, i, cmplx.Pow(D.At(i, i), 0.5))
+	}
+
+	sqrtx := matrix.MatMul(V, D, V.Dagger())
+	for _, row := range sqrtx.Seq2() {
+		fmt.Printf("%.3f\n", row)
+	}
+
+	for _, row := range matrix.MatMul(sqrtx, sqrtx).Seq2() {
+		fmt.Printf("%.3f\n", row)
+	}
+
+	// Output:
+	// [(0.500+0.500i) (0.500-0.500i)]
+	// [(0.500-0.500i) (0.500+0.500i)]
+	// [(0.000+0.000i) (1.000-0.000i)]
+	// [(1.000-0.000i) (-0.000+0.000i)]
+}
+
+func Example_pow1p5() {
+	a := matrix.New(
+		[]complex128{0, 1},
+		[]complex128{1, 0},
+	)
+
+	iter := 10
+	V, D := matrix.Eigen(a, iter)
+
+	for i := range D.Rows {
+		D.Set(i, i, cmplx.Pow(D.At(i, i), 1.5))
+	}
+
+	x1p5 := matrix.MatMul(V, D, V.Dagger())
+	for _, row := range x1p5.Seq2() {
+		fmt.Printf("%.3f\n", row)
+	}
+
+	for _, row := range matrix.MatMul(x1p5, x1p5).Seq2() {
+		fmt.Printf("%.3f\n", row)
+	}
+
+	// Output:
+	// [(0.500-0.500i) (0.500+0.500i)]
+	// [(0.500+0.500i) (0.500-0.500i)]
+	// [(0.000+0.000i) (1.000-0.000i)]
+	// [(1.000-0.000i) (-0.000+0.000i)]
+}
+
 func ExampleEigen_x() {
 	a := matrix.New(
 		[]complex128{0, 1},
