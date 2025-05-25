@@ -11,6 +11,83 @@ import (
 	"github.com/itsubaki/q/math/matrix"
 )
 
+func Example_exp2() {
+	theta := math.Pi / 3
+	c := cmplx.Cos(complex(theta/2, 0))
+	s := cmplx.Sin(complex(theta/2, 0))
+
+	// exp(-i theta/2 X) = cos(theta/2)·I - i sin(theta/2)·X
+	I := matrix.New(
+		[]complex128{1, 0},
+		[]complex128{0, 1},
+	)
+	X := matrix.New(
+		[]complex128{0, 1},
+		[]complex128{1, 0},
+	)
+
+	expX := I.Mul(c).Add(X.Mul(-1i * s)) // cos·I - i·sin·X
+
+	// Rx(θ)
+	rx := func(theta float64) *matrix.Matrix {
+		v := complex(theta/2, 0)
+		return matrix.New(
+			[]complex128{cmplx.Cos(v), -1i * cmplx.Sin(v)},
+			[]complex128{-1i * cmplx.Sin(v), cmplx.Cos(v)},
+		)
+	}
+
+	rxTheta := rx(theta)
+
+	// print both
+	for _, row := range expX.Seq2() {
+		fmt.Printf("%.3f\n", row)
+	}
+	for _, row := range rxTheta.Seq2() {
+		fmt.Printf("%.3f\n", row)
+	}
+
+	fmt.Println(expX.Equals(rxTheta, 1e-12))
+
+	// Output:
+	// [(0.866+0.000i) (0.000-0.500i)]
+	// [(0.000-0.500i) (0.866+0.000i)]
+	// [(0.866-0.000i) (0.000-0.500i)]
+	// [(0.000-0.500i) (0.866-0.000i)]
+	// true
+}
+
+func Example_exp() {
+	rx := func(theta float64) *matrix.Matrix {
+		v := complex(theta/2, 0)
+		return matrix.New(
+			[]complex128{cmplx.Cos(v), -1i * cmplx.Sin(v)},
+			[]complex128{-1i * cmplx.Sin(v), cmplx.Cos(v)},
+		)
+	}
+
+	exp := func(x *matrix.Matrix, theta float64, iter int) *matrix.Matrix {
+		V, D := matrix.Eigen(x, iter)
+		for i := range D.Rows {
+			D.Set(i, i, cmplx.Exp(D.At(i, i)*-1i*complex(theta/2, 0)))
+		}
+
+		return matrix.MatMul(V, D, V.Dagger())
+	}
+
+	x := matrix.New(
+		[]complex128{0, 1},
+		[]complex128{1, 0},
+	)
+
+	theta := rand.Float64()
+	expX := exp(x, theta, 10)
+	fmt.Println(expX.Equals(rx(theta)))
+
+	// Output:
+	// true
+}
+
 func Example_pow0p5() {
 	a := matrix.New(
 		[]complex128{0, 1},
