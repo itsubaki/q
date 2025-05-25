@@ -122,7 +122,7 @@ func TestShurQRHH(t *testing.T) {
 				[]complex128{3 + 4i, 4},
 			),
 			qr:   matrix.QRHH,
-			iter: 30,
+			iter: 20,
 			eps:  epsilon.E13(),
 		},
 		{
@@ -132,7 +132,7 @@ func TestShurQRHH(t *testing.T) {
 				[]complex128{0, 0, 4 - 4i},
 			),
 			qr:   matrix.QRHH,
-			iter: 30,
+			iter: 20,
 			eps:  epsilon.E13(),
 		},
 		{
