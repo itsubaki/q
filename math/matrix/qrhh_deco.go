@@ -36,15 +36,15 @@ func QRHH(a *Matrix, eps ...float64) (q *Matrix, r *Matrix) {
 			u[i] = x[i]
 		}
 
-		norm := norm(u)
-		if norm < epsilon.E13(eps...) {
+		nu := norm(u)
+		if nu < epsilon.E13(eps...) {
 			// If the norm is less than the threshold, skip this column
 			continue
 		}
 
 		// Normalize u
 		for i := range u {
-			u[i] /= complex(norm, 0)
+			u[i] /= complex(nu, 0)
 		}
 
 		// h = I - 2 * uu^dagger
