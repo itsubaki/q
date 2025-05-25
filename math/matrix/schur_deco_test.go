@@ -81,7 +81,6 @@ func TestSchur(t *testing.T) {
 				t.Errorf("Q * T * Q^dagger does not equal a")
 			}
 
-			// check T is upper triangular
 			if !T.IsUpperTriangular(c.eps) {
 				t.Errorf("T is not upper triangular")
 			}
