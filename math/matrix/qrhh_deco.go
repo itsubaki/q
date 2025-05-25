@@ -1,7 +1,6 @@
 package matrix
 
 import (
-	"math"
 	"math/cmplx"
 
 	"github.com/itsubaki/q/math/epsilon"
@@ -37,43 +36,35 @@ func QRHH(a *Matrix, eps ...float64) (q *Matrix, r *Matrix) {
 			u[i] = x[i]
 		}
 
-		// Normalize u
 		norm := norm(u)
 		if norm < epsilon.E13(eps...) {
 			// If the norm is less than the threshold, skip this column
 			continue
 		}
 
+		// Normalize u
 		for i := range u {
 			u[i] /= complex(norm, 0)
 		}
 
-		// hk = I - 2 * uu^dagger
-		hk := Identity(rows)
-		uu := outer(u)
+		// h = I - 2 * uu^dagger
+		h, uu := Identity(rows), outer(u)
 		for i := k; i < rows; i++ {
 			for j := k; j < rows; j++ {
-				hk.Set(i, j, hk.At(i, j)-2*uu.At(i-k, j-k))
+				// h[i][j] -= 2 * uu.At(i-k, j-k)
+				h.SubAt(i, j, 2*uu.At(i-k, j-k))
 			}
 		}
 
-		// Apply the Householder transformation to R
-		r = hk.MatMul(r)
-		q = q.MatMul(hk)
+		// Apply the Householder transformation
+		q = q.MatMul(h)
+		r = h.MatMul(r)
 	}
 
 	return q, r
 }
 
-func norm(x []complex128) float64 {
-	var sum float64
-	for _, v := range x {
-		sum += cmplx.Abs(v) * cmplx.Abs(v)
-	}
-
-	return math.Sqrt(sum)
-}
-
+// outer computes the outer product of vector u with itself.
 func outer(u []complex128) *Matrix {
 	n := len(u)
 	out := Zero(n, n)

@@ -83,9 +83,19 @@ func (m *Matrix) AddAt(i, j int, z complex128) {
 	m.Data[i*m.Cols+j] += z
 }
 
+// SubAt subtracts a value of matrix at (i,j).
+func (m *Matrix) SubAt(i, j int, z complex128) {
+	m.Data[i*m.Cols+j] -= z
+}
+
 // MulAt multiplies a value of matrix at (i,j).
 func (m *Matrix) MulAt(i, j int, z complex128) {
 	m.Data[i*m.Cols+j] *= z
+}
+
+// DivAt divides a value of matrix at (i,j).
+func (m *Matrix) DivAt(i, j int, z complex128) {
+	m.Data[i*m.Cols+j] /= z
 }
 
 // Seq2 returns a sequence of rows.
