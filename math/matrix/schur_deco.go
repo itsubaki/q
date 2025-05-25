@@ -12,17 +12,17 @@ var (
 // Schur performs the Schur decomposition of matrix a using iterative QR decomposition.
 // It returns Q (unitary) and T (upper triangular) such that A = Q * T * Q^dagger.
 func Schur(a *Matrix, qr QRFunc, iter int, eps ...float64) (q *Matrix, t *Matrix) {
-	qt, ak := Identity(a.Rows), a.Clone()
+	q, t = Identity(a.Rows), a.Clone()
 
 	for range iter {
-		qk, rk := qr(ak, eps...)
-		ak = rk.MatMul(qk)
-		qt = qt.MatMul(qk)
+		qk, rk := qr(t, eps...)
+		t = rk.MatMul(qk)
+		q = q.MatMul(qk)
 
-		if ak.IsUpperTriangular(eps...) {
+		if t.IsUpperTriangular(eps...) {
 			break
 		}
 	}
 
-	return qt, ak
+	return q, t
 }
