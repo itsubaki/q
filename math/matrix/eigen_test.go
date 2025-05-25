@@ -21,7 +21,7 @@ func Example_exp() {
 	}
 
 	expA := func(x *matrix.Matrix, theta float64, iter int) *matrix.Matrix {
-		V, D := matrix.Eigen(x, iter)
+		V, D := matrix.EigenJacobi(x, iter)
 
 		for i := range D.Rows {
 			D.Set(i, i, cmplx.Exp(D.At(i, i)*-1i*complex(theta/2, 0)))
@@ -32,7 +32,7 @@ func Example_exp() {
 
 	expB := func(x *matrix.Matrix, theta float64, iter int) *matrix.Matrix {
 		ix := x.Mul(-1i * complex(theta/2, 0))
-		V, D := matrix.Eigen(ix, iter)
+		V, D := matrix.EigenJacobi(ix, iter)
 
 		for i := range D.Rows {
 			D.Set(i, i, cmplx.Exp(D.At(i, i)))
@@ -65,7 +65,7 @@ func Example_pow0p5() {
 	)
 
 	iter := 10
-	V, D := matrix.Eigen(a, iter)
+	V, D := matrix.EigenJacobi(a, iter)
 
 	for i := range D.Rows {
 		D.Set(i, i, cmplx.Pow(D.At(i, i), 0.5))
@@ -94,7 +94,7 @@ func Example_pow1p5() {
 	)
 
 	iter := 10
-	V, D := matrix.Eigen(a, iter)
+	V, D := matrix.EigenJacobi(a, iter)
 
 	for i := range D.Rows {
 		D.Set(i, i, cmplx.Pow(D.At(i, i), 1.5))
@@ -116,14 +116,14 @@ func Example_pow1p5() {
 	// [(1.000-0.000i) (-0.000+0.000i)]
 }
 
-func ExampleEigen_x() {
+func ExampleEigenJacobi_x() {
 	a := matrix.New(
 		[]complex128{0, 1},
 		[]complex128{1, 0},
 	)
 
 	iter := 10
-	V, D := matrix.Eigen(a, iter)
+	V, D := matrix.EigenJacobi(a, iter)
 
 	for _, row := range V.Seq2() {
 		fmt.Printf("%.3f\n", row)
@@ -140,7 +140,7 @@ func ExampleEigen_x() {
 	// [(0.000+0.000i) (-1.000+0.000i)]
 }
 
-func ExampleEigen_cx() {
+func ExampleEigenJacobi_cx() {
 	a := matrix.New(
 		[]complex128{1, 0, 0, 0},
 		[]complex128{0, 1, 0, 0},
@@ -149,7 +149,7 @@ func ExampleEigen_cx() {
 	)
 
 	iter := 10
-	V, D := matrix.Eigen(a, iter)
+	V, D := matrix.EigenJacobi(a, iter)
 
 	for _, row := range V.Seq2() {
 		fmt.Printf("%.3f\n", row)
@@ -170,14 +170,14 @@ func ExampleEigen_cx() {
 	// [(0.000+0.000i) (0.000+0.000i) (0.000+0.000i) (-1.000+0.000i)]
 }
 
-func ExampleEigen_h() {
+func ExampleEigenJacobi_h() {
 	a := matrix.New(
 		[]complex128{1 / math.Sqrt2, 1 / math.Sqrt2},
 		[]complex128{1 / math.Sqrt2, -1 / math.Sqrt2},
 	)
 
 	iter := 10
-	V, D := matrix.Eigen(a, iter)
+	V, D := matrix.EigenJacobi(a, iter)
 
 	for _, row := range V.Seq2() {
 		fmt.Printf("%.3f\n", row)
@@ -194,7 +194,7 @@ func ExampleEigen_h() {
 	// [(0.000+0.000i) (-1.000+0.000i)]
 }
 
-func TestEigen(t *testing.T) {
+func TestEigenJacobi(t *testing.T) {
 	rx := func(theta float64) *matrix.Matrix {
 		v := complex(theta/2, 0)
 		return matrix.New(
@@ -270,7 +270,7 @@ func TestEigen(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		V, D := matrix.Eigen(c.a, 10)
+		V, D := matrix.EigenJacobi(c.a, 10)
 
 		if !D.IsDiagonal() {
 			t.Errorf("D is not diagonal")

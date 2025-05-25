@@ -6,8 +6,8 @@ import (
 	"github.com/itsubaki/q/math/epsilon"
 )
 
-// Eigen performs eigen decomposition of a matrix using the Jacobi method.
-func Eigen(a *Matrix, iter int, eps ...float64) (vectors *Matrix, lambdas *Matrix) {
+// EigenJacobi performs eigen decomposition of a matrix using the Jacobi method.
+func EigenJacobi(a *Matrix, iter int, eps ...float64) (vectors *Matrix, lambdas *Matrix) {
 	n := a.Rows
 	v, ak := Identity(n), a.Clone()
 
