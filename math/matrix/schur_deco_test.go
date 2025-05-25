@@ -7,7 +7,7 @@ import (
 	"github.com/itsubaki/q/math/matrix"
 )
 
-func TestShur(t *testing.T) {
+func TestSchur(t *testing.T) {
 	cases := []struct {
 		a    *matrix.Matrix
 		qr   matrix.QRFunc

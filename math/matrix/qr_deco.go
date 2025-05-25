@@ -14,10 +14,10 @@ func QR(a *Matrix, eps ...float64) (q *Matrix, r *Matrix) {
 	q, r = a.Clone(), Zero(cols, cols)
 
 	for k := range cols {
-		norm := norm(column(q, k))
-		r.Set(k, k, complex(norm, 0))
+		n := norm(column(q, k))
+		r.Set(k, k, complex(n, 0))
 
-		if norm < epsilon.E13(eps...) {
+		if n < epsilon.E13(eps...) {
 			// If the norm is smaller than a small threshold (effectively zero),
 			// treat the k-th vector as numerically zero to avoid division by zero
 			// and preserve numerical stability.
@@ -26,7 +26,7 @@ func QR(a *Matrix, eps ...float64) (q *Matrix, r *Matrix) {
 		}
 
 		// Normalize the k-th column of Q
-		div(q, k, complex(norm, 0))
+		div(q, k, complex(n, 0))
 
 		// Compute the k-th row of R
 		for j := k + 1; j < cols; j++ {
