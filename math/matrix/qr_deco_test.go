@@ -157,6 +157,15 @@ func TestQR(t *testing.T) {
 		},
 		{
 			a: matrix.New(
+				[]complex128{0, 0, 0, 1},
+				[]complex128{0, 0, 1, 0},
+				[]complex128{0, 1, 0, 0},
+				[]complex128{1, 0, 0, 0},
+			),
+			eps: epsilon.E13(),
+		},
+		{
+			a: matrix.New(
 				[]complex128{0, -1i},
 				[]complex128{1i, 0},
 			),

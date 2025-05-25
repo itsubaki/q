@@ -170,6 +170,21 @@ func (m *Matrix) Equals(n *Matrix, eps ...float64) bool {
 	return true
 }
 
+// IsSquare returns true if m is square matrix.
+func (m *Matrix) IsSquare() bool {
+	return m.Rows == m.Cols
+}
+
+// IsHermitian returns true if m is hermitian matrix.
+func (m *Matrix) IsHermite(eps ...float64) bool {
+	return m.IsSquare() && m.Equals(m.Dagger(), eps...)
+}
+
+// IsUnitary returns true if m is unitary matrix.
+func (m *Matrix) IsUnitary(eps ...float64) bool {
+	return m.IsSquare() && m.Apply(m.Dagger()).Equals(Identity(m.Rows), eps...)
+}
+
 // IsZero returns true if m is zero matrix.
 func (m *Matrix) IsZero(eps ...float64) bool {
 	e := epsilon.E13(eps...)
@@ -201,21 +216,6 @@ func (m *Matrix) IsDiagonal(eps ...float64) bool {
 	}
 
 	return true
-}
-
-// IsSquare returns true if m is square matrix.
-func (m *Matrix) IsSquare() bool {
-	return m.Rows == m.Cols
-}
-
-// IsHermitian returns true if m is hermitian matrix.
-func (m *Matrix) IsHermite(eps ...float64) bool {
-	return m.IsSquare() && m.Equals(m.Dagger(), eps...)
-}
-
-// IsUnitary returns true if m is unitary matrix.
-func (m *Matrix) IsUnitary(eps ...float64) bool {
-	return m.IsSquare() && m.Apply(m.Dagger()).Equals(Identity(m.Rows), eps...)
 }
 
 // IsUpperTriangular returns true if m is upper triangular matrix.

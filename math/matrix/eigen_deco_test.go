@@ -43,7 +43,7 @@ func TestEigen(t *testing.T) {
 		}
 
 		if !matrix.MatMul(P, D, P.Inverse()).Equals(c.a, c.eps) {
-			t.Errorf("Expected P * D * P^-1 to equal t")
+			t.Errorf("P * D * P^-1 does not equal a")
 		}
 	}
 }
@@ -120,15 +120,11 @@ func TestEigenUpperT(t *testing.T) {
 		D, P := matrix.EigenUpperT(c.t, c.eps)
 
 		if !D.IsDiagonal() {
-			t.Errorf("Expected lambdas to be diagonal")
+			t.Errorf("D is not diagonal")
 		}
 
 		if !matrix.MatMul(P, D, P.Inverse()).Equals(c.t, c.eps) {
-			t.Errorf("Expected P * D * P^-1 to equal t")
-
-			for _, v := range matrix.MatMul(P, D, P.Inverse()).Seq2() {
-				t.Log(v)
-			}
+			t.Errorf("P * D * P^-1 does not equal t")
 		}
 	}
 }

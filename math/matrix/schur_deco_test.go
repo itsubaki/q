@@ -99,7 +99,7 @@ func TestSchur(t *testing.T) {
 
 		// check Q * T * Q^dagger = a
 		if !matrix.MatMul(Q, T, Q.Dagger()).Equals(c.a) {
-			t.Errorf("Q * T * Q^dagger != a")
+			t.Errorf("Q * T * Q^dagger does not equal a")
 		}
 
 		// check T is upper triangular
@@ -208,7 +208,7 @@ func TestShurQRHH(t *testing.T) {
 
 		// check Q * T * Q^dagger = a
 		if !matrix.MatMul(Q, T, Q.Dagger()).Equals(c.a) {
-			t.Errorf("Q * T * Q^dagger != a")
+			t.Errorf("Q * T * Q^dagger does not equal a")
 		}
 
 		// check T is upper triangular

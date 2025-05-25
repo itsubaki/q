@@ -193,6 +193,15 @@ func TestQRHH(t *testing.T) {
 		},
 		{
 			a: matrix.New(
+				[]complex128{0, 0, 0, 1},
+				[]complex128{0, 0, 1, 0},
+				[]complex128{0, 1, 0, 0},
+				[]complex128{1, 0, 0, 0},
+			),
+			eps: epsilon.E13(),
+		},
+		{
+			a: matrix.New(
 				[]complex128{0, -1i},
 				[]complex128{1i, 0},
 			),
@@ -244,7 +253,7 @@ func TestQRHH(t *testing.T) {
 
 		// check Q * R = a
 		if !matrix.MatMul(Q, R).Equals(c.a) {
-			t.Errorf("matmul(Q, R) does not equal a")
+			t.Errorf("Q * R does not equal a")
 		}
 
 		// check R is upper triangular
