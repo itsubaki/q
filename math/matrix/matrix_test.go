@@ -255,6 +255,19 @@ func ExampleApplyN() {
 	// [(0+0i) (1+0i)]
 }
 
+func ExampleMatrix_IsDiagonal() {
+	x := matrix.New(
+		[]complex128{1, 0},
+		[]complex128{0, 2},
+		[]complex128{3, 4},
+	)
+
+	fmt.Println(x.IsDiagonal())
+
+	// Output:
+	// false
+}
+
 func ExampleMatrix_TensorProduct() {
 	x := matrix.New(
 		[]complex128{0, 1},
@@ -510,6 +523,34 @@ func TestMatrix_IsSquare(t *testing.T) {
 
 	for _, c := range cases {
 		if c.in.IsSquare() != c.want {
+			t.Fail()
+		}
+	}
+}
+
+func TestMatrix_IsDiagonal(t *testing.T) {
+	cases := []struct {
+		in   *matrix.Matrix
+		want bool
+	}{
+		{
+			matrix.New(
+				[]complex128{1, 0},
+				[]complex128{0, 2},
+			),
+			true,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 2},
+				[]complex128{3, 4},
+			),
+			false,
+		},
+	}
+
+	for _, c := range cases {
+		if c.in.IsDiagonal() != c.want {
 			t.Fail()
 		}
 	}
