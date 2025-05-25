@@ -182,6 +182,27 @@ func (m *Matrix) IsZero(eps ...float64) bool {
 	return true
 }
 
+func (m *Matrix) IsDiagonal(eps ...float64) bool {
+	if !m.IsSquare() {
+		return false
+	}
+
+	e := epsilon.E13(eps...)
+	for i := range m.Rows {
+		for j := range m.Cols {
+			if i == j {
+				continue
+			}
+
+			if cmplx.Abs(m.At(i, j)) > e {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
 // IsSquare returns true if m is square matrix.
 func (m *Matrix) IsSquare() bool {
 	return m.Rows == m.Cols

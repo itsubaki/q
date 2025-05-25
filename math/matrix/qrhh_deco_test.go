@@ -186,6 +186,34 @@ func TestQRHH(t *testing.T) {
 	}{
 		{
 			a: matrix.New(
+				[]complex128{0, 1},
+				[]complex128{1, 0},
+			),
+			eps: epsilon.E13(),
+		},
+		{
+			a: matrix.New(
+				[]complex128{0, -1i},
+				[]complex128{1i, 0},
+			),
+			eps: epsilon.E13(),
+		},
+		{
+			a: matrix.New(
+				[]complex128{1 / math.Sqrt2, 1 / math.Sqrt2},
+				[]complex128{1 / math.Sqrt2, -1 / math.Sqrt2},
+			),
+			eps: epsilon.E13(),
+		},
+		{
+			a: matrix.New(
+				[]complex128{1, 0},
+				[]complex128{0, cmplx.Exp(1i * math.Pi / 4)},
+			),
+			eps: epsilon.E13(),
+		},
+		{
+			a: matrix.New(
 				[]complex128{1, 2},
 				[]complex128{3, 4},
 			),
