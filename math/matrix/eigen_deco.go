@@ -1,7 +1,6 @@
 package matrix
 
 import (
-	"math"
 	"math/cmplx"
 
 	"github.com/itsubaki/q/math/epsilon"
@@ -20,9 +19,9 @@ func Eigen(a *Matrix, iter int, eps ...float64) (vectors *Matrix, lambdas *Matri
 					continue
 				}
 
-				phi := 0.5 * math.Atan(2*cmplx.Abs(c)/real(b-a))
-				cos := complex(math.Cos(phi), 0)
-				sin := complex(math.Sin(phi), 0) * cmplx.Rect(1, cmplx.Phase(c))
+				phi := 0.5 * cmplx.Atan(2*c/(b-a))
+				cos := cmplx.Cos(phi)
+				sin := cmplx.Sin(phi) * cmplx.Rect(1, cmplx.Phase(c))
 
 				g := Identity(n)
 				g.Set(i, i, cos)

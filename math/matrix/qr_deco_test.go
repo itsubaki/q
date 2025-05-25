@@ -221,15 +221,13 @@ func ExampleQR_zero() {
 
 func TestQR(t *testing.T) {
 	cases := []struct {
-		a   *matrix.Matrix
-		eps float64
+		a *matrix.Matrix
 	}{
 		{
 			a: matrix.New(
 				[]complex128{0, 1},
 				[]complex128{1, 0},
 			),
-			eps: epsilon.E13(),
 		},
 		{
 			a: matrix.New(
@@ -238,35 +236,30 @@ func TestQR(t *testing.T) {
 				[]complex128{0, 1, 0, 0},
 				[]complex128{1, 0, 0, 0},
 			),
-			eps: epsilon.E13(),
 		},
 		{
 			a: matrix.New(
 				[]complex128{0, -1i},
 				[]complex128{1i, 0},
 			),
-			eps: epsilon.E13(),
 		},
 		{
 			a: matrix.New(
 				[]complex128{1 / math.Sqrt2, 1 / math.Sqrt2},
 				[]complex128{1 / math.Sqrt2, -1 / math.Sqrt2},
 			),
-			eps: epsilon.E13(),
 		},
 		{
 			a: matrix.New(
 				[]complex128{1, 0},
 				[]complex128{0, cmplx.Exp(1i * math.Pi / 4)},
 			),
-			eps: epsilon.E13(),
 		},
 		{
 			a: matrix.New(
 				[]complex128{1, 2},
 				[]complex128{3, 4},
 			),
-			eps: epsilon.E13(),
 		},
 		{
 			a: matrix.New(
@@ -274,7 +267,6 @@ func TestQR(t *testing.T) {
 				[]complex128{3, 4, 5},
 				[]complex128{7, 8, 10},
 			),
-			eps: epsilon.E13(),
 		},
 	}
 
@@ -285,15 +277,15 @@ func TestQR(t *testing.T) {
 		for _, c := range cases {
 			Q, R := qr(c.a)
 
-			if !Q.IsUnitary(c.eps) {
+			if !Q.IsUnitary() {
 				t.Errorf("Q is not unitary")
 			}
 
-			if !matrix.MatMul(Q, R).Equals(c.a, c.eps) {
+			if !matrix.MatMul(Q, R).Equals(c.a) {
 				t.Errorf("matmul(Q, R) does not equal a")
 			}
 
-			if !R.IsUpperTriangular(c.eps) {
+			if !R.IsUpperTriangular() {
 				t.Errorf("R is not upper triangular")
 			}
 		}

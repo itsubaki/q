@@ -3,21 +3,18 @@ package matrix_test
 import (
 	"testing"
 
-	"github.com/itsubaki/q/math/epsilon"
 	"github.com/itsubaki/q/math/matrix"
 )
 
 func TestSchur(t *testing.T) {
 	cases := []struct {
-		a   *matrix.Matrix
-		eps float64
+		a *matrix.Matrix
 	}{
 		{
 			a: matrix.New(
 				[]complex128{1 + 1i, 2 - 1i},
 				[]complex128{3 + 4i, 4},
 			),
-			eps: epsilon.E13(),
 		},
 		{
 			a: matrix.New(
@@ -25,14 +22,12 @@ func TestSchur(t *testing.T) {
 				[]complex128{0, 3 + 3i, 1 + 1i},
 				[]complex128{0, 0, 4 - 4i},
 			),
-			eps: epsilon.E13(),
 		},
 		{
 			a: matrix.New(
 				[]complex128{1, 2},
 				[]complex128{3, 4},
 			),
-			eps: epsilon.E13(),
 		},
 		{
 			a: matrix.New(
@@ -40,21 +35,18 @@ func TestSchur(t *testing.T) {
 				[]complex128{3, 4, 5},
 				[]complex128{7, 8, 10},
 			),
-			eps: epsilon.E13(),
 		},
 		{
 			a: matrix.New(
 				[]complex128{1, 2},
 				[]complex128{2, 3},
 			),
-			eps: epsilon.E13(),
 		},
 		{
 			a: matrix.New(
 				[]complex128{1, 1i},
 				[]complex128{-1i, 3},
 			),
-			eps: epsilon.E13(),
 		},
 		{
 			a: matrix.New(
@@ -62,7 +54,6 @@ func TestSchur(t *testing.T) {
 				[]complex128{0, 4, 5},
 				[]complex128{0, 0, 6},
 			),
-			eps: epsilon.E13(),
 		},
 	}
 
@@ -71,17 +62,17 @@ func TestSchur(t *testing.T) {
 		matrix.QRHH,
 	} {
 		for _, c := range cases {
-			Q, T := matrix.Schur(c.a, qr, 20, c.eps)
+			Q, T := matrix.Schur(c.a, qr, 20)
 
-			if !Q.IsUnitary(c.eps) {
+			if !Q.IsUnitary() {
 				t.Errorf("Q is not unitary")
 			}
 
-			if !matrix.MatMul(Q, T, Q.Dagger()).Equals(c.a, c.eps) {
+			if !matrix.MatMul(Q, T, Q.Dagger()).Equals(c.a) {
 				t.Errorf("Q * T * Q^dagger does not equal a")
 			}
 
-			if !T.IsUpperTriangular(c.eps) {
+			if !T.IsUpperTriangular() {
 				t.Errorf("T is not upper triangular")
 			}
 		}

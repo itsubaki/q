@@ -11,52 +11,6 @@ import (
 	"github.com/itsubaki/q/math/matrix"
 )
 
-func Example_exp2() {
-	theta := math.Pi / 3
-	c := cmplx.Cos(complex(theta/2, 0))
-	s := cmplx.Sin(complex(theta/2, 0))
-
-	// exp(-i theta/2 X) = cos(theta/2)·I - i sin(theta/2)·X
-	I := matrix.New(
-		[]complex128{1, 0},
-		[]complex128{0, 1},
-	)
-	X := matrix.New(
-		[]complex128{0, 1},
-		[]complex128{1, 0},
-	)
-
-	expX := I.Mul(c).Add(X.Mul(-1i * s)) // cos·I - i·sin·X
-
-	// Rx(θ)
-	rx := func(theta float64) *matrix.Matrix {
-		v := complex(theta/2, 0)
-		return matrix.New(
-			[]complex128{cmplx.Cos(v), -1i * cmplx.Sin(v)},
-			[]complex128{-1i * cmplx.Sin(v), cmplx.Cos(v)},
-		)
-	}
-
-	rxTheta := rx(theta)
-
-	// print both
-	for _, row := range expX.Seq2() {
-		fmt.Printf("%.3f\n", row)
-	}
-	for _, row := range rxTheta.Seq2() {
-		fmt.Printf("%.3f\n", row)
-	}
-
-	fmt.Println(expX.Equals(rxTheta, 1e-12))
-
-	// Output:
-	// [(0.866+0.000i) (0.000-0.500i)]
-	// [(0.000-0.500i) (0.866+0.000i)]
-	// [(0.866-0.000i) (0.000-0.500i)]
-	// [(0.000-0.500i) (0.866-0.000i)]
-	// true
-}
-
 func Example_exp() {
 	rx := func(theta float64) *matrix.Matrix {
 		v := complex(theta/2, 0)
@@ -66,10 +20,22 @@ func Example_exp() {
 		)
 	}
 
-	exp := func(x *matrix.Matrix, theta float64, iter int) *matrix.Matrix {
+	expA := func(x *matrix.Matrix, theta float64, iter int) *matrix.Matrix {
 		V, D := matrix.Eigen(x, iter)
+
 		for i := range D.Rows {
 			D.Set(i, i, cmplx.Exp(D.At(i, i)*-1i*complex(theta/2, 0)))
+		}
+
+		return matrix.MatMul(V, D, V.Dagger())
+	}
+
+	expB := func(x *matrix.Matrix, theta float64, iter int) *matrix.Matrix {
+		ix := x.Mul(-1i * complex(theta/2, 0))
+		V, D := matrix.Eigen(ix, iter)
+
+		for i := range D.Rows {
+			D.Set(i, i, cmplx.Exp(D.At(i, i)))
 		}
 
 		return matrix.MatMul(V, D, V.Dagger())
@@ -81,10 +47,14 @@ func Example_exp() {
 	)
 
 	theta := rand.Float64()
-	expX := exp(x, theta, 10)
-	fmt.Println(expX.Equals(rx(theta)))
+	expXa := expA(x, theta, 10)
+	expXb := expB(x, theta, 10)
+
+	fmt.Println(expXa.Equals(rx(theta)))
+	fmt.Println(expXb.Equals(rx(theta)))
 
 	// Output:
+	// true
 	// true
 }
 
@@ -225,58 +195,58 @@ func ExampleEigen_h() {
 }
 
 func TestEigen(t *testing.T) {
+	rx := func(theta float64) *matrix.Matrix {
+		v := complex(theta/2, 0)
+		return matrix.New(
+			[]complex128{cmplx.Cos(v), -1i * cmplx.Sin(v)},
+			[]complex128{-1i * cmplx.Sin(v), cmplx.Cos(v)},
+		)
+	}
+
 	cases := []struct {
-		a   *matrix.Matrix
-		eps float64
+		a *matrix.Matrix
 	}{
 		{
 			a: matrix.New(
 				[]complex128{0, 1},
 				[]complex128{1, 0},
 			),
-			eps: epsilon.E13(),
 		},
 		{
 			a: matrix.New(
 				[]complex128{0, -1i},
 				[]complex128{1i, 0},
 			),
-			eps: epsilon.E13(),
 		},
 		{
 			a: matrix.New(
 				[]complex128{1, 0},
 				[]complex128{0, -1},
 			),
-			eps: epsilon.E13(),
 		},
 		{
 			a: matrix.New(
 				[]complex128{1 / math.Sqrt2, 1 / math.Sqrt2},
 				[]complex128{1 / math.Sqrt2, -1 / math.Sqrt2},
 			),
-			eps: epsilon.E13(),
 		},
 		{
 			a: matrix.New(
 				[]complex128{1, 0},
 				[]complex128{0, 1i},
 			),
-			eps: epsilon.E13(),
 		},
 		{
 			a: matrix.New(
 				[]complex128{1, 0},
 				[]complex128{0, cmplx.Exp(1i * math.Pi / 4)},
 			),
-			eps: epsilon.E13(),
 		},
 		{
 			a: matrix.New(
 				[]complex128{1, 0},
 				[]complex128{0, cmplx.Exp(complex(0, rand.Float64()))},
 			),
-			eps: epsilon.E13(),
 		},
 		{
 			a: matrix.New(
@@ -285,7 +255,6 @@ func TestEigen(t *testing.T) {
 				[]complex128{0, 1, 0, 0},
 				[]complex128{1, 0, 0, 0},
 			),
-			eps: epsilon.E13(),
 		},
 		{
 			a: matrix.New(
@@ -294,22 +263,24 @@ func TestEigen(t *testing.T) {
 				[]complex128{0, 0, 0, 1},
 				[]complex128{0, 0, 1, 0},
 			),
-			eps: epsilon.E13(),
+		},
+		{
+			a: rx(rand.Float64()),
 		},
 	}
 
 	for _, c := range cases {
-		V, D := matrix.Eigen(c.a, 10, c.eps)
+		V, D := matrix.Eigen(c.a, 10)
 
-		if !D.IsDiagonal(c.eps) {
+		if !D.IsDiagonal() {
 			t.Errorf("D is not diagonal")
 		}
 
-		if !V.IsUnitary(c.eps) {
+		if !V.IsUnitary() {
 			t.Errorf("V * V^dagger does not equal I")
 		}
 
-		if !matrix.MatMul(V, D, V.Dagger()).Equals(c.a, c.eps) {
+		if !matrix.MatMul(V, D, V.Dagger()).Equals(c.a) {
 			t.Errorf("V * D * V^dagger does not equal a")
 			for _, row := range V.Seq2() {
 				t.Log(row)
@@ -320,15 +291,13 @@ func TestEigen(t *testing.T) {
 
 func TestEigenQR(t *testing.T) {
 	cases := []struct {
-		a   *matrix.Matrix
-		eps float64
+		a *matrix.Matrix
 	}{
 		{
 			a: matrix.New(
 				[]complex128{1, 2},
 				[]complex128{3, 4},
 			),
-			eps: epsilon.E13(),
 		},
 		{
 			a: matrix.New(
@@ -336,7 +305,6 @@ func TestEigenQR(t *testing.T) {
 				[]complex128{3, 4, 5},
 				[]complex128{7, 8, 10},
 			),
-			eps: epsilon.E13(),
 		},
 	}
 
@@ -345,13 +313,13 @@ func TestEigenQR(t *testing.T) {
 		matrix.QRHH,
 	} {
 		for _, c := range cases {
-			D, P := matrix.EigenQR(c.a, qr, 20, c.eps)
+			D, P := matrix.EigenQR(c.a, qr, 20)
 
-			if !D.IsDiagonal(c.eps) {
+			if !D.IsDiagonal() {
 				t.Errorf("D is not diagonal")
 			}
 
-			if !matrix.MatMul(P, D, P.Inverse()).Equals(c.a, c.eps) {
+			if !matrix.MatMul(P, D, P.Inverse()).Equals(c.a) {
 				t.Errorf("P * D * P^-1 does not equal a")
 			}
 		}
