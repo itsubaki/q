@@ -182,7 +182,7 @@ func (m *Matrix) IsHermite(eps ...float64) bool {
 
 // IsUnitary returns true if m is unitary matrix.
 func (m *Matrix) IsUnitary(eps ...float64) bool {
-	return m.IsSquare() && m.Apply(m.Dagger()).Equals(Identity(m.Rows), eps...)
+	return m.IsSquare() && m.MatMul(m.Dagger()).Equals(Identity(m.Rows), eps...)
 }
 
 // IsZero returns true if m is zero matrix.
