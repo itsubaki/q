@@ -1,12 +1,17 @@
-package matrix
+package decomp
 
-import "math/cmplx"
+import (
+	"math/cmplx"
+
+	"github.com/itsubaki/q/math/epsilon"
+	"github.com/itsubaki/q/math/matrix"
+)
 
 // Hessenberg performs the Hessenberg decomposition of matrix a using Householder transformations.
 // It returns Q (unitary) and H (upper Hessenberg) such that A = Q * H * Q^dagger.
-func Hessenberg(a *Matrix) (q *Matrix, h *Matrix) {
+func Hessenberg(a *matrix.Matrix) (q *matrix.Matrix, h *matrix.Matrix) {
 	n := a.Rows
-	q, h = Identity(n), a.Clone()
+	q, h = matrix.Identity(n), a.Clone()
 
 	for k := range n - 2 {
 		x := make([]complex128, n-k-1)
@@ -54,4 +59,22 @@ func Hessenberg(a *Matrix) (q *Matrix, h *Matrix) {
 	}
 
 	return q, h
+}
+
+// IsHessenberg returns true if m is Hessenberg matrix.
+func IsHessenberg(m *matrix.Matrix, eps ...float64) bool {
+	if !m.IsSquare() {
+		return false
+	}
+
+	e := epsilon.E13(eps...)
+	for i := 2; i < m.Rows; i++ {
+		for j := range i - 1 {
+			if cmplx.Abs(m.At(i, j)) > e {
+				return false
+			}
+		}
+	}
+
+	return true
 }

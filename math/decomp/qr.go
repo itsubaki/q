@@ -1,17 +1,18 @@
-package matrix
+package decomp
 
 import (
 	"math"
 	"math/cmplx"
 
 	"github.com/itsubaki/q/math/epsilon"
+	"github.com/itsubaki/q/math/matrix"
 )
 
 // QR performs the QR decomposition of matrix a using the Modified Gram-Schmidt process.
 // It returns Q (orthonormal columns) and R (upper triangular) such that A = Q * R.
-func QR(a *Matrix, eps ...float64) (q *Matrix, r *Matrix) {
+func QR(a *matrix.Matrix, eps ...float64) (q *matrix.Matrix, r *matrix.Matrix) {
 	rows, cols := a.Dimension()
-	q, r = a.Clone(), Zero(cols, cols)
+	q, r = a.Clone(), matrix.Zero(cols, cols)
 
 	for k := range cols {
 		nqk := norm(column(q, k))
@@ -65,7 +66,7 @@ func dot(a, b []complex128) complex128 {
 }
 
 // column returns the j-th column of matrix a as a slice.
-func column(a *Matrix, j int) []complex128 {
+func column(a *matrix.Matrix, j int) []complex128 {
 	col := make([]complex128, a.Rows)
 	for i := range a.Rows {
 		col[i] = a.At(i, j)
@@ -75,14 +76,14 @@ func column(a *Matrix, j int) []complex128 {
 }
 
 // div divides the j-th column of matrix a by v.
-func div(a *Matrix, j int, v complex128) {
+func div(a *matrix.Matrix, j int, v complex128) {
 	for i := range a.Rows {
 		a.DivAt(i, j, v)
 	}
 }
 
 // zero sets the j-th column of matrix a to zero.
-func zero(a *Matrix, j int) {
+func zero(a *matrix.Matrix, j int) {
 	for i := range a.Rows {
 		a.Set(i, j, 0)
 	}
@@ -90,9 +91,9 @@ func zero(a *Matrix, j int) {
 
 // QRHH performs the QR decomposition using the Householder transformation.
 // It returns Q (orthonormal columns) and R (upper triangular) such that A = Q * R.
-func QRHH(a *Matrix, eps ...float64) (q *Matrix, r *Matrix) {
+func QRHH(a *matrix.Matrix, eps ...float64) (q *matrix.Matrix, r *matrix.Matrix) {
 	rows, cols := a.Dimension()
-	q, r = Identity(rows), a.Clone()
+	q, r = matrix.Identity(rows), a.Clone()
 
 	for k := 0; k < cols && k < rows-1; k++ {
 		x := make([]complex128, rows-k)

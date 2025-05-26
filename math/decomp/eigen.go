@@ -1,15 +1,16 @@
-package matrix
+package decomp
 
 import (
 	"math/cmplx"
 
 	"github.com/itsubaki/q/math/epsilon"
+	"github.com/itsubaki/q/math/matrix"
 )
 
 // EigenJacobi performs eigen decomposition of a matrix using the Jacobi method.
-func EigenJacobi(a *Matrix, iter int, eps ...float64) (lambdas *Matrix, vectors *Matrix) {
+func EigenJacobi(a *matrix.Matrix, iter int, eps ...float64) (lambdas *matrix.Matrix, vectors *matrix.Matrix) {
 	n := a.Rows
-	v, ak := Identity(n), a.Clone()
+	v, ak := matrix.Identity(n), a.Clone()
 
 	for range iter {
 		for i := range n - 1 {
@@ -23,19 +24,19 @@ func EigenJacobi(a *Matrix, iter int, eps ...float64) (lambdas *Matrix, vectors 
 				cos := cmplx.Cos(phi)
 				sin := cmplx.Sin(phi) * cmplx.Rect(1, cmplx.Phase(c))
 
-				g := Identity(n)
+				g := matrix.Identity(n)
 				g.Set(i, i, cos)
 				g.Set(j, j, cos)
 				g.Set(i, j, -cmplx.Conj(sin))
 				g.Set(j, i, sin)
 
-				v = MatMul(v, g)
-				ak = MatMul(g.Dagger(), ak, g)
+				v = matrix.MatMul(v, g)
+				ak = matrix.MatMul(g.Dagger(), ak, g)
 			}
 		}
 	}
 
-	d := ZeroLike(ak)
+	d := matrix.ZeroLike(ak)
 	for i := range n {
 		d.Set(i, i, ak.At(i, i))
 	}
@@ -44,20 +45,20 @@ func EigenJacobi(a *Matrix, iter int, eps ...float64) (lambdas *Matrix, vectors 
 }
 
 // EigenQR performs eigen decomposition of a matrix using the Schur decomposition.
-func EigenQR(m *Matrix, qr QRFunc, iter int, eps ...float64) (lambdas *Matrix, vectors *Matrix) {
+func EigenQR(m *matrix.Matrix, qr QRFunc, iter int, eps ...float64) (lambdas *matrix.Matrix, vectors *matrix.Matrix) {
 	q, t := Schur(m, qr, iter, eps...)
 	lambdas, vectors = EigenUpperT(t, eps...)
-	return lambdas, MatMul(q, vectors)
+	return lambdas, matrix.MatMul(q, vectors)
 }
 
 // EigenUpperT performs eigen decomposition of an upper triangular matrix.
-func EigenUpperT(t *Matrix, eps ...float64) (lambdas *Matrix, vectors *Matrix) {
-	lambdas = ZeroLike(t)
+func EigenUpperT(t *matrix.Matrix, eps ...float64) (lambdas *matrix.Matrix, vectors *matrix.Matrix) {
+	lambdas = matrix.ZeroLike(t)
 	for i := range t.Rows {
 		lambdas.Set(i, i, t.At(i, i))
 	}
 
-	vectors = Zero(t.Rows, t.Rows)
+	vectors = matrix.Zero(t.Rows, t.Rows)
 	for k := range t.Rows {
 		x := make([]complex128, t.Rows)
 		x[k] = 1.0
@@ -91,4 +92,26 @@ func EigenUpperT(t *Matrix, eps ...float64) (lambdas *Matrix, vectors *Matrix) {
 	}
 
 	return lambdas, vectors
+}
+
+// IsDiagonal returns true if m is diagonal matrix.
+func IsDiagonal(m *matrix.Matrix, eps ...float64) bool {
+	if !m.IsSquare() {
+		return false
+	}
+
+	e := epsilon.E13(eps...)
+	for i := range m.Rows {
+		for j := range m.Cols {
+			if i == j {
+				continue
+			}
+
+			if cmplx.Abs(m.At(i, j)) > e {
+				return false
+			}
+		}
+	}
+
+	return true
 }

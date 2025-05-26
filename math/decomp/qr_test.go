@@ -1,4 +1,4 @@
-package matrix_test
+package decomp_test
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"math/cmplx"
 	"testing"
 
+	"github.com/itsubaki/q/math/decomp"
 	"github.com/itsubaki/q/math/epsilon"
 	"github.com/itsubaki/q/math/matrix"
 )
@@ -16,9 +17,9 @@ func ExampleQR() {
 		[]complex128{3, 4},
 	)
 
-	for _, qr := range []matrix.QRFunc{
-		matrix.QR,
-		matrix.QRHH,
+	for _, qr := range []decomp.QRFunc{
+		decomp.QR,
+		decomp.QRHH,
 	} {
 		q, r := qr(a)
 		for _, v := range q.Seq2() {
@@ -55,9 +56,9 @@ func ExampleQR_x3() {
 		[]complex128{7, 8, 10},
 	)
 
-	for _, qr := range []matrix.QRFunc{
-		matrix.QR,
-		matrix.QRHH,
+	for _, qr := range []decomp.QRFunc{
+		decomp.QR,
+		decomp.QRHH,
 	} {
 		q, r := qr(a)
 		for _, v := range q.Seq2() {
@@ -94,9 +95,9 @@ func ExampleQR_x3() {
 func ExampleQR_identity() {
 	a := matrix.Identity(2)
 
-	for _, qr := range []matrix.QRFunc{
-		matrix.QR,
-		matrix.QRHH,
+	for _, qr := range []decomp.QRFunc{
+		decomp.QR,
+		decomp.QRHH,
 	} {
 		q, r := qr(a)
 		for _, v := range q.Seq2() {
@@ -133,9 +134,9 @@ func ExampleQR_orthogonal() {
 		[]complex128{v, -v},
 	)
 
-	for _, qr := range []matrix.QRFunc{
-		matrix.QR,
-		matrix.QRHH,
+	for _, qr := range []decomp.QRFunc{
+		decomp.QR,
+		decomp.QRHH,
 	} {
 		q, r := qr(a)
 		for _, v := range q.Seq2() {
@@ -184,9 +185,9 @@ func ExampleQR_rankdeficient() {
 		[]complex128{3, 6, 9},
 	)
 
-	for _, qr := range []matrix.QRFunc{
-		matrix.QR,
-		matrix.QRHH,
+	for _, qr := range []decomp.QRFunc{
+		decomp.QR,
+		decomp.QRHH,
 	} {
 		_, r := qr(a)
 		for i, row := range r.Seq2() {
@@ -206,9 +207,9 @@ func ExampleQR_rankdeficient() {
 func ExampleQR_zero() {
 	a := matrix.Zero(3, 3)
 
-	for _, qr := range []matrix.QRFunc{
-		matrix.QR,
-		matrix.QRHH,
+	for _, qr := range []decomp.QRFunc{
+		decomp.QR,
+		decomp.QRHH,
 	} {
 		_, r := qr(a)
 		fmt.Println(r.IsZero())
@@ -270,9 +271,9 @@ func TestQR(t *testing.T) {
 		},
 	}
 
-	for _, qr := range []matrix.QRFunc{
-		matrix.QR,
-		matrix.QRHH,
+	for _, qr := range []decomp.QRFunc{
+		decomp.QR,
+		decomp.QRHH,
 	} {
 		for _, c := range cases {
 			Q, R := qr(c.in)
@@ -281,12 +282,12 @@ func TestQR(t *testing.T) {
 				t.Errorf("Q is not unitary")
 			}
 
-			if !matrix.MatMul(Q, R).Equals(c.in) {
-				t.Errorf("matmul(Q, R) does not equal a")
+			if !decomp.IsUpperTriangular(R) {
+				t.Errorf("R is not upper triangular")
 			}
 
-			if !R.IsUpperTriangular() {
-				t.Errorf("R is not upper triangular")
+			if !matrix.MatMul(Q, R).Equals(c.in) {
+				t.Errorf("matmul(Q, R) does not equal a")
 			}
 		}
 	}
