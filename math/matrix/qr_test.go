@@ -160,7 +160,7 @@ func ExampleQR_orthogonal() {
 	// [(-0.707+0.000i) (-0.707+0.000i)]
 	// [(-0.707+0.000i) (0.707+0.000i)]
 	// [(-1.000+0.000i) (0.000+0.000i)]
-	// [(-0.000+0.000i) (-1.000+0.000i)]
+	// [(0.000+0.000i) (-1.000-0.000i)]
 	// true
 	// true
 }
@@ -221,16 +221,16 @@ func ExampleQR_zero() {
 
 func TestQR(t *testing.T) {
 	cases := []struct {
-		a *matrix.Matrix
+		in *matrix.Matrix
 	}{
 		{
-			a: matrix.New(
+			matrix.New(
 				[]complex128{0, 1},
 				[]complex128{1, 0},
 			),
 		},
 		{
-			a: matrix.New(
+			matrix.New(
 				[]complex128{0, 0, 0, 1},
 				[]complex128{0, 0, 1, 0},
 				[]complex128{0, 1, 0, 0},
@@ -238,31 +238,31 @@ func TestQR(t *testing.T) {
 			),
 		},
 		{
-			a: matrix.New(
+			matrix.New(
 				[]complex128{0, -1i},
 				[]complex128{1i, 0},
 			),
 		},
 		{
-			a: matrix.New(
+			matrix.New(
 				[]complex128{1 / math.Sqrt2, 1 / math.Sqrt2},
 				[]complex128{1 / math.Sqrt2, -1 / math.Sqrt2},
 			),
 		},
 		{
-			a: matrix.New(
+			matrix.New(
 				[]complex128{1, 0},
 				[]complex128{0, cmplx.Exp(1i * math.Pi / 4)},
 			),
 		},
 		{
-			a: matrix.New(
+			matrix.New(
 				[]complex128{1, 2},
 				[]complex128{3, 4},
 			),
 		},
 		{
-			a: matrix.New(
+			matrix.New(
 				[]complex128{1, 2, 3},
 				[]complex128{3, 4, 5},
 				[]complex128{7, 8, 10},
@@ -275,13 +275,13 @@ func TestQR(t *testing.T) {
 		matrix.QRHH,
 	} {
 		for _, c := range cases {
-			Q, R := qr(c.a)
+			Q, R := qr(c.in)
 
 			if !Q.IsUnitary() {
 				t.Errorf("Q is not unitary")
 			}
 
-			if !matrix.MatMul(Q, R).Equals(c.a) {
+			if !matrix.MatMul(Q, R).Equals(c.in) {
 				t.Errorf("matmul(Q, R) does not equal a")
 			}
 

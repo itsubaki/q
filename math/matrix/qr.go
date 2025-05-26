@@ -15,8 +15,6 @@ func QR(a *Matrix, eps ...float64) (q *Matrix, r *Matrix) {
 
 	for k := range cols {
 		nqk := norm(column(q, k))
-		r.Set(k, k, complex(nqk, 0))
-
 		if nqk < epsilon.E13(eps...) {
 			// If the norm is smaller than a small threshold (effectively zero),
 			// treat the k-th vector as numerically zero to avoid division by zero
@@ -24,6 +22,8 @@ func QR(a *Matrix, eps ...float64) (q *Matrix, r *Matrix) {
 			zero(q, k)
 			continue
 		}
+
+		r.Set(k, k, complex(nqk, 0))
 
 		// Normalize the k-th column of Q
 		div(q, k, complex(nqk, 0))
@@ -100,61 +100,56 @@ func QRHH(a *Matrix, eps ...float64) (q *Matrix, r *Matrix) {
 			x[i-k] = r.At(i, k)
 		}
 
-		// alpha defines the magnitude and direction to reflect x
-		// onto the first basis vector e_1 in the Householder transform.
-		alpha := complex(norm(x), 0)
-		if cmplx.Abs(x[0]) != 0 {
-			alpha *= x[0] / complex(cmplx.Abs(x[0]), 0)
-		}
-
-		// u = x + alpha * e_1
-		u := make([]complex128, len(x))
-		for i := range x {
-			if i == 0 {
-				u[i] = x[i] + alpha
-				continue
-			}
-
-			u[i] = x[i]
-		}
-
-		nu := norm(u)
-		if nu < epsilon.E13(eps...) {
-			// If the norm is less than the threshold, skip this column
+		u, ok := householder(x, eps...)
+		if !ok {
 			continue
 		}
 
-		// Normalize u
-		for i := range u {
-			u[i] /= complex(nu, 0)
-		}
+		// Apply the Householder transformation
+		for j := k; j < cols; j++ {
+			var v complex128
+			for i := range u {
+				v += cmplx.Conj(u[i]) * r.At(i+k, j)
+			}
 
-		// h = I - 2 * uu^dagger
-		h, uu := Identity(rows), outer(u)
-		for i := k; i < rows; i++ {
-			for j := k; j < rows; j++ {
-				// h[i][j] -= 2 * uu.At(i-k, j-k)
-				h.SubAt(i, j, 2*uu.At(i-k, j-k))
+			for i := range u {
+				r.SubAt(i+k, j, 2*v*u[i])
 			}
 		}
 
-		// Apply the Householder transformation
-		q = q.MatMul(h)
-		r = h.MatMul(r)
+		for i := range rows {
+			var v complex128
+			for j := range u {
+				v += q.At(i, j+k) * u[j]
+			}
+
+			for j := range u {
+				q.SubAt(i, j+k, 2*v*cmplx.Conj(u[j]))
+			}
+		}
 	}
 
 	return q, r
 }
 
-// outer computes the outer product of vector u with itself.
-func outer(u []complex128) *Matrix {
-	n := len(u)
-	out := Zero(n, n)
-	for i := range n {
-		for j := range n {
-			out.Set(i, j, u[i]*cmplx.Conj(u[j]))
-		}
+func householder(x []complex128, eps ...float64) ([]complex128, bool) {
+	alpha := complex(norm(x), 0)
+	if cmplx.Abs(x[0]) > epsilon.E13(eps...) {
+		alpha *= -x[0] / complex(cmplx.Abs(x[0]), 0)
 	}
 
-	return out
+	u := make([]complex128, len(x))
+	u[0] = x[0] - alpha
+	copy(u[1:], x[1:])
+
+	nu := norm(u)
+	if nu < epsilon.E13(eps...) {
+		return nil, false
+	}
+
+	for i := range u {
+		u[i] /= complex(nu, 0)
+	}
+
+	return u, true
 }

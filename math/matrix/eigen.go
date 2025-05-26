@@ -7,7 +7,7 @@ import (
 )
 
 // EigenJacobi performs eigen decomposition of a matrix using the Jacobi method.
-func EigenJacobi(a *Matrix, iter int, eps ...float64) (vectors *Matrix, lambdas *Matrix) {
+func EigenJacobi(a *Matrix, iter int, eps ...float64) (lambdas *Matrix, vectors *Matrix) {
 	n := a.Rows
 	v, ak := Identity(n), a.Clone()
 
@@ -40,7 +40,7 @@ func EigenJacobi(a *Matrix, iter int, eps ...float64) (vectors *Matrix, lambdas 
 		d.Set(i, i, ak.At(i, i))
 	}
 
-	return v, d
+	return d, v
 }
 
 // EigenQR performs eigen decomposition of a matrix using the Schur decomposition.

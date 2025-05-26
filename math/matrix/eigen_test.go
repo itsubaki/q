@@ -21,7 +21,7 @@ func Example_exp() {
 	}
 
 	expA := func(x *matrix.Matrix, theta float64, iter int) *matrix.Matrix {
-		V, D := matrix.EigenJacobi(x, iter)
+		D, V := matrix.EigenJacobi(x, iter)
 
 		for i := range D.Rows {
 			D.Set(i, i, cmplx.Exp(D.At(i, i)*-1i*complex(theta/2, 0)))
@@ -32,7 +32,7 @@ func Example_exp() {
 
 	expB := func(x *matrix.Matrix, theta float64, iter int) *matrix.Matrix {
 		ix := x.Mul(-1i * complex(theta/2, 0))
-		V, D := matrix.EigenJacobi(ix, iter)
+		D, V := matrix.EigenJacobi(ix, iter)
 
 		for i := range D.Rows {
 			D.Set(i, i, cmplx.Exp(D.At(i, i)))
@@ -64,8 +64,7 @@ func Example_pow0p5() {
 		[]complex128{1, 0},
 	)
 
-	iter := 10
-	V, D := matrix.EigenJacobi(a, iter)
+	D, V := matrix.EigenJacobi(a, 10)
 
 	for i := range D.Rows {
 		D.Set(i, i, cmplx.Pow(D.At(i, i), 0.5))
@@ -93,8 +92,7 @@ func Example_pow1p5() {
 		[]complex128{1, 0},
 	)
 
-	iter := 10
-	V, D := matrix.EigenJacobi(a, iter)
+	D, V := matrix.EigenJacobi(a, 10)
 
 	for i := range D.Rows {
 		D.Set(i, i, cmplx.Pow(D.At(i, i), 1.5))
@@ -122,8 +120,7 @@ func ExampleEigenJacobi_x() {
 		[]complex128{1, 0},
 	)
 
-	iter := 10
-	V, D := matrix.EigenJacobi(a, iter)
+	D, V := matrix.EigenJacobi(a, 10)
 
 	for _, row := range V.Seq2() {
 		fmt.Printf("%.3f\n", row)
@@ -148,8 +145,7 @@ func ExampleEigenJacobi_cx() {
 		[]complex128{0, 0, 1, 0},
 	)
 
-	iter := 10
-	V, D := matrix.EigenJacobi(a, iter)
+	D, V := matrix.EigenJacobi(a, 10)
 
 	for _, row := range V.Seq2() {
 		fmt.Printf("%.3f\n", row)
@@ -176,8 +172,7 @@ func ExampleEigenJacobi_h() {
 		[]complex128{1 / math.Sqrt2, -1 / math.Sqrt2},
 	)
 
-	iter := 10
-	V, D := matrix.EigenJacobi(a, iter)
+	D, V := matrix.EigenJacobi(a, 10)
 
 	for _, row := range V.Seq2() {
 		fmt.Printf("%.3f\n", row)
@@ -204,52 +199,52 @@ func TestEigenJacobi(t *testing.T) {
 	}
 
 	cases := []struct {
-		a *matrix.Matrix
+		in *matrix.Matrix
 	}{
 		{
-			a: matrix.New(
+			matrix.New(
 				[]complex128{0, 1},
 				[]complex128{1, 0},
 			),
 		},
 		{
-			a: matrix.New(
+			matrix.New(
 				[]complex128{0, -1i},
 				[]complex128{1i, 0},
 			),
 		},
 		{
-			a: matrix.New(
+			matrix.New(
 				[]complex128{1, 0},
 				[]complex128{0, -1},
 			),
 		},
 		{
-			a: matrix.New(
+			matrix.New(
 				[]complex128{1 / math.Sqrt2, 1 / math.Sqrt2},
 				[]complex128{1 / math.Sqrt2, -1 / math.Sqrt2},
 			),
 		},
 		{
-			a: matrix.New(
+			matrix.New(
 				[]complex128{1, 0},
 				[]complex128{0, 1i},
 			),
 		},
 		{
-			a: matrix.New(
+			matrix.New(
 				[]complex128{1, 0},
 				[]complex128{0, cmplx.Exp(1i * math.Pi / 4)},
 			),
 		},
 		{
-			a: matrix.New(
+			matrix.New(
 				[]complex128{1, 0},
 				[]complex128{0, cmplx.Exp(complex(0, rand.Float64()))},
 			),
 		},
 		{
-			a: matrix.New(
+			matrix.New(
 				[]complex128{0, 0, 0, 1},
 				[]complex128{0, 0, 1, 0},
 				[]complex128{0, 1, 0, 0},
@@ -257,7 +252,7 @@ func TestEigenJacobi(t *testing.T) {
 			),
 		},
 		{
-			a: matrix.New(
+			matrix.New(
 				[]complex128{1, 0, 0, 0},
 				[]complex128{0, 1, 0, 0},
 				[]complex128{0, 0, 0, 1},
@@ -265,12 +260,12 @@ func TestEigenJacobi(t *testing.T) {
 			),
 		},
 		{
-			a: rx(rand.Float64()),
+			rx(rand.Float64()),
 		},
 	}
 
 	for _, c := range cases {
-		V, D := matrix.EigenJacobi(c.a, 10)
+		D, V := matrix.EigenJacobi(c.in, 10)
 
 		if !D.IsDiagonal() {
 			t.Errorf("D is not diagonal")
@@ -280,7 +275,7 @@ func TestEigenJacobi(t *testing.T) {
 			t.Errorf("V * V^dagger does not equal I")
 		}
 
-		if !matrix.MatMul(V, D, V.Dagger()).Equals(c.a) {
+		if !matrix.MatMul(V, D, V.Dagger()).Equals(c.in) {
 			t.Errorf("V * D * V^dagger does not equal a")
 			for _, row := range V.Seq2() {
 				t.Log(row)
@@ -291,16 +286,16 @@ func TestEigenJacobi(t *testing.T) {
 
 func TestEigenQR(t *testing.T) {
 	cases := []struct {
-		a *matrix.Matrix
+		in *matrix.Matrix
 	}{
 		{
-			a: matrix.New(
+			matrix.New(
 				[]complex128{1, 2},
 				[]complex128{3, 4},
 			),
 		},
 		{
-			a: matrix.New(
+			matrix.New(
 				[]complex128{1, 2, 3},
 				[]complex128{3, 4, 5},
 				[]complex128{7, 8, 10},
@@ -313,13 +308,13 @@ func TestEigenQR(t *testing.T) {
 		matrix.QRHH,
 	} {
 		for _, c := range cases {
-			D, P := matrix.EigenQR(c.a, qr, 20)
+			D, P := matrix.EigenQR(c.in, qr, 20)
 
 			if !D.IsDiagonal() {
 				t.Errorf("D is not diagonal")
 			}
 
-			if !matrix.MatMul(P, D, P.Inverse()).Equals(c.a) {
+			if !matrix.MatMul(P, D, P.Inverse()).Equals(c.in) {
 				t.Errorf("P * D * P^-1 does not equal a")
 			}
 		}
@@ -328,54 +323,54 @@ func TestEigenQR(t *testing.T) {
 
 func TestEigenUpperT(t *testing.T) {
 	cases := []struct {
-		t   *matrix.Matrix
+		in  *matrix.Matrix
 		eps float64
 	}{
 		{
-			t: matrix.New(
+			matrix.New(
 				[]complex128{1, 2},
 				[]complex128{0, 3},
 			),
-			eps: epsilon.E13(),
+			epsilon.E13(),
 		},
 		{
-			t: matrix.New(
+			matrix.New(
 				[]complex128{1, 0, 0},
 				[]complex128{0, 2, 0},
 				[]complex128{0, 0, 3},
 			),
-			eps: epsilon.E13(),
+			epsilon.E13(),
 		},
 		{
-			t: matrix.New(
+			matrix.New(
 				[]complex128{1, 2, 3, 4, 5},
 				[]complex128{0, 2, 3, 4, 5},
 				[]complex128{0, 0, 3, 4, 5},
 				[]complex128{0, 0, 0, 4, 5},
 				[]complex128{0, 0, 0, 0, 5},
 			),
-			eps: epsilon.E13(),
+			epsilon.E13(),
 		},
 		{
-			t: matrix.New(
+			matrix.New(
 				[]complex128{1 + 1i, 2 - 1i, 3 + 0.5i},
 				[]complex128{0, 2 + 2i, 1 - 0.5i},
 				[]complex128{0, 0, 3 - 1i},
 			),
-			eps: epsilon.E13(),
+			epsilon.E13(),
 		},
 		{
 
-			t: matrix.New(
+			matrix.New(
 				[]complex128{5, 0, 0, 1},
 				[]complex128{0, 3, 0, 0},
 				[]complex128{0, 0, 2, 0},
 				[]complex128{0, 0, 0, 1},
 			),
-			eps: epsilon.E13(),
+			epsilon.E13(),
 		},
 		{
-			t: matrix.New(
+			matrix.New(
 				[]complex128{10, 0, 0, 0, 0, 2},
 				[]complex128{0, 9, 0, 0, 0, 0},
 				[]complex128{0, 0, 8, 0, 0, 0},
@@ -383,25 +378,25 @@ func TestEigenUpperT(t *testing.T) {
 				[]complex128{0, 0, 0, 0, 6, 0},
 				[]complex128{0, 0, 0, 0, 0, 5},
 			),
-			eps: epsilon.E13(),
+			epsilon.E13(),
 		},
 		{
-			t: matrix.New(
+			matrix.New(
 				[]complex128{1, 0.0001},
 				[]complex128{0, 1},
 			),
-			eps: 1e-2,
+			1e-2,
 		},
 	}
 
 	for _, c := range cases {
-		D, P := matrix.EigenUpperT(c.t, c.eps)
+		D, P := matrix.EigenUpperT(c.in, c.eps)
 
 		if !D.IsDiagonal(c.eps) {
 			t.Errorf("D is not diagonal")
 		}
 
-		if !matrix.MatMul(P, D, P.Inverse()).Equals(c.t, c.eps) {
+		if !matrix.MatMul(P, D, P.Inverse()).Equals(c.in, c.eps) {
 			t.Errorf("P * D * P^-1 does not equal t")
 		}
 	}
