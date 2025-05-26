@@ -121,6 +121,38 @@ func ExampleMatrix_Mul() {
 	// [(-3+3i) (0+0i)]
 }
 
+func ExampleMatrix_SubAt() {
+	m := matrix.New(
+		[]complex128{1, 2},
+		[]complex128{3, 4},
+	)
+	m.SubAt(1, 0, 3)
+
+	for _, r := range m.Seq2() {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [(1+0i) (2+0i)]
+	// [(0+0i) (4+0i)]
+}
+
+func ExampleMatrix_DivAt() {
+	m := matrix.New(
+		[]complex128{1, 2},
+		[]complex128{3, 4},
+	)
+	m.DivAt(1, 0, 3)
+
+	for _, r := range m.Seq2() {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [(1+0i) (2+0i)]
+	// [(1+0i) (4+0i)]
+}
+
 func ExampleMatrix_Apply() {
 	x := matrix.New(
 		[]complex128{0, 1},
@@ -253,19 +285,6 @@ func ExampleApplyN() {
 	//
 	// [(1+0i) (0+0i)]
 	// [(0+0i) (1+0i)]
-}
-
-func ExampleMatrix_IsDiagonal() {
-	x := matrix.New(
-		[]complex128{1, 0},
-		[]complex128{0, 2},
-		[]complex128{3, 4},
-	)
-
-	fmt.Println(x.IsDiagonal())
-
-	// Output:
-	// false
 }
 
 func ExampleMatrix_TensorProduct() {
@@ -528,34 +547,6 @@ func TestMatrix_IsSquare(t *testing.T) {
 	}
 }
 
-func TestMatrix_IsDiagonal(t *testing.T) {
-	cases := []struct {
-		in   *matrix.Matrix
-		want bool
-	}{
-		{
-			matrix.New(
-				[]complex128{1, 0},
-				[]complex128{0, 2},
-			),
-			true,
-		},
-		{
-			matrix.New(
-				[]complex128{1, 2},
-				[]complex128{3, 4},
-			),
-			false,
-		},
-	}
-
-	for _, c := range cases {
-		if c.in.IsDiagonal() != c.want {
-			t.Fail()
-		}
-	}
-}
-
 func TestMatrix_IsHermite(t *testing.T) {
 	cases := []struct {
 		in   *matrix.Matrix
@@ -650,137 +641,6 @@ func TestMatrix_IsUnitary(t *testing.T) {
 	for i, c := range cases {
 		if c.in.IsUnitary() != c.want {
 			t.Errorf("case[%v] is failed", i)
-		}
-	}
-}
-
-func TestMatrix_IsUpperTriangular(t *testing.T) {
-	cases := []struct {
-		in   *matrix.Matrix
-		want bool
-	}{
-		{
-			matrix.New(
-				[]complex128{1, 2},
-				[]complex128{0, 3},
-			),
-			true,
-		},
-		{
-			matrix.New(
-				[]complex128{1, 2, 3},
-				[]complex128{0, 4, 5},
-				[]complex128{0, 0, 6},
-			),
-			true,
-		},
-		{
-			matrix.New(
-				[]complex128{1, 2},
-				[]complex128{3, 4},
-			),
-			false,
-		},
-		{
-			matrix.New(
-				[]complex128{1, 2},
-				[]complex128{0, 4},
-				[]complex128{0, 6},
-			),
-			false,
-		},
-		{
-			matrix.New(
-				[]complex128{1, 2, 3},
-				[]complex128{0, 4, 5},
-			),
-			false,
-		},
-		{
-			matrix.New(
-				[]complex128{complex(1, 1), complex(2, 2)},
-				[]complex128{0, complex(3, -1)},
-			),
-			true,
-		},
-		{
-			matrix.New(
-				[]complex128{complex(1, 0), complex(2, 0)},
-				[]complex128{complex(1, 1), complex(3, 0)},
-			),
-			false,
-		},
-	}
-
-	for _, c := range cases {
-		if c.in.IsUpperTriangular() != c.want {
-			t.Fail()
-		}
-	}
-}
-
-func TestMatrix_IsHessenberg(t *testing.T) {
-	cases := []struct {
-		in   *matrix.Matrix
-		want bool
-	}{
-		{
-			matrix.New(
-				[]complex128{1, 2},
-				[]complex128{3, 4},
-			),
-			true,
-		},
-		{
-			matrix.New(
-				[]complex128{1, 2, 3},
-				[]complex128{4, 5, 6},
-				[]complex128{0, 7, 8},
-			),
-			true,
-		},
-		{
-			matrix.New(
-				[]complex128{1, 2, 3},
-				[]complex128{4, 5, 6},
-				[]complex128{9, 7, 8},
-			),
-			false,
-		},
-		{
-			matrix.Identity(4),
-			true,
-		},
-		{
-			matrix.New(
-				[]complex128{1, 2, 3},
-				[]complex128{0, 4, 5},
-				[]complex128{0, 0, 6},
-			),
-			true,
-		},
-		{
-			matrix.New(
-				[]complex128{1, 0, 0},
-				[]complex128{2, 3, 0},
-				[]complex128{4, 5, 6},
-			),
-			false,
-		},
-		{
-			matrix.New(
-				[]complex128{1, 2, 3},
-				[]complex128{4, 5, 6},
-				[]complex128{0, 7, 8},
-				[]complex128{0, 0, 9},
-			),
-			false,
-		},
-	}
-
-	for _, c := range cases {
-		if c.in.IsHessenberg() != c.want {
-			t.Fail()
 		}
 	}
 }

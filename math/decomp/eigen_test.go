@@ -1,4 +1,4 @@
-package matrix_test
+package decomp_test
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"testing"
 
+	"github.com/itsubaki/q/math/decomp"
 	"github.com/itsubaki/q/math/epsilon"
 	"github.com/itsubaki/q/math/matrix"
 )
@@ -21,7 +22,7 @@ func Example_exp() {
 	}
 
 	expA := func(x *matrix.Matrix, theta float64, iter int) *matrix.Matrix {
-		D, V := matrix.EigenJacobi(x, iter)
+		D, V := decomp.EigenJacobi(x, iter)
 
 		for i := range D.Rows {
 			D.Set(i, i, cmplx.Exp(D.At(i, i)*-1i*complex(theta/2, 0)))
@@ -32,7 +33,7 @@ func Example_exp() {
 
 	expB := func(x *matrix.Matrix, theta float64, iter int) *matrix.Matrix {
 		ix := x.Mul(-1i * complex(theta/2, 0))
-		D, V := matrix.EigenJacobi(ix, iter)
+		D, V := decomp.EigenJacobi(ix, iter)
 
 		for i := range D.Rows {
 			D.Set(i, i, cmplx.Exp(D.At(i, i)))
@@ -64,7 +65,7 @@ func Example_pow0p5() {
 		[]complex128{1, 0},
 	)
 
-	D, V := matrix.EigenJacobi(a, 10)
+	D, V := decomp.EigenJacobi(a, 10)
 
 	for i := range D.Rows {
 		D.Set(i, i, cmplx.Pow(D.At(i, i), 0.5))
@@ -92,7 +93,7 @@ func Example_pow1p5() {
 		[]complex128{1, 0},
 	)
 
-	D, V := matrix.EigenJacobi(a, 10)
+	D, V := decomp.EigenJacobi(a, 10)
 
 	for i := range D.Rows {
 		D.Set(i, i, cmplx.Pow(D.At(i, i), 1.5))
@@ -120,7 +121,7 @@ func ExampleEigenJacobi_x() {
 		[]complex128{1, 0},
 	)
 
-	D, V := matrix.EigenJacobi(a, 10)
+	D, V := decomp.EigenJacobi(a, 10)
 
 	for _, row := range V.Seq2() {
 		fmt.Printf("%.3f\n", row)
@@ -145,7 +146,7 @@ func ExampleEigenJacobi_cx() {
 		[]complex128{0, 0, 1, 0},
 	)
 
-	D, V := matrix.EigenJacobi(a, 10)
+	D, V := decomp.EigenJacobi(a, 10)
 
 	for _, row := range V.Seq2() {
 		fmt.Printf("%.3f\n", row)
@@ -172,7 +173,7 @@ func ExampleEigenJacobi_h() {
 		[]complex128{1 / math.Sqrt2, -1 / math.Sqrt2},
 	)
 
-	D, V := matrix.EigenJacobi(a, 10)
+	D, V := decomp.EigenJacobi(a, 10)
 
 	for _, row := range V.Seq2() {
 		fmt.Printf("%.3f\n", row)
@@ -187,6 +188,19 @@ func ExampleEigenJacobi_h() {
 	// [(0.383+0.000i) (0.924+0.000i)]
 	// [(1.000+0.000i) (0.000+0.000i)]
 	// [(0.000+0.000i) (-1.000+0.000i)]
+}
+
+func ExampleIsDiagonal() {
+	x := matrix.New(
+		[]complex128{1, 0},
+		[]complex128{0, 2},
+		[]complex128{3, 4},
+	)
+
+	fmt.Println(decomp.IsDiagonal(x))
+
+	// Output:
+	// false
 }
 
 func TestEigenJacobi(t *testing.T) {
@@ -265,9 +279,9 @@ func TestEigenJacobi(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		D, V := matrix.EigenJacobi(c.in, 10)
+		D, V := decomp.EigenJacobi(c.in, 10)
 
-		if !D.IsDiagonal() {
+		if !decomp.IsDiagonal(D) {
 			t.Errorf("D is not diagonal")
 		}
 
@@ -303,14 +317,14 @@ func TestEigenQR(t *testing.T) {
 		},
 	}
 
-	for _, qr := range []matrix.QRFunc{
-		matrix.QR,
-		matrix.QRHH,
+	for _, qr := range []decomp.QRFunc{
+		decomp.QR,
+		decomp.QRHH,
 	} {
 		for _, c := range cases {
-			D, P := matrix.EigenQR(c.in, qr, 20)
+			D, P := decomp.EigenQR(c.in, qr, 20)
 
-			if !D.IsDiagonal() {
+			if !decomp.IsDiagonal(D) {
 				t.Errorf("D is not diagonal")
 			}
 
@@ -390,14 +404,42 @@ func TestEigenUpperT(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		D, P := matrix.EigenUpperT(c.in, c.eps)
+		D, P := decomp.EigenUpperT(c.in, c.eps)
 
-		if !D.IsDiagonal(c.eps) {
+		if !decomp.IsDiagonal(D, c.eps) {
 			t.Errorf("D is not diagonal")
 		}
 
 		if !matrix.MatMul(P, D, P.Inverse()).Equals(c.in, c.eps) {
 			t.Errorf("P * D * P^-1 does not equal t")
+		}
+	}
+}
+
+func TestIsDiagonal(t *testing.T) {
+	cases := []struct {
+		in   *matrix.Matrix
+		want bool
+	}{
+		{
+			matrix.New(
+				[]complex128{1, 0},
+				[]complex128{0, 2},
+			),
+			true,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 2},
+				[]complex128{3, 4},
+			),
+			false,
+		},
+	}
+
+	for _, c := range cases {
+		if decomp.IsDiagonal(c.in) != c.want {
+			t.Fail()
 		}
 	}
 }

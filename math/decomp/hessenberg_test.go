@@ -1,4 +1,4 @@
-package matrix_test
+package decomp_test
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"testing"
 
+	"github.com/itsubaki/q/math/decomp"
 	"github.com/itsubaki/q/math/matrix"
 )
 
@@ -20,7 +21,7 @@ func ExampleHessenberg() {
 
 	a := ry(rand.Float64())
 	aa := matrix.TensorProduct(a, a)
-	q, h := matrix.Hessenberg(aa)
+	q, h := decomp.Hessenberg(aa)
 
 	fmt.Println(q.IsUnitary())
 	fmt.Println(matrix.MatMul(q, h, q.Dagger()).Equals(aa))
@@ -42,8 +43,8 @@ func ExampleHessenberg_qr() {
 	a := ry(rand.Float64())
 	aa := matrix.TensorProduct(a, a)
 
-	qq, h := matrix.Hessenberg(aa)
-	q, r := matrix.QRHH(h)
+	qq, h := decomp.Hessenberg(aa)
+	q, r := decomp.QRHH(h)
 
 	fmt.Println(q.IsUnitary())
 	fmt.Println(matrix.MatMul(q, r).Equals(h))
@@ -93,18 +94,84 @@ func TestHessenberg(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		Q, T := matrix.Hessenberg(c.in)
+		Q, T := decomp.Hessenberg(c.in)
 
 		if !Q.IsUnitary() {
 			t.Errorf("Q is not unitary")
 		}
 
-		if !T.IsHessenberg() {
+		if !decomp.IsHessenberg(T) {
 			t.Errorf("T is not in Hessenberg form")
 		}
 
 		if !matrix.MatMul(Q, T, Q.Dagger()).Equals(c.in) {
 			t.Errorf("Q * T * Q^dagger does not equal a")
+		}
+	}
+}
+
+func TestIsHessenberg(t *testing.T) {
+	cases := []struct {
+		in   *matrix.Matrix
+		want bool
+	}{
+		{
+			matrix.New(
+				[]complex128{1, 2},
+				[]complex128{3, 4},
+			),
+			true,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 2, 3},
+				[]complex128{4, 5, 6},
+				[]complex128{0, 7, 8},
+			),
+			true,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 2, 3},
+				[]complex128{4, 5, 6},
+				[]complex128{9, 7, 8},
+			),
+			false,
+		},
+		{
+			matrix.Identity(4),
+			true,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 2, 3},
+				[]complex128{0, 4, 5},
+				[]complex128{0, 0, 6},
+			),
+			true,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 0, 0},
+				[]complex128{2, 3, 0},
+				[]complex128{4, 5, 6},
+			),
+			false,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 2, 3},
+				[]complex128{4, 5, 6},
+				[]complex128{0, 7, 8},
+				[]complex128{0, 0, 9},
+			),
+			false,
+		},
+	}
+
+	for _, c := range cases {
+		if decomp.IsHessenberg(c.in) != c.want {
+			t.Fail()
 		}
 	}
 }
