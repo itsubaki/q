@@ -24,7 +24,7 @@ func Parlett(t *matrix.Matrix, f, df ParlettF, eps ...float64) *matrix.Matrix {
 			j := i + d
 			tij := t.At(i, j)
 
-			// numnerator
+			// numerator
 			num := tij * (a.At(j, j) - a.At(i, i))
 			for k := i + 1; k < j; k++ {
 				num += t.At(i, k)*a.At(k, j) - a.At(i, k)*t.At(k, j)
