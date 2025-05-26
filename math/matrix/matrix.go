@@ -197,6 +197,7 @@ func (m *Matrix) IsZero(eps ...float64) bool {
 	return true
 }
 
+// IsDiagonal returns true if m is diagonal matrix.
 func (m *Matrix) IsDiagonal(eps ...float64) bool {
 	if !m.IsSquare() {
 		return false
@@ -227,6 +228,24 @@ func (m *Matrix) IsUpperTriangular(eps ...float64) bool {
 	e := epsilon.E13(eps...)
 	for i := 1; i < m.Rows; i++ {
 		for j := range i {
+			if cmplx.Abs(m.At(i, j)) > e {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
+// IsHessenberg returns true if m is Hessenberg matrix.
+func (m *Matrix) IsHessenberg(eps ...float64) bool {
+	if !m.IsSquare() {
+		return false
+	}
+
+	e := epsilon.E13(eps...)
+	for i := 2; i < m.Rows; i++ {
+		for j := range i - 1 {
 			if cmplx.Abs(m.At(i, j)) > e {
 				return false
 			}

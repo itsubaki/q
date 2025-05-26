@@ -719,6 +719,72 @@ func TestMatrix_IsUpperTriangular(t *testing.T) {
 	}
 }
 
+func TestMatrix_IsHessenberg(t *testing.T) {
+	cases := []struct {
+		in   *matrix.Matrix
+		want bool
+	}{
+		{
+			matrix.New(
+				[]complex128{1, 2},
+				[]complex128{3, 4},
+			),
+			true,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 2, 3},
+				[]complex128{4, 5, 6},
+				[]complex128{0, 7, 8},
+			),
+			true,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 2, 3},
+				[]complex128{4, 5, 6},
+				[]complex128{9, 7, 8},
+			),
+			false,
+		},
+		{
+			matrix.Identity(4),
+			true,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 2, 3},
+				[]complex128{0, 4, 5},
+				[]complex128{0, 0, 6},
+			),
+			true,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 0, 0},
+				[]complex128{2, 3, 0},
+				[]complex128{4, 5, 6},
+			),
+			false,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 2, 3},
+				[]complex128{4, 5, 6},
+				[]complex128{0, 7, 8},
+				[]complex128{0, 0, 9},
+			),
+			false,
+		},
+	}
+
+	for _, c := range cases {
+		if c.in.IsHessenberg() != c.want {
+			t.Fail()
+		}
+	}
+}
+
 func TestTensorProductN(t *testing.T) {
 	cases := []struct {
 		in *matrix.Matrix
