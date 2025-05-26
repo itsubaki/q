@@ -24,9 +24,11 @@ func ExampleHessenberg() {
 	q, h := decomp.Hessenberg(aa)
 
 	fmt.Println(q.IsUnitary())
+	fmt.Println(decomp.IsHessenberg(h))
 	fmt.Println(matrix.MatMul(q, h, q.Dagger()).Equals(aa))
 
 	// Output:
+	// true
 	// true
 	// true
 }
@@ -47,10 +49,12 @@ func ExampleHessenberg_qr() {
 	q, r := decomp.QRHH(h)
 
 	fmt.Println(q.IsUnitary())
+	fmt.Println(decomp.IsUpperTriangular(r))
 	fmt.Println(matrix.MatMul(q, r).Equals(h))
 	fmt.Println(matrix.MatMul(qq, q, r, qq.Dagger()).Equals(aa))
 
 	// Output:
+	// true
 	// true
 	// true
 	// true

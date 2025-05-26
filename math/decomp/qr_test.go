@@ -31,6 +31,7 @@ func ExampleQR() {
 		}
 
 		fmt.Println(q.IsUnitary())
+		fmt.Println(decomp.IsUpperTriangular(r))
 		fmt.Println(matrix.MatMul(q, r).Equals(a))
 	}
 
@@ -41,10 +42,12 @@ func ExampleQR() {
 	// [(0.000+0.000i) (0.632+0.000i)]
 	// true
 	// true
+	// true
 	// [(-0.316+0.000i) (-0.949+0.000i)]
 	// [(-0.949+0.000i) (0.316+0.000i)]
 	// [(-3.162+0.000i) (-4.427+0.000i)]
 	// [(0.000+0.000i) (-0.632+0.000i)]
+	// true
 	// true
 	// true
 }
@@ -70,6 +73,7 @@ func ExampleQR_x3() {
 		}
 
 		fmt.Println(q.IsUnitary())
+		fmt.Println(decomp.IsUpperTriangular(r))
 		fmt.Println(matrix.MatMul(q, r).Equals(a))
 	}
 
@@ -82,12 +86,14 @@ func ExampleQR_x3() {
 	// [(0.000+0.000i) (0.000+0.000i) (0.267+0.000i)]
 	// true
 	// true
+	// true
 	// [(-0.130+0.000i) (-0.835+0.000i) (-0.535+0.000i)]
 	// [(-0.391+0.000i) (-0.452+0.000i) (0.802+0.000i)]
 	// [(-0.911+0.000i) (0.313+0.000i) (-0.267+0.000i)]
 	// [(-7.681+0.000i) (-9.113+0.000i) (-11.457+0.000i)]
 	// [(0.000+0.000i) (-0.974+0.000i) (-1.635+0.000i)]
 	// [(0.000+0.000i) (0.000+0.000i) (-0.267+0.000i)]
+	// true
 	// true
 	// true
 }
@@ -109,6 +115,7 @@ func ExampleQR_identity() {
 		}
 
 		fmt.Println(q.IsUnitary())
+		fmt.Println(decomp.IsUpperTriangular(r))
 		fmt.Println(matrix.MatMul(q, r).Equals(a))
 	}
 
@@ -119,10 +126,12 @@ func ExampleQR_identity() {
 	// [(0.000+0.000i) (1.000+0.000i)]
 	// true
 	// true
+	// true
 	// [(-1.000+0.000i) (0.000+0.000i)]
 	// [(0.000+0.000i) (1.000+0.000i)]
 	// [(-1.000+0.000i) (0.000+0.000i)]
 	// [(0.000+0.000i) (1.000+0.000i)]
+	// true
 	// true
 	// true
 }
@@ -148,6 +157,7 @@ func ExampleQR_orthogonal() {
 		}
 
 		fmt.Println(q.IsUnitary())
+		fmt.Println(decomp.IsUpperTriangular(r))
 		fmt.Println(matrix.MatMul(q, r).Equals(a))
 	}
 
@@ -158,10 +168,12 @@ func ExampleQR_orthogonal() {
 	// [(0.000+0.000i) (1.000+0.000i)]
 	// true
 	// true
+	// true
 	// [(-0.707+0.000i) (-0.707+0.000i)]
 	// [(-0.707+0.000i) (0.707+0.000i)]
 	// [(-1.000+0.000i) (0.000+0.000i)]
 	// [(0.000+0.000i) (-1.000-0.000i)]
+	// true
 	// true
 	// true
 }
