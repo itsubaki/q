@@ -11,12 +11,13 @@ import (
 func EigenJacobi(a *matrix.Matrix, iter int, eps ...float64) (lambdas *matrix.Matrix, vectors *matrix.Matrix) {
 	n := a.Rows
 	v, ak := matrix.Identity(n), a.Clone()
+	e := epsilon.E13(eps...)
 
 	for range iter {
 		for i := range n - 1 {
 			for j := i + 1; j < n; j++ {
 				a, b, c := ak.At(i, i), ak.At(j, j), ak.At(i, j)
-				if cmplx.Abs(c) < epsilon.E13(eps...) {
+				if cmplx.Abs(c) < e {
 					continue
 				}
 
@@ -59,6 +60,8 @@ func EigenUpperT(t *matrix.Matrix, eps ...float64) (lambdas *matrix.Matrix, vect
 	}
 
 	vectors = matrix.Zero(t.Rows, t.Rows)
+	e := epsilon.E13(eps...)
+
 	for k := range t.Rows {
 		x := make([]complex128, t.Rows)
 		x[k] = 1.0
@@ -66,7 +69,7 @@ func EigenUpperT(t *matrix.Matrix, eps ...float64) (lambdas *matrix.Matrix, vect
 		lambdak := t.At(k, k)
 		for i := k - 1; i >= 0; i-- {
 			diff := t.At(i, i) - lambdak
-			if cmplx.Abs(diff) < epsilon.E13(eps...) {
+			if cmplx.Abs(diff) < e {
 				x[i] = 0.0
 				continue
 			}
@@ -80,7 +83,7 @@ func EigenUpperT(t *matrix.Matrix, eps ...float64) (lambdas *matrix.Matrix, vect
 		}
 
 		nx := norm(x)
-		if nx > epsilon.E13(eps...) {
+		if nx > e {
 			for i := range x {
 				x[i] /= complex(nx, 0)
 			}

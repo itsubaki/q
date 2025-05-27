@@ -390,3 +390,23 @@ func TestApply(t *testing.T) {
 		}
 	}
 }
+
+func TestMatrix_IsZero(t *testing.T) {
+	cases := []struct {
+		in   *density.Matrix
+		want bool
+	}{
+		{
+			density.New([]density.State{
+				{1.0, qubit.Zero()},
+			}),
+			false,
+		},
+	}
+
+	for _, c := range cases {
+		if c.in.IsZero() != c.want {
+			t.Fail()
+		}
+	}
+}

@@ -216,22 +216,6 @@ func ExampleQR_rankdeficient() {
 	// 2 : true
 }
 
-func ExampleQR_zero() {
-	a := matrix.Zero(3, 3)
-
-	for _, qr := range []decomp.QRFunc{
-		decomp.QR,
-		decomp.QRHH,
-	} {
-		_, r := qr(a)
-		fmt.Println(r.IsZero())
-	}
-
-	// Output:
-	// true
-	// true
-}
-
 func TestQR(t *testing.T) {
 	cases := []struct {
 		in *matrix.Matrix

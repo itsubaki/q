@@ -491,34 +491,6 @@ func TestMatrix_Equals(t *testing.T) {
 	}
 }
 
-func TestMatrix_IsZero(t *testing.T) {
-	cases := []struct {
-		in   *matrix.Matrix
-		want bool
-	}{
-		{
-			matrix.New(
-				[]complex128{0, 0},
-				[]complex128{0, 0},
-			),
-			true,
-		},
-		{
-			matrix.New(
-				[]complex128{1, 2},
-				[]complex128{3, 4},
-			),
-			false,
-		},
-	}
-
-	for _, c := range cases {
-		if c.in.IsZero() != c.want {
-			t.Fail()
-		}
-	}
-}
-
 func TestMatrix_IsSquare(t *testing.T) {
 	cases := []struct {
 		in   *matrix.Matrix

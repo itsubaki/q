@@ -13,10 +13,11 @@ import (
 func QR(a *matrix.Matrix, eps ...float64) (q *matrix.Matrix, r *matrix.Matrix) {
 	rows, cols := a.Dimension()
 	q, r = a.Clone(), matrix.Zero(cols, cols)
+	e := epsilon.E13(eps...)
 
 	for k := range cols {
 		nqk := norm(column(q, k))
-		if nqk < epsilon.E13(eps...) {
+		if nqk < e {
 			// If the norm is smaller than a small threshold (effectively zero),
 			// treat the k-th vector as numerically zero to avoid division by zero
 			// and preserve numerical stability.
@@ -134,8 +135,10 @@ func QRHH(a *matrix.Matrix, eps ...float64) (q *matrix.Matrix, r *matrix.Matrix)
 }
 
 func householder(x []complex128, eps ...float64) ([]complex128, bool) {
+	e := epsilon.E13(eps...)
+
 	alpha := complex(norm(x), 0)
-	if cmplx.Abs(x[0]) > epsilon.E13(eps...) {
+	if cmplx.Abs(x[0]) > e {
 		alpha *= -x[0] / complex(cmplx.Abs(x[0]), 0)
 	}
 
@@ -144,7 +147,7 @@ func householder(x []complex128, eps ...float64) ([]complex128, bool) {
 	copy(u[1:], x[1:])
 
 	nu := norm(u)
-	if nu < epsilon.E13(eps...) {
+	if nu < e {
 		return nil, false
 	}
 

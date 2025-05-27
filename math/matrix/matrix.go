@@ -185,18 +185,6 @@ func (m *Matrix) IsUnitary(eps ...float64) bool {
 	return m.IsSquare() && m.MatMul(m.Dagger()).Equals(Identity(m.Rows), eps...)
 }
 
-// IsZero returns true if m is zero matrix.
-func (m *Matrix) IsZero(eps ...float64) bool {
-	e := epsilon.E13(eps...)
-	for i := range m.Data {
-		if cmplx.Abs(m.Data[i]) > e {
-			return false
-		}
-	}
-
-	return true
-}
-
 // Apply returns a matrix product of m and n.
 // A.Apply(B) is BA.
 // For example, to compute XHZ|v>, you can write v.Apply(Z).Apply(H).Apply(X).

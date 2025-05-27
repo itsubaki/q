@@ -19,6 +19,7 @@ func Parlett(t *matrix.Matrix, f, df ParlettF, eps ...float64) *matrix.Matrix {
 		a.Set(i, i, f(t.At(i, i)))
 	}
 
+	e := epsilon.E13(eps...)
 	for d := 1; d < n; d++ {
 		for i := range n - d {
 			j := i + d
@@ -32,7 +33,7 @@ func Parlett(t *matrix.Matrix, f, df ParlettF, eps ...float64) *matrix.Matrix {
 
 			// denominator
 			denom := t.At(j, j) - t.At(i, i)
-			if cmplx.Abs(denom) < epsilon.E13(eps...) {
+			if cmplx.Abs(denom) < e {
 				a.Set(i, j, tij*df(t.At(i, i))+num)
 				continue
 			}

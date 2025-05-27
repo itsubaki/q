@@ -75,7 +75,14 @@ func (m *Matrix) Dimension() (rows int, cols int) {
 
 // IsZero returns true if the density matrix is zero.
 func (m *Matrix) IsZero(eps ...float64) bool {
-	return m.m.IsZero(eps...)
+	e := epsilon.E13(eps...)
+	for i := range m.m.Data {
+		if cmplx.Abs(m.m.Data[i]) > e {
+			return false
+		}
+	}
+
+	return true
 }
 
 // NumQubits returns the number of qubits.
