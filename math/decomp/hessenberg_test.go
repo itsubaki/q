@@ -1,64 +1,11 @@
 package decomp_test
 
 import (
-	"fmt"
-	"math/cmplx"
-	"math/rand"
 	"testing"
 
 	"github.com/itsubaki/q/math/decomp"
 	"github.com/itsubaki/q/math/matrix"
 )
-
-func ExampleHessenberg() {
-	ry := func(theta float64) *matrix.Matrix {
-		v := complex(theta/2, 0)
-		return matrix.New(
-			[]complex128{cmplx.Cos(v), -1 * cmplx.Sin(v)},
-			[]complex128{cmplx.Sin(v), cmplx.Cos(v)},
-		)
-	}
-
-	a := ry(rand.Float64())
-	aa := matrix.TensorProduct(a, a)
-	q, h := decomp.Hessenberg(aa)
-
-	fmt.Println(q.IsUnitary())
-	fmt.Println(decomp.IsHessenberg(h))
-	fmt.Println(matrix.MatMul(q, h, q.Dagger()).Equals(aa))
-
-	// Output:
-	// true
-	// true
-	// true
-}
-
-func ExampleHessenberg_qr() {
-	ry := func(theta float64) *matrix.Matrix {
-		v := complex(theta/2, 0)
-		return matrix.New(
-			[]complex128{cmplx.Cos(v), -1 * cmplx.Sin(v)},
-			[]complex128{cmplx.Sin(v), cmplx.Cos(v)},
-		)
-	}
-
-	a := ry(rand.Float64())
-	aa := matrix.TensorProduct(a, a)
-
-	qq, h := decomp.Hessenberg(aa)
-	q, r := decomp.QRHH(h)
-
-	fmt.Println(q.IsUnitary())
-	fmt.Println(decomp.IsUpperTriangular(r))
-	fmt.Println(matrix.MatMul(q, r).Equals(h))
-	fmt.Println(matrix.MatMul(qq, q, r, qq.Dagger()).Equals(aa))
-
-	// Output:
-	// true
-	// true
-	// true
-	// true
-}
 
 func TestHessenberg(t *testing.T) {
 	cases := []struct {

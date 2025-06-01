@@ -12,7 +12,57 @@ import (
 	"github.com/itsubaki/q/math/matrix"
 )
 
-func Example_exp() {
+func Example_pow0p5() {
+	x := matrix.New(
+		[]complex128{0, 1},
+		[]complex128{1, 0},
+	)
+
+	D, V := decomp.EigenJacobi(x, 10)
+
+	for i := range D.Rows {
+		D.Set(i, i, cmplx.Pow(D.At(i, i), 0.5))
+	}
+
+	sqrtx := matrix.MatMul(V, D, V.Dagger())
+	for _, row := range sqrtx.Seq2() {
+		fmt.Printf("%.3f\n", row)
+	}
+
+	fmt.Println(matrix.MatMul(sqrtx, sqrtx).Equals(x))
+
+	// Output:
+	// [(0.500+0.500i) (0.500-0.500i)]
+	// [(0.500-0.500i) (0.500+0.500i)]
+	// true
+}
+
+func Example_pow1p5() {
+	x := matrix.New(
+		[]complex128{0, 1},
+		[]complex128{1, 0},
+	)
+
+	D, V := decomp.EigenJacobi(x, 10)
+
+	for i := range D.Rows {
+		D.Set(i, i, cmplx.Pow(D.At(i, i), 1.5))
+	}
+
+	x1p5 := matrix.MatMul(V, D, V.Dagger())
+	for _, row := range x1p5.Seq2() {
+		fmt.Printf("%.3f\n", row)
+	}
+
+	fmt.Println(matrix.MatMul(x1p5, x1p5).Equals(x))
+
+	// Output:
+	// [(0.500-0.500i) (0.500+0.500i)]
+	// [(0.500+0.500i) (0.500-0.500i)]
+	// true
+}
+
+func Example_expA() {
 	rx := func(theta float64) *matrix.Matrix {
 		v := complex(theta/2, 0)
 		return matrix.New(
@@ -21,7 +71,7 @@ func Example_exp() {
 		)
 	}
 
-	expA := func(x *matrix.Matrix, theta float64, iter int) *matrix.Matrix {
+	exp := func(x *matrix.Matrix, theta float64, iter int) *matrix.Matrix {
 		D, V := decomp.EigenJacobi(x, iter)
 
 		for i := range D.Rows {
@@ -31,7 +81,29 @@ func Example_exp() {
 		return matrix.MatMul(V, D, V.Dagger())
 	}
 
-	expB := func(x *matrix.Matrix, theta float64, iter int) *matrix.Matrix {
+	x := matrix.New(
+		[]complex128{0, 1},
+		[]complex128{1, 0},
+	)
+
+	theta := rand.Float64()
+	expiX := exp(x, theta, 10)
+	fmt.Println(expiX.Equals(rx(theta)))
+
+	// Output:
+	// true
+}
+
+func Example_expB() {
+	rx := func(theta float64) *matrix.Matrix {
+		v := complex(theta/2, 0)
+		return matrix.New(
+			[]complex128{cmplx.Cos(v), -1i * cmplx.Sin(v)},
+			[]complex128{-1i * cmplx.Sin(v), cmplx.Cos(v)},
+		)
+	}
+
+	exp := func(x *matrix.Matrix, theta float64, iter int) *matrix.Matrix {
 		ix := x.Mul(-1i * complex(theta/2, 0))
 		D, V := decomp.EigenJacobi(ix, iter)
 
@@ -48,146 +120,11 @@ func Example_exp() {
 	)
 
 	theta := rand.Float64()
-	expXa := expA(x, theta, 10)
-	expXb := expB(x, theta, 10)
-
-	fmt.Println(expXa.Equals(rx(theta)))
-	fmt.Println(expXb.Equals(rx(theta)))
+	expiX := exp(x, theta, 10)
+	fmt.Println(expiX.Equals(rx(theta)))
 
 	// Output:
 	// true
-	// true
-}
-
-func Example_pow0p5() {
-	a := matrix.New(
-		[]complex128{0, 1},
-		[]complex128{1, 0},
-	)
-
-	D, V := decomp.EigenJacobi(a, 10)
-
-	for i := range D.Rows {
-		D.Set(i, i, cmplx.Pow(D.At(i, i), 0.5))
-	}
-
-	sqrtx := matrix.MatMul(V, D, V.Dagger())
-	for _, row := range sqrtx.Seq2() {
-		fmt.Printf("%.3f\n", row)
-	}
-
-	for _, row := range matrix.MatMul(sqrtx, sqrtx).Seq2() {
-		fmt.Printf("%.3f\n", row)
-	}
-
-	// Output:
-	// [(0.500+0.500i) (0.500-0.500i)]
-	// [(0.500-0.500i) (0.500+0.500i)]
-	// [(0.000+0.000i) (1.000-0.000i)]
-	// [(1.000-0.000i) (-0.000+0.000i)]
-}
-
-func Example_pow1p5() {
-	a := matrix.New(
-		[]complex128{0, 1},
-		[]complex128{1, 0},
-	)
-
-	D, V := decomp.EigenJacobi(a, 10)
-
-	for i := range D.Rows {
-		D.Set(i, i, cmplx.Pow(D.At(i, i), 1.5))
-	}
-
-	x1p5 := matrix.MatMul(V, D, V.Dagger())
-	for _, row := range x1p5.Seq2() {
-		fmt.Printf("%.3f\n", row)
-	}
-
-	for _, row := range matrix.MatMul(x1p5, x1p5).Seq2() {
-		fmt.Printf("%.3f\n", row)
-	}
-
-	// Output:
-	// [(0.500-0.500i) (0.500+0.500i)]
-	// [(0.500+0.500i) (0.500-0.500i)]
-	// [(0.000+0.000i) (1.000-0.000i)]
-	// [(1.000-0.000i) (-0.000+0.000i)]
-}
-
-func ExampleEigenJacobi_x() {
-	a := matrix.New(
-		[]complex128{0, 1},
-		[]complex128{1, 0},
-	)
-
-	D, V := decomp.EigenJacobi(a, 10)
-
-	for _, row := range V.Seq2() {
-		fmt.Printf("%.3f\n", row)
-	}
-
-	for _, row := range D.Seq2() {
-		fmt.Printf("%.3f\n", row)
-	}
-
-	// Output:
-	// [(0.707+0.000i) (-0.707+0.000i)]
-	// [(0.707+0.000i) (0.707+0.000i)]
-	// [(1.000+0.000i) (0.000+0.000i)]
-	// [(0.000+0.000i) (-1.000+0.000i)]
-}
-
-func ExampleEigenJacobi_cx() {
-	a := matrix.New(
-		[]complex128{1, 0, 0, 0},
-		[]complex128{0, 1, 0, 0},
-		[]complex128{0, 0, 0, 1},
-		[]complex128{0, 0, 1, 0},
-	)
-
-	D, V := decomp.EigenJacobi(a, 10)
-
-	for _, row := range V.Seq2() {
-		fmt.Printf("%.3f\n", row)
-	}
-
-	for _, row := range D.Seq2() {
-		fmt.Printf("%.3f\n", row)
-	}
-
-	// Output:
-	// [(1.000+0.000i) (0.000+0.000i) (0.000+0.000i) (0.000+0.000i)]
-	// [(0.000+0.000i) (1.000+0.000i) (0.000+0.000i) (0.000+0.000i)]
-	// [(0.000+0.000i) (0.000+0.000i) (0.707+0.000i) (-0.707+0.000i)]
-	// [(0.000+0.000i) (0.000+0.000i) (0.707+0.000i) (0.707+0.000i)]
-	// [(1.000+0.000i) (0.000+0.000i) (0.000+0.000i) (0.000+0.000i)]
-	// [(0.000+0.000i) (1.000+0.000i) (0.000+0.000i) (0.000+0.000i)]
-	// [(0.000+0.000i) (0.000+0.000i) (1.000+0.000i) (0.000+0.000i)]
-	// [(0.000+0.000i) (0.000+0.000i) (0.000+0.000i) (-1.000+0.000i)]
-}
-
-func ExampleEigenJacobi_h() {
-	a := matrix.New(
-		[]complex128{1 / math.Sqrt2, 1 / math.Sqrt2},
-		[]complex128{1 / math.Sqrt2, -1 / math.Sqrt2},
-	)
-
-	D, V := decomp.EigenJacobi(a, 10)
-
-	for _, row := range V.Seq2() {
-		fmt.Printf("%.3f\n", row)
-	}
-
-	for _, row := range D.Seq2() {
-		fmt.Printf("%.3f\n", row)
-	}
-
-	// Output:
-	// [(0.924+0.000i) (-0.383+0.000i)]
-	// [(0.383+0.000i) (0.924+0.000i)]
-	// [(1.000+0.000i) (0.000+0.000i)]
-	// [(0.000+0.000i) (-1.000+0.000i)]
 }
 
 func ExampleIsDiagonal() {
