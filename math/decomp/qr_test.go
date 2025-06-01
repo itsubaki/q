@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/cmplx"
+	"math/rand"
 	"testing"
 
 	"github.com/itsubaki/q/math/decomp"
@@ -11,7 +12,31 @@ import (
 	"github.com/itsubaki/q/math/matrix"
 )
 
-func ExampleQR_rankdeficient() {
+func rx(theta float64) *matrix.Matrix {
+	v := complex(theta/2, 0)
+	return matrix.New(
+		[]complex128{cmplx.Cos(v), -1i * cmplx.Sin(v)},
+		[]complex128{-1i * cmplx.Sin(v), cmplx.Cos(v)},
+	)
+}
+
+func ry(theta float64) *matrix.Matrix {
+	v := complex(theta/2, 0)
+	return matrix.New(
+		[]complex128{cmplx.Cos(v), -cmplx.Sin(v)},
+		[]complex128{cmplx.Sin(v), cmplx.Cos(v)},
+	)
+}
+
+func rz(theta float64) *matrix.Matrix {
+	v := complex(0, theta/2)
+	return matrix.New(
+		[]complex128{cmplx.Exp(-1 * v), 0},
+		[]complex128{0, cmplx.Exp(v)},
+	)
+}
+
+func ExampleQR_rank1() {
 	isZero := func(row []complex128) bool {
 		for _, v := range row {
 			if cmplx.Abs(v) < epsilon.E13() {
@@ -55,22 +80,26 @@ func TestQR(t *testing.T) {
 	}{
 		{
 			matrix.New(
+				[]complex128{1, 0},
+				[]complex128{0, 1},
+			),
+		},
+		{
+			matrix.New(
 				[]complex128{0, 1},
 				[]complex128{1, 0},
 			),
 		},
 		{
 			matrix.New(
-				[]complex128{0, 0, 0, 1},
-				[]complex128{0, 0, 1, 0},
-				[]complex128{0, 1, 0, 0},
-				[]complex128{1, 0, 0, 0},
+				[]complex128{0, -1i},
+				[]complex128{1i, 0},
 			),
 		},
 		{
 			matrix.New(
-				[]complex128{0, -1i},
-				[]complex128{1i, 0},
+				[]complex128{1, 0},
+				[]complex128{0, -1},
 			),
 		},
 		{
@@ -82,14 +111,52 @@ func TestQR(t *testing.T) {
 		{
 			matrix.New(
 				[]complex128{1, 0},
+				[]complex128{0, 1i},
+			),
+		},
+		{
+			matrix.New(
+				[]complex128{1, 0},
 				[]complex128{0, cmplx.Exp(1i * math.Pi / 4)},
 			),
 		},
 		{
 			matrix.New(
-				[]complex128{1, 0, 0},
-				[]complex128{0, 1, 0},
-				[]complex128{0, 0, 1},
+				[]complex128{1, 0},
+				[]complex128{0, cmplx.Exp(complex(0, rand.Float64()))},
+			),
+		},
+		{
+			rx(rand.Float64()),
+		},
+		{
+			ry(rand.Float64()),
+		},
+		{
+			rz(rand.Float64()),
+		},
+		{
+			matrix.New(
+				[]complex128{0, 0, 0, 1},
+				[]complex128{0, 0, 1, 0},
+				[]complex128{0, 1, 0, 0},
+				[]complex128{1, 0, 0, 0},
+			),
+		},
+		{
+			matrix.New(
+				[]complex128{1, 0, 0, 0},
+				[]complex128{0, 1, 0, 0},
+				[]complex128{0, 0, 0, 1},
+				[]complex128{0, 0, 1, 0},
+			),
+		},
+		{
+			matrix.New(
+				[]complex128{1, 0, 0, 0},
+				[]complex128{0, 1, 0, 0},
+				[]complex128{0, 0, 1, 0},
+				[]complex128{0, 0, 0, 1},
 			),
 		},
 		{

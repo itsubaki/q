@@ -12,24 +12,30 @@ import (
 	"github.com/itsubaki/q/math/matrix"
 )
 
-func Example_pow0p5() {
+func diagF(a *matrix.Matrix, f func(v complex128) complex128) {
+	for i := range a.Rows {
+		a.Set(i, i, f(a.At(i, i)))
+	}
+}
+
+func ExampleEigenJacobi_pow0p5() {
 	x := matrix.New(
 		[]complex128{0, 1},
 		[]complex128{1, 0},
 	)
 
 	D, V := decomp.EigenJacobi(x, 10)
-
-	for i := range D.Rows {
-		D.Set(i, i, cmplx.Pow(D.At(i, i), 0.5))
-	}
+	diagF(D, func(v complex128) complex128 {
+		return cmplx.Pow(v, 0.5)
+	})
 
 	sqrtx := matrix.MatMul(V, D, V.Dagger())
 	for _, row := range sqrtx.Seq2() {
 		fmt.Printf("%.3f\n", row)
 	}
 
-	fmt.Println(matrix.MatMul(sqrtx, sqrtx).Equals(x))
+	sqrtx2 := matrix.MatMul(sqrtx, sqrtx)
+	fmt.Println(sqrtx2.Equals(x))
 
 	// Output:
 	// [(0.500+0.500i) (0.500-0.500i)]
@@ -37,24 +43,24 @@ func Example_pow0p5() {
 	// true
 }
 
-func Example_pow1p5() {
+func ExampleEigenJacobi_pow1p5() {
 	x := matrix.New(
 		[]complex128{0, 1},
 		[]complex128{1, 0},
 	)
 
 	D, V := decomp.EigenJacobi(x, 10)
-
-	for i := range D.Rows {
-		D.Set(i, i, cmplx.Pow(D.At(i, i), 1.5))
-	}
+	diagF(D, func(v complex128) complex128 {
+		return cmplx.Pow(v, 1.5)
+	})
 
 	x1p5 := matrix.MatMul(V, D, V.Dagger())
 	for _, row := range x1p5.Seq2() {
 		fmt.Printf("%.3f\n", row)
 	}
 
-	fmt.Println(matrix.MatMul(x1p5, x1p5).Equals(x))
+	x1p52 := matrix.MatMul(x1p5, x1p5)
+	fmt.Println(x1p52.Equals(x))
 
 	// Output:
 	// [(0.500-0.500i) (0.500+0.500i)]
@@ -62,21 +68,12 @@ func Example_pow1p5() {
 	// true
 }
 
-func Example_exp() {
-	rx := func(theta float64) *matrix.Matrix {
-		v := complex(theta/2, 0)
-		return matrix.New(
-			[]complex128{cmplx.Cos(v), -1i * cmplx.Sin(v)},
-			[]complex128{-1i * cmplx.Sin(v), cmplx.Cos(v)},
-		)
-	}
-
+func ExampleEigenJacobi_exp() {
 	exp := func(x *matrix.Matrix, theta float64, iter int) *matrix.Matrix {
 		D, V := decomp.EigenJacobi(x, iter)
-
-		for i := range D.Rows {
-			D.Set(i, i, cmplx.Exp(D.At(i, i)*-1i*complex(theta/2, 0)))
-		}
+		diagF(D, func(v complex128) complex128 {
+			return cmplx.Exp(-1 * complex(0, theta/2) * v) // exp(-i * theta/2 * v)
+		})
 
 		return matrix.MatMul(V, D, V.Dagger())
 	}
@@ -94,22 +91,14 @@ func Example_exp() {
 	// true
 }
 
-func Example_expiX() {
-	rx := func(theta float64) *matrix.Matrix {
-		v := complex(theta/2, 0)
-		return matrix.New(
-			[]complex128{cmplx.Cos(v), -1i * cmplx.Sin(v)},
-			[]complex128{-1i * cmplx.Sin(v), cmplx.Cos(v)},
-		)
-	}
-
+func ExampleEigenJacobi_expiX() {
 	exp := func(x *matrix.Matrix, theta float64, iter int) *matrix.Matrix {
-		ix := x.Mul(-1i * complex(theta/2, 0))
-		D, V := decomp.EigenJacobi(ix, iter)
+		ix := x.Mul(-1 * complex(0, theta/2))
 
-		for i := range D.Rows {
-			D.Set(i, i, cmplx.Exp(D.At(i, i)))
-		}
+		D, V := decomp.EigenJacobi(ix, iter)
+		diagF(D, func(v complex128) complex128 {
+			return cmplx.Exp(v)
+		})
 
 		return matrix.MatMul(V, D, V.Dagger())
 	}
@@ -141,27 +130,19 @@ func ExampleIsDiagonal() {
 }
 
 func TestEigenJacobi(t *testing.T) {
-	rx := func(theta float64) *matrix.Matrix {
-		v := complex(theta/2, 0)
-		return matrix.New(
-			[]complex128{cmplx.Cos(v), -1i * cmplx.Sin(v)},
-			[]complex128{-1i * cmplx.Sin(v), cmplx.Cos(v)},
-		)
-	}
-
 	cases := []struct {
 		in *matrix.Matrix
 	}{
 		{
 			matrix.New(
-				[]complex128{0, 1},
 				[]complex128{1, 0},
+				[]complex128{0, 1},
 			),
 		},
 		{
 			matrix.New(
-				[]complex128{0, -1i},
-				[]complex128{1i, 0},
+				[]complex128{0, 1},
+				[]complex128{1, 0},
 			),
 		},
 		{
@@ -178,24 +159,6 @@ func TestEigenJacobi(t *testing.T) {
 		},
 		{
 			matrix.New(
-				[]complex128{1, 0},
-				[]complex128{0, 1i},
-			),
-		},
-		{
-			matrix.New(
-				[]complex128{1, 0},
-				[]complex128{0, cmplx.Exp(1i * math.Pi / 4)},
-			),
-		},
-		{
-			matrix.New(
-				[]complex128{1, 0},
-				[]complex128{0, cmplx.Exp(complex(0, rand.Float64()))},
-			),
-		},
-		{
-			matrix.New(
 				[]complex128{0, 0, 0, 1},
 				[]complex128{0, 0, 1, 0},
 				[]complex128{0, 1, 0, 0},
@@ -209,13 +172,14 @@ func TestEigenJacobi(t *testing.T) {
 				[]complex128{0, 0, 0, 1},
 				[]complex128{0, 0, 1, 0},
 			),
-		},
-		{
-			rx(rand.Float64()),
 		},
 	}
 
 	for _, c := range cases {
+		if !c.in.Equals(c.in.Dagger()) {
+			t.Errorf("input is not Hermitian")
+		}
+
 		D, V := decomp.EigenJacobi(c.in, 10)
 
 		if !decomp.IsDiagonal(D) {

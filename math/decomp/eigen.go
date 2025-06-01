@@ -8,6 +8,7 @@ import (
 )
 
 // EigenJacobi performs eigen decomposition of a matrix using the Jacobi method.
+// The matrix `a` must be Hermitian.
 func EigenJacobi(a *matrix.Matrix, iter int, eps ...float64) (lambdas *matrix.Matrix, vectors *matrix.Matrix) {
 	n := a.Rows
 	v, ak := matrix.Identity(n), a.Clone()
