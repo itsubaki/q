@@ -62,7 +62,7 @@ func Example_pow1p5() {
 	// true
 }
 
-func Example_expA() {
+func Example_exp() {
 	rx := func(theta float64) *matrix.Matrix {
 		v := complex(theta/2, 0)
 		return matrix.New(
@@ -94,7 +94,7 @@ func Example_expA() {
 	// true
 }
 
-func Example_expB() {
+func Example_expiX() {
 	rx := func(theta float64) *matrix.Matrix {
 		v := complex(theta/2, 0)
 		return matrix.New(
