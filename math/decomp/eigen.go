@@ -1,6 +1,7 @@
 package decomp
 
 import (
+	"math"
 	"math/cmplx"
 
 	"github.com/itsubaki/q/math/epsilon"
@@ -22,15 +23,19 @@ func EigenJacobi(a *matrix.Matrix, iter int, eps ...float64) (lambdas *matrix.Ma
 					continue
 				}
 
-				phi := 0.5 * cmplx.Atan(2*c/(b-a))
+				diff, phi := b-a, complex(math.Pi/4, 0)
+				if cmplx.Abs(diff) > e {
+					phi = 0.5 * cmplx.Atan(2*c/diff)
+				}
+
 				cos := cmplx.Cos(phi)
-				sin := cmplx.Sin(phi) * cmplx.Rect(1, cmplx.Phase(c))
+				sin := cmplx.Sin(phi) * cmplx.Rect(1, cmplx.Phase(c)) // cmplx.Exp(complex(0, cmplx.Phase(c)))
 
 				g := matrix.Identity(n)
 				g.Set(i, i, cos)
-				g.Set(j, j, cos)
 				g.Set(i, j, -cmplx.Conj(sin))
 				g.Set(j, i, sin)
+				g.Set(j, j, cos)
 
 				v = matrix.MatMul(v, g)
 				ak = matrix.MatMul(g.Dagger(), ak, g)

@@ -13,7 +13,8 @@ import (
 )
 
 func diagF(a *matrix.Matrix, f func(v complex128) complex128) {
-	for i := range a.Rows {
+	s := min(a.Rows, a.Cols)
+	for i := range s {
 		a.Set(i, i, f(a.At(i, i)))
 	}
 }
@@ -25,9 +26,7 @@ func ExampleEigenJacobi_pow0p5() {
 	)
 
 	D, V := decomp.EigenJacobi(x, 10)
-	diagF(D, func(v complex128) complex128 {
-		return cmplx.Pow(v, 0.5)
-	})
+	diagF(D, func(v complex128) complex128 { return cmplx.Pow(v, 0.5) })
 
 	sqrtx := matrix.MatMul(V, D, V.Dagger())
 	for _, row := range sqrtx.Seq2() {
@@ -50,9 +49,7 @@ func ExampleEigenJacobi_pow1p5() {
 	)
 
 	D, V := decomp.EigenJacobi(x, 10)
-	diagF(D, func(v complex128) complex128 {
-		return cmplx.Pow(v, 1.5)
-	})
+	diagF(D, func(v complex128) complex128 { return cmplx.Pow(v, 1.5) })
 
 	x1p5 := matrix.MatMul(V, D, V.Dagger())
 	for _, row := range x1p5.Seq2() {
@@ -69,11 +66,9 @@ func ExampleEigenJacobi_pow1p5() {
 }
 
 func ExampleEigenJacobi_exp() {
-	exp := func(x *matrix.Matrix, theta float64, iter int) *matrix.Matrix {
-		D, V := decomp.EigenJacobi(x, iter)
-		diagF(D, func(v complex128) complex128 {
-			return cmplx.Exp(-1 * complex(0, theta/2) * v) // exp(-i * theta/2 * v)
-		})
+	exp := func(x *matrix.Matrix, theta float64) *matrix.Matrix {
+		D, V := decomp.EigenJacobi(x, 10)
+		diagF(D, func(v complex128) complex128 { return cmplx.Exp(-1i * complex(theta/2, 0) * v) })
 
 		return matrix.MatMul(V, D, V.Dagger())
 	}
@@ -84,32 +79,7 @@ func ExampleEigenJacobi_exp() {
 	)
 
 	theta := rand.Float64()
-	expiX := exp(x, theta, 10)
-	fmt.Println(expiX.Equals(rx(theta)))
-
-	// Output:
-	// true
-}
-
-func ExampleEigenJacobi_expiX() {
-	exp := func(x *matrix.Matrix, theta float64, iter int) *matrix.Matrix {
-		ix := x.Mul(-1 * complex(0, theta/2))
-
-		D, V := decomp.EigenJacobi(ix, iter)
-		diagF(D, func(v complex128) complex128 {
-			return cmplx.Exp(v)
-		})
-
-		return matrix.MatMul(V, D, V.Dagger())
-	}
-
-	x := matrix.New(
-		[]complex128{0, 1},
-		[]complex128{1, 0},
-	)
-
-	theta := rand.Float64()
-	expiX := exp(x, theta, 10)
+	expiX := exp(x, theta)
 	fmt.Println(expiX.Equals(rx(theta)))
 
 	// Output:
