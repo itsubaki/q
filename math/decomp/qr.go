@@ -119,6 +119,7 @@ func QRHH(a *matrix.Matrix, eps ...float64) (q *matrix.Matrix, r *matrix.Matrix)
 			}
 		}
 
+		// q = q * I - 2 * u * u^dagger
 		for i := range rows {
 			var v complex128
 			for j := range u {
