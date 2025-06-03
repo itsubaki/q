@@ -9,7 +9,7 @@ import (
 
 // Hessenberg performs the Hessenberg decomposition of matrix a using Householder transformations.
 // It returns Q (unitary) and H (upper Hessenberg) such that A = Q * H * Q^dagger.
-func Hessenberg(a *matrix.Matrix) (q *matrix.Matrix, h *matrix.Matrix) {
+func Hessenberg(a *matrix.Matrix, eps ...float64) (q *matrix.Matrix, h *matrix.Matrix) {
 	n := a.Rows
 	q, h = matrix.Identity(n), a.Clone()
 
@@ -19,7 +19,7 @@ func Hessenberg(a *matrix.Matrix) (q *matrix.Matrix, h *matrix.Matrix) {
 			x[i] = h.At(k+1+i, k)
 		}
 
-		u, ok := householder(x)
+		u, ok := householder(x, eps...)
 		if !ok {
 			continue
 		}
