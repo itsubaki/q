@@ -107,7 +107,7 @@ func QRHH(a *matrix.Matrix, eps ...float64) (q *matrix.Matrix, r *matrix.Matrix)
 			continue
 		}
 
-		// Apply the Householder transformation
+		// r = H * r, where H = I - 2 * u * u^dagger
 		for j := k; j < cols; j++ {
 			var v complex128
 			for i := range u {
@@ -119,7 +119,7 @@ func QRHH(a *matrix.Matrix, eps ...float64) (q *matrix.Matrix, r *matrix.Matrix)
 			}
 		}
 
-		// q = q * I - 2 * u * u^dagger
+		// q = q * H, where H = I - 2 * u * u^dagger)
 		for i := range rows {
 			var v complex128
 			for j := range u {
