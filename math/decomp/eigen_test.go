@@ -13,8 +13,7 @@ import (
 )
 
 func diagF(a *matrix.Matrix, f func(v complex128) complex128) {
-	s := min(a.Rows, a.Cols)
-	for i := range s {
+	for i := range min(a.Rows, a.Cols) {
 		a.Set(i, i, f(a.At(i, i)))
 	}
 }
@@ -25,7 +24,7 @@ func ExampleEigenJacobi_pow0p5() {
 		[]complex128{1, 0},
 	)
 
-	D, V := decomp.EigenJacobi(x, 10)
+	V, D := decomp.EigenJacobi(x, 10)
 	diagF(D, func(v complex128) complex128 { return cmplx.Pow(v, 0.5) })
 
 	sqrtx := matrix.MatMul(V, D, V.Dagger())
@@ -48,7 +47,7 @@ func ExampleEigenJacobi_pow1p5() {
 		[]complex128{1, 0},
 	)
 
-	D, V := decomp.EigenJacobi(x, 10)
+	V, D := decomp.EigenJacobi(x, 10)
 	diagF(D, func(v complex128) complex128 { return cmplx.Pow(v, 1.5) })
 
 	x1p5 := matrix.MatMul(V, D, V.Dagger())
@@ -67,7 +66,7 @@ func ExampleEigenJacobi_pow1p5() {
 
 func ExampleEigenJacobi_exp() {
 	exp := func(x *matrix.Matrix, theta float64) *matrix.Matrix {
-		D, V := decomp.EigenJacobi(x, 10)
+		V, D := decomp.EigenJacobi(x, 10)
 		diagF(D, func(v complex128) complex128 { return cmplx.Exp(-1i * complex(theta/2, 0) * v) })
 
 		return matrix.MatMul(V, D, V.Dagger())
@@ -150,7 +149,7 @@ func TestEigenJacobi(t *testing.T) {
 			t.Errorf("input is not Hermitian")
 		}
 
-		D, V := decomp.EigenJacobi(c.in, 10)
+		V, D := decomp.EigenJacobi(c.in, 10)
 
 		if !decomp.IsDiagonal(D) {
 			t.Errorf("D is not diagonal")
@@ -193,7 +192,7 @@ func TestEigenQR(t *testing.T) {
 		decomp.QRHH,
 	} {
 		for _, c := range cases {
-			D, P := decomp.EigenQR(c.in, qr, 20)
+			P, D := decomp.EigenQR(c.in, qr, 20)
 
 			if !decomp.IsDiagonal(D) {
 				t.Errorf("D is not diagonal")
@@ -275,7 +274,7 @@ func TestEigenUpperT(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		D, P := decomp.EigenUpperT(c.in, c.eps)
+		P, D := decomp.EigenUpperT(c.in, c.eps)
 
 		if !decomp.IsDiagonal(D, c.eps) {
 			t.Errorf("D is not diagonal")

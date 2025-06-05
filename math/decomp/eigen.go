@@ -10,7 +10,7 @@ import (
 
 // EigenJacobi performs eigen decomposition of a matrix using the Jacobi method.
 // The matrix `a` must be Hermitian.
-func EigenJacobi(a *matrix.Matrix, iter int, eps ...float64) (lambdas *matrix.Matrix, vectors *matrix.Matrix) {
+func EigenJacobi(a *matrix.Matrix, iter int, eps ...float64) (vectors *matrix.Matrix, lambdas *matrix.Matrix) {
 	n := a.Rows
 	v, ak := matrix.Identity(n), a.Clone()
 	e := epsilon.E13(eps...)
@@ -48,18 +48,18 @@ func EigenJacobi(a *matrix.Matrix, iter int, eps ...float64) (lambdas *matrix.Ma
 		d.Set(i, i, ak.At(i, i))
 	}
 
-	return d, v
+	return v, d
 }
 
 // EigenQR performs eigen decomposition of a matrix using the Schur decomposition.
-func EigenQR(m *matrix.Matrix, qr QRFunc, iter int, eps ...float64) (lambdas *matrix.Matrix, vectors *matrix.Matrix) {
+func EigenQR(m *matrix.Matrix, qr QRFunc, iter int, eps ...float64) (vectors *matrix.Matrix, lambdas *matrix.Matrix) {
 	q, t := Schur(m, qr, iter, eps...)
-	lambdas, vectors = EigenUpperT(t, eps...)
-	return lambdas, matrix.MatMul(q, vectors)
+	vectors, lambdas = EigenUpperT(t, eps...)
+	return matrix.MatMul(q, vectors), lambdas
 }
 
 // EigenUpperT performs eigen decomposition of an upper triangular matrix.
-func EigenUpperT(t *matrix.Matrix, eps ...float64) (lambdas *matrix.Matrix, vectors *matrix.Matrix) {
+func EigenUpperT(t *matrix.Matrix, eps ...float64) (vectors *matrix.Matrix, lambdas *matrix.Matrix) {
 	lambdas = matrix.ZeroLike(t)
 	for i := range t.Rows {
 		lambdas.Set(i, i, t.At(i, i))
@@ -100,7 +100,7 @@ func EigenUpperT(t *matrix.Matrix, eps ...float64) (lambdas *matrix.Matrix, vect
 		}
 	}
 
-	return lambdas, vectors
+	return vectors, lambdas
 }
 
 // IsDiagonal returns true if m is diagonal matrix.
