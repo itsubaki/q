@@ -270,19 +270,17 @@ func ExampleApplyN() {
 		[]complex128{1, 0},
 	)
 
-	for _, r := range matrix.ApplyN(x).Seq2() {
-		fmt.Println(r)
-	}
-	fmt.Println()
-
 	for _, r := range matrix.ApplyN(x, 2).Seq2() {
 		fmt.Println(r)
 	}
 
+	for _, r := range matrix.ApplyN(x, 0).Seq2() {
+		fmt.Println(r)
+	}
+
 	// Output:
-	// [(0+0i) (1+0i)]
 	// [(1+0i) (0+0i)]
-	//
+	// [(0+0i) (1+0i)]
 	// [(1+0i) (0+0i)]
 	// [(0+0i) (1+0i)]
 }

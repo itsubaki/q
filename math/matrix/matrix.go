@@ -289,16 +289,17 @@ func (m *Matrix) Clone() *Matrix {
 }
 
 // Inverse returns an inverse matrix of m.
-func (m *Matrix) Inverse() *Matrix {
+func (m *Matrix) Inverse(eps ...float64) *Matrix {
 	p, q := m.Dimension()
 	mm := m.Clone()
+	e := epsilon.E13(eps...)
 
 	out := Identity(p)
 	for i := range p {
-		if mm.At(i, i) == 0 {
+		if cmplx.Abs(mm.At(i, i)) < e {
 			// swap rows
 			for r := i + 1; r < p; r++ {
-				if mm.At(r, i) == 0 {
+				if cmplx.Abs(mm.At(r, i)) < e {
 					continue
 				}
 
@@ -398,13 +399,15 @@ func Apply(m ...*Matrix) *Matrix {
 	return out
 }
 
-func ApplyN(m *Matrix, n ...int) *Matrix {
-	if len(n) < 1 {
-		return m
+// ApplyN returns a matrix product of m applied n times.
+// If n is 0, it returns identity matrix.
+func ApplyN(m *Matrix, n int) *Matrix {
+	if n == 0 {
+		return Identity(m.Rows)
 	}
 
-	list := make([]*Matrix, n[0])
-	for i := range n[0] {
+	list := make([]*Matrix, n)
+	for i := range n {
 		list[i] = m
 	}
 
