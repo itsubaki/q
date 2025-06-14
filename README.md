@@ -9,7 +9,7 @@
 - pure Go implementation
 - using only the standard library
 
-## Example
+## Examples
 
 ### Bell state
 
