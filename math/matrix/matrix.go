@@ -63,6 +63,13 @@ func Identity(size int) *Matrix {
 	return m
 }
 
+// Clone returns a clone of matrix.
+func (m *Matrix) Clone() *Matrix {
+	out := ZeroLike(m)
+	copy(out.Data, m.Data)
+	return out
+}
+
 // At returns a value of matrix at (i,j).
 func (m *Matrix) At(i, j int) complex128 {
 	return m.Data[i*m.Cols+j]
@@ -278,13 +285,6 @@ func (m *Matrix) Imag() [][]float64 {
 		out[i] = row(data, m.Cols, i)
 	}
 
-	return out
-}
-
-// Clone returns a clone of matrix.
-func (m *Matrix) Clone() *Matrix {
-	out := ZeroLike(m)
-	copy(out.Data, m.Data)
 	return out
 }
 
