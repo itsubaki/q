@@ -223,6 +223,45 @@ func (m *Matrix) Depolarizing(p float64) *Matrix {
 	}
 }
 
+// Flip applies a flip channel to the density matrix.
+func (m *Matrix) Flip(p float64, qb Qubit, g *matrix.Matrix) *Matrix {
+	n := m.NumQubits()
+	ops := make([]*matrix.Matrix, n)
+	for i := range n {
+		if i == qb.Index() {
+			ops[i] = g
+			continue
+		}
+
+		ops[i] = gate.I()
+	}
+
+	e0 := gate.I(n).Mul(complex(math.Sqrt(p), 0))
+	e1 := matrix.TensorProduct(ops...).Mul(complex(math.Sqrt(1-p), 0))
+
+	rho0 := matrix.MatMul(e0, m.m, e0.Dagger())
+	rho1 := matrix.MatMul(e1, m.m, e1.Dagger())
+
+	return &Matrix{
+		m: rho0.Add(rho1),
+	}
+}
+
+// BitFlip applies a bit flip channel to the density matrix.
+func (m *Matrix) BitFlip(p float64, qb Qubit) *Matrix {
+	return m.Flip(p, qb, gate.X())
+}
+
+// PhaseFlip applies a phase flip channel to the density matrix.
+func (m *Matrix) PhaseFlip(p float64, qb Qubit) *Matrix {
+	return m.Flip(p, qb, gate.Z())
+}
+
+// BitPhaseFlip applies a bit-phase flip channel to the density matrix.
+func (m *Matrix) BitPhaseFlip(p float64, qb Qubit) *Matrix {
+	return m.Flip(p, qb, gate.Y())
+}
+
 func take(n, i int, index []Qubit) (string, string) {
 	idx := make(map[int]struct{}, len(index))
 	for _, j := range index {

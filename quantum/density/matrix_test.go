@@ -14,14 +14,10 @@ import (
 )
 
 func ExampleMatrix_bell() {
-	phi := qubit.Zero(2).Apply(
+	rho := density.NewPure(qubit.Zero(2).Apply(
 		gate.H().TensorProduct(gate.I()),
 		gate.CNOT(2, 0, 1),
-	)
-
-	rho := density.New([]density.State{
-		{1.0, phi}, // pure state
-	})
+	))
 
 	qb := rho.Qubits()
 	p0 := rho.PartialTrace(qb[0]) // Partial trace over qubit 0: returns the reduced density matrix for qubit 1
@@ -187,14 +183,10 @@ func ExampleMatrix_PartialTrace() {
 }
 
 func ExampleMatrix_PartialTrace_x8() {
-	phi := qubit.Zero(3).Apply(
+	rho := density.NewPure(qubit.Zero(3).Apply(
 		matrix.TensorProduct(gate.H(), gate.I(), gate.I()),
 		gate.CNOT(3, 0, 1),
-	)
-
-	rho := density.New([]density.State{
-		{1.0, phi},
-	})
+	))
 
 	qb := rho.Qubits()
 	p0 := rho.PartialTrace(qb[0])
@@ -214,7 +206,7 @@ func ExampleMatrix_PartialTrace_x8() {
 }
 
 func ExampleMatrix_Depolarizing() {
-	rho := density.New([]density.State{{1.0, qubit.Zero()}})
+	rho := density.NewPure(qubit.Zero())
 	fmt.Printf("0: %.2f\n", rho.Probability(qubit.Zero()))
 	fmt.Printf("1: %.2f\n", rho.Probability(qubit.One()))
 	fmt.Println()
@@ -229,6 +221,49 @@ func ExampleMatrix_Depolarizing() {
 	//
 	// 0: 0.50
 	// 1: 0.50
+}
+
+func ExampleMatrix_BitFlip() {
+	rho := density.NewPure(qubit.Zero())
+
+	qb := rho.Qubits()
+	flipped := rho.BitFlip(0.3, qb[0])
+
+	fmt.Printf("%.2f\n", flipped.Probability(qubit.Zero()))
+	fmt.Printf("%.2f\n", flipped.Probability(qubit.One()))
+
+	// Output:
+	// 0.30
+	// 0.70
+}
+
+func ExampleMatrix_BitPhaseFlip() {
+	rho := density.NewPure(qubit.Zero())
+
+	qb := rho.Qubits()
+	flipped := rho.BitPhaseFlip(0.4, qb[0])
+
+	fmt.Printf("%.2f\n", flipped.Probability(qubit.Zero()))
+	fmt.Printf("%.2f\n", flipped.Probability(qubit.One()))
+
+	// Output:
+	// 0.40
+	// 0.60
+}
+
+func ExampleMatrix_PhaseFlip() {
+	rho := density.NewPure(qubit.Zero().Apply(gate.H()))
+
+	qb := rho.Qubits()
+	flipped := rho.PhaseFlip(0.3, qb[0])
+
+	// (1 - 2p) * (-0.5) -> (1 - 2 * 0.3) * (-0.5) = -0.2
+	fmt.Printf("%.3v\n", flipped.At(0, 1))
+	fmt.Printf("%.3v\n", flipped.At(1, 0))
+
+	// Output:
+	// (-0.2+0i)
+	// (-0.2+0i)
 }
 
 func TestExpectedValue(t *testing.T) {
