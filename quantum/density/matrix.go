@@ -1,6 +1,7 @@
 package density
 
 import (
+	"math"
 	"math/cmplx"
 	"strconv"
 	"strings"
@@ -47,6 +48,16 @@ func New(ensemble []State) *Matrix {
 	}
 }
 
+// NewPure returns a new pure density matrix.
+func NewPure(qb *qubit.Qubit) *Matrix {
+	return New([]State{
+		{
+			Probability: 1.0,
+			Qubit:       qb,
+		},
+	})
+}
+
 func (m *Matrix) At(i, j int) complex128 {
 	return m.m.At(i, j)
 }
@@ -73,6 +84,21 @@ func (m *Matrix) Dimension() (rows int, cols int) {
 	return m.m.Dimension()
 }
 
+// IsPure returns true if the density matrix is pure.
+func (m *Matrix) IsPure(eps ...float64) bool {
+	return math.Abs(1-m.Purity()) < epsilon.E13(eps...)
+}
+
+// IsMixed returns true if the density matrix is mixed.
+func (m *Matrix) IsMixed(eps ...float64) bool {
+	return !m.IsPure(eps...)
+}
+
+// IsHermite returns true if the density matrix is Hermitian.
+func (m *Matrix) IsHermite(eps ...float64) bool {
+	return m.m.IsHermite(eps...)
+}
+
 // IsZero returns true if the density matrix is zero.
 func (m *Matrix) IsZero(eps ...float64) bool {
 	e := epsilon.E13(eps...)
@@ -93,7 +119,7 @@ func (m *Matrix) NumQubits() int {
 
 // Apply applies a unitary matrix to the density matrix.
 func (m *Matrix) Apply(u *matrix.Matrix) *Matrix {
-	m.m = u.Dagger().Apply(m.m).Apply(u)
+	m.m = matrix.MatMul(u, m.m, u.Dagger())
 	return m
 }
 
@@ -133,6 +159,13 @@ func (m *Matrix) Trace() float64 {
 // Purity returns the purity of the density matrix, defined as Tr(rho^2).
 func (m *Matrix) Purity() float64 {
 	return real(m.m.Apply(m.m).Trace())
+}
+
+// TensorProduct returns the tensor product of two density matrices.
+func (m *Matrix) TensorProduct(n *Matrix) *Matrix {
+	return &Matrix{
+		m: m.m.TensorProduct(n.m),
+	}
 }
 
 // PartialTrace returns the partial trace of the density matrix.
