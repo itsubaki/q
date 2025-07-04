@@ -241,7 +241,7 @@ func TestExpectedValue(t *testing.T) {
 	}
 }
 
-func TestProbabilityOf(t *testing.T) {
+func TestProbability(t *testing.T) {
 	cases := []struct {
 		s    []density.State
 		m    *qubit.Qubit
