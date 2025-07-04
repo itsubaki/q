@@ -146,7 +146,7 @@ func (m *Matrix) Project(q *qubit.Qubit, eps ...float64) *Matrix {
 	}
 }
 
-// ExpectationValue returns the expectation value of the given operator.
+// ExpectedValue returns the expectation value of the given operator.
 func (m *Matrix) ExpectedValue(u *matrix.Matrix) float64 {
 	return real(m.m.Apply(u).Trace())
 }
