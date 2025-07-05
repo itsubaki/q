@@ -57,6 +57,7 @@ q1 := qsim.Zero()
 for _, s := range qsim.State(phi) {
   fmt.Println(s)
 }
+
 // [0][  0]( 0.4472 0.0000i): 0.2000
 // [1][  1]( 0.8944 0.0000i): 0.8000
 
