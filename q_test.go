@@ -488,6 +488,34 @@ func ExampleQ_State() {
 	// Output:
 }
 
+func ExampleQ_State_big() {
+	qsim := q.New()
+	qb := qsim.Zeros(2)
+
+	qsim.H(qb[0])
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00][  0]( 0.7071 0.0000i): 0.5000
+	// [10][  2]( 0.7071 0.0000i): 0.5000
+}
+
+func ExampleQ_State_little() {
+	qsim := q.New()
+	qb := qsim.Zeros(2)
+
+	qsim.H(qb[0])
+	for _, s := range qsim.State([]q.Qubit{qb[1], qb[0]}) {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00][  0]( 0.7071 0.0000i): 0.5000
+	// [01][  1]( 0.7071 0.0000i): 0.5000
+}
+
 func ExampleQ_C() {
 	qsim := q.New()
 
@@ -528,7 +556,6 @@ func ExampleQ_CondX() {
 
 func ExampleQ_CondZ() {
 	qsim := q.New()
-
 	q0 := qsim.One()
 
 	qsim.CondZ(false, q0)
@@ -683,14 +710,13 @@ func Example_bellState2() {
 
 	qsim.H(r[0])
 	qsim.CNOT(r[0], r[1])
-
-	m0 := qsim.Measure(r[0])
-	m1 := qsim.Measure(r[1])
-
-	fmt.Printf("%v%v\n", m0.Int(), m1.Int())
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
 
 	// Output:
-	// 11
+	// [00][  0]( 0.7071 0.0000i): 0.5000
+	// [11][  3]( 0.7071 0.0000i): 0.5000
 }
 
 func Example_quantumTeleportation() {
@@ -925,6 +951,40 @@ func Example_grover3qubit() {
 	// [111 1][  7   1](-0.1768 0.0000i): 0.0313
 }
 
+func Example_grover3qubit_little() {
+	// NOTE: C. Figgatt, D. Maslov, K. A. Landsman, N. M. Linke, S. Debnath, and C. Monroe. Complete 3-Qubit Grover Search on a Programmable Quantum Computer.
+	qsim := q.New()
+
+	// initial state
+	r := qsim.Zeros(3)
+	a := qsim.One()
+
+	// superposition
+	qsim.H(r...).H(a)
+
+	// oracle for |1>|110>
+	qsim.X(r[0]).CCCNOT(r[0], r[1], r[2], a).X(r[0])
+
+	// amplification
+	qsim.H(r...).H(a)
+	qsim.X(r...).CCZ(r[0], r[1], r[2]).X(r...)
+	qsim.H(r...)
+
+	for _, s := range qsim.State(a, []q.Qubit{r[2], r[1], r[0]}) {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [1 000][  1   0](-0.1768 0.0000i): 0.0313
+	// [1 100][  1   4](-0.1768 0.0000i): 0.0313
+	// [1 010][  1   2](-0.1768 0.0000i): 0.0313
+	// [1 110][  1   6](-0.8839 0.0000i): 0.7813
+	// [1 001][  1   1](-0.1768 0.0000i): 0.0313
+	// [1 101][  1   5](-0.1768 0.0000i): 0.0313
+	// [1 011][  1   3](-0.1768 0.0000i): 0.0313
+	// [1 111][  1   7](-0.1768 0.0000i): 0.0313
+}
+
 func Example_grover4qubit() {
 	// NOTE: Eric R. Johnson, Nic Harrigan, and Merecedes Gimeno-Segovia. Programming Quantum Computers. O'Reilly.
 	qsim := q.New()
@@ -942,7 +1002,7 @@ func Example_grover4qubit() {
 	N := number.Pow(2, qsim.NumQubits())
 	r := math.Floor(math.Pi / 4 * math.Sqrt(float64(N)))
 	for range int(r) {
-		// oracle for |110>|x>
+		// oracle for |x>|011> (|q3q2q1q0>)
 		qsim.X(q2, q3)
 		qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)
 		qsim.X(q2, q3)
@@ -955,27 +1015,27 @@ func Example_grover4qubit() {
 		qsim.H(q0, q1, q2, q3)
 	}
 
-	for _, s := range qsim.State([]q.Qubit{q0, q1, q2}, q3) {
+	for _, s := range qsim.State(q3, []q.Qubit{q2, q1, q0}) {
 		fmt.Println(s)
 	}
 
 	// Output:
-	// [000 0][  0   0]( 0.0508 0.0000i): 0.0026
-	// [000 1][  0   1]( 0.0508 0.0000i): 0.0026
-	// [001 0][  1   0]( 0.0508 0.0000i): 0.0026
-	// [001 1][  1   1]( 0.0508 0.0000i): 0.0026
-	// [010 0][  2   0]( 0.0508 0.0000i): 0.0026
-	// [010 1][  2   1]( 0.0508 0.0000i): 0.0026
-	// [011 0][  3   0]( 0.0508 0.0000i): 0.0026
-	// [011 1][  3   1]( 0.0508 0.0000i): 0.0026
-	// [100 0][  4   0]( 0.0508 0.0000i): 0.0026
-	// [100 1][  4   1]( 0.0508 0.0000i): 0.0026
-	// [101 0][  5   0]( 0.0508 0.0000i): 0.0026
-	// [101 1][  5   1]( 0.0508 0.0000i): 0.0026
-	// [110 0][  6   0](-0.9805 0.0000i): 0.9613
-	// [110 1][  6   1]( 0.0508 0.0000i): 0.0026
-	// [111 0][  7   0]( 0.0508 0.0000i): 0.0026
-	// [111 1][  7   1]( 0.0508 0.0000i): 0.0026
+	// [0 000][  0   0]( 0.0508 0.0000i): 0.0026
+	// [1 000][  1   0]( 0.0508 0.0000i): 0.0026
+	// [0 100][  0   4]( 0.0508 0.0000i): 0.0026
+	// [1 100][  1   4]( 0.0508 0.0000i): 0.0026
+	// [0 010][  0   2]( 0.0508 0.0000i): 0.0026
+	// [1 010][  1   2]( 0.0508 0.0000i): 0.0026
+	// [0 110][  0   6]( 0.0508 0.0000i): 0.0026
+	// [1 110][  1   6]( 0.0508 0.0000i): 0.0026
+	// [0 001][  0   1]( 0.0508 0.0000i): 0.0026
+	// [1 001][  1   1]( 0.0508 0.0000i): 0.0026
+	// [0 101][  0   5]( 0.0508 0.0000i): 0.0026
+	// [1 101][  1   5]( 0.0508 0.0000i): 0.0026
+	// [0 011][  0   3](-0.9805 0.0000i): 0.9613
+	// [1 011][  1   3]( 0.0508 0.0000i): 0.0026
+	// [0 111][  0   7]( 0.0508 0.0000i): 0.0026
+	// [1 111][  1   7]( 0.0508 0.0000i): 0.0026
 }
 
 func Example_qFT() {
