@@ -231,7 +231,9 @@ func (q *Qubit) String() string {
 	return q.vec.String()
 }
 
-// State returns the state of q with index.
+// State returns the state of the qubit at the given index.
+// If no index is provided, it returns the state vector of all qubits,
+// ordered from the most significant bit (MSB) to the least significant bit (LSB) (big-endian).
 func (q *Qubit) State(index ...[]int) []State {
 	if len(index) < 1 {
 		n := q.NumQubits()
