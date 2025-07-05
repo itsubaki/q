@@ -23,33 +23,33 @@ func (q Qubit) Index() int {
 
 // Matrix is a density matrix.
 type Matrix struct {
-	m *matrix.Matrix
+	rho *matrix.Matrix
 }
 
 // New returns a new density matrix.
 func New(ensemble []State) *Matrix {
-	var m *matrix.Matrix
+	var rho *matrix.Matrix
 	for _, s := range Normalize(ensemble) {
 		n := s.Qubit.Dimension()
-		if m == nil {
-			m = matrix.Zero(n, n)
+		if rho == nil {
+			rho = matrix.Zero(n, n)
 		}
 
 		op := s.Qubit.OuterProduct(s.Qubit).Mul(complex(s.Probability, 0))
 		for i := range n {
 			for j := range n {
-				m.AddAt(i, j, op.At(i, j))
+				rho.AddAt(i, j, op.At(i, j))
 			}
 		}
 	}
 
 	return &Matrix{
-		m: m,
+		rho: rho,
 	}
 }
 
-// NewPure returns a new pure density matrix.
-func NewPure(qb *qubit.Qubit) *Matrix {
+// NewPureState returns a new pure state density matrix for the given qubit.
+func NewPureState(qb *qubit.Qubit) *Matrix {
 	return New([]State{
 		{
 			Probability: 1.0,
@@ -59,7 +59,7 @@ func NewPure(qb *qubit.Qubit) *Matrix {
 }
 
 func (m *Matrix) At(i, j int) complex128 {
-	return m.m.At(i, j)
+	return m.rho.At(i, j)
 }
 
 // Qubits returns the qubits of the density matrix.
@@ -76,12 +76,12 @@ func (m *Matrix) Qubits() []Qubit {
 
 // Underlying returns the internal matrix.
 func (m *Matrix) Underlying() *matrix.Matrix {
-	return m.m
+	return m.rho
 }
 
 // Dimension returns the dimension of the density matrix.
 func (m *Matrix) Dimension() (rows int, cols int) {
-	return m.m.Dimension()
+	return m.rho.Dimension()
 }
 
 // IsPure returns true if the density matrix is pure.
@@ -96,14 +96,14 @@ func (m *Matrix) IsMixed(eps ...float64) bool {
 
 // IsHermite returns true if the density matrix is Hermitian.
 func (m *Matrix) IsHermite(eps ...float64) bool {
-	return m.m.IsHermite(eps...)
+	return m.rho.IsHermite(eps...)
 }
 
 // IsZero returns true if the density matrix is zero.
 func (m *Matrix) IsZero(eps ...float64) bool {
 	e := epsilon.E13(eps...)
-	for i := range m.m.Data {
-		if cmplx.Abs(m.m.Data[i]) > e {
+	for i := range m.rho.Data {
+		if cmplx.Abs(m.rho.Data[i]) > e {
 			return false
 		}
 	}
@@ -119,52 +119,52 @@ func (m *Matrix) NumQubits() int {
 
 // Apply applies a unitary matrix to the density matrix.
 func (m *Matrix) Apply(u *matrix.Matrix) *Matrix {
-	m.m = matrix.MatMul(u, m.m, u.Dagger())
+	m.rho = matrix.MatMul(u, m.rho, u.Dagger())
 	return m
 }
 
 // Probability returns the probability of the qubit in the given state.
 func (m *Matrix) Probability(q *qubit.Qubit) float64 {
 	p := q.OuterProduct(q)
-	return real(m.m.Apply(p).Trace())
+	return real(matrix.MatMul(m.rho, p).Trace())
 }
 
 // Project returns the projection of the density matrix onto the given qubit.
 func (m *Matrix) Project(q *qubit.Qubit, eps ...float64) *Matrix {
 	p := q.OuterProduct(q)
-	tr := m.m.Apply(p).Trace()
+	tr := matrix.MatMul(m.rho, p).Trace()
 
 	if cmplx.Abs(tr) < epsilon.E13(eps...) {
 		return &Matrix{
-			m: matrix.ZeroLike(m.m),
+			rho: matrix.ZeroLike(m.rho),
 		}
 	}
 
-	pmp := matrix.Apply(p, m.m, p)
+	prp := matrix.Apply(p, m.rho, p)
 	return &Matrix{
-		m: pmp.Mul(1.0 / tr),
+		rho: prp.Mul(1.0 / tr),
 	}
 }
 
 // ExpectedValue returns the expectation value of the given operator.
 func (m *Matrix) ExpectedValue(u *matrix.Matrix) float64 {
-	return real(m.m.Apply(u).Trace())
+	return real(m.rho.Apply(u).Trace())
 }
 
 // Trace returns the trace of the density matrix.
 func (m *Matrix) Trace() float64 {
-	return real(m.m.Trace())
+	return real(m.rho.Trace())
 }
 
 // Purity returns the purity of the density matrix, defined as Tr(rho^2).
 func (m *Matrix) Purity() float64 {
-	return real(m.m.Apply(m.m).Trace())
+	return real(matrix.MatMul(m.rho, m.rho).Trace())
 }
 
 // TensorProduct returns the tensor product of two density matrices.
 func (m *Matrix) TensorProduct(n *Matrix) *Matrix {
 	return &Matrix{
-		m: m.m.TensorProduct(n.m),
+		rho: m.rho.TensorProduct(n.rho),
 	}
 }
 
@@ -176,7 +176,7 @@ func (m *Matrix) PartialTrace(index ...Qubit) *Matrix {
 	p, q := m.Dimension()
 	d := number.Pow(2, n-1)
 
-	out := matrix.Zero(d, d)
+	rho := matrix.Zero(d, d)
 	for i := range p {
 		k, kr := take(n, i, index)
 
@@ -189,7 +189,7 @@ func (m *Matrix) PartialTrace(index ...Qubit) *Matrix {
 
 			r := int(number.Must(strconv.ParseInt(kr, 2, 0)))
 			c := int(number.Must(strconv.ParseInt(lr, 2, 0)))
-			out.AddAt(r, c, m.m.At(i, j))
+			rho.AddAt(r, c, m.At(i, j))
 
 			// fmt.Printf("[%v][%v] = [%v][%v] + [%v][%v]\n", r, c, r, c, i, j)
 			//
@@ -208,7 +208,7 @@ func (m *Matrix) PartialTrace(index ...Qubit) *Matrix {
 		}
 	}
 
-	return &Matrix{m: out}
+	return &Matrix{rho: rho}
 }
 
 // Depolarizing returns the depolarizing channel.
@@ -220,50 +220,69 @@ func (m *Matrix) Depolarizing(p float64) *Matrix {
 
 	id := gate.I(n).Mul(complex(1.0/float64(d), 0))
 	i := id.Mul(complex(p, 0))
-	r := m.m.Mul(complex(1-p, 0))
+	r := m.rho.Mul(complex(1-p, 0))
 
 	return &Matrix{
-		m: i.Add(r),
+		rho: i.Add(r),
 	}
 }
 
-// Flip applies a flip channel to the density matrix.
-func (m *Matrix) Flip(p float64, qb Qubit, g *matrix.Matrix) *Matrix {
-	n := m.NumQubits()
-	ops := make([]*matrix.Matrix, n)
-	for i := range n {
-		if i == qb.Index() {
-			ops[i] = g
-			continue
-		}
+// ApplyChannel applies a channel to the density matrix.
+func (m *Matrix) ApplyChannel(p float64, g *matrix.Matrix, qb ...Qubit) *Matrix {
+	n, k := m.NumQubits(), len(qb)
+	id := gate.I()
+	e0 := gate.I().Mul(complex(math.Sqrt(1-p), 0))
+	e1 := g.Mul(complex(math.Sqrt(p), 0))
 
-		ops[i] = gate.I()
+	index := make([]int, k)
+	for i, v := range qb {
+		index[i] = v.Index()
 	}
 
-	e0 := gate.I(n).Mul(complex(math.Sqrt(p), 0))
-	e1 := matrix.TensorProduct(ops...).Mul(complex(math.Sqrt(1-p), 0))
+	// create kraus operators
+	kraus := make([]*matrix.Matrix, 1<<k)
+	for i := range 1 << k {
+		ops := make([]*matrix.Matrix, n)
+		for j := range n {
+			ops[j] = id
+		}
 
-	rho0 := matrix.MatMul(e0, m.m, e0.Dagger())
-	rho1 := matrix.MatMul(e1, m.m, e1.Dagger())
+		for j, idx := range index {
+			if (i>>j)&1 == 1 {
+				ops[idx] = e1
+				continue
+			}
+
+			ops[idx] = e0
+		}
+
+		kraus[i] = matrix.TensorProduct(ops...)
+	}
+
+	// E(rho) = sum(E * rho * E^dagger)
+	rho := matrix.ZeroLike(m.rho)
+	for _, e := range kraus {
+		rho = rho.Add(matrix.MatMul(e, m.rho, e.Dagger()))
+	}
 
 	return &Matrix{
-		m: rho0.Add(rho1),
+		rho: rho,
 	}
 }
 
 // BitFlip applies a bit flip channel to the density matrix.
 func (m *Matrix) BitFlip(p float64, qb Qubit) *Matrix {
-	return m.Flip(p, qb, gate.X())
+	return m.ApplyChannel(p, gate.X(), qb)
 }
 
 // PhaseFlip applies a phase flip channel to the density matrix.
 func (m *Matrix) PhaseFlip(p float64, qb Qubit) *Matrix {
-	return m.Flip(p, qb, gate.Z())
+	return m.ApplyChannel(p, gate.Z(), qb)
 }
 
 // BitPhaseFlip applies a bit-phase flip channel to the density matrix.
 func (m *Matrix) BitPhaseFlip(p float64, qb Qubit) *Matrix {
-	return m.Flip(p, qb, gate.Y())
+	return m.ApplyChannel(p, gate.Y(), qb)
 }
 
 func take(n, i int, index []Qubit) (string, string) {

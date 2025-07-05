@@ -31,6 +31,16 @@ func ExampleZero() {
 	// z2:[00][  0]( 1.0000 0.0000i): 1.0000
 }
 
+func ExampleNewFrom() {
+	z := qubit.NewFrom("0011")
+	for _, s := range z.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [0011][  3]( 1.0000 0.0000i): 1.0000
+}
+
 func Example_pOVM() {
 	E1 := gate.New(
 		[]complex128{0, 0},

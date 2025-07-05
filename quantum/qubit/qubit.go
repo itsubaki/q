@@ -47,6 +47,21 @@ func One(n ...int) *Qubit {
 	return New(v.Data...)
 }
 
+// NewFrom returns a new qubit from a binary string.
+func NewFrom(binary string) *Qubit {
+	list := make([]*Qubit, len(binary))
+	for i, c := range binary {
+		if c == '1' {
+			list[i] = One()
+			continue
+		}
+
+		list[i] = Zero()
+	}
+
+	return TensorProduct(list...)
+}
+
 // NumQubits returns the number of qubits.
 func (q *Qubit) NumQubits() int {
 	return number.Log2(q.Dimension())
