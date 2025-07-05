@@ -3,7 +3,6 @@ package density
 import (
 	"math"
 	"math/cmplx"
-	"slices"
 	"strconv"
 	"strings"
 
@@ -73,7 +72,6 @@ func (m *Matrix) Qubits() []Qubit {
 		qubits[i] = Qubit(i)
 	}
 
-	slices.Reverse(qubits)
 	return qubits
 }
 
