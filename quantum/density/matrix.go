@@ -217,7 +217,6 @@ func (m *Matrix) PartialTrace(index ...Qubit) *Matrix {
 // Depolarizing returns the depolarizing channel.
 // p should be between 0 and 1, representing the probability of depolarization.
 func (m *Matrix) Depolarizing(p float64) *Matrix {
-
 	n := m.NumQubits()
 	d := 1 << n
 
