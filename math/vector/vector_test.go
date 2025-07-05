@@ -76,15 +76,6 @@ func ExampleNew() {
 	// [(1+0i) (0+0i)]
 }
 
-func ExampleTensorProduct() {
-	v := vector.New(1, 0)
-	vv := vector.TensorProduct(v, v)
-	fmt.Println(vv)
-
-	// Output:
-	// [(1+0i) (0+0i) (0+0i) (0+0i)]
-}
-
 func ExampleTensorProductN() {
 	v := vector.New(1, 0)
 	vv := vector.TensorProductN(v, 2)

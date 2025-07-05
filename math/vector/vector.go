@@ -203,13 +203,9 @@ func TensorProductN(v *Vector, n ...int) *Vector {
 		list[i] = v
 	}
 
-	return TensorProduct(list...)
-}
-
-func TensorProduct(v ...*Vector) *Vector {
-	out := v[0]
-	for i := 1; i < len(v); i++ {
-		out = out.TensorProduct(v[i])
+	out := list[0]
+	for i := 1; i < len(list); i++ {
+		out = out.TensorProduct(list[i])
 	}
 
 	return out
