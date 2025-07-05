@@ -26,6 +26,7 @@ qsim.H(q0).CNOT(q0, q1)
 for _, s := range qsim.State() {
   fmt.Println(s)
 }
+
 // [00][  0]( 0.7071 0.0000i): 0.5000
 // [11][  3]( 0.7071 0.0000i): 0.5000
 
@@ -36,6 +37,7 @@ fmt.Println(m0.Equals(m1)) // always true
 for _, s := range qsim.State() {
   fmt.Println(s)
 }
+
 // [00][  0]( 1.0000 0.0000i): 1.0000
 // or
 // [11][  3]( 1.0000 0.0000i): 1.0000
@@ -73,6 +75,7 @@ qsim.CondZ(mz.IsOne(), q1)
 for _, s := range qsim.State(q1) {
   fmt.Println(s)
 }
+
 // [0][  0]( 0.4472 0.0000i): 0.2000
 // [1][  1]( 0.8944 0.0000i): 0.8000
 ```
@@ -113,6 +116,7 @@ qsim.CNOT(q0, q2).CNOT(q0, q1)
 for _, s := range qsim.State(q0) {
   fmt.Println(s)
 }
+
 // [0][  0]( 0.4472 0.0000i): 0.2000
 // [1][  1]( 0.8944 0.0000i): 0.8000
 ```
@@ -245,6 +249,7 @@ qsim.C(x, q0, q1)
 for _, s := range qsim.State() {
   fmt.Println(s)
 }
+
 // [00][  0]( 0.7071 0.0000i): 0.5000
 // [11][  3]( 0.7071 0.0000i): 0.5000
 ```
