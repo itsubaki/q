@@ -63,6 +63,7 @@ func (m *Matrix) At(i, j int) complex128 {
 }
 
 // Qubits returns the qubits of the density matrix.
+// The order of the qubits is from least significant to most significant bit (little-endian).
 func (m *Matrix) Qubits() []Qubit {
 	n := m.NumQubits()
 
