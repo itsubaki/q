@@ -70,6 +70,7 @@ func (m *Matrix) Qubits() []Qubit {
 	for i := range n {
 		qubits[i] = Qubit(i)
 	}
+
 	return qubits
 }
 
