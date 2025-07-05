@@ -14,7 +14,7 @@ import (
 )
 
 func ExampleMatrix_bell() {
-	rho := density.NewPure(qubit.Zero(2).Apply(
+	rho := density.NewPureState(qubit.Zero(2).Apply(
 		gate.H().TensorProduct(gate.I()),
 		gate.CNOT(2, 0, 1),
 	))
@@ -27,10 +27,10 @@ func ExampleMatrix_bell() {
 	fmt.Printf("trace: %.2v, purity: %.2v\n", p0.Trace(), p0.Purity())
 	fmt.Printf("trace: %.2v, purity: %.2v\n", p1.Trace(), p1.Purity())
 
-	q00 := qubit.TensorProduct(qubit.Zero(), qubit.Zero())
-	q01 := qubit.TensorProduct(qubit.Zero(), qubit.One())
-	q10 := qubit.TensorProduct(qubit.One(), qubit.Zero())
-	q11 := qubit.TensorProduct(qubit.One(), qubit.One())
+	q00 := qubit.NewFrom("00")
+	q01 := qubit.NewFrom("01")
+	q10 := qubit.NewFrom("10")
+	q11 := qubit.NewFrom("11")
 
 	m00 := rho.Probability(q00) // 0.5
 	m01 := rho.Probability(q01) // zero
@@ -100,7 +100,7 @@ func ExampleMatrix_Probability() {
 }
 
 func ExampleMatrix_Trace() {
-	s0 := density.NewPure(qubit.Zero())
+	s0 := density.NewPureState(qubit.Zero())
 	s1 := density.New([]density.State{{0.1, qubit.Zero()}, {0.9, qubit.One()}})
 
 	fmt.Printf("pure:  %.2f\n", s0.Trace())
@@ -112,7 +112,7 @@ func ExampleMatrix_Trace() {
 }
 
 func ExampleMatrix_Purity() {
-	s0 := density.NewPure(qubit.Zero())
+	s0 := density.NewPureState(qubit.Zero())
 	s1 := density.New([]density.State{{0.1, qubit.Zero()}, {0.9, qubit.One()}})
 
 	fmt.Printf("pure:  %.2f, %v\n", s0.Purity(), s0.IsPure())
@@ -124,7 +124,7 @@ func ExampleMatrix_Purity() {
 }
 
 func ExampleMatrix_IsHermite() {
-	s0 := density.NewPure(qubit.Zero())
+	s0 := density.NewPureState(qubit.Zero())
 	s1 := density.New([]density.State{{0.1, qubit.Zero()}, {0.9, qubit.One()}})
 
 	fmt.Println(s0.IsHermite())
@@ -136,8 +136,8 @@ func ExampleMatrix_IsHermite() {
 }
 
 func ExampleMatrix_TensorProduct() {
-	s0 := density.NewPure(qubit.Zero())
-	s1 := density.NewPure(qubit.One())
+	s0 := density.NewPureState(qubit.Zero())
+	s1 := density.NewPureState(qubit.One())
 
 	s01 := s0.TensorProduct(s1)
 
@@ -154,8 +154,8 @@ func ExampleMatrix_TensorProduct() {
 
 func ExampleMatrix_PartialTrace() {
 	rho := density.New([]density.State{
-		{0.5, qubit.Zero(2)},
-		{0.5, qubit.One().TensorProduct(qubit.Zero())},
+		{0.5, qubit.NewFrom("00")},
+		{0.5, qubit.NewFrom("10")},
 	})
 
 	for _, r := range rho.Underlying().Seq2() {
@@ -164,12 +164,12 @@ func ExampleMatrix_PartialTrace() {
 	fmt.Println()
 
 	qb := rho.Qubits()
-	p0 := rho.PartialTrace(qb[0]) // Partial trace over qubit 0: returns the reduced density matrix for qubit 1
-	p1 := rho.PartialTrace(qb[1]) // Partial trace over qubit 1: returns the reduced density matrix for qubit 0
+	s1 := rho.PartialTrace(qb[0]) // Partial trace over qubit 0: returns the reduced density matrix for qubit 1
+	s0 := rho.PartialTrace(qb[1]) // Partial trace over qubit 1: returns the reduced density matrix for qubit 0
 
 	fmt.Printf("trace: %.2v, purity: %.2v\n", rho.Trace(), rho.Purity())
-	fmt.Printf("trace: %.2v, purity: %.2v\n", p0.Trace(), p0.Purity()) // qubit 1: pure |0⟩
-	fmt.Printf("trace: %.2v, purity: %.2v\n", p1.Trace(), p1.Purity()) // qubit 0: maximally mixed
+	fmt.Printf("trace: %.2v, purity: %.2v\n", s1.Trace(), s1.Purity()) // qubit 0: pure |0⟩
+	fmt.Printf("trace: %.2v, purity: %.2v\n", s0.Trace(), s0.Purity()) // qubit 1: mixed
 
 	// Output:
 	// [(0.5+0i) (0+0i) (0+0i) (0+0i)]
@@ -183,20 +183,20 @@ func ExampleMatrix_PartialTrace() {
 }
 
 func ExampleMatrix_PartialTrace_x8() {
-	rho := density.NewPure(qubit.Zero(3).Apply(
+	rho := density.NewPureState(qubit.Zero(3).Apply(
 		matrix.TensorProduct(gate.H(), gate.I(), gate.I()),
 		gate.CNOT(3, 0, 1),
 	))
 
 	qb := rho.Qubits()
-	p0 := rho.PartialTrace(qb[0])
-	p1 := rho.PartialTrace(qb[1])
-	p2 := rho.PartialTrace(qb[2])
+	s12 := rho.PartialTrace(qb[0])
+	s02 := rho.PartialTrace(qb[1])
+	s01 := rho.PartialTrace(qb[2])
 
-	fmt.Printf("trace: %.2v, purity: %.2v\n", rho.Trace(), rho.Purity())
-	fmt.Printf("trace: %.2v, purity: %.2v\n", p0.Trace(), p0.Purity())
-	fmt.Printf("trace: %.2v, purity: %.2v\n", p1.Trace(), p1.Purity())
-	fmt.Printf("trace: %.2v, purity: %.2v\n", p2.Trace(), p2.Purity())
+	fmt.Printf("trace: %.2v, purity: %.2v\n", rho.Trace(), rho.Purity()) // pure
+	fmt.Printf("trace: %.2v, purity: %.2v\n", s12.Trace(), s12.Purity()) // mixed
+	fmt.Printf("trace: %.2v, purity: %.2v\n", s02.Trace(), s02.Purity()) // mixed
+	fmt.Printf("trace: %.2v, purity: %.2v\n", s01.Trace(), s01.Purity()) // pure
 
 	// Output:
 	// trace: 1, purity: 1
@@ -206,7 +206,7 @@ func ExampleMatrix_PartialTrace_x8() {
 }
 
 func ExampleMatrix_Depolarizing() {
-	rho := density.NewPure(qubit.Zero())
+	rho := density.NewPureState(qubit.Zero())
 	fmt.Printf("0: %.2f\n", rho.Probability(qubit.Zero()))
 	fmt.Printf("1: %.2f\n", rho.Probability(qubit.One()))
 	fmt.Println()
@@ -223,8 +223,42 @@ func ExampleMatrix_Depolarizing() {
 	// 1: 0.50
 }
 
+func ExampleMatrix_ApplyChannel() {
+	rho := density.NewPureState(qubit.Zero(2))
+
+	qb := rho.Qubits()
+	flipped := rho.ApplyChannel(0.3, gate.X(), qb[0])
+	fmt.Printf("%.2f\n", flipped.Probability(qubit.NewFrom("00")))
+	fmt.Printf("%.2f\n", flipped.Probability(qubit.NewFrom("01")))
+	fmt.Printf("%.2f\n", flipped.Probability(qubit.NewFrom("10")))
+	fmt.Printf("%.2f\n", flipped.Probability(qubit.NewFrom("11")))
+
+	// Output:
+	// 0.70
+	// 0.00
+	// 0.30
+	// 0.00
+}
+
+func ExampleMatrix_ApplyChannel_qb1() {
+	rho := density.NewPureState(qubit.Zero(2))
+
+	qb := rho.Qubits()
+	flipped := rho.ApplyChannel(0.3, gate.X(), qb[1])
+	fmt.Printf("%.2f\n", flipped.Probability(qubit.NewFrom("00")))
+	fmt.Printf("%.2f\n", flipped.Probability(qubit.NewFrom("01")))
+	fmt.Printf("%.2f\n", flipped.Probability(qubit.NewFrom("10")))
+	fmt.Printf("%.2f\n", flipped.Probability(qubit.NewFrom("11")))
+
+	// Output:
+	// 0.70
+	// 0.30
+	// 0.00
+	// 0.00
+}
+
 func ExampleMatrix_BitFlip() {
-	rho := density.NewPure(qubit.Zero())
+	rho := density.NewPureState(qubit.Zero())
 
 	qb := rho.Qubits()
 	flipped := rho.BitFlip(0.3, qb[0])
@@ -238,7 +272,7 @@ func ExampleMatrix_BitFlip() {
 }
 
 func ExampleMatrix_BitPhaseFlip() {
-	rho := density.NewPure(qubit.Zero())
+	rho := density.NewPureState(qubit.Zero())
 
 	qb := rho.Qubits()
 	flipped := rho.BitPhaseFlip(0.3, qb[0])
@@ -252,12 +286,12 @@ func ExampleMatrix_BitPhaseFlip() {
 }
 
 func ExampleMatrix_PhaseFlip() {
-	rho := density.NewPure(qubit.Zero().Apply(gate.H()))
+	rho := density.NewPureState(qubit.Zero().Apply(gate.H()))
 
 	qb := rho.Qubits()
 	flipped := rho.PhaseFlip(0.3, qb[0])
 
-	// (1 - 2p) * 0.5 -> (1 - 2 * 0.3) * 0.5 = 0.2
+	// (1 - 2p) * 0.5
 	fmt.Printf("%.3v\n", flipped.At(0, 1))
 	fmt.Printf("%.3v\n", flipped.At(1, 0))
 

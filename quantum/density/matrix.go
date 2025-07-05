@@ -48,8 +48,8 @@ func New(ensemble []State) *Matrix {
 	}
 }
 
-// NewPure returns a new pure density matrix.
-func NewPure(qb *qubit.Qubit) *Matrix {
+// NewPureState returns a new pure state density matrix for the given qubit.
+func NewPureState(qb *qubit.Qubit) *Matrix {
 	return New([]State{
 		{
 			Probability: 1.0,
@@ -70,7 +70,6 @@ func (m *Matrix) Qubits() []Qubit {
 	for i := range n {
 		qubits[i] = Qubit(i)
 	}
-
 	return qubits
 }
 
@@ -126,7 +125,7 @@ func (m *Matrix) Apply(u *matrix.Matrix) *Matrix {
 // Probability returns the probability of the qubit in the given state.
 func (m *Matrix) Probability(q *qubit.Qubit) float64 {
 	p := q.OuterProduct(q)
-	return real(m.m.Apply(p).Trace())
+	return real(matrix.MatMul(m.m, p).Trace())
 }
 
 // Project returns the projection of the density matrix onto the given qubit.
@@ -229,52 +228,34 @@ func (m *Matrix) Depolarizing(p float64) *Matrix {
 
 // ApplyChannel applies a channel to the density matrix.
 func (m *Matrix) ApplyChannel(p float64, g *matrix.Matrix, qb ...Qubit) *Matrix {
-	n := m.NumQubits()
+	n, k := m.NumQubits(), len(qb)
 	id := gate.I()
 	e0 := gate.I().Mul(complex(math.Sqrt(1-p), 0))
 	e1 := g.Mul(complex(math.Sqrt(p), 0))
 
-	target := make(map[int]struct{})
-	for _, q := range qb {
-		target[q.Index()] = struct{}{}
-	}
-
-	// create kraus pairs
-	type KrausPair struct {
-		E0, E1 *matrix.Matrix
-	}
-
-	pair := make([]KrausPair, n)
-	for i := range n {
-		if _, ok := target[i]; ok {
-			pair[i] = KrausPair{
-				E0: e0,
-				E1: e1,
-			}
-
-			continue
-		}
-
-		pair[i] = KrausPair{
-			E0: id,
-			E1: id,
-		}
+	index := make([]int, k)
+	for i, v := range qb {
+		index[i] = v.Index()
 	}
 
 	// create kraus operators
-	kraus := make([]*matrix.Matrix, 1<<n)
-	for i := range 1 << n {
-		list := make([]*matrix.Matrix, n)
+	kraus := make([]*matrix.Matrix, 1<<k)
+	for i := range 1 << k {
+		ops := make([]*matrix.Matrix, n)
 		for j := range n {
+			ops[j] = id
+		}
+
+		for j, idx := range index {
 			if (i>>j)&1 == 1 {
-				list[j] = pair[j].E1
+				ops[idx] = e1
 				continue
 			}
 
-			list[j] = pair[j].E0
+			ops[idx] = e0
 		}
 
-		kraus[i] = matrix.TensorProduct(list...)
+		kraus[i] = matrix.TensorProduct(ops...)
 	}
 
 	// E(rho) = sum(E * rho * E^dagger)
