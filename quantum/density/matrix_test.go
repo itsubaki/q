@@ -168,8 +168,8 @@ func ExampleMatrix_PartialTrace() {
 	s0 := rho.PartialTrace(qb[1]) // Partial trace over qubit 1: returns the reduced density matrix for qubit 0
 
 	fmt.Printf("trace: %.2v, purity: %.2v\n", rho.Trace(), rho.Purity())
-	fmt.Printf("trace: %.2v, purity: %.2v\n", s1.Trace(), s1.Purity()) // qubit 0: pure |0⟩
-	fmt.Printf("trace: %.2v, purity: %.2v\n", s0.Trace(), s0.Purity()) // qubit 1: mixed
+	fmt.Printf("trace: %.2v, purity: %.2v\n", s1.Trace(), s1.Purity()) // qubit 1: pure |0⟩
+	fmt.Printf("trace: %.2v, purity: %.2v\n", s0.Trace(), s0.Purity()) // qubit 0: mixed
 
 	// Output:
 	// [(0.5+0i) (0+0i) (0+0i) (0+0i)]
@@ -178,8 +178,8 @@ func ExampleMatrix_PartialTrace() {
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
 	//
 	// trace: 1, purity: 0.5
-	// trace: 1, purity: 1
 	// trace: 1, purity: 0.5
+	// trace: 1, purity: 1
 }
 
 func ExampleMatrix_PartialTrace_x8() {
@@ -193,16 +193,16 @@ func ExampleMatrix_PartialTrace_x8() {
 	s02 := rho.PartialTrace(qb[1])
 	s01 := rho.PartialTrace(qb[2])
 
-	fmt.Printf("trace: %.2v, purity: %.2v\n", rho.Trace(), rho.Purity()) // pure
-	fmt.Printf("trace: %.2v, purity: %.2v\n", s12.Trace(), s12.Purity()) // mixed
-	fmt.Printf("trace: %.2v, purity: %.2v\n", s02.Trace(), s02.Purity()) // mixed
-	fmt.Printf("trace: %.2v, purity: %.2v\n", s01.Trace(), s01.Purity()) // pure
+	fmt.Printf("trace: %.2v, purity: %.2v\n", rho.Trace(), rho.Purity())
+	fmt.Printf("trace: %.2v, purity: %.2v\n", s12.Trace(), s12.Purity())
+	fmt.Printf("trace: %.2v, purity: %.2v\n", s02.Trace(), s02.Purity())
+	fmt.Printf("trace: %.2v, purity: %.2v\n", s01.Trace(), s01.Purity())
 
 	// Output:
 	// trace: 1, purity: 1
-	// trace: 1, purity: 0.5
-	// trace: 1, purity: 0.5
 	// trace: 1, purity: 1
+	// trace: 1, purity: 0.5
+	// trace: 1, purity: 0.5
 }
 
 func ExampleMatrix_Depolarizing() {
@@ -235,8 +235,8 @@ func ExampleMatrix_ApplyChannel() {
 
 	// Output:
 	// 0.70
-	// 0.00
 	// 0.30
+	// 0.00
 	// 0.00
 }
 
@@ -252,8 +252,8 @@ func ExampleMatrix_ApplyChannel_qb1() {
 
 	// Output:
 	// 0.70
-	// 0.30
 	// 0.00
+	// 0.30
 	// 0.00
 }
 
