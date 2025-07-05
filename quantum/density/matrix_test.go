@@ -233,22 +233,22 @@ func ExampleMatrix_BitFlip() {
 	fmt.Printf("%.2f\n", flipped.Probability(qubit.One()))
 
 	// Output:
-	// 0.30
 	// 0.70
+	// 0.30
 }
 
 func ExampleMatrix_BitPhaseFlip() {
 	rho := density.NewPure(qubit.Zero())
 
 	qb := rho.Qubits()
-	flipped := rho.BitPhaseFlip(0.4, qb[0])
+	flipped := rho.BitPhaseFlip(0.3, qb[0])
 
 	fmt.Printf("%.2f\n", flipped.Probability(qubit.Zero()))
 	fmt.Printf("%.2f\n", flipped.Probability(qubit.One()))
 
 	// Output:
-	// 0.40
-	// 0.60
+	// 0.70
+	// 0.30
 }
 
 func ExampleMatrix_PhaseFlip() {
@@ -257,13 +257,13 @@ func ExampleMatrix_PhaseFlip() {
 	qb := rho.Qubits()
 	flipped := rho.PhaseFlip(0.3, qb[0])
 
-	// (1 - 2p) * (-0.5) -> (1 - 2 * 0.3) * (-0.5) = -0.2
+	// (1 - 2p) * 0.5 -> (1 - 2 * 0.3) * 0.5 = 0.2
 	fmt.Printf("%.3v\n", flipped.At(0, 1))
 	fmt.Printf("%.3v\n", flipped.At(1, 0))
 
 	// Output:
-	// (-0.2+0i)
-	// (-0.2+0i)
+	// (0.2+0i)
+	// (0.2+0i)
 }
 
 func TestExpectedValue(t *testing.T) {

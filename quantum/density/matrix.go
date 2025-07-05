@@ -227,43 +227,80 @@ func (m *Matrix) Depolarizing(p float64) *Matrix {
 	}
 }
 
-// Flip applies a flip channel to the density matrix.
-func (m *Matrix) Flip(p float64, qb Qubit, g *matrix.Matrix) *Matrix {
+// ApplyChannel applies a channel to the density matrix.
+func (m *Matrix) ApplyChannel(p float64, g *matrix.Matrix, qb ...Qubit) *Matrix {
 	n := m.NumQubits()
-	ops := make([]*matrix.Matrix, n)
+	id := gate.I()
+	e0 := gate.I().Mul(complex(math.Sqrt(1-p), 0))
+	e1 := g.Mul(complex(math.Sqrt(p), 0))
+
+	target := make(map[int]struct{})
+	for _, q := range qb {
+		target[q.Index()] = struct{}{}
+	}
+
+	// create kraus pairs
+	type KrausPair struct {
+		E0, E1 *matrix.Matrix
+	}
+
+	pair := make([]KrausPair, n)
 	for i := range n {
-		if i == qb.Index() {
-			ops[i] = g
+		if _, ok := target[i]; ok {
+			pair[i] = KrausPair{
+				E0: e0,
+				E1: e1,
+			}
+
 			continue
 		}
 
-		ops[i] = gate.I()
+		pair[i] = KrausPair{
+			E0: id,
+			E1: id,
+		}
 	}
 
-	e0 := gate.I(n).Mul(complex(math.Sqrt(p), 0))
-	e1 := matrix.TensorProduct(ops...).Mul(complex(math.Sqrt(1-p), 0))
+	// create kraus operators
+	kraus := make([]*matrix.Matrix, 1<<n)
+	for i := range 1 << n {
+		list := make([]*matrix.Matrix, n)
+		for j := range n {
+			if (i>>j)&1 == 1 {
+				list[j] = pair[j].E1
+				continue
+			}
 
-	rho0 := matrix.MatMul(e0, m.m, e0.Dagger())
-	rho1 := matrix.MatMul(e1, m.m, e1.Dagger())
+			list[j] = pair[j].E0
+		}
+
+		kraus[i] = matrix.TensorProduct(list...)
+	}
+
+	// E(rho) = sum(E * rho * E^dagger)
+	rho := matrix.ZeroLike(m.m)
+	for _, e := range kraus {
+		rho = rho.Add(matrix.MatMul(e, m.m, e.Dagger()))
+	}
 
 	return &Matrix{
-		m: rho0.Add(rho1),
+		m: rho,
 	}
 }
 
 // BitFlip applies a bit flip channel to the density matrix.
 func (m *Matrix) BitFlip(p float64, qb Qubit) *Matrix {
-	return m.Flip(p, qb, gate.X())
+	return m.ApplyChannel(p, gate.X(), qb)
 }
 
 // PhaseFlip applies a phase flip channel to the density matrix.
 func (m *Matrix) PhaseFlip(p float64, qb Qubit) *Matrix {
-	return m.Flip(p, qb, gate.Z())
+	return m.ApplyChannel(p, gate.Z(), qb)
 }
 
 // BitPhaseFlip applies a bit-phase flip channel to the density matrix.
 func (m *Matrix) BitPhaseFlip(p float64, qb Qubit) *Matrix {
-	return m.Flip(p, qb, gate.Y())
+	return m.ApplyChannel(p, gate.Y(), qb)
 }
 
 func take(n, i int, index []Qubit) (string, string) {
