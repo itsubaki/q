@@ -27,33 +27,66 @@ func ExampleMatrix_bell() {
 	fmt.Printf("trace: %.2v, purity: %.2v\n", s1.Trace(), s1.Purity())
 	fmt.Printf("trace: %.2v, purity: %.2v\n", s0.Trace(), s0.Purity())
 
-	q00 := qubit.NewFrom("00")
-	q01 := qubit.NewFrom("01")
-	q10 := qubit.NewFrom("10")
-	q11 := qubit.NewFrom("11")
-
-	m00 := rho.Probability(q00) // 0.5
-	m01 := rho.Probability(q01) // 0.0
-	m10 := rho.Probability(q10) // 0.0
-	m11 := rho.Probability(q11) // 0.5
-	fmt.Printf("%.2f, %.2f, %.2f, %.2f\n", m00, m01, m10, m11)
-
-	fmt.Println(rho.Project(q00).Underlying().Data)
-	fmt.Println(rho.Project(q01).IsZero())
-	fmt.Println(rho.Project(q10).IsZero())
-	fmt.Println(rho.Project(q11).Underlying().Data)
-
 	// Output:
 	// trace: 1, purity: 1
 	// trace: 1, purity: 0.5
 	// trace: 1, purity: 0.5
-	// 0.50, 0.00, 0.00, 0.50
-	// [(1+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i)]
-	// true
-	// true
-	// [(0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (0+0i) (1+0i)]
 }
 
+func ExampleMatrix_prob() {
+	rho := density.NewPureState(qubit.Zero(2).Apply(
+		gate.H().TensorProduct(gate.I()),
+		gate.CNOT(2, 0, 1),
+	))
+
+	basis := []*qubit.Qubit{
+		qubit.NewFrom("00"),
+		qubit.NewFrom("01"),
+		qubit.NewFrom("10"),
+		qubit.NewFrom("11"),
+	}
+
+	for _, b := range basis {
+		fmt.Printf("%v, %.2f\n", b.State(), rho.Probability(b))
+	}
+	fmt.Println()
+
+	for _, b := range basis {
+		p, sigma := rho.Project(b)
+		fmt.Printf("%v, p: %.2f\n", b.State(), p)
+
+		for _, r := range sigma.Underlying().Seq2() {
+			fmt.Println(r)
+		}
+	}
+
+	// Output:
+	// [[00][  0]( 1.0000 0.0000i): 1.0000], 0.50
+	// [[01][  1]( 1.0000 0.0000i): 1.0000], 0.00
+	// [[10][  2]( 1.0000 0.0000i): 1.0000], 0.00
+	// [[11][  3]( 1.0000 0.0000i): 1.0000], 0.50
+	//
+	// [[00][  0]( 1.0000 0.0000i): 1.0000], p: 0.50
+	// [(1+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [[01][  1]( 1.0000 0.0000i): 1.0000], p: 0.00
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [[10][  2]( 1.0000 0.0000i): 1.0000], p: 0.00
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [[11][  3]( 1.0000 0.0000i): 1.0000], p: 0.50
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (1+0i)]
+}
 func ExampleMatrix_ExpectedValue() {
 	rho := density.New([]density.State{
 		{0.1, qubit.Zero()},

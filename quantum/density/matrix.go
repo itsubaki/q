@@ -129,19 +129,19 @@ func (m *Matrix) Probability(q *qubit.Qubit) float64 {
 	return real(matrix.MatMul(m.rho, p).Trace())
 }
 
-// Project returns the projection of the density matrix onto the given qubit.
-func (m *Matrix) Project(q *qubit.Qubit, eps ...float64) *Matrix {
+// Project returns the probability and post-measurement density matrix.
+func (m *Matrix) Project(q *qubit.Qubit, eps ...float64) (float64, *Matrix) {
 	p := q.OuterProduct(q)
 	tr := matrix.MatMul(m.rho, p).Trace()
 
 	if cmplx.Abs(tr) < epsilon.E13(eps...) {
-		return &Matrix{
+		return 0, &Matrix{
 			rho: matrix.ZeroLike(m.rho),
 		}
 	}
 
 	prp := matrix.Apply(p, m.rho, p)
-	return &Matrix{
+	return real(tr), &Matrix{
 		rho: prp.Mul(1.0 / tr),
 	}
 }
