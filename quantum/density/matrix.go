@@ -275,14 +275,14 @@ func (m *Matrix) BitFlip(p float64, qb Qubit) *Matrix {
 	return m.ApplyChannel(p, gate.X(), qb)
 }
 
-// PhaseFlip applies a phase flip channel to the density matrix.
-func (m *Matrix) PhaseFlip(p float64, qb Qubit) *Matrix {
-	return m.ApplyChannel(p, gate.Z(), qb)
-}
-
 // BitPhaseFlip applies a bit-phase flip channel to the density matrix.
 func (m *Matrix) BitPhaseFlip(p float64, qb Qubit) *Matrix {
 	return m.ApplyChannel(p, gate.Y(), qb)
+}
+
+// PhaseFlip applies a phase flip channel to the density matrix.
+func (m *Matrix) PhaseFlip(p float64, qb Qubit) *Matrix {
+	return m.ApplyChannel(p, gate.Z(), qb)
 }
 
 func take(n, i int, index []Qubit) (string, string) {
