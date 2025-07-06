@@ -47,16 +47,46 @@ func One(n ...int) *Qubit {
 	return New(v.Data...)
 }
 
+// Plus returns a qubit in the plus state.
+// n is the number of qubits.
+// The plus state is defined as (|0> + |1>) / sqrt(2).
+func Plus(n ...int) *Qubit {
+	plus := &vector.Vector{Data: []complex128{
+		complex(1/math.Sqrt2, 0),
+		complex(1/math.Sqrt2, 0),
+	}}
+
+	v := vector.TensorProductN(plus, n...)
+	return New(v.Data...)
+}
+
+// Minus returns a qubit in the minus state.
+// n is the number of qubits.
+// The minus state is defined as (|0> - |1>) / sqrt(2).
+func Minus(n ...int) *Qubit {
+	minus := &vector.Vector{Data: []complex128{
+		complex(1/math.Sqrt2, 0),
+		-1 * complex(1/math.Sqrt2, 0),
+	}}
+
+	v := vector.TensorProductN(minus, n...)
+	return New(v.Data...)
+}
+
 // NewFrom returns a new qubit from a binary string.
 func NewFrom(binary string) *Qubit {
 	list := make([]*Qubit, len(binary))
 	for i, c := range binary {
-		if c == '1' {
+		switch c {
+		case '0':
+			list[i] = Zero()
+		case '1':
 			list[i] = One()
-			continue
+		case '+':
+			list[i] = Plus()
+		case '-':
+			list[i] = Minus()
 		}
-
-		list[i] = Zero()
 	}
 
 	return TensorProduct(list...)

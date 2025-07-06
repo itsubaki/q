@@ -41,6 +41,19 @@ func ExampleNewFrom() {
 	// [0011][  3]( 1.0000 0.0000i): 1.0000
 }
 
+func ExampleNewFrom_plus() {
+	z := qubit.NewFrom("+-")
+	for _, s := range z.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00][  0]( 0.5000 0.0000i): 0.2500
+	// [01][  1](-0.5000 0.0000i): 0.2500
+	// [10][  2]( 0.5000 0.0000i): 0.2500
+	// [11][  3](-0.5000 0.0000i): 0.2500
+}
+
 func Example_pOVM() {
 	E1 := gate.New(
 		[]complex128{0, 0},
@@ -69,14 +82,14 @@ func Example_pOVM() {
 	}
 
 	{
-		q0 := qubit.Zero().Apply(gate.H()).Apply(E1) // E1|+>
-		q1 := qubit.Zero().Apply(gate.H()).Apply(E2) // E2|+>
-		q2 := qubit.Zero().Apply(gate.H()).Apply(E3) // E3|+>
+		q0 := qubit.Plus().Apply(E1) // E1|+>
+		q1 := qubit.Plus().Apply(E2) // E2|+>
+		q2 := qubit.Plus().Apply(E3) // E3|+>
 
 		fmt.Println("H(zero):")
-		fmt.Println(q0.InnerProduct(qubit.Zero().Apply(gate.H()))) // <+|E1|+>
-		fmt.Println(q1.InnerProduct(qubit.Zero().Apply(gate.H()))) // <+|E2|+>
-		fmt.Println(q2.InnerProduct(qubit.Zero().Apply(gate.H()))) // <+|E3|+>
+		fmt.Println(q0.InnerProduct(qubit.Plus())) // <+|E1|+>
+		fmt.Println(q1.InnerProduct(qubit.Plus())) // <+|E2|+>
+		fmt.Println(q2.InnerProduct(qubit.Plus())) // <+|E3|+>
 	}
 
 	// Output:
