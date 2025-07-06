@@ -33,55 +33,49 @@ func ExampleMatrix_bell() {
 	// trace: 1, purity: 0.5
 }
 
-func ExampleMatrix_prob() {
+func ExampleMatrix_ComputationalBasis() {
 	rho := density.NewPureState(qubit.Zero(2).Apply(
 		gate.H().TensorProduct(gate.I()),
 		gate.CNOT(2, 0, 1),
 	))
 
-	basis := []*qubit.Qubit{
-		qubit.NewFrom("00"),
-		qubit.NewFrom("01"),
-		qubit.NewFrom("10"),
-		qubit.NewFrom("11"),
-	}
-
+	basis := rho.ComputationalBasis()
 	for _, b := range basis {
-		fmt.Printf("%v, %.2f\n", b.State(), rho.Probability(b))
+		fmt.Printf("%v: %.2f\n", b.State(), rho.Probability(b))
 	}
 	fmt.Println()
 
 	for _, b := range basis {
 		p, sigma := rho.Project(b)
-		fmt.Printf("%v, p: %.2f\n", b.State(), p)
+		fmt.Printf("%v: %.2f\n", b.State(), p)
 
-		for _, r := range sigma.Underlying().Seq2() {
+		for _, r := range sigma.Seq2() {
 			fmt.Println(r)
 		}
 	}
 
 	// Output:
-	// [[00][  0]( 1.0000 0.0000i): 1.0000], 0.50
-	// [[01][  1]( 1.0000 0.0000i): 1.0000], 0.00
-	// [[10][  2]( 1.0000 0.0000i): 1.0000], 0.00
-	// [[11][  3]( 1.0000 0.0000i): 1.0000], 0.50
+	// [[00][  0]( 1.0000 0.0000i): 1.0000]: 0.50
+	// [[01][  1]( 1.0000 0.0000i): 1.0000]: 0.00
+	// [[10][  2]( 1.0000 0.0000i): 1.0000]: 0.00
+	// [[11][  3]( 1.0000 0.0000i): 1.0000]: 0.50
 	//
-	// [[00][  0]( 1.0000 0.0000i): 1.0000], p: 0.50
+	// [[00][  0]( 1.0000 0.0000i): 1.0000]: 0.50
 	// [(1+0i) (0+0i) (0+0i) (0+0i)]
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [[01][  1]( 1.0000 0.0000i): 1.0000], p: 0.00
+	// [[01][  1]( 1.0000 0.0000i): 1.0000]: 0.00
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [[10][  2]( 1.0000 0.0000i): 1.0000], p: 0.00
+	// [[10][  2]( 1.0000 0.0000i): 1.0000]: 0.00
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [[11][  3]( 1.0000 0.0000i): 1.0000], p: 0.50
+	// [[11][  3]( 1.0000 0.0000i): 1.0000]: 0.50
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
@@ -173,7 +167,7 @@ func ExampleMatrix_TensorProduct() {
 	s1 := density.NewPureState(qubit.One())
 
 	s01 := s0.TensorProduct(s1)
-	for _, r := range s01.Underlying().Seq2() {
+	for _, r := range s01.Seq2() {
 		fmt.Println(r)
 	}
 
@@ -190,7 +184,7 @@ func ExampleMatrix_PartialTrace() {
 		{0.5, qubit.NewFrom("10")},
 	})
 
-	for _, r := range rho.Underlying().Seq2() {
+	for _, r := range rho.Seq2() {
 		fmt.Println(r)
 	}
 	fmt.Println()

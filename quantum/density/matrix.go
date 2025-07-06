@@ -1,6 +1,8 @@
 package density
 
 import (
+	"fmt"
+	"iter"
 	"math"
 	"math/cmplx"
 	"strconv"
@@ -58,10 +60,6 @@ func NewPureState(qb *qubit.Qubit) *Matrix {
 	})
 }
 
-func (m *Matrix) At(i, j int) complex128 {
-	return m.rho.At(i, j)
-}
-
 // Qubits returns the qubits of the density matrix.
 func (m *Matrix) Qubits() []Qubit {
 	n := m.NumQubits()
@@ -74,9 +72,30 @@ func (m *Matrix) Qubits() []Qubit {
 	return qubits
 }
 
+func (m *Matrix) ComputationalBasis() []*qubit.Qubit {
+	n := m.NumQubits()
+
+	basis := make([]*qubit.Qubit, 1<<n)
+	for i := 0; i < 1<<n; i++ {
+		basis[i] = qubit.NewFrom(fmt.Sprintf("%0*b", n, i))
+	}
+
+	return basis
+}
+
+// At returns a value of matrix at (i,j).
+func (m *Matrix) At(i, j int) complex128 {
+	return m.rho.At(i, j)
+}
+
 // Underlying returns the internal matrix.
 func (m *Matrix) Underlying() *matrix.Matrix {
 	return m.rho
+}
+
+// Seq2 returns a sequence of rows.
+func (m *Matrix) Seq2() iter.Seq2[int, []complex128] {
+	return m.rho.Seq2()
 }
 
 // Dimension returns the dimension of the density matrix.
@@ -126,23 +145,23 @@ func (m *Matrix) Apply(u *matrix.Matrix) *Matrix {
 // Probability returns the probability of the qubit in the given state.
 func (m *Matrix) Probability(q *qubit.Qubit) float64 {
 	p := q.OuterProduct(q)
-	return real(matrix.MatMul(m.rho, p).Trace())
+	tr := matrix.MatMul(m.rho, p).Trace()
+	return real(tr)
 }
 
 // Project returns the probability and post-measurement density matrix.
 func (m *Matrix) Project(q *qubit.Qubit, eps ...float64) (float64, *Matrix) {
-	p := q.OuterProduct(q)
-	tr := matrix.MatMul(m.rho, p).Trace()
-
-	if cmplx.Abs(tr) < epsilon.E13(eps...) {
+	p := m.Probability(q)
+	if math.Abs(p) < epsilon.E13(eps...) {
 		return 0, &Matrix{
 			rho: matrix.ZeroLike(m.rho),
 		}
 	}
 
-	prp := matrix.Apply(p, m.rho, p)
-	return real(tr), &Matrix{
-		rho: prp.Mul(1.0 / tr),
+	op := q.OuterProduct(q)
+	rho := matrix.MatMul(op, m.rho, op)
+	return p, &Matrix{
+		rho: rho.Mul(1.0 / complex(p, 0)),
 	}
 }
 
