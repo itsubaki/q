@@ -246,11 +246,12 @@ func (m *Matrix) Depolarizing(p float64) *Matrix {
 }
 
 // ApplyChannel applies a channel to the density matrix.
+// It applies the identity with probability p, and applies the gate g with probability 1-p.
 func (m *Matrix) ApplyChannel(p float64, g *matrix.Matrix, qb ...Qubit) *Matrix {
 	n, k := m.NumQubits(), len(qb)
 	id := gate.I()
-	e0 := gate.I().Mul(complex(math.Sqrt(1-p), 0))
-	e1 := g.Mul(complex(math.Sqrt(p), 0))
+	e0 := gate.I().Mul(complex(math.Sqrt(p), 0))
+	e1 := g.Mul(complex(math.Sqrt(1-p), 0))
 
 	index := make([]int, k)
 	for i, v := range qb {
