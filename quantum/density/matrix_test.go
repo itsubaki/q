@@ -226,9 +226,10 @@ func ExampleMatrix_ApplyChannel() {
 	rho := density.NewPureState(qubit.Zero(2))
 
 	qb := rho.Qubits()
-	flipped := rho.ApplyChannel(0.3, gate.X(), qb[0])
-	fmt.Printf("%.2f\n", flipped.Probability(qubit.NewFrom("00")))
-	fmt.Printf("%.2f\n", flipped.Probability(qubit.NewFrom("10")))
+	x := rho.ApplyChannel(0.3, gate.X(), qb[0])
+
+	fmt.Printf("%.2f\n", x.Probability(qubit.NewFrom("00")))
+	fmt.Printf("%.2f\n", x.Probability(qubit.NewFrom("10")))
 
 	// Output:
 	// 0.70
@@ -239,9 +240,10 @@ func ExampleMatrix_ApplyChannel_qb1() {
 	rho := density.NewPureState(qubit.Zero(2))
 
 	qb := rho.Qubits()
-	flipped := rho.ApplyChannel(0.3, gate.X(), qb[1])
-	fmt.Printf("%.2f\n", flipped.Probability(qubit.NewFrom("00")))
-	fmt.Printf("%.2f\n", flipped.Probability(qubit.NewFrom("01")))
+	x := rho.ApplyChannel(0.3, gate.X(), qb[1])
+
+	fmt.Printf("%.2f\n", x.Probability(qubit.NewFrom("00")))
+	fmt.Printf("%.2f\n", x.Probability(qubit.NewFrom("01")))
 
 	// Output:
 	// 0.70
@@ -252,24 +254,10 @@ func ExampleMatrix_BitFlip() {
 	rho := density.NewPureState(qubit.Zero())
 
 	qb := rho.Qubits()
-	flipped := rho.BitFlip(0.3, qb[0])
+	x := rho.BitFlip(0.3, qb[0])
 
-	fmt.Printf("%.2f\n", flipped.Probability(qubit.Zero()))
-	fmt.Printf("%.2f\n", flipped.Probability(qubit.One()))
-
-	// Output:
-	// 0.70
-	// 0.30
-}
-
-func ExampleMatrix_PhaseFlip() {
-	rho := density.NewPureState(qubit.Plus())
-
-	qb := rho.Qubits()
-	flipped := rho.PhaseFlip(0.3, qb[0])
-
-	fmt.Printf("%.2f\n", flipped.Probability(qubit.Plus()))
-	fmt.Printf("%.2f\n", flipped.Probability(qubit.Minus()))
+	fmt.Printf("%.2f\n", x.Probability(qubit.Zero()))
+	fmt.Printf("%.2f\n", x.Probability(qubit.One()))
 
 	// Output:
 	// 0.70
@@ -280,14 +268,47 @@ func ExampleMatrix_BitPhaseFlip() {
 	rho := density.NewPureState(qubit.Plus())
 
 	qb := rho.Qubits()
-	flipped := rho.BitPhaseFlip(0.3, qb[0])
+	y := rho.BitPhaseFlip(0.3, qb[0])
 
-	fmt.Printf("%.2f\n", flipped.Probability(qubit.Plus()))
-	fmt.Printf("%.2f\n", flipped.Probability(qubit.Minus()))
+	fmt.Printf("%.2f\n", y.Probability(qubit.Plus()))
+	fmt.Printf("%.2f\n", y.Probability(qubit.Minus()))
 
 	// Output:
 	// 0.70
 	// 0.30
+}
+
+func ExampleMatrix_PhaseFlip() {
+	rho := density.NewPureState(qubit.Plus())
+
+	qb := rho.Qubits()
+	z := rho.PhaseFlip(0.3, qb[0])
+
+	fmt.Printf("%.2f\n", z.Probability(qubit.Plus()))
+	fmt.Printf("%.2f\n", z.Probability(qubit.Minus()))
+
+	// Output:
+	// 0.70
+	// 0.30
+}
+
+func ExampleMatrix_phaseAndBitPhaseFlip() {
+	rho := density.NewPureState(qubit.Zero())
+
+	qb := rho.Qubits()
+	y := rho.BitPhaseFlip(0.3, qb[0])
+	z := rho.PhaseFlip(0.3, qb[0])
+
+	fmt.Printf("%.2f\n", y.Probability(qubit.Zero()))
+	fmt.Printf("%.2f\n", y.Probability(qubit.One()))
+	fmt.Printf("%.2f\n", z.Probability(qubit.Zero()))
+	fmt.Printf("%.2f\n", z.Probability(qubit.One()))
+
+	// Output:
+	// 0.70
+	// 0.30
+	// 1.00
+	// 0.00
 }
 
 func TestExpectedValue(t *testing.T) {
