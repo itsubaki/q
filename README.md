@@ -232,8 +232,6 @@ for i := range 10 {
 // i=2: N=15, a=7. p=3, q=5. s/r=1/4 ([0.010]~0.250)
 ```
 
-- In general, See [`cmd/shor`](./cmd/shor/main.go)
-
 ### Any 1-qubit quantum gate and its controlled gate
 
 ```go
