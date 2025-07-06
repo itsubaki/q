@@ -30,19 +30,13 @@ type Matrix struct {
 
 // New returns a new density matrix.
 func New(ensemble []State) *Matrix {
-	var rho *matrix.Matrix
-	for _, s := range Normalize(ensemble) {
-		n := s.Qubit.Dimension()
-		if rho == nil {
-			rho = matrix.Zero(n, n)
-		}
+	normalized := Normalize(ensemble)
+	n := normalized[0].Qubit.Dimension()
 
-		op := s.Qubit.OuterProduct(s.Qubit).Mul(complex(s.Probability, 0))
-		for i := range n {
-			for j := range n {
-				rho.AddAt(i, j, op.At(i, j))
-			}
-		}
+	rho := matrix.Zero(n, n)
+	for _, s := range normalized {
+		op := s.Qubit.OuterProduct(s.Qubit)
+		rho = rho.Add(op.Mul(complex(s.Probability, 0)))
 	}
 
 	return &Matrix{
@@ -231,27 +225,28 @@ func (m *Matrix) PartialTrace(index ...Qubit) *Matrix {
 }
 
 // Depolarizing returns the depolarizing channel.
-// p should be between 0 and 1, representing the probability of depolarization.
+// It applies the identity with probability (1 - p),
+// and applies each of the Pauli gates X, Y, and Z with probability p/3.
 func (m *Matrix) Depolarizing(p float64) *Matrix {
 	n := m.NumQubits()
-	d := 1 << n
 
-	id := gate.I(n).Mul(complex(1.0/float64(d), 0))
-	i := id.Mul(complex(p, 0))
-	r := m.rho.Mul(complex(1-p, 0))
+	id := m.rho.Mul(complex(1-p, 0))
+	x := matrix.MatMul(gate.X(n), m.rho, gate.X(n)).Mul(complex(p/3, 0))
+	y := matrix.MatMul(gate.Y(n), m.rho, gate.Y(n)).Mul(complex(p/3, 0))
+	z := matrix.MatMul(gate.Z(n), m.rho, gate.Z(n)).Mul(complex(p/3, 0))
 
 	return &Matrix{
-		rho: i.Add(r),
+		rho: id.Add(x).Add(y).Add(z),
 	}
 }
 
 // ApplyChannel applies a channel to the density matrix.
-// It applies the identity with probability p, and applies the gate g with probability 1-p.
+// It applies the identity with probability 1-p, and applies the gate g with probability p.
 func (m *Matrix) ApplyChannel(p float64, g *matrix.Matrix, qb ...Qubit) *Matrix {
 	n, k := m.NumQubits(), len(qb)
 	id := gate.I()
-	e0 := gate.I().Mul(complex(math.Sqrt(p), 0))
-	e1 := g.Mul(complex(math.Sqrt(1-p), 0))
+	e0 := gate.I().Mul(complex(math.Sqrt(1-p), 0))
+	e1 := g.Mul(complex(math.Sqrt(p), 0))
 
 	index := make([]int, k)
 	for i, v := range qb {

@@ -237,7 +237,9 @@ func ExampleMatrix_Depolarizing() {
 	fmt.Printf("1: %.2f\n", rho.Probability(qubit.One()))
 	fmt.Println()
 
-	dep := rho.Depolarizing(1)
+	// XrhoX = |1><1|, YrhoY = |1><1|, ZrhoZ = |0><0|
+	// E(rho) = 0.7|0><0| + 0.1|1><1| + 0.1|1><1| + 0.1|0>>0| = 0.8|0><0| + 0.2|1><1|
+	dep := rho.Depolarizing(0.3)
 	fmt.Printf("0: %.2f\n", dep.Probability(qubit.Zero()))
 	fmt.Printf("1: %.2f\n", dep.Probability(qubit.One()))
 
@@ -245,8 +247,8 @@ func ExampleMatrix_Depolarizing() {
 	// 0: 1.00
 	// 1: 0.00
 	//
-	// 0: 0.50
-	// 1: 0.50
+	// 0: 0.80
+	// 1: 0.20
 }
 
 func ExampleMatrix_ApplyChannel() {
@@ -259,8 +261,8 @@ func ExampleMatrix_ApplyChannel() {
 	fmt.Printf("%.2f\n", x.Probability(qubit.NewFrom("10")))
 
 	// Output:
-	// 0.30
 	// 0.70
+	// 0.30
 }
 
 func ExampleMatrix_ApplyChannel_qb1() {
@@ -273,8 +275,8 @@ func ExampleMatrix_ApplyChannel_qb1() {
 	fmt.Printf("%.2f\n", x.Probability(qubit.NewFrom("01")))
 
 	// Output:
-	// 0.30
 	// 0.70
+	// 0.30
 }
 
 func ExampleMatrix_BitFlip() {
@@ -287,8 +289,8 @@ func ExampleMatrix_BitFlip() {
 	fmt.Printf("%.2f\n", x.Probability(qubit.One()))
 
 	// Output:
-	// 0.30
 	// 0.70
+	// 0.30
 }
 
 func ExampleMatrix_BitPhaseFlip() {
@@ -301,8 +303,8 @@ func ExampleMatrix_BitPhaseFlip() {
 	fmt.Printf("%.2f\n", y.Probability(qubit.Minus()))
 
 	// Output:
-	// 0.30
 	// 0.70
+	// 0.30
 }
 
 func ExampleMatrix_PhaseFlip() {
@@ -315,8 +317,8 @@ func ExampleMatrix_PhaseFlip() {
 	fmt.Printf("%.2f\n", z.Probability(qubit.Minus()))
 
 	// Output:
-	// 0.30
 	// 0.70
+	// 0.30
 }
 
 func ExampleMatrix_phaseAndBitPhaseFlip() {
@@ -332,8 +334,8 @@ func ExampleMatrix_phaseAndBitPhaseFlip() {
 	fmt.Printf("%.2f\n", z.Probability(qubit.One()))
 
 	// Output:
-	// 0.30
 	// 0.70
+	// 0.30
 	// 1.00
 	// 0.00
 }
