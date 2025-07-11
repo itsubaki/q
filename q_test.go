@@ -386,6 +386,41 @@ func ExampleQ_Toffoli() {
 	// [111][  7]( 1.0000 0.0000i): 1.0000
 }
 
+func Example_qft() {
+	qsim := q.New()
+
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.One()
+
+	qsim.H(q0)
+	qsim.CR(math.Pi/2, q0, q1)
+	qsim.CR(math.Pi/4, q0, q2)
+
+	qsim.H(q1)
+	qsim.CR(math.Pi/2, q1, q2)
+
+	qsim.H(q2)
+
+	qsim.CNOT(q0, q2)
+	qsim.CNOT(q2, q0)
+	qsim.CNOT(q0, q2)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [000][  0]( 0.3536 0.0000i): 0.1250
+	// [001][  1]( 0.2500 0.2500i): 0.1250
+	// [010][  2]( 0.0000 0.3536i): 0.1250
+	// [011][  3](-0.2500 0.2500i): 0.1250
+	// [100][  4](-0.3536 0.0000i): 0.1250
+	// [101][  5](-0.2500-0.2500i): 0.1250
+	// [110][  6]( 0.0000-0.3536i): 0.1250
+	// [111][  7]( 0.2500-0.2500i): 0.1250
+}
+
 func ExampleQ_QFT() {
 	qsim := q.New()
 
