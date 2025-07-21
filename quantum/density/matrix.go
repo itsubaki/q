@@ -54,6 +54,11 @@ func NewPureState(qb *qubit.Qubit) *Matrix {
 	})
 }
 
+// NewZeroState returns a new zero state density matrix for the given number of qubits.
+func NewZeroState(n ...int) *Matrix {
+	return NewPureState(qubit.Zero(n...))
+}
+
 // Qubits returns the qubits of the density matrix.
 func (m *Matrix) Qubits() []Qubit {
 	n := m.NumQubits()

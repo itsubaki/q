@@ -128,8 +128,11 @@ func ExampleMatrix_Probability() {
 }
 
 func ExampleMatrix_IsHermite() {
-	s0 := density.NewPureState(qubit.Zero())
-	s1 := density.New([]density.State{{0.1, qubit.Zero()}, {0.9, qubit.One()}})
+	s0 := density.NewZeroState()
+	s1 := density.New([]density.State{
+		{0.1, qubit.Zero()},
+		{0.9, qubit.One()},
+	})
 
 	fmt.Println(s0.IsHermite())
 	fmt.Println(s1.IsHermite())
@@ -140,8 +143,11 @@ func ExampleMatrix_IsHermite() {
 }
 
 func ExampleMatrix_Trace() {
-	s0 := density.NewPureState(qubit.Zero())
-	s1 := density.New([]density.State{{0.1, qubit.Zero()}, {0.9, qubit.One()}})
+	s0 := density.NewZeroState()
+	s1 := density.New([]density.State{
+		{0.1, qubit.Zero()},
+		{0.9, qubit.One()},
+	})
 
 	fmt.Printf("pure : %.2f\n", s0.Trace())
 	fmt.Printf("mixed: %.2f\n", s1.Trace())
@@ -152,8 +158,11 @@ func ExampleMatrix_Trace() {
 }
 
 func ExampleMatrix_Purity() {
-	s0 := density.NewPureState(qubit.Zero())
-	s1 := density.New([]density.State{{0.1, qubit.Zero()}, {0.9, qubit.One()}})
+	s0 := density.NewZeroState()
+	s1 := density.New([]density.State{
+		{0.1, qubit.Zero()},
+		{0.9, qubit.One()},
+	})
 
 	fmt.Printf("pure : %.2f, %v\n", s0.Purity(), s0.IsPure())
 	fmt.Printf("mixed: %.2f, %v\n", s1.Purity(), s1.IsMixed())
@@ -233,7 +242,7 @@ func ExampleMatrix_PartialTrace_x8() {
 }
 
 func ExampleMatrix_Depolarizing() {
-	rho := density.NewPureState(qubit.Zero())
+	rho := density.NewZeroState()
 	fmt.Printf("0: %.2f\n", rho.Probability(qubit.Zero()))
 	fmt.Printf("1: %.2f\n", rho.Probability(qubit.One()))
 	fmt.Println()
@@ -253,7 +262,7 @@ func ExampleMatrix_Depolarizing() {
 }
 
 func ExampleMatrix_ApplyChannel() {
-	rho := density.NewPureState(qubit.Zero(2))
+	rho := density.NewZeroState(2)
 
 	qb := rho.Qubits()
 	x := rho.ApplyChannel(0.3, gate.X(), qb[0])
@@ -267,7 +276,7 @@ func ExampleMatrix_ApplyChannel() {
 }
 
 func ExampleMatrix_ApplyChannel_qb1() {
-	rho := density.NewPureState(qubit.Zero(2))
+	rho := density.NewZeroState(2)
 
 	qb := rho.Qubits()
 	x := rho.ApplyChannel(0.3, gate.X(), qb[1])
@@ -281,7 +290,7 @@ func ExampleMatrix_ApplyChannel_qb1() {
 }
 
 func ExampleMatrix_BitFlip() {
-	rho := density.NewPureState(qubit.Zero())
+	rho := density.NewZeroState()
 
 	qb := rho.Qubits()
 	x := rho.BitFlip(0.3, qb[0])
@@ -323,7 +332,7 @@ func ExampleMatrix_PhaseFlip() {
 }
 
 func ExampleMatrix_phaseAndBitPhaseFlip() {
-	rho := density.NewPureState(qubit.Zero())
+	rho := density.NewZeroState()
 
 	qb := rho.Qubits()
 	y := rho.BitPhaseFlip(0.3, qb[0])
@@ -350,13 +359,19 @@ func TestExpectedValue(t *testing.T) {
 		eps      float64
 	}{
 		{
-			[]density.State{{0.1, qubit.Zero()}, {0.9, qubit.One()}},
+			[]density.State{
+				{0.1, qubit.Zero()},
+				{0.9, qubit.One()},
+			},
 			1, 0.82,
 			gate.X(), 0.0,
 			epsilon.E13(),
 		},
 		{
-			[]density.State{{0.1, qubit.Zero()}, {0.9, qubit.Plus()}},
+			[]density.State{
+				{0.1, qubit.Zero()},
+				{0.9, qubit.Plus()},
+			},
 			1, 0.91,
 			gate.X(), 0.9,
 			epsilon.E13(),
