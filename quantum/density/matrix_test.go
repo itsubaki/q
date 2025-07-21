@@ -81,6 +81,7 @@ func ExampleMatrix_ComputationalBasis() {
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
 	// [(0+0i) (0+0i) (0+0i) (1+0i)]
 }
+
 func ExampleMatrix_ExpectedValue() {
 	rho := density.New([]density.State{
 		{0.1, qubit.Zero()},
@@ -238,7 +239,7 @@ func ExampleMatrix_Depolarizing() {
 	fmt.Println()
 
 	// XrhoX = |1><1|, YrhoY = |1><1|, ZrhoZ = |0><0|
-	// E(rho) = 0.7|0><0| + 0.1|1><1| + 0.1|1><1| + 0.1|0>>0| = 0.8|0><0| + 0.2|1><1|
+	// E(rho) = 0.7|0><0| + 0.1|1><1| + 0.1|1><1| + 0.1|0><0| = 0.8|0><0| + 0.2|1><1|
 	dep := rho.Depolarizing(0.3)
 	fmt.Printf("0: %.2f\n", dep.Probability(qubit.Zero()))
 	fmt.Printf("1: %.2f\n", dep.Probability(qubit.One()))
