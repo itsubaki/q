@@ -15,3 +15,6 @@ doc:
 
 shor:
 	go run cmd/shor/main.go --N=21 --t=5
+
+grover:
+	go run cmd/grover/main.go --oracle=011

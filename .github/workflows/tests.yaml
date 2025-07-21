@@ -42,3 +42,7 @@ jobs:
       - name: Shor
         run: |
           make shor
+
+      - name: Grover
+        run: |
+          make grover
