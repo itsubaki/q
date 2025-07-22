@@ -43,28 +43,19 @@ import (
 // This aligns with Grover's algorithm, which assumes only a condition-checking black box (oracle),
 // not prior knowledge of the answer itself.
 func oracle(qsim *q.Q, r, t []q.Qubit, a q.Qubit) {
-	// check a != b, c != d, a != c, b != d
-	qsim.CNOT(r[0], t[0])
-	qsim.CNOT(r[1], t[0])
-	qsim.CNOT(r[2], t[1])
-	qsim.CNOT(r[3], t[1])
-	qsim.CNOT(r[0], t[2])
-	qsim.CNOT(r[2], t[2])
-	qsim.CNOT(r[1], t[3])
-	qsim.CNOT(r[3], t[3])
+	qsim.CNOT(r[0], t[0]).CNOT(r[1], t[0]) // XOR(r[0], r[1]) -> t[0]
+	qsim.CNOT(r[2], t[1]).CNOT(r[3], t[1]) // XOR(r[2], r[3]) -> t[1]
+	qsim.CNOT(r[0], t[2]).CNOT(r[2], t[2]) // XOR(r[0], r[2]) -> t[2]
+	qsim.CNOT(r[1], t[3]).CNOT(r[3], t[3]) // XOR(r[1], r[3]) -> t[3]
 
 	// apply Z if all t are 1
 	qsim.ControlledZ(t, a)
 
 	// uncompute
-	qsim.CNOT(r[3], t[3])
-	qsim.CNOT(r[1], t[3])
-	qsim.CNOT(r[2], t[2])
-	qsim.CNOT(r[0], t[2])
-	qsim.CNOT(r[3], t[1])
-	qsim.CNOT(r[2], t[1])
-	qsim.CNOT(r[1], t[0])
-	qsim.CNOT(r[0], t[0])
+	qsim.CNOT(r[3], t[3]).CNOT(r[1], t[3])
+	qsim.CNOT(r[2], t[2]).CNOT(r[0], t[2])
+	qsim.CNOT(r[3], t[1]).CNOT(r[2], t[1])
+	qsim.CNOT(r[1], t[0]).CNOT(r[0], t[0])
 }
 
 func amplify(qsim *q.Q, r []q.Qubit) {
