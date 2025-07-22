@@ -100,11 +100,11 @@ func main() {
 
 	// iteration count
 	N := float64(number.Pow(2, len(r)))
-	M := float64(2)                               // there are 2 solutions: [0,1,1,0] and [1,0,0,1].
-	R := math.Floor(math.Pi / 4 * math.Sqrt(N/M)) // floor(pi/4 * sqrt(N/M))
+	M := float64(2)                        // there are 2 solutions: [0,1,1,0] and [1,0,0,1].
+	R := int(math.Pi / 4 * math.Sqrt(N/M)) // floor(pi/4 * sqrt(N/M))
 
 	// iterations
-	for range int(R) {
+	for range R {
 		oracle(qsim, r, t, a)
 		amplify(qsim, r)
 	}
@@ -118,5 +118,5 @@ func main() {
 		fmt.Println(s)
 	}
 
-	fmt.Println("result:", qsim.Measure(r...).BinaryString())
+	fmt.Printf("result=%v, R=%v\n", qsim.Measure(r...).BinaryString(), R)
 }
