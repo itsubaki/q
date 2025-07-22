@@ -10,18 +10,6 @@ import (
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
-func top(s []qubit.State, n int) []qubit.State {
-	sort.Slice(s, func(i, j int) bool {
-		return s[i].Probability() > s[j].Probability()
-	})
-
-	if len(s) < n {
-		return s
-	}
-
-	return s[:n]
-}
-
 // oracle constructs a Grover oracle for validating 2x2 mini-sudoku solutions.
 // It applies a phase flip (−1) only to states that represent valid solutions.
 //
@@ -85,6 +73,18 @@ func amplify(qsim *q.Q, r []q.Qubit) {
 	qsim.ControlledZ([]q.Qubit{r[0], r[1], r[2]}, r[3])
 	qsim.X(r...)
 	qsim.H(r...)
+}
+
+func top(s []qubit.State, n int) []qubit.State {
+	sort.Slice(s, func(i, j int) bool {
+		return s[i].Probability() > s[j].Probability()
+	})
+
+	if len(s) < n {
+		return s
+	}
+
+	return s[:n]
 }
 
 func main() {
