@@ -102,7 +102,7 @@ func main() {
 	// estimate the number of solutions `M`
 	N := number.Pow(2, len(r))
 	for _, k := range keys {
-		theta := float64(k) / float64(int(1)<<len(c))          // theta = k / 2**len(c)
+		theta := float64(k) / float64(number.Pow(2, len(c)))   // theta = k / 2**len(c)
 		M := float64(N) * math.Pow(math.Sin(math.Pi*theta), 2) // M = N * (sin(pi * theta))**2
 
 		// result=1, prob=0.2669; theta=0.1250, M=2.3431
