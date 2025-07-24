@@ -43,19 +43,24 @@ import (
 // This aligns with Grover's algorithm, which assumes only a condition-checking black box (oracle),
 // not prior knowledge of the answer itself.
 func oracle(qsim *q.Q, r, t []q.Qubit, a q.Qubit) {
-	qsim.CNOT(r[0], t[0]).CNOT(r[1], t[0]) // XOR(r[0], r[1]) -> t[0]
-	qsim.CNOT(r[2], t[1]).CNOT(r[3], t[1]) // XOR(r[2], r[3]) -> t[1]
-	qsim.CNOT(r[0], t[2]).CNOT(r[2], t[2]) // XOR(r[0], r[2]) -> t[2]
-	qsim.CNOT(r[1], t[3]).CNOT(r[3], t[3]) // XOR(r[1], r[3]) -> t[3]
+	xor := func(x, y, t q.Qubit) {
+		qsim.CNOT(x, t)
+		qsim.CNOT(y, t)
+	}
+
+	xor(r[0], r[1], t[0]) // a != b
+	xor(r[2], r[3], t[1]) // c != d
+	xor(r[0], r[2], t[2]) // a != c
+	xor(r[1], r[3], t[3]) // b != d
 
 	// apply Z if all t are 1
 	qsim.ControlledZ(t, a)
 
 	// uncompute
-	qsim.CNOT(r[3], t[3]).CNOT(r[1], t[3])
-	qsim.CNOT(r[2], t[2]).CNOT(r[0], t[2])
-	qsim.CNOT(r[3], t[1]).CNOT(r[2], t[1])
-	qsim.CNOT(r[1], t[0]).CNOT(r[0], t[0])
+	xor(r[3], r[1], t[3])
+	xor(r[2], r[0], t[2])
+	xor(r[3], r[2], t[1])
+	xor(r[1], r[0], t[0])
 }
 
 func amplify(qsim *q.Q, r []q.Qubit) {
@@ -71,11 +76,7 @@ func top(s []qubit.State, n int) []qubit.State {
 		return s[i].Probability() > s[j].Probability()
 	})
 
-	if len(s) < n {
-		return s
-	}
-
-	return s[:n]
+	return s[:min(n, len(s))]
 }
 
 func main() {
@@ -100,6 +101,7 @@ func main() {
 		amplify(qsim, r)
 	}
 
+	// quantum states
 	for _, s := range top(qsim.State(r), 5) {
 		// [0110][  6](-0.4861 0.0000i): 0.2363
 		// [1001][  9](-0.4861 0.0000i): 0.2363
@@ -109,5 +111,6 @@ func main() {
 		fmt.Println(s)
 	}
 
+	// measure
 	fmt.Printf("result=%v, R=%v\n", qsim.Measure(r...).BinaryString(), R)
 }

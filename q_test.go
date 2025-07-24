@@ -1308,12 +1308,11 @@ func Example_top() {
 	qsim.M(r1...)
 
 	top := func(s []qubit.State, n int) []qubit.State {
-		sort.Slice(s, func(i, j int) bool { return s[i].Probability() > s[j].Probability() })
-		if len(s) < n {
-			return s
-		}
+		sort.Slice(s, func(i, j int) bool {
+			return s[i].Probability() > s[j].Probability()
+		})
 
-		return s[:n]
+		return s[:min(n, len(s))]
 	}
 
 	for _, s := range top(qsim.State(r0), 10) {
