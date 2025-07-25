@@ -190,15 +190,18 @@ func (q *Q) Apply(m *matrix.Matrix, qb ...Qubit) *Q {
 	return q
 }
 
-func (q *Q) Controlled(m *matrix.Matrix, control []Qubit, target Qubit) *Q {
+func (q *Q) Controlled(m *matrix.Matrix, control []Qubit, target []Qubit) *Q {
 	n := q.NumQubits()
-	g := gate.Controlled(m, n, Index(control...), target.Index())
-	q.qb.Apply(g)
+	for _, t := range target {
+		g := gate.Controlled(m, n, Index(control...), t.Index())
+		q.qb.Apply(g)
+	}
+
 	return q
 }
 
 func (q *Q) C(m *matrix.Matrix, control, target Qubit) *Q {
-	return q.Controlled(m, []Qubit{control}, target)
+	return q.Controlled(m, []Qubit{control}, []Qubit{target})
 }
 
 // ControlledNot applies CNOT gate.

@@ -6,7 +6,6 @@ import (
 	"sort"
 
 	"github.com/itsubaki/q"
-	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/math/number"
 	"github.com/itsubaki/q/quantum/gate"
 )
@@ -40,17 +39,11 @@ func oracle(qsim *q.Q, ctrl q.Qubit, r, t []q.Qubit, a q.Qubit) {
 }
 
 func amplify(qsim *q.Q, ctrl q.Qubit, r []q.Qubit) {
-	controlled := func(g *matrix.Matrix, ctrl q.Qubit, target []q.Qubit) {
-		for _, t := range target {
-			qsim.Controlled(g, []q.Qubit{ctrl}, t)
-		}
-	}
-
-	controlled(gate.H(), ctrl, r)
-	controlled(gate.X(), ctrl, r)
+	qsim.Controlled(gate.H(), []q.Qubit{ctrl}, r)
+	qsim.Controlled(gate.X(), []q.Qubit{ctrl}, r)
 	qsim.ControlledZ([]q.Qubit{ctrl, r[0], r[1], r[2]}, r[3])
-	controlled(gate.X(), ctrl, r)
-	controlled(gate.H(), ctrl, r)
+	qsim.Controlled(gate.X(), []q.Qubit{ctrl}, r)
+	qsim.Controlled(gate.H(), []q.Qubit{ctrl}, r)
 }
 
 func sortedKeys(result map[int64]float64) []int64 {
