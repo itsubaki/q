@@ -18,3 +18,6 @@ shor:
 
 grover:
 	go run cmd/grover/main.go
+
+counting:
+	go run cmd/counting/main.go

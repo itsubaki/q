@@ -53,6 +53,19 @@ func amplify(qsim *q.Q, ctrl q.Qubit, r []q.Qubit) {
 	controlled(gate.H(), ctrl, r)
 }
 
+func sortedKeys(result map[int64]float64) []int64 {
+	keys := make([]int64, 0, len(result))
+	for k := range result {
+		keys = append(keys, k)
+	}
+
+	sort.Slice(keys, func(i, j int) bool {
+		return result[keys[i]] > result[keys[j]]
+	})
+
+	return keys
+}
+
 func main() {
 	qsim := q.New()
 
@@ -67,41 +80,26 @@ func main() {
 	qsim.H(r...)
 	qsim.H(a)
 
-	// apply controlled Grover iterations (phase estimation)
+	// phase estimation
 	for i := range len(c) {
+		// apply controlled-G**(2**i) where control is c[len(c)-1-i]
 		for range 1 << i {
 			controlledG(qsim, c[len(c)-1-i], r, t, a)
 		}
 	}
 
-	// inverse quantum Fourier transform
+	// inverse quantum fourier transform
 	qsim.IQFT(c...)
 
 	// results
 	result := make(map[int64]float64)
 	for _, s := range qsim.State(c) {
-		v, ok := result[s.Int()]
-		if !ok {
-			result[s.Int()] = s.Probability()
-			continue
-		}
-
-		result[s.Int()] = v + s.Probability()
+		result[s.Int()] += s.Probability()
 	}
-
-	// sort result by descending probability
-	keys := make([]int64, 0, len(result))
-	for k := range result {
-		keys = append(keys, k)
-	}
-
-	sort.Slice(keys, func(i, j int) bool {
-		return result[keys[i]] > result[keys[j]]
-	})
 
 	// estimate the number of solutions `M`
 	N := number.Pow(2, len(r))
-	for _, k := range keys {
+	for _, k := range sortedKeys(result) {
 		theta := float64(k) / float64(number.Pow(2, len(c)))   // theta = k / 2**len(c)
 		M := float64(N) * math.Pow(math.Sin(math.Pi*theta), 2) // M = N * (sin(pi * theta))**2
 
