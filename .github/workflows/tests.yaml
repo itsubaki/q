@@ -39,10 +39,14 @@ jobs:
         run: |
           make bench
 
-      - name: Shor
+      - name: Shor's algorithm
         run: |
           make shor
 
-      - name: Grover
+      - name: Grover's algorithm
         run: |
           make grover
+
+      - name: Quantum Counting
+        run: |
+          make counting
