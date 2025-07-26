@@ -88,7 +88,8 @@ func main() {
 	a := qsim.One()
 
 	// superposition
-	qsim.H(r...).H(a)
+	qsim.H(r...)
+	qsim.H(a)
 
 	// iteration count
 	N := float64(number.Pow(2, len(r)))
