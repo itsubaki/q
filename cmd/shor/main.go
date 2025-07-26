@@ -9,6 +9,7 @@ import (
 	"github.com/itsubaki/q"
 	"github.com/itsubaki/q/math/number"
 	"github.com/itsubaki/q/math/rand"
+	"github.com/itsubaki/q/quantum/gate"
 )
 
 // go run main.go --N 15
@@ -71,10 +72,8 @@ func main() {
 	qsim.H(r0...)
 	print("create superposition", qsim, r0, r1)
 
-	// qsim.CModExp2(a, N, r0, r1)
-	// print("apply controlled-U", qsim, r0, r1)
 	for i := range r0 {
-		qsim.ControlledModExp2(a, i, N, r0[i], r1)
+		ControlledModExp2(qsim, a, i, N, r0[i], r1)
 		print(fmt.Sprintf("apply controlled-U[%d]", i), qsim, r0, r1)
 	}
 
@@ -113,4 +112,11 @@ func print(desc string, qsim *q.Q, reg ...any) {
 	}
 
 	fmt.Println()
+}
+
+// ControlledModExp2 applies Controlled-ModExp2 gate.
+func ControlledModExp2(qsim *q.Q, a, j, N int, control q.Qubit, target []q.Qubit) {
+	n := qsim.NumQubits()
+	g := gate.ControlledModExp2(n, a, j, N, control.Index(), q.Index(target...))
+	qsim.Apply(g)
 }

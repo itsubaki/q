@@ -34,7 +34,7 @@ func New(z ...complex128) *Qubit {
 // Zero returns a qubit in the zero state.
 // n is the number of qubits.
 func Zero(n ...int) *Qubit {
-	z := &vector.Vector{Data: []complex128{1, 0}}
+	z := vector.New(1, 0)
 	v := vector.TensorProductN(z, n...)
 	return New(v.Data...)
 }
@@ -42,7 +42,7 @@ func Zero(n ...int) *Qubit {
 // One returns a qubit in the one state.
 // n is the number of qubits.
 func One(n ...int) *Qubit {
-	o := &vector.Vector{Data: []complex128{0, 1}}
+	o := vector.New(0, 1)
 	v := vector.TensorProductN(o, n...)
 	return New(v.Data...)
 }
@@ -51,10 +51,10 @@ func One(n ...int) *Qubit {
 // n is the number of qubits.
 // The plus state is defined as (|0> + |1>) / sqrt(2).
 func Plus(n ...int) *Qubit {
-	plus := &vector.Vector{Data: []complex128{
+	plus := vector.New(
 		complex(1/math.Sqrt2, 0),
 		complex(1/math.Sqrt2, 0),
-	}}
+	)
 
 	v := vector.TensorProductN(plus, n...)
 	return New(v.Data...)
@@ -64,10 +64,10 @@ func Plus(n ...int) *Qubit {
 // n is the number of qubits.
 // The minus state is defined as (|0> - |1>) / sqrt(2).
 func Minus(n ...int) *Qubit {
-	minus := &vector.Vector{Data: []complex128{
+	minus := vector.New(
 		complex(1/math.Sqrt2, 0),
-		-1 * complex(1/math.Sqrt2, 0),
-	}}
+		-1*complex(1/math.Sqrt2, 0),
+	)
 
 	v := vector.TensorProductN(minus, n...)
 	return New(v.Data...)
@@ -130,32 +130,6 @@ func (q *Qubit) Clone() *Qubit {
 	}
 }
 
-// Fidelity returns the fidelity of q and qb.
-func (q *Qubit) Fidelity(qb *Qubit) float64 {
-	p0 := qb.Probability()
-	p1 := q.Probability()
-
-	var sum float64
-	for i := range p0 {
-		sum = sum + math.Sqrt(p0[i]*p1[i])
-	}
-
-	return sum
-}
-
-// TraceDistance returns the trace distance of q and qb.
-func (q *Qubit) TraceDistance(qb *Qubit) float64 {
-	p0 := qb.Probability()
-	p1 := q.Probability()
-
-	var sum float64
-	for i := range p0 {
-		sum = sum + math.Abs(p0[i]-p1[i])
-	}
-
-	return sum / 2
-}
-
 // Equals returns true if q and qb are equal.
 func (q *Qubit) Equals(qb *Qubit, eps ...float64) bool {
 	return q.vec.Equals(qb.vec, eps...)
@@ -179,8 +153,8 @@ func (q *Qubit) Apply(m ...*matrix.Matrix) *Qubit {
 // Normalize returns a normalized qubit.
 func (q *Qubit) Normalize() *Qubit {
 	sum := number.Sum(q.Probability())
-	z := 1 / math.Sqrt(sum)
-	q.vec = q.vec.Mul(complex(z, 0))
+	norm := complex(1/math.Sqrt(sum), 0)
+	q.vec = q.vec.Mul(norm)
 	return q
 }
 
@@ -204,45 +178,37 @@ func (q *Qubit) Measure(index int) *Qubit {
 	n := q.NumQubits()
 	mask := 1 << (n - 1 - index)
 
-	zidx, zprop := make([]int, 0), make([]float64, 0)
-	oidx := make([]int, 0)
-	for i, p := range q.Probability() {
-		if i&mask == 0 {
-			zidx, zprop = append(zidx, i), append(zprop, p)
-			continue
+	var prob0 float64
+	for i := range q.Dimension() {
+		if (i & mask) == 0 {
+			prob0 += math.Pow(cmplx.Abs(q.vec.Data[i]), 2)
 		}
-
-		oidx = append(oidx, i)
 	}
 
-	// One()
-	if q.Rand() > number.Sum(zprop) {
-		for _, i := range zidx {
-			q.vec.Data[i] = complex(0, 0)
+	collapse := func(q *Qubit, result int) {
+		for i := range q.Dimension() {
+			if ((i & mask) >> (n - 1 - index)) == result {
+				continue
+			}
+
+			q.vec.Data[i] = 0
 		}
 
 		q.Normalize()
-		return One()
 	}
 
-	// Zero()
-	for _, i := range oidx {
-		q.vec.Data[i] = complex(0, 0)
+	if q.Rand() < prob0 {
+		collapse(q, 0)
+		return Zero()
 	}
 
-	q.Normalize()
-	return Zero()
-}
-
-// Int measures the quantum state and returns its int representation.
-func (q *Qubit) Int() int64 {
-	return number.Must(strconv.ParseInt(q.BinaryString(), 2, 0))
+	collapse(q, 1)
+	return One()
 }
 
 // BinaryString measures the quantum state and returns its binary string representation.
 func (q *Qubit) BinaryString() string {
 	c := q.Clone()
-
 	var sb strings.Builder
 	for i := range q.NumQubits() {
 		if c.Measure(i).IsZero() {
@@ -254,6 +220,11 @@ func (q *Qubit) BinaryString() string {
 	}
 
 	return sb.String()
+}
+
+// Int measures the quantum state and returns its int representation.
+func (q *Qubit) Int() int64 {
+	return number.Must(strconv.ParseInt(q.BinaryString(), 2, 0))
 }
 
 // String returns the string representation of q.
@@ -282,12 +253,12 @@ func (q *Qubit) State(index ...[]int) []State {
 			continue
 		}
 
-		var bin []string
+		var binary []string
 		for _, idx := range index {
-			bin = append(bin, take(n, i, idx))
+			binary = append(binary, take(n, i, idx))
 		}
 
-		state = append(state, NewState(amp, bin...))
+		state = append(state, NewState(amp, binary...))
 	}
 
 	return state

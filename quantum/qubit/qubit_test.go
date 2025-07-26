@@ -536,40 +536,6 @@ func TestIsOne(t *testing.T) {
 	}
 }
 
-func TestFidelity(t *testing.T) {
-	cases := []struct {
-		q0, q1 *qubit.Qubit
-		want   float64
-	}{
-		{qubit.Zero(), qubit.Zero(), 1.0},
-		{qubit.Zero(), qubit.One(), 0.0},
-	}
-
-	for _, c := range cases {
-		got := c.q0.Fidelity(c.q1)
-		if got != c.want {
-			t.Errorf("got=%v, want=%v", got, c.want)
-		}
-	}
-}
-
-func TestTraceDistance(t *testing.T) {
-	cases := []struct {
-		q0, q1 *qubit.Qubit
-		want   float64
-	}{
-		{qubit.Zero(), qubit.Zero(), 0.0},
-		{qubit.Zero(), qubit.One(), 1.0},
-	}
-
-	for _, c := range cases {
-		got := c.q0.TraceDistance(c.q1)
-		if got != c.want {
-			t.Errorf("got=%v, want=%v", got, c.want)
-		}
-	}
-}
-
 func TestNormalize(t *testing.T) {
 	cases := []struct {
 		in   *qubit.Qubit

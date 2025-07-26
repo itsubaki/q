@@ -42,7 +42,7 @@ import (
 // a state is a valid solution **without knowing in advance what the solution is**.
 // This aligns with Grover's algorithm, which assumes only a condition-checking black box (oracle),
 // not prior knowledge of the answer itself.
-func oracle(qsim *q.Q, r, t []q.Qubit, a q.Qubit) {
+func oracle(qsim *q.Q, r, t, a []q.Qubit) {
 	xor := func(x, y, t q.Qubit) {
 		qsim.CNOT(x, t)
 		qsim.CNOT(y, t)
@@ -66,7 +66,7 @@ func oracle(qsim *q.Q, r, t []q.Qubit, a q.Qubit) {
 func amplify(qsim *q.Q, r []q.Qubit) {
 	qsim.H(r...)
 	qsim.X(r...)
-	qsim.ControlledZ([]q.Qubit{r[0], r[1], r[2]}, r[3])
+	qsim.ControlledZ([]q.Qubit{r[0], r[1], r[2]}, []q.Qubit{r[3]})
 	qsim.X(r...)
 	qsim.H(r...)
 }
@@ -85,11 +85,11 @@ func main() {
 	// initialize
 	r := qsim.Zeros(4)
 	t := qsim.Zeros(4)
-	a := qsim.One()
+	a := qsim.Ones(1)
 
 	// superposition
 	qsim.H(r...)
-	qsim.H(a)
+	qsim.H(a...)
 
 	// iteration count
 	N := float64(number.Pow(2, len(r)))

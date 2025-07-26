@@ -48,18 +48,6 @@ func (v *Vector) Dual() *Vector {
 	}
 }
 
-// Add returns a vector of v+w.
-func (v *Vector) Add(w *Vector) *Vector {
-	data := make([]complex128, len(v.Data))
-	for i := range v.Data {
-		data[i] = v.Data[i] + w.Data[i]
-	}
-
-	return &Vector{
-		Data: data,
-	}
-}
-
 // Mul returns a vector of z*v.
 func (v *Vector) Mul(z complex128) *Vector {
 	data := make([]complex128, len(v.Data))
@@ -117,21 +105,6 @@ func (v *Vector) OuterProduct(w *Vector) *matrix.Matrix {
 		Cols: cols,
 		Data: data,
 	}
-}
-
-// IsOrthogonal returns true if v and w are orthogonal.
-func (v *Vector) IsOrthogonal(w *Vector) bool {
-	return v.InnerProduct(w) == 0
-}
-
-// Norm returns a norm of vector.
-func (v *Vector) Norm() complex128 {
-	return cmplx.Sqrt(v.InnerProduct(v))
-}
-
-// IsUnit returns true if v is unit vector.
-func (v *Vector) IsUnit() bool {
-	return v.Norm() == 1
 }
 
 // Apply returns a matrix product of v and m.

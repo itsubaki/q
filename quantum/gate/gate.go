@@ -21,9 +21,10 @@ func New(v ...[]complex128) *matrix.Matrix {
 // U returns a unitary gate.
 func U(theta, phi, lambda float64) *matrix.Matrix {
 	v := complex(theta/2, 0)
+	sin, cos := cmplx.Sin(v), cmplx.Cos(v)
 	return matrix.New(
-		[]complex128{cmplx.Cos(v), -1 * cmplx.Exp(complex(0, lambda)) * cmplx.Sin(v)},
-		[]complex128{cmplx.Exp(complex(0, phi)) * cmplx.Sin(v), cmplx.Exp(complex(0, (phi+lambda))) * cmplx.Cos(v)},
+		[]complex128{cos, -1 * sin * cmplx.Exp(complex(0, lambda))},
+		[]complex128{sin * cmplx.Exp(complex(0, phi)), cos * cmplx.Exp(complex(0, (phi+lambda)))},
 	)
 }
 
@@ -96,18 +97,20 @@ func R(theta float64) *matrix.Matrix {
 // RX returns a rotation gate around the X axis.
 func RX(theta float64) *matrix.Matrix {
 	v := complex(theta/2, 0)
+	sin, cos := cmplx.Sin(v), cmplx.Cos(v)
 	return matrix.New(
-		[]complex128{cmplx.Cos(v), -1i * cmplx.Sin(v)},
-		[]complex128{-1i * cmplx.Sin(v), cmplx.Cos(v)},
+		[]complex128{cos, -1i * sin},
+		[]complex128{-1i * sin, cos},
 	)
 }
 
 // RY returns a rotation gate around the Y axis.
 func RY(theta float64) *matrix.Matrix {
 	v := complex(theta/2, 0)
+	sin, cos := cmplx.Sin(v), cmplx.Cos(v)
 	return matrix.New(
-		[]complex128{cmplx.Cos(v), -1 * cmplx.Sin(v)},
-		[]complex128{cmplx.Sin(v), cmplx.Cos(v)},
+		[]complex128{cos, -1 * sin},
+		[]complex128{sin, cos},
 	)
 }
 
@@ -118,6 +121,36 @@ func RZ(theta float64) *matrix.Matrix {
 		[]complex128{cmplx.Exp(-1 * v), 0},
 		[]complex128{0, cmplx.Exp(v)},
 	)
+}
+
+// C returns a controlled-u gate.
+func C(u *matrix.Matrix, n int, c int, t int) *matrix.Matrix {
+	return Controlled(u, n, []int{c}, t)
+}
+
+// CNOT returns a controlled-not gate.
+func CNOT(n, c, t int) *matrix.Matrix {
+	return ControlledNot(n, []int{c}, t)
+}
+
+// CCNOT returns a controlled-controlled-not gate.
+func CCNOT(n, c0, c1, t int) *matrix.Matrix {
+	return ControlledNot(n, []int{c0, c1}, t)
+}
+
+// CZ returns a controlled-z gate.
+func CZ(n, c, t int) *matrix.Matrix {
+	return ControlledZ(n, []int{c}, t)
+}
+
+// CS returns a controlled-s gate.
+func CS(n, c, t int) *matrix.Matrix {
+	return ControlledS(n, []int{c}, t)
+}
+
+// CR returns a controlled-r gate.
+func CR(theta float64, n, c, t int) *matrix.Matrix {
+	return ControlledR(theta, n, []int{c}, t)
 }
 
 // Controlled returns a controlled-u gate.
@@ -154,11 +187,6 @@ func Controlled(u *matrix.Matrix, n int, c []int, t int) *matrix.Matrix {
 	return g
 }
 
-// C returns a controlled-u gate.
-func C(u *matrix.Matrix, n int, c int, t int) *matrix.Matrix {
-	return Controlled(u, n, []int{c}, t)
-}
-
 // ControlledNot returns a controlled-not gate.
 func ControlledNot(n int, c []int, t int) *matrix.Matrix {
 	var mask int
@@ -183,21 +211,6 @@ func ControlledNot(n int, c []int, t int) *matrix.Matrix {
 	return matrix.New(data...)
 }
 
-// CNOT returns a controlled-not gate.
-func CNOT(n, c, t int) *matrix.Matrix {
-	return ControlledNot(n, []int{c}, t)
-}
-
-// CCNOT returns a controlled-controlled-not gate.
-func CCNOT(n, c0, c1, t int) *matrix.Matrix {
-	return ControlledNot(n, []int{c0, c1}, t)
-}
-
-// Toffoli returns a toffoli gate.
-func Toffoli(n, c0, c1, t int) *matrix.Matrix {
-	return CCNOT(n, c0, c1, t)
-}
-
 // ControlledZ returns a controlled-z gate.
 func ControlledZ(n int, c []int, t int) *matrix.Matrix {
 	var mask int
@@ -215,11 +228,6 @@ func ControlledZ(n int, c []int, t int) *matrix.Matrix {
 	return g
 }
 
-// CZ returns a controlled-z gate.
-func CZ(n, c, t int) *matrix.Matrix {
-	return ControlledZ(n, []int{c}, t)
-}
-
 // ControlledS returns a controlled-s gate.
 func ControlledS(n int, c []int, t int) *matrix.Matrix {
 	var mask int
@@ -235,11 +243,6 @@ func ControlledS(n int, c []int, t int) *matrix.Matrix {
 	}
 
 	return g
-}
-
-// CS returns a controlled-s gate.
-func CS(n, c, t int) *matrix.Matrix {
-	return ControlledS(n, []int{c}, t)
 }
 
 // ControlledR returns a controlled-r gate.
@@ -262,26 +265,12 @@ func ControlledR(theta float64, n int, c []int, t int) *matrix.Matrix {
 	return g
 }
 
-// CR returns a controlled-r gate.
-func CR(theta float64, n, c, t int) *matrix.Matrix {
-	return ControlledR(theta, n, []int{c}, t)
-}
-
 // Swap returns a swap gate.
 func Swap(n, c, t int) *matrix.Matrix {
 	return matrix.Apply(
 		CNOT(n, c, t),
 		CNOT(n, t, c),
 		CNOT(n, c, t),
-	)
-}
-
-// Fredkin returns a fredkin gate.
-func Fredkin(n, c, t0, t1 int) *matrix.Matrix {
-	return matrix.Apply(
-		CNOT(n, t0, t1),
-		CCNOT(n, c, t1, t0),
-		CNOT(n, t0, t1),
 	)
 }
 

@@ -8,6 +8,11 @@ import (
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
+// Theta returns 2 * pi / 2**k
+func Theta(k int) float64 {
+	return gate.Theta(k)
+}
+
 // Qubit is a quantum bit.
 type Qubit int
 
@@ -24,11 +29,6 @@ func Index(qb ...Qubit) []int {
 	}
 
 	return idx
-}
-
-// Theta returns 2 * pi / 2**k
-func Theta(k int) float64 {
-	return gate.Theta(k)
 }
 
 // Q is a quantum computation simulator.
@@ -189,7 +189,39 @@ func (q *Q) Apply(m *matrix.Matrix, qb ...Qubit) *Q {
 	return q
 }
 
-func (q *Q) Controlled(m *matrix.Matrix, control []Qubit, target []Qubit) *Q {
+func (q *Q) C(m *matrix.Matrix, control, target Qubit) *Q {
+	return q.Controlled(m, []Qubit{control}, []Qubit{target})
+}
+
+// CNOT applies CNOT gate.
+func (q *Q) CNOT(control, target Qubit) *Q {
+	return q.ControlledNot([]Qubit{control}, []Qubit{target})
+}
+
+// CCNOT applies CCNOT gate.
+func (q *Q) CCNOT(control0, control1, target Qubit) *Q {
+	return q.ControlledNot([]Qubit{control0, control1}, []Qubit{target})
+}
+
+// CCCNOT applies CCCNOT gate.
+func (q *Q) CCCNOT(control0, control1, control2, target Qubit) *Q {
+	return q.ControlledNot([]Qubit{control0, control1, control2}, []Qubit{target})
+}
+
+func (q *Q) CZ(control, target Qubit) *Q {
+	return q.ControlledZ([]Qubit{control}, []Qubit{target})
+}
+
+func (q *Q) CCZ(control0, control1, target Qubit) *Q {
+	return q.ControlledZ([]Qubit{control0, control1}, []Qubit{target})
+}
+
+// CR applies Controlled-R gate.
+func (q *Q) CR(theta float64, control, target Qubit) *Q {
+	return q.ControlledR(theta, []Qubit{control}, []Qubit{target})
+}
+
+func (q *Q) Controlled(m *matrix.Matrix, control, target []Qubit) *Q {
 	n := q.NumQubits()
 	for _, t := range target {
 		g := gate.Controlled(m, n, Index(control...), t.Index())
@@ -199,89 +231,34 @@ func (q *Q) Controlled(m *matrix.Matrix, control []Qubit, target []Qubit) *Q {
 	return q
 }
 
-func (q *Q) C(m *matrix.Matrix, control, target Qubit) *Q {
-	return q.Controlled(m, []Qubit{control}, []Qubit{target})
-}
-
 // ControlledNot applies CNOT gate.
-func (q *Q) ControlledNot(control []Qubit, target Qubit) *Q {
+func (q *Q) ControlledNot(control, target []Qubit) *Q {
 	n := q.NumQubits()
-	g := gate.ControlledNot(n, Index(control...), target.Index())
-	q.qb.Apply(g)
+	for _, t := range target {
+		g := gate.ControlledNot(n, Index(control...), t.Index())
+		q.qb.Apply(g)
+	}
+
 	return q
-}
-
-// CNOT applies CNOT gate.
-func (q *Q) CNOT(control, target Qubit) *Q {
-	return q.ControlledNot([]Qubit{control}, target)
-}
-
-// CCNOT applies CCNOT gate.
-func (q *Q) CCNOT(control0, control1, target Qubit) *Q {
-	return q.ControlledNot([]Qubit{control0, control1}, target)
-}
-
-// CCCNOT applies CCCNOT gate.
-func (q *Q) CCCNOT(control0, control1, control2, target Qubit) *Q {
-	return q.ControlledNot([]Qubit{control0, control1, control2}, target)
-}
-
-// Toffoli applies Toffoli gate.
-func (q *Q) Toffoli(control0, control1, target Qubit) *Q {
-	return q.CCNOT(control0, control1, target)
 }
 
 // ControlledZ applies Controlled-Z gate.
-func (q *Q) ControlledZ(control []Qubit, target Qubit) *Q {
+func (q *Q) ControlledZ(control, target []Qubit) *Q {
 	n := q.NumQubits()
-	g := gate.ControlledZ(n, Index(control...), target.Index())
-	q.qb.Apply(g)
-	return q
-}
-
-func (q *Q) CZ(control, target Qubit) *Q {
-	return q.ControlledZ([]Qubit{control}, target)
-}
-
-func (q *Q) CCZ(control0, control1, target Qubit) *Q {
-	return q.ControlledZ([]Qubit{control0, control1}, target)
-}
-
-func (q *Q) ControlledR(theta float64, control []Qubit, target Qubit) *Q {
-	n := q.NumQubits()
-	g := gate.ControlledR(theta, n, Index(control...), target.Index())
-	q.qb.Apply(g)
-	return q
-}
-
-// CR applies Controlled-R gate.
-func (q *Q) CR(theta float64, control, target Qubit) *Q {
-	return q.ControlledR(theta, []Qubit{control}, target)
-}
-
-// ControlledModExp2 applies Controlled-ModExp2 gate.
-func (q *Q) ControlledModExp2(a, j, N int, control Qubit, target []Qubit) *Q {
-	n := q.NumQubits()
-	g := gate.ControlledModExp2(n, a, j, N, control.Index(), Index(target...))
-	q.qb.Apply(g)
-	return q
-}
-
-// CModExp2 applies Controlled-ModExp2 gate.
-func (q *Q) CModExp2(a, N int, control []Qubit, target []Qubit) *Q {
-	for i, c := range control {
-		q.ControlledModExp2(a, i, N, c, target)
+	for _, t := range target {
+		g := gate.ControlledZ(n, Index(control...), t.Index())
+		q.qb.Apply(g)
 	}
 
 	return q
 }
 
-// Cond applies m if condition is true.
-func (q *Q) Cond(condition bool, m *matrix.Matrix, qb ...Qubit) *Q {
-	if condition {
-		return q.Apply(m, qb...)
+func (q *Q) ControlledR(theta float64, control, target []Qubit) *Q {
+	n := q.NumQubits()
+	for _, t := range target {
+		g := gate.ControlledR(theta, n, Index(control...), t.Index())
+		q.qb.Apply(g)
 	}
-
 	return q
 }
 
@@ -293,6 +270,15 @@ func (q *Q) CondX(condition bool, qb ...Qubit) *Q {
 // CondZ applies Z gate if condition is true.
 func (q *Q) CondZ(condition bool, qb ...Qubit) *Q {
 	return q.Cond(condition, gate.Z(), qb...)
+}
+
+// Cond applies m if condition is true.
+func (q *Q) Cond(condition bool, m *matrix.Matrix, qb ...Qubit) *Q {
+	if condition {
+		return q.Apply(m, qb...)
+	}
+
+	return q
 }
 
 // Swap applies Swap gate.
@@ -325,8 +311,8 @@ func (q *Q) QFT(qb ...Qubit) *Q {
 	return q
 }
 
-// InverseQFT applies Inverse Quantum Fourier Transform.
-func (q *Q) InverseQFT(qb ...Qubit) *Q {
+// InvQFT applies Inverse Quantum Fourier Transform.
+func (q *Q) InvQFT(qb ...Qubit) *Q {
 	l := len(qb)
 	for i := l - 1; i > -1; i-- {
 		k := l - i
@@ -341,16 +327,6 @@ func (q *Q) InverseQFT(qb ...Qubit) *Q {
 	return q
 }
 
-// InvQFT applies Inverse Quantum Fourier Transform.
-func (q *Q) InvQFT(qb ...Qubit) *Q {
-	return q.InverseQFT(qb...)
-}
-
-// IQFT applies Inverse Quantum Fourier Transform.
-func (q *Q) IQFT(qb ...Qubit) *Q {
-	return q.InverseQFT(qb...)
-}
-
 // M returns the measured state of qubits.
 func (q *Q) M(qb ...Qubit) *qubit.Qubit {
 	return q.Measure(qb...)
@@ -359,13 +335,10 @@ func (q *Q) M(qb ...Qubit) *qubit.Qubit {
 // Measure returns the measured state of qubits.
 func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
 	if len(qb) < 1 {
-		n := q.NumQubits()
-		m := make([]*qubit.Qubit, n)
-		for i := range n {
-			m[i] = q.qb.Measure(i)
+		qb = make([]Qubit, q.NumQubits())
+		for i := range qb {
+			qb[i] = Qubit(i)
 		}
-
-		return qubit.TensorProduct(m...)
 	}
 
 	m := make([]*qubit.Qubit, len(qb))
@@ -403,10 +376,6 @@ func (q *Q) String() string {
 
 // State returns the state of qubits.
 func (q *Q) State(reg ...any) []qubit.State {
-	if q.qb == nil {
-		return nil
-	}
-
 	idx := make([][]int, 0)
 	for _, r := range reg {
 		switch r := r.(type) {

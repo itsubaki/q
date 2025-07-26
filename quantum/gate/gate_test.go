@@ -155,41 +155,6 @@ func ExampleTensorProduct() {
 	// [(0+0i) (1+0i) (0+0i) (0+0i)]
 }
 
-func TestControlledModExp2(t *testing.T) {
-	g1 := matrix.Apply(
-		gate.CNOT(7, 3, 5),
-		gate.CCNOT(7, 1, 5, 3),
-		gate.CNOT(7, 3, 5),
-	)
-	g2 := matrix.Apply(
-		gate.CNOT(7, 4, 6),
-		gate.CCNOT(7, 1, 6, 4),
-		gate.CNOT(7, 4, 6),
-	)
-	g3 := gate.I(7)
-
-	cases := []struct {
-		n, a, j, N int
-		c          int
-		t          []int
-		want       *matrix.Matrix
-	}{
-		{7, 7, 1, 15, 1, []int{4, 5, 6, 7}, matrix.Apply(g1, g2)},
-		{7, 7, 2, 15, 0, []int{4, 5, 6, 7}, g3},
-	}
-
-	for _, c := range cases {
-		got := gate.ControlledModExp2(c.n, c.a, c.j, c.N, c.c, c.t)
-		if !got.IsUnitary() {
-			t.Errorf("modexp is not unitary")
-		}
-
-		if !got.Equals(c.want) {
-			t.Fail()
-		}
-	}
-}
-
 func TestU(t *testing.T) {
 	cases := []struct {
 		in, want *matrix.Matrix
@@ -375,15 +340,7 @@ func TestMultiQubitGate(t *testing.T) {
 			),
 		},
 		{
-			in: gate.ControlledNot(2, []int{0}, 1),
-			want: func() *matrix.Matrix {
-				g0 := gate.I().Add(gate.Z()).TensorProduct(gate.I())
-				g1 := gate.I().Sub(gate.Z()).TensorProduct(gate.X())
-				return g0.Add(g1).Mul(0.5)
-			}(),
-		},
-		{
-			in: gate.Toffoli(3, 0, 1, 2),
+			in: gate.CCNOT(3, 0, 1, 2),
 			want: func() *matrix.Matrix {
 				g := make([]*matrix.Matrix, 13)
 				g[0] = gate.I(2).TensorProduct(gate.H())
@@ -409,23 +366,53 @@ func TestMultiQubitGate(t *testing.T) {
 			}(),
 		},
 		{
-			in: gate.Fredkin(3, 0, 1, 2),
-			want: gate.New(
-				[]complex128{1, 0, 0, 0, 0, 0, 0, 0},
-				[]complex128{0, 1, 0, 0, 0, 0, 0, 0},
-				[]complex128{0, 0, 1, 0, 0, 0, 0, 0},
-				[]complex128{0, 0, 0, 1, 0, 0, 0, 0},
-				[]complex128{0, 0, 0, 0, 1, 0, 0, 0},
-				[]complex128{0, 0, 0, 0, 0, 0, 1, 0},
-				[]complex128{0, 0, 0, 0, 0, 1, 0, 0},
-				[]complex128{0, 0, 0, 0, 0, 0, 0, 1},
-			),
+			in: gate.ControlledNot(2, []int{0}, 1),
+			want: func() *matrix.Matrix {
+				g0 := gate.I().Add(gate.Z()).TensorProduct(gate.I())
+				g1 := gate.I().Sub(gate.Z()).TensorProduct(gate.X())
+				return g0.Add(g1).Mul(0.5)
+			}(),
 		},
 	}
 
 	for _, c := range cases {
 		if !c.in.Equals(c.want) {
 			t.Errorf("got=%v, want=%v", c.in, c.want)
+		}
+	}
+}
+
+func TestControlledModExp2(t *testing.T) {
+	g1 := matrix.Apply(
+		gate.CNOT(7, 3, 5),
+		gate.CCNOT(7, 1, 5, 3),
+		gate.CNOT(7, 3, 5),
+	)
+	g2 := matrix.Apply(
+		gate.CNOT(7, 4, 6),
+		gate.CCNOT(7, 1, 6, 4),
+		gate.CNOT(7, 4, 6),
+	)
+	g3 := gate.I(7)
+
+	cases := []struct {
+		n, a, j, N int
+		c          int
+		t          []int
+		want       *matrix.Matrix
+	}{
+		{7, 7, 1, 15, 1, []int{4, 5, 6, 7}, matrix.Apply(g1, g2)},
+		{7, 7, 2, 15, 0, []int{4, 5, 6, 7}, g3},
+	}
+
+	for _, c := range cases {
+		got := gate.ControlledModExp2(c.n, c.a, c.j, c.N, c.c, c.t)
+		if !got.IsUnitary() {
+			t.Errorf("modexp is not unitary")
+		}
+
+		if !got.Equals(c.want) {
+			t.Fail()
 		}
 	}
 }

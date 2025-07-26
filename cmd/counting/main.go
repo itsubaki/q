@@ -14,15 +14,15 @@ import (
 
 // controlledG applies the Grover operator for 2x2 mini-sudoku solutions.
 // The number of solutions `M` is 2.
-func controlledG(qsim *q.Q, c q.Qubit, r, s []q.Qubit, a q.Qubit) {
+func controlledG(qsim *q.Q, c q.Qubit, r, s, a []q.Qubit) {
 	oracle(qsim, c, r, s, a)
 	amplify(qsim, c, r)
 }
 
-func oracle(qsim *q.Q, c q.Qubit, r, s []q.Qubit, a q.Qubit) {
+func oracle(qsim *q.Q, c q.Qubit, r, s, a []q.Qubit) {
 	xor := func(x, y, z q.Qubit) {
-		qsim.ControlledNot([]q.Qubit{c, x}, z)
-		qsim.ControlledNot([]q.Qubit{c, y}, z)
+		qsim.ControlledNot([]q.Qubit{c, x}, []q.Qubit{z})
+		qsim.ControlledNot([]q.Qubit{c, y}, []q.Qubit{z})
 	}
 
 	xor(r[0], r[1], s[0]) // a != b
@@ -43,7 +43,7 @@ func oracle(qsim *q.Q, c q.Qubit, r, s []q.Qubit, a q.Qubit) {
 func amplify(qsim *q.Q, c q.Qubit, r []q.Qubit) {
 	qsim.Controlled(gate.H(), []q.Qubit{c}, r)
 	qsim.Controlled(gate.X(), []q.Qubit{c}, r)
-	qsim.ControlledZ([]q.Qubit{c, r[0], r[1], r[2]}, r[3])
+	qsim.ControlledZ([]q.Qubit{c, r[0], r[1], r[2]}, []q.Qubit{r[3]})
 	qsim.Controlled(gate.X(), []q.Qubit{c}, r)
 	qsim.Controlled(gate.H(), []q.Qubit{c}, r)
 }
@@ -55,6 +55,7 @@ func top(s []qubit.State, n int) []qubit.State {
 
 	return s[:min(n, len(s))]
 }
+
 func main() {
 	var t int
 	flag.IntVar(&t, "t", 3, "precision bits")
@@ -66,12 +67,12 @@ func main() {
 	c := qsim.Zeros(t) // for phase estimation
 	r := qsim.Zeros(4) // data qubits for the Grover search space
 	s := qsim.Zeros(4) // ancilla qubits for comparing Sudoku constraints
-	a := qsim.One()    // oracle target (phase kickback)
+	a := qsim.Ones(1)  // oracle target (phase kickback)
 
 	// superposition
 	qsim.H(c...)
 	qsim.H(r...)
-	qsim.H(a)
+	qsim.H(a...)
 
 	// phase estimation
 	for i := range len(c) {
@@ -82,12 +83,12 @@ func main() {
 	}
 
 	// inverse quantum fourier transform
-	qsim.IQFT(c...)
+	qsim.InvQFT(c...)
 
 	// measure unused registers
 	qsim.Measure(r...)
 	qsim.Measure(s...)
-	qsim.Measure(a)
+	qsim.Measure(a...)
 
 	// results
 	N := number.Pow(2, len(r))

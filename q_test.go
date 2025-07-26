@@ -3,17 +3,12 @@ package q_test
 import (
 	"fmt"
 	"math"
-	"math/cmplx"
-	"sort"
-	"testing"
 
 	"github.com/itsubaki/q"
-	"github.com/itsubaki/q/math/epsilon"
 	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/math/number"
 	"github.com/itsubaki/q/math/rand"
 	"github.com/itsubaki/q/quantum/gate"
-	"github.com/itsubaki/q/quantum/qubit"
 )
 
 func ExampleQ_Zero() {
@@ -370,22 +365,6 @@ func ExampleQ_RZ() {
 	// [0][  0]( 0.0000-1.0000i): 1.0000
 }
 
-func ExampleQ_Toffoli() {
-	qsim := q.New()
-
-	q0 := qsim.One()
-	q1 := qsim.One()
-	q2 := qsim.Zero()
-	qsim.Toffoli(q0, q1, q2)
-
-	for _, s := range qsim.State() {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [111][  7]( 1.0000 0.0000i): 1.0000
-}
-
 func Example_qft() {
 	qsim := q.New()
 
@@ -488,23 +467,6 @@ func ExampleQ_InvQFT() {
 	// [010][  2]( 1.0000 0.0000i): 1.0000
 }
 
-func ExampleQ_IQFT() {
-	qsim := q.New()
-
-	q0 := qsim.Zero()
-	q1 := qsim.One()
-	q2 := qsim.Zero()
-
-	qsim.QFT(q0, q1, q2)
-	qsim.IQFT(q0, q1, q2)
-	for _, s := range qsim.State() {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [010][  2]( 1.0000 0.0000i): 1.0000
-}
-
 func ExampleQ_Clone() {
 	qsim := q.New()
 
@@ -537,16 +499,6 @@ func ExampleQ_String() {
 
 	// Output:
 	// [(0+0i) (0+0i) (1+0i) (0+0i)]
-}
-
-func ExampleQ_State_nil() {
-	qsim := q.New()
-
-	for _, s := range qsim.State() {
-		fmt.Println(s)
-	}
-
-	// Output:
 }
 
 func ExampleQ_C() {
@@ -604,113 +556,6 @@ func ExampleQ_CondZ() {
 	// Output:
 	// [1][  1]( 1.0000 0.0000i): 1.0000
 	// [1][  1](-1.0000 0.0000i): 1.0000
-}
-
-func ExampleQ_CModExp2() {
-	qsim := q.New()
-
-	c := qsim.Zeros(3)
-	t := qsim.ZeroLog2(15)
-
-	qsim.X(c...)
-	qsim.X(t[len(t)-1])
-	for _, s := range qsim.State(c, t) {
-		fmt.Println(s)
-	}
-
-	// qsim.ControlledModExp2(7, 0, 15, c[0], t)
-	// qsim.ControlledModExp2(7, 1, 15, c[1], t)
-	// qsim.ControlledModExp2(7, 2, 15, c[2], t)
-	// equals to
-	qsim.CModExp2(7, 15, c, t)
-	for _, s := range qsim.State(c, t) {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [111 0001][  7   1]( 1.0000 0.0000i): 1.0000
-	// [111 1101][  7  13]( 1.0000 0.0000i): 1.0000
-}
-
-func ExampleQ_ControlledModExp2_mod21() {
-	qsim := q.New()
-
-	c := qsim.Zero()
-	t := qsim.ZeroLog2(21)
-
-	qsim.X(c)
-	qsim.X(t[len(t)-1])
-	for _, s := range qsim.State(c, t) {
-		fmt.Println(s)
-	}
-
-	// 2^2^0 * 1 mod 21 = 2
-	qsim.ControlledModExp2(2, 0, 21, c, t)
-	for _, s := range qsim.State(c, t) {
-		fmt.Println(s)
-	}
-
-	// 2^2^1 * 2 mod 21 = 8
-	qsim.ControlledModExp2(2, 1, 21, c, t)
-	for _, s := range qsim.State(c, t) {
-		fmt.Println(s)
-	}
-
-	// 2^2^2 * 8 mod 21 = 2
-	qsim.ControlledModExp2(2, 2, 21, c, t)
-	for _, s := range qsim.State(c, t) {
-		fmt.Println(s)
-	}
-
-	// 2^2^3 * 2 mod 21 = 8
-	qsim.ControlledModExp2(2, 3, 21, c, t)
-	for _, s := range qsim.State(c, t) {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [1 00001][  1   1]( 1.0000 0.0000i): 1.0000
-	// [1 00010][  1   2]( 1.0000 0.0000i): 1.0000
-	// [1 01000][  1   8]( 1.0000 0.0000i): 1.0000
-	// [1 00010][  1   2]( 1.0000 0.0000i): 1.0000
-	// [1 01000][  1   8]( 1.0000 0.0000i): 1.0000
-}
-
-func ExampleQ_ControlledModExp2_mod15() {
-	qsim := q.New()
-
-	c := qsim.Zero()
-	t := qsim.ZeroLog2(15)
-
-	qsim.X(c)
-	qsim.X(t[len(t)-1])
-	for _, s := range qsim.State(c, t) {
-		fmt.Println(s)
-	}
-
-	// 7^2^0 * 1 mod 15 = 7
-	qsim.ControlledModExp2(7, 0, 15, c, t)
-	for _, s := range qsim.State(c, t) {
-		fmt.Println(s)
-	}
-
-	// 7^2^1 * 7 mod 15 = 13
-	qsim.ControlledModExp2(7, 1, 15, c, t)
-	for _, s := range qsim.State(c, t) {
-		fmt.Println(s)
-	}
-
-	// 7^2^2 * 13 mod 15 = 13
-	qsim.ControlledModExp2(7, 2, 15, c, t)
-	for _, s := range qsim.State(c, t) {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [1 0001][  1   1]( 1.0000 0.0000i): 1.0000
-	// [1 0111][  1   7]( 1.0000 0.0000i): 1.0000
-	// [1 1101][  1  13]( 1.0000 0.0000i): 1.0000
-	// [1 1101][  1  13]( 1.0000 0.0000i): 1.0000
 }
 
 func Example_bellState() {
@@ -1124,39 +969,6 @@ func Example_shorFactoring15() {
 	// N=15, a=7. p=3, q=5. s/r=3/4 ([0.110]~0.750)
 }
 
-func Example_shorFactoring21() {
-	N := 21
-	a := 8
-
-	qsim := q.New()
-	qsim.Rand = rand.Const()
-
-	r0 := qsim.Zeros(4)
-	r1 := qsim.ZeroLog2(N)
-
-	qsim.X(r1[len(r1)-1])
-	qsim.H(r0...)
-	qsim.CModExp2(a, N, r0, r1)
-	qsim.InvQFT(r0...)
-
-	m := qsim.Measure(r0...).BinaryString()
-	s, r, d, ok := number.FindOrder(a, N, fmt.Sprintf("0.%s", m))
-	if !ok || number.IsOdd(r) {
-		return
-	}
-
-	p0 := number.GCD(number.Pow(a, r/2)-1, N)
-	p1 := number.GCD(number.Pow(a, r/2)+1, N)
-	if number.IsTrivial(N, p0, p1) {
-		return
-	}
-
-	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d ([0.%v]~%.3f)\n", N, a, p0, p1, s, r, m, d)
-
-	// Output:
-	// N=21, a=8. p=7, q=3. s/r=1/2 ([0.1000]~0.500)
-}
-
 func Example_shorFactoring51() {
 	// NOTE: Michael R. Geller, Zhongyuan Zhou. Factoring 51 and 85 with 8 qubits.
 	N := 51
@@ -1291,108 +1103,14 @@ func Example_any() {
 	// [11][  3]( 0.7071 0.0000i): 0.5000
 }
 
-func Example_top() {
-	N := 21
-	a := 11
-
-	qsim := q.New()
-	qsim.Rand = rand.Const()
-
-	r0 := qsim.Zeros(4)
-	r1 := qsim.ZeroLog2(N)
-
-	qsim.X(r1[len(r1)-1])
-	qsim.H(r0...)
-	qsim.CModExp2(a, N, r0, r1)
-	qsim.IQFT(r0...)
-	qsim.M(r1...)
-
-	top := func(s []qubit.State, n int) []qubit.State {
-		sort.Slice(s, func(i, j int) bool {
-			return s[i].Probability() > s[j].Probability()
-		})
-
-		return s[:min(n, len(s))]
-	}
-
-	for _, s := range top(qsim.State(r0), 10) {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [1000][  8]( 0.4330 0.0000i): 0.1875
-	// [0000][  0]( 0.4330 0.0000i): 0.1875
-	// [1101][ 13](-0.3485 0.0000i): 0.1214
-	// [1011][ 11](-0.3485 0.0000i): 0.1214
-	// [0011][  3](-0.3485 0.0000i): 0.1214
-	// [0101][  5](-0.3485 0.0000i): 0.1214
-	// [0100][  4](-0.1443 0.0000i): 0.0208
-	// [0110][  6]( 0.1443 0.0000i): 0.0208
-	// [1010][ 10]( 0.1443 0.0000i): 0.0208
-	// [0010][  2]( 0.1443 0.0000i): 0.0208
-}
-
 func ExampleQ_Underlying() {
 	qsim := q.New()
 	qsim.Zero()
 
-	qb := qsim.Underlying()
-
-	d := qb.TraceDistance(qb)
-	fmt.Println(d)
-
-	f := qb.Fidelity(qb)
-	fmt.Println(f)
+	for _, s := range qsim.Underlying().State() {
+		fmt.Println(s)
+	}
 
 	// Output:
-	// 0
-	// 1
-}
-
-func TestEigenVector(t *testing.T) {
-	cases := []struct {
-		N, a, t int
-		bin     []string
-		amp     []complex128
-		eps     float64
-	}{
-		{
-			15, 7, 3,
-			[]string{"0001", "0100", "0111", "1101"},
-			[]complex128{1, 0, 0, 0},
-			epsilon.E13(),
-		},
-	}
-
-	for _, c := range cases {
-		qsim := q.New()
-		r0 := qsim.Zeros(c.t)
-		r1 := qsim.ZeroLog2(c.N)
-
-		qsim.X(r1[len(r1)-1])
-		qsim.H(r0...)
-		qsim.CModExp2(c.a, c.N, r0, r1)
-		qsim.InvQFT(r0...)
-
-		us := make(map[string]complex128)
-		for _, s := range qsim.State(r1) {
-			m := s.BinaryString()
-			if v, ok := us[m]; ok {
-				us[m] = v + s.Amplitude()
-				continue
-			}
-
-			us[m] = s.Amplitude()
-		}
-
-		if len(us) != len(c.bin) {
-			t.Fail()
-		}
-
-		for i := range c.bin {
-			if cmplx.Abs(us[c.bin[i]]-c.amp[i]) > c.eps {
-				t.Fail()
-			}
-		}
-	}
+	// [0][  0]( 1.0000 0.0000i): 1.0000
 }
