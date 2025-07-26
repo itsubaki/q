@@ -2,6 +2,7 @@ package rand_test
 
 import (
 	"fmt"
+	"slices"
 	"testing"
 
 	"github.com/itsubaki/q/math/rand"
@@ -10,11 +11,8 @@ import (
 func ExampleCoprime() {
 	p := rand.Coprime(15)
 
-	for _, e := range []int{2, 4, 7, 8, 11, 13, 14} {
-		if p == e {
-			fmt.Println("found")
-			break
-		}
+	if slices.Contains([]int{2, 4, 7, 8, 11, 13, 14}, p) {
+		fmt.Println("found")
 	}
 
 	// Output:
