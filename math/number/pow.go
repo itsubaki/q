@@ -58,11 +58,7 @@ func ModExp2(a, j, N int) int {
 		return 0
 	}
 
-	if j == 0 {
-		return a % N
-	}
-
-	p := a
+	p := a % N
 	for range j {
 		p = (p * p) % N
 	}
