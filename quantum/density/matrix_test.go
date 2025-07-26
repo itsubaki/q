@@ -493,7 +493,7 @@ func TestPartialTrace(t *testing.T) {
 		for _, cs := range c.cs {
 			got := density.New(c.s).PartialTrace(cs.index)
 
-			p, q := got.Dimension()
+			p, q := got.Dim()
 			if p != len(cs.want) || q != len(cs.want) {
 				t.Errorf("got=%v, %v want=%v", p, q, cs.want)
 			}

@@ -25,7 +25,7 @@ func BenchmarkApplyN12(b *testing.B) {
 
 func BenchmarkApplyConcurrencyN12(b *testing.B) {
 	apply := func(v *vector.Vector, m *matrix.Matrix) *vector.Vector {
-		p, q := m.Dimension()
+		p, q := m.Dim()
 
 		wg := sync.WaitGroup{}
 		data := make([]complex128, p)

@@ -94,7 +94,7 @@ func NewFrom(binary string) *Qubit {
 
 // NumQubits returns the number of qubits.
 func (q *Qubit) NumQubits() int {
-	return number.Log2(q.Dimension())
+	return number.Log2(q.Dim())
 }
 
 // IsZero returns true if q is zero qubit.
@@ -117,8 +117,8 @@ func (q *Qubit) OuterProduct(qb *Qubit) *matrix.Matrix {
 	return q.vec.OuterProduct(qb.vec)
 }
 
-// Dimension returns the dimension of q.
-func (q *Qubit) Dimension() int {
+// Dim returns the dimension of q.
+func (q *Qubit) Dim() int {
 	return len(q.vec.Data)
 }
 
@@ -179,14 +179,14 @@ func (q *Qubit) Measure(index int) *Qubit {
 	mask := 1 << (n - 1 - index)
 
 	var prob0 float64
-	for i := range q.Dimension() {
+	for i := range q.Dim() {
 		if (i & mask) == 0 {
 			prob0 += math.Pow(cmplx.Abs(q.vec.Data[i]), 2)
 		}
 	}
 
 	collapse := func(q *Qubit, result int) {
-		for i := range q.Dimension() {
+		for i := range q.Dim() {
 			if ((i & mask) >> (n - 1 - index)) == result {
 				continue
 			}

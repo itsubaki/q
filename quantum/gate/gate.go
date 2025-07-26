@@ -309,7 +309,7 @@ func ControlledModExp2(n, a, j, N, c int, t []int) *matrix.Matrix {
 	r1len := len(t)
 	a2jmodN := number.ModExp2(a, j, N)
 
-	d, _ := m.Dimension()
+	d, _ := m.Dim()
 	idx := make([]int, d)
 	for i := range d {
 		if (i>>(n-1-c))&1 == 0 {

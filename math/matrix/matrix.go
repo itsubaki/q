@@ -45,7 +45,7 @@ func Zero(rows, cols int) *Matrix {
 
 // ZeroLike returns a zero matrix of same size as m.
 func ZeroLike(m *Matrix) *Matrix {
-	rows, cols := m.Dimension()
+	rows, cols := m.Dim()
 	return &Matrix{
 		Rows: rows,
 		Cols: cols,
@@ -116,14 +116,14 @@ func (m *Matrix) Seq2() iter.Seq2[int, []complex128] {
 	}
 }
 
-// Dimension returns a dimension of matrix.
-func (m *Matrix) Dimension() (rows int, cols int) {
+// Dim returns a dimension of matrix.
+func (m *Matrix) Dim() (rows int, cols int) {
 	return m.Rows, m.Cols
 }
 
 // Transpose returns a transpose matrix.
 func (m *Matrix) Transpose() *Matrix {
-	rows, cols := m.Dimension()
+	rows, cols := m.Dim()
 
 	out := Zero(cols, rows)
 	for i := range rows {
@@ -160,8 +160,8 @@ func (m *Matrix) Dagger() *Matrix {
 // Equals returns true if m equals n.
 // If eps is not given, epsilon.E13 is used.
 func (m *Matrix) Equals(n *Matrix, eps ...float64) bool {
-	p, q := m.Dimension()
-	a, b := n.Dimension()
+	p, q := m.Dim()
+	a, b := n.Dim()
 
 	if a != p || b != q {
 		return false
@@ -202,8 +202,8 @@ func (m *Matrix) Apply(n *Matrix) *Matrix {
 // MatMul returns the matrix product of m and n.
 // A.MatMul(B) is AB.
 func (m *Matrix) MatMul(n *Matrix) *Matrix {
-	a, b := m.Dimension()
-	_, p := n.Dimension()
+	a, b := m.Dim()
+	_, p := n.Dim()
 
 	out := Zero(a, p)
 	for i := range a {
@@ -290,7 +290,7 @@ func (m *Matrix) Imag() [][]float64 {
 
 // Inverse returns an inverse matrix of m.
 func (m *Matrix) Inverse(eps ...float64) *Matrix {
-	p, q := m.Dimension()
+	p, q := m.Dim()
 	mm := m.Clone()
 	e := epsilon.E13(eps...)
 
@@ -353,8 +353,8 @@ func (m *Matrix) Swap(i, j int) *Matrix {
 
 // TensorProduct returns a tensor product of m and n.
 func (m *Matrix) TensorProduct(n *Matrix) *Matrix {
-	p, q := m.Dimension()
-	a, b := n.Dimension()
+	p, q := m.Dim()
+	a, b := n.Dim()
 	rows, cols := p*a, q*b
 
 	data := make([]complex128, rows*cols)

@@ -31,7 +31,7 @@ type Matrix struct {
 // New returns a new density matrix.
 func New(ensemble []State) *Matrix {
 	normalized := Normalize(ensemble)
-	n := normalized[0].Qubit.Dimension()
+	n := normalized[0].Qubit.Dim()
 
 	rho := matrix.Zero(n, n)
 	for _, s := range normalized {
@@ -97,9 +97,9 @@ func (m *Matrix) Seq2() iter.Seq2[int, []complex128] {
 	return m.rho.Seq2()
 }
 
-// Dimension returns the dimension of the density matrix.
-func (m *Matrix) Dimension() (rows int, cols int) {
-	return m.rho.Dimension()
+// Dim returns the dimension of the density matrix.
+func (m *Matrix) Dim() (rows int, cols int) {
+	return m.rho.Dim()
 }
 
 // IsPure returns true if the density matrix is pure.
@@ -131,7 +131,7 @@ func (m *Matrix) IsZero(eps ...float64) bool {
 
 // NumQubits returns the number of qubits.
 func (m *Matrix) NumQubits() int {
-	p, _ := m.Dimension()
+	p, _ := m.Dim()
 	return number.Log2(p)
 }
 
@@ -191,7 +191,7 @@ func (m *Matrix) TensorProduct(n *Matrix) *Matrix {
 // where n is the number of qubits in the matrix.
 func (m *Matrix) PartialTrace(index ...Qubit) *Matrix {
 	n := m.NumQubits()
-	p, q := m.Dimension()
+	p, q := m.Dim()
 	d := number.Pow(2, n-1)
 
 	rho := matrix.Zero(d, d)

@@ -110,7 +110,7 @@ func (v *Vector) OuterProduct(w *Vector) *matrix.Matrix {
 // Apply returns a matrix product of v and m.
 // v.Apply(X) -> X|v>
 func (v *Vector) Apply(m *matrix.Matrix) *Vector {
-	p, q := m.Dimension()
+	p, q := m.Dim()
 
 	data := make([]complex128, p)
 	for i := range p {
