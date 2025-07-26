@@ -87,8 +87,7 @@ func (q *Q) Ones(n int) []Qubit {
 	return qb
 }
 
-// ZeroLog2 returns n qubits in the zero state.
-// n is greater than or equal to log2(N).
+// ZeroLog2 returns log2(N)+1 qubits in the zero state.
 func (q *Q) ZeroLog2(N int) []Qubit {
 	return q.Zeros(number.Log2(N) + 1)
 }

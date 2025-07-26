@@ -278,7 +278,7 @@ func (q *Qubit) State(index ...[]int) []State {
 	state := make([]State, 0)
 	for i, a := range q.Amplitude() {
 		amp := round(a)
-		if amp == 0 {
+		if cmplx.Abs(amp) < epsilon.E13() {
 			continue
 		}
 
