@@ -42,25 +42,25 @@ import (
 // a state is a valid solution **without knowing in advance what the solution is**.
 // This aligns with Grover's algorithm, which assumes only a condition-checking black box (oracle),
 // not prior knowledge of the answer itself.
-func oracle(qsim *q.Q, r, t, a []q.Qubit) {
-	xor := func(x, y, t q.Qubit) {
-		qsim.CNOT(x, t)
-		qsim.CNOT(y, t)
+func oracle(qsim *q.Q, r, s, a []q.Qubit) {
+	xor := func(x, y, z q.Qubit) {
+		qsim.CNOT(x, z)
+		qsim.CNOT(y, z)
 	}
 
-	xor(r[0], r[1], t[0]) // a != b
-	xor(r[2], r[3], t[1]) // c != d
-	xor(r[0], r[2], t[2]) // a != c
-	xor(r[1], r[3], t[3]) // b != d
+	xor(r[0], r[1], s[0]) // a != b
+	xor(r[2], r[3], s[1]) // c != d
+	xor(r[0], r[2], s[2]) // a != c
+	xor(r[1], r[3], s[3]) // b != d
 
-	// apply Z if all t are 1
-	qsim.ControlledZ(t, a)
+	// apply Z if all s are 1
+	qsim.ControlledZ(s, a)
 
 	// uncompute
-	xor(r[3], r[1], t[3])
-	xor(r[2], r[0], t[2])
-	xor(r[3], r[2], t[1])
-	xor(r[1], r[0], t[0])
+	xor(r[3], r[1], s[3])
+	xor(r[2], r[0], s[2])
+	xor(r[3], r[2], s[1])
+	xor(r[1], r[0], s[0])
 }
 
 func amplify(qsim *q.Q, r []q.Qubit) {
@@ -84,7 +84,7 @@ func main() {
 
 	// initialize
 	r := qsim.Zeros(4)
-	t := qsim.Zeros(4)
+	s := qsim.Zeros(4)
 	a := qsim.Ones(1)
 
 	// superposition
@@ -98,7 +98,7 @@ func main() {
 
 	// iterations
 	for range R {
-		oracle(qsim, r, t, a)
+		oracle(qsim, r, s, a)
 		amplify(qsim, r)
 	}
 

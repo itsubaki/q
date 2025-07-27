@@ -84,23 +84,27 @@ func main() {
 	qsim.Measure(r1...)
 	print("measure reg1", qsim, r0, r1)
 
+	var prop float64
 	for _, s := range qsim.State(r0) {
 		i, m := s.Int(), s.BinaryString()
 		ss, r, d, ok := number.FindOrder(a, N, fmt.Sprintf("0.%s", m))
 		if !ok || number.IsOdd(r) {
-			fmt.Printf("  i=%3d: N=%d, a=%d, t=%d; s/r=%2d/%2d ([0.%v]~%.4f);\n", i, N, a, t, ss, r, m, d)
+			fmt.Printf("  i=%4d: N=%d, a=%d, t=%d; s/r=%4d/%4d ([0.%v]~%.4f);\n", i, N, a, t, ss, r, m, d)
 			continue
 		}
 
 		p0 := number.GCD(number.Pow(a, r/2)-1, N)
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
 		if number.IsTrivial(N, p0, p1) {
-			fmt.Printf("  i=%3d: N=%d, a=%d, t=%d; s/r=%2d/%2d ([0.%v]~%.4f); p=%v, q=%v.\n", i, N, a, t, ss, r, m, d, p0, p1)
+			fmt.Printf("  i=%4d: N=%d, a=%d, t=%d; s/r=%4d/%4d ([0.%v]~%.4f); p=%v, q=%v.\n", i, N, a, t, ss, r, m, d, p0, p1)
 			continue
 		}
 
-		fmt.Printf("* i=%3d: N=%d, a=%d, t=%d; s/r=%2d/%2d ([0.%v]~%.4f); p=%v, q=%v.\n", i, N, a, t, ss, r, m, d, p0, p1)
+		fmt.Printf("* i=%4d: N=%d, a=%d, t=%d; s/r=%4d/%4d ([0.%v]~%.4f); p=%v, q=%v.\n", i, N, a, t, ss, r, m, d, p0, p1)
+		prop += s.Probability()
 	}
+
+	fmt.Printf("total probability: %.8f\n", prop)
 }
 
 func print(desc string, qsim *q.Q, reg ...any) {
@@ -115,16 +119,15 @@ func print(desc string, qsim *q.Q, reg ...any) {
 	fmt.Println()
 }
 
-// ApplyControlledModExp2 applies Controlled-ModExp2 gate.
+// ApplyControlledModExp2 applies controlled modular exponentiation.
 func ApplyControlledModExp2(qsim *q.Q, a, j, N int, control q.Qubit, target []q.Qubit) {
 	n := qsim.NumQubits()
 	g := ControlledModExp2(n, a, j, N, control.Index(), q.Index(target...))
 	qsim.Apply(g)
 }
 
-// ControlledModExp2 returns gate of controlled modular exponentiation operation.
+// ControlledModExp2 applies the controlled modular exponentiation operation.
 // |j>|k> -> |j>|a**(2**j) * k mod N>.
-// len(t) must be larger than log2(N).
 func ControlledModExp2(n, a, j, N, c int, t []int) *matrix.Matrix {
 	m := gate.I(n)
 	r1len := len(t)

@@ -124,14 +124,14 @@ func ExampleQ_Amplitude() {
 	qsim.CNOT(q0, q1)
 
 	for _, a := range qsim.Amplitude() {
-		fmt.Println(a)
+		fmt.Printf("%.4f\n", a)
 	}
 
 	// Output:
-	// (0.7071067811865476+0i)
-	// (0+0i)
-	// (0+0i)
-	// (0.7071067811865476+0i)
+	// (0.7071+0.0000i)
+	// (0.0000+0.0000i)
+	// (0.0000+0.0000i)
+	// (0.7071+0.0000i)
 }
 
 func ExampleQ_Probability() {
