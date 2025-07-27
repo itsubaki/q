@@ -178,20 +178,20 @@ func (q *Q) RZ(theta float64, qb ...Qubit) *Q {
 }
 
 // Apply applies matrix to qubits.
-func (q *Q) Apply(m *matrix.Matrix, qb ...Qubit) *Q {
+func (q *Q) Apply(u *matrix.Matrix, qb ...Qubit) *Q {
 	if len(qb) < 1 {
-		q.qb.Apply(m)
+		q.qb.Apply(u)
 		return q
 	}
 
 	n := q.NumQubits()
-	g := gate.TensorProduct(m, n, Index(qb...))
+	g := gate.TensorProduct(u, n, Index(qb...))
 	q.qb.Apply(g)
 	return q
 }
 
-func (q *Q) C(m *matrix.Matrix, control, target Qubit) *Q {
-	return q.Controlled(m, []Qubit{control}, []Qubit{target})
+func (q *Q) C(u *matrix.Matrix, control, target Qubit) *Q {
+	return q.Controlled(u, []Qubit{control}, []Qubit{target})
 }
 
 // CNOT applies CNOT gate.
@@ -222,10 +222,10 @@ func (q *Q) CR(theta float64, control, target Qubit) *Q {
 	return q.ControlledR(theta, []Qubit{control}, []Qubit{target})
 }
 
-func (q *Q) Controlled(m *matrix.Matrix, control, target []Qubit) *Q {
+func (q *Q) Controlled(u *matrix.Matrix, control, target []Qubit) *Q {
 	n := q.NumQubits()
 	for _, t := range target {
-		g := gate.Controlled(m, n, Index(control...), t.Index())
+		g := gate.Controlled(u, n, Index(control...), t.Index())
 		q.qb.Apply(g)
 	}
 
@@ -274,9 +274,9 @@ func (q *Q) CondZ(condition bool, qb ...Qubit) *Q {
 }
 
 // Cond applies m if condition is true.
-func (q *Q) Cond(condition bool, m *matrix.Matrix, qb ...Qubit) *Q {
+func (q *Q) Cond(condition bool, u *matrix.Matrix, qb ...Qubit) *Q {
 	if condition {
-		return q.Apply(m, qb...)
+		return q.Apply(u, qb...)
 	}
 
 	return q
