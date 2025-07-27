@@ -119,7 +119,11 @@ func (q *Q) Reset(qb ...Qubit) {
 
 // U applies U gate.
 func (q *Q) U(theta, phi, lambda float64, qb ...Qubit) *Q {
-	return q.Apply(gate.U(theta, phi, lambda), qb...)
+	for i := range qb {
+		q.qb.U(theta, phi, lambda, qb[i].Index())
+	}
+
+	return q
 }
 
 // I applies I gate.

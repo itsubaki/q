@@ -82,6 +82,22 @@ func ExampleQubit_OuterProduct_operatorSum() {
 	// [(0+0i) (1+0i)]
 }
 
+func ExampleQubit_U() {
+	qb := qubit.Zero(2)
+	qb.U(math.Pi/2, 0, 0, 0)
+	qb.U(math.Pi/2, 0, 0, 1)
+
+	for _, s := range qb.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00][  0]( 0.5000 0.0000i): 0.2500
+	// [01][  1]( 0.5000 0.0000i): 0.2500
+	// [10][  2]( 0.5000 0.0000i): 0.2500
+	// [11][  3]( 0.5000 0.0000i): 0.2500
+}
+
 func ExampleQubit_State() {
 	v := qubit.Zero(4).Apply(gate.H(4))
 

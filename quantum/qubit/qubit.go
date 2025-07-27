@@ -143,6 +143,28 @@ func (q *Qubit) Apply(m ...*matrix.Matrix) *Qubit {
 	return q
 }
 
+// U applies a unitary gate.
+func (q *Qubit) U(theta, phi, lambda float64, idx int) *Qubit {
+	v := complex(theta/2, 0)
+	cos := cmplx.Cos(v)
+	sin := cmplx.Sin(v)
+
+	e0 := cmplx.Exp(complex(0, phi))
+	e1 := cmplx.Exp(complex(0, lambda))
+	e2 := cmplx.Exp(complex(0, phi+lambda))
+
+	stride := 1 << (q.NumQubits() - 1 - idx)
+	for i := 0; i < q.Dim(); i += 2 * stride {
+		for j := range stride {
+			a, b := q.state.Data[i+j], q.state.Data[i+j+stride]
+			q.state.Data[i+j] = cos*a - e1*sin*b
+			q.state.Data[i+j+stride] = e0*sin*a + e2*cos*b
+		}
+	}
+
+	return q
+}
+
 // Measure returns a measured qubit.
 func (q *Qubit) Measure(idx int) *Qubit {
 	n := q.NumQubits()
