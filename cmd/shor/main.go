@@ -121,7 +121,7 @@ func print(desc string, qsim *q.Q, reg ...any) {
 	fmt.Println()
 }
 
-// ControlledModExp applies controlled modular exponentiation.
+// ApplyControlledModExp2 applies controlled modular exponentiation.
 func ApplyControlledModExp2(qsim *q.Q, a, j, N int, control q.Qubit, target []q.Qubit) {
 	ControlledModExp2(qsim.Underlying(), a, j, N, control.Index(), q.Index(target...))
 }
@@ -166,7 +166,7 @@ func ControlledModExp2(qb *qubit.Qubit, a, j, N, control int, target []int) {
 	qb.Update(vector.New(newState...))
 }
 
-// ControlledModExp2 returns gate of controlled modular exponentiation operation.
+// ControlledModExp2g returns gate of controlled modular exponentiation operation.
 // |j>|k> -> |j>|a**(2**j) * k mod N>.
 func ControlledModExp2g(n, a, j, N, c int, t []int) *matrix.Matrix {
 	m := gate.I(n)
