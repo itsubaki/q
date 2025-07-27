@@ -41,19 +41,19 @@ func (s State) Amplitude() complex128 {
 	return s.amp
 }
 
-func (s State) BinaryString(index ...int) string {
+func (s State) BinaryString(idx ...int) string {
 	var i int
-	if len(index) > 0 {
-		i = index[0]
+	if len(idx) > 0 {
+		i = idx[0]
 	}
 
 	return s.binaryString[i]
 }
 
-func (s State) Int(index ...int) int64 {
+func (s State) Int(idx ...int) int64 {
 	var i int
-	if len(index) > 0 {
-		i = index[0]
+	if len(idx) > 0 {
+		i = idx[0]
 	}
 
 	return s.intValue[i]

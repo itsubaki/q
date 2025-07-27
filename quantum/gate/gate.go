@@ -301,19 +301,19 @@ func QFT(n int) *matrix.Matrix {
 }
 
 // TensorProduct returns the tensor product of 'u' at specified indices over 'n' qubits.
-func TensorProduct(u *matrix.Matrix, n int, index []int) *matrix.Matrix {
-	idx := make(map[int]bool)
-	for _, i := range index {
-		idx[i] = true
+func TensorProduct(u *matrix.Matrix, n int, idx []int) *matrix.Matrix {
+	target := make(map[int]bool)
+	for _, i := range idx {
+		target[i] = true
 	}
 
 	g := I()
-	if _, ok := idx[0]; ok {
+	if _, ok := target[0]; ok {
 		g = u
 	}
 
 	for i := 1; i < n; i++ {
-		if _, ok := idx[i]; ok {
+		if _, ok := target[i]; ok {
 			g = g.TensorProduct(u)
 			continue
 		}

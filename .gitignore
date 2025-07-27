@@ -23,7 +23,9 @@ secret
 coverage.txt
 coverage.html
 
-
 # Github codespaces
 .vscode
 oryxBuildBinary
+
+# etc
+*.patch

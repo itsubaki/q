@@ -138,9 +138,9 @@ func (q *Qubit) Apply(m ...*matrix.Matrix) *Qubit {
 }
 
 // Measure returns a measured qubit.
-func (q *Qubit) Measure(index int) *Qubit {
+func (q *Qubit) Measure(idx int) *Qubit {
 	n := q.NumQubits()
-	mask := 1 << (n - 1 - index)
+	mask := 1 << (n - 1 - idx)
 
 	var prob0 float64
 	for i := range q.Dim() {
@@ -151,7 +151,7 @@ func (q *Qubit) Measure(index int) *Qubit {
 
 	collapse := func(q *Qubit, result int) {
 		for i := range q.Dim() {
-			if ((i & mask) >> (n - 1 - index)) == result {
+			if ((i & mask) >> (n - 1 - idx)) == result {
 				continue
 			}
 
@@ -219,14 +219,15 @@ func (q *Qubit) String() string {
 
 // State returns the state of the qubit at the given index.
 // If no index is provided, it returns the state vector of all qubits.
-func (q *Qubit) State(index ...[]int) []State {
-	if len(index) < 1 {
-		idx := make([]int, q.NumQubits())
-		for i := range idx {
-			idx[i] = i
+func (q *Qubit) State(idx ...[]int) []State {
+	if len(idx) < 1 {
+		n := q.NumQubits()
+		all := make([]int, n)
+		for i := range n {
+			all[i] = i
 		}
 
-		index = append(index, idx)
+		idx = append(idx, all)
 	}
 
 	n := q.NumQubits()
@@ -238,7 +239,7 @@ func (q *Qubit) State(index ...[]int) []State {
 		}
 
 		var binary []string
-		for _, j := range index {
+		for _, j := range idx {
 			binary = append(binary, take(n, i, j))
 		}
 
@@ -267,10 +268,10 @@ func round(a complex128, eps ...float64) (complex128, bool) {
 	return a, true
 }
 
-func take(n, i int, index []int) string {
+func take(n, i int, idx []int) string {
 	var sb strings.Builder
-	for _, idx := range index {
-		if (i & (1 << (n - 1 - idx))) == 0 {
+	for _, j := range idx {
+		if (i & (1 << (n - 1 - j))) == 0 {
 			sb.WriteByte('0')
 			continue
 		}

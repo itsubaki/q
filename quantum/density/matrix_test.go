@@ -423,8 +423,8 @@ func TestProbability(t *testing.T) {
 
 func TestPartialTrace(t *testing.T) {
 	type Case struct {
-		index density.Qubit
-		want  [][]complex128
+		idx  density.Qubit
+		want [][]complex128
 	}
 
 	cases := []struct {
@@ -492,7 +492,7 @@ func TestPartialTrace(t *testing.T) {
 
 	for _, c := range cases {
 		for _, cs := range c.cs {
-			got := density.New(c.s).PartialTrace(cs.index)
+			got := density.New(c.s).PartialTrace(cs.idx)
 
 			p, q := got.Dim()
 			if p != len(cs.want) || q != len(cs.want) {

@@ -189,17 +189,17 @@ func (m *Matrix) TensorProduct(n *Matrix) *Matrix {
 // PartialTrace returns the partial trace of the density matrix.
 // The length of index must be less than or equal to n - 1,
 // where n is the number of qubits in the matrix.
-func (m *Matrix) PartialTrace(index ...Qubit) *Matrix {
+func (m *Matrix) PartialTrace(idx ...Qubit) *Matrix {
 	n := m.NumQubits()
-	p, q := m.Dim()
 	d := number.Pow(2, n-1)
+	p, q := m.Dim()
 
 	rho := matrix.Zero(d, d)
 	for i := range p {
-		k, kr := take(n, i, index)
+		k, kr := take(n, i, idx)
 
 		for j := range q {
-			l, lr := take(n, j, index)
+			l, lr := take(n, j, idx)
 
 			if k != l {
 				continue
@@ -253,9 +253,9 @@ func (m *Matrix) ApplyChannel(p float64, g *matrix.Matrix, qb ...Qubit) *Matrix 
 	e0 := gate.I().Mul(complex(math.Sqrt(1-p), 0))
 	e1 := g.Mul(complex(math.Sqrt(p), 0))
 
-	index := make([]int, k)
+	idx := make([]int, k)
 	for i, v := range qb {
-		index[i] = v.Index()
+		idx[i] = v.Index()
 	}
 
 	// create kraus operators
@@ -266,13 +266,13 @@ func (m *Matrix) ApplyChannel(p float64, g *matrix.Matrix, qb ...Qubit) *Matrix 
 			ops[j] = id
 		}
 
-		for j, idx := range index {
+		for j, v := range idx {
 			if (i>>j)&1 == 1 {
-				ops[idx] = e1
+				ops[v] = e1
 				continue
 			}
 
-			ops[idx] = e0
+			ops[v] = e0
 		}
 
 		kraus[i] = matrix.TensorProduct(ops...)
@@ -304,21 +304,21 @@ func (m *Matrix) PhaseFlip(p float64, qb Qubit) *Matrix {
 	return m.ApplyChannel(p, gate.Z(), qb)
 }
 
-func take(n, i int, index []Qubit) (string, string) {
-	idx := make(map[int]struct{}, len(index))
-	for _, j := range index {
-		idx[j.Index()] = struct{}{}
+func take(n, i int, idx []Qubit) (string, string) {
+	target := make(map[int]struct{}, len(idx))
+	for _, j := range idx {
+		target[j.Index()] = struct{}{}
 	}
 
 	var out, remain strings.Builder
-	for bit := range n {
-		b := byte('0' + ((i >> (n - 1 - bit)) & 1))
-		if _, ok := idx[bit]; ok {
-			out.WriteByte(b)
+	for j := range n {
+		s := byte('0' + ((i >> (n - 1 - j)) & 1))
+		if _, ok := target[j]; ok {
+			out.WriteByte(s)
 			continue
 		}
 
-		remain.WriteByte(b)
+		remain.WriteByte(s)
 	}
 
 	return out.String(), remain.String()
