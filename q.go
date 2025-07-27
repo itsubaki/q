@@ -4,6 +4,7 @@ import (
 	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/math/number"
 	"github.com/itsubaki/q/math/rand"
+	"github.com/itsubaki/q/math/vector"
 	"github.com/itsubaki/q/quantum/gate"
 	"github.com/itsubaki/q/quantum/qubit"
 )
@@ -48,12 +49,12 @@ func New() *Q {
 // New returns a new qubit.
 func (q *Q) New(v ...complex128) Qubit {
 	if q.qb == nil {
-		q.qb = qubit.New(v...)
+		q.qb = qubit.New(vector.New(v...))
 		q.qb.Rand = q.Rand
 		return Qubit(0)
 	}
 
-	q.qb.TensorProduct(qubit.New(v...))
+	q.qb.TensorProduct(qubit.New(vector.New(v...)))
 	return Qubit(q.NumQubits() - 1)
 }
 

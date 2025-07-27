@@ -9,6 +9,7 @@ import (
 	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/math/number"
 	"github.com/itsubaki/q/math/rand"
+	"github.com/itsubaki/q/math/vector"
 	"github.com/itsubaki/q/quantum/gate"
 	"github.com/itsubaki/q/quantum/qubit"
 )
@@ -54,351 +55,8 @@ func ExampleNewFrom_plus() {
 	// [11][  3](-0.5000 0.0000i): 0.2500
 }
 
-func Example_pOVM() {
-	E1 := gate.New(
-		[]complex128{0, 0},
-		[]complex128{0, 1},
-	).Mul(complex(math.Sqrt(2)/(1.0+math.Sqrt(2)), 0))
-
-	E2 := gate.New(
-		[]complex128{1, -1},
-		[]complex128{-1, 1},
-	).Mul(complex(math.Sqrt(2)/(1.0+math.Sqrt(2)), 0)).Mul(complex(0.5, 0))
-
-	E3 := gate.I().Sub(E1).Sub(E2)
-
-	add := E1.Add(E2).Add(E3)
-	fmt.Println(add.Equals(gate.I()))
-
-	{
-		q0 := qubit.Zero().Apply(E1) // E1|0>
-		q1 := qubit.Zero().Apply(E2) // E2|0>
-		q2 := qubit.Zero().Apply(E3) // E3|0>
-
-		fmt.Println("zero:")
-		fmt.Println(q0.InnerProduct(qubit.Zero())) // <0|E1|0>
-		fmt.Println(q1.InnerProduct(qubit.Zero())) // <0|E2|0>
-		fmt.Println(q2.InnerProduct(qubit.Zero())) // <0|E3|0>
-	}
-
-	{
-		q0 := qubit.Plus().Apply(E1) // E1|+>
-		q1 := qubit.Plus().Apply(E2) // E2|+>
-		q2 := qubit.Plus().Apply(E3) // E3|+>
-
-		fmt.Println("H(zero):")
-		fmt.Println(q0.InnerProduct(qubit.Plus())) // <+|E1|+>
-		fmt.Println(q1.InnerProduct(qubit.Plus())) // <+|E2|+>
-		fmt.Println(q2.InnerProduct(qubit.Plus())) // <+|E3|+>
-	}
-
-	// Output:
-	// true
-	// zero:
-	// (0+0i)
-	// (0.29289321881345254+0i)
-	// (0.7071067811865475+0i)
-	// H(zero):
-	// (0.29289321881345254+0i)
-	// (0+0i)
-	// (0.7071067811865477+0i)
-}
-
-func Example_bellState() {
-	q := qubit.Zero(2).Apply(
-		gate.H().TensorProduct(gate.I()),
-		gate.CNOT(2, 0, 1),
-	)
-
-	for _, s := range q.State() {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [00][  0]( 0.7071 0.0000i): 0.5000
-	// [11][  3]( 0.7071 0.0000i): 0.5000
-}
-
-func Example_grover2qubit() {
-	oracle := gate.CZ(2, 0, 1)
-	amp := matrix.Apply(
-		gate.H(2),
-		gate.X(2),
-		gate.CZ(2, 0, 1),
-		gate.X(2),
-		gate.H(2),
-	)
-
-	q := qubit.Zero(2).Apply(
-		gate.H(2),
-		oracle,
-		amp,
-	)
-
-	q.Measure(0)
-	q.Measure(1)
-
-	for _, s := range q.State() {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [11][  3](-1.0000 0.0000i): 1.0000
-}
-
-func Example_grover3qubit() {
-	oracle := matrix.Apply(
-		matrix.TensorProduct(gate.X(), gate.I(3)),
-		gate.ControlledNot(4, []int{0, 1, 2}, 3),
-		matrix.TensorProduct(gate.X(), gate.I(3)),
-	)
-
-	amp := matrix.Apply(
-		matrix.TensorProduct(gate.H(3), gate.H()),
-		matrix.TensorProduct(gate.X(3), gate.I()),
-		matrix.TensorProduct(gate.ControlledZ(3, []int{0, 1}, 2), gate.I()),
-		matrix.TensorProduct(gate.X(3), gate.I()),
-		matrix.TensorProduct(gate.H(3), gate.I()),
-	)
-
-	q := qubit.TensorProduct(
-		qubit.Zero(3),
-		qubit.One(),
-	).Apply(
-		gate.H(4),
-		oracle,
-		amp,
-	)
-
-	for _, s := range q.State() {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [0001][  1](-0.1768 0.0000i): 0.0313
-	// [0011][  3](-0.1768 0.0000i): 0.0313
-	// [0101][  5](-0.1768 0.0000i): 0.0313
-	// [0111][  7](-0.8839 0.0000i): 0.7813
-	// [1001][  9](-0.1768 0.0000i): 0.0313
-	// [1011][ 11](-0.1768 0.0000i): 0.0313
-	// [1101][ 13](-0.1768 0.0000i): 0.0313
-	// [1111][ 15](-0.1768 0.0000i): 0.0313
-}
-
-func Example_errorCorrectionBitFlip() {
-	phi := qubit.New(1, 2)
-
-	// encoding
-	phi.TensorProduct(qubit.Zero(2))
-	phi.Apply(
-		gate.CNOT(3, 0, 1),
-		gate.CNOT(3, 0, 2),
-	)
-
-	// error: first qubit is flipped
-	phi.Apply(matrix.TensorProduct(gate.X(), gate.I(2)))
-
-	// add ancilla qubit
-	phi.TensorProduct(qubit.Zero(2))
-
-	// z1z2
-	phi.Apply(
-		gate.CNOT(5, 0, 3),
-		gate.CNOT(5, 1, 3),
-	)
-
-	// z2z3
-	phi.Apply(
-		gate.CNOT(5, 1, 4),
-		gate.CNOT(5, 2, 4),
-	)
-
-	// measure
-	m3 := phi.Measure(3)
-	m4 := phi.Measure(4)
-
-	// recover
-	if m3.IsOne() && m4.IsZero() {
-		phi.Apply(matrix.TensorProduct(gate.X(), gate.I(4)))
-	}
-
-	if m3.IsOne() && m4.IsOne() {
-		phi.Apply(matrix.TensorProduct(gate.I(), gate.X(), gate.I(3)))
-	}
-
-	if m3.IsZero() && m4.IsOne() {
-		phi.Apply(matrix.TensorProduct(gate.I(2), gate.X(), gate.I(2)))
-	}
-
-	// decoding
-	phi.Apply(
-		gate.CNOT(5, 0, 2),
-		gate.CNOT(5, 0, 1),
-	)
-
-	for _, s := range phi.State() {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [00010][  2]( 0.4472 0.0000i): 0.2000
-	// [10010][ 18]( 0.8944 0.0000i): 0.8000
-}
-
-func Example_errorCorrectionPhaseFlip() {
-	phi := qubit.New(1, 2)
-
-	// encoding
-	phi.TensorProduct(qubit.Zero(2))
-	phi.Apply(
-		gate.CNOT(3, 0, 1),
-		gate.CNOT(3, 0, 2),
-		gate.H(3),
-	)
-
-	// error: first qubit is flipped
-	phi.Apply(matrix.TensorProduct(gate.Z(), gate.I(2)))
-
-	// H
-	phi.Apply(gate.H(3))
-
-	// add ancilla qubit
-	phi.TensorProduct(qubit.Zero(2))
-
-	// x1x2
-	phi.Apply(
-		gate.CNOT(5, 0, 3),
-		gate.CNOT(5, 1, 3),
-	)
-
-	// x2x3
-	phi.Apply(
-		gate.CNOT(5, 1, 4),
-		gate.CNOT(5, 2, 4),
-	)
-
-	// H
-	phi.Apply(matrix.TensorProduct(gate.H(3), gate.I(2)))
-
-	// measure
-	m3 := phi.Measure(3)
-	m4 := phi.Measure(4)
-
-	// recover
-	if m3.IsOne() && m4.IsZero() {
-		phi.Apply(matrix.TensorProduct(gate.Z(), gate.I(4)))
-	}
-
-	if m3.IsOne() && m4.IsOne() {
-		phi.Apply(matrix.TensorProduct(gate.I(), gate.Z(), gate.I(3)))
-	}
-
-	if m3.IsZero() && m4.IsOne() {
-		phi.Apply(matrix.TensorProduct(gate.I(2), gate.Z(), gate.I(2)))
-	}
-
-	// decoding
-	phi.Apply(
-		matrix.TensorProduct(gate.H(3), gate.I(2)),
-		gate.CNOT(5, 0, 2),
-		gate.CNOT(5, 0, 1),
-	)
-
-	for _, s := range phi.State() {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [00010][  2]( 0.4472 0.0000i): 0.2000
-	// [10010][ 18]( 0.8944 0.0000i): 0.8000
-}
-
-func Example_quantumTeleportation() {
-	phi := qubit.New(1, 2)
-	phi.Rand = rand.Const()
-
-	fmt.Println("before:")
-	for _, s := range phi.State() {
-		fmt.Println(s)
-	}
-
-	bell := qubit.Zero(2).Apply(
-		matrix.TensorProduct(gate.H(), gate.I()),
-		gate.CNOT(2, 0, 1),
-	)
-	phi.TensorProduct(bell)
-
-	phi.Apply(
-		gate.CNOT(3, 0, 1),
-		matrix.TensorProduct(gate.H(), gate.I(2)),
-	)
-
-	mz := phi.Measure(0)
-	mx := phi.Measure(1)
-
-	if mx.IsOne() {
-		phi.Apply(matrix.TensorProduct(gate.I(2), gate.X()))
-	}
-
-	if mz.IsOne() {
-		phi.Apply(matrix.TensorProduct(gate.I(2), gate.Z()))
-	}
-
-	fmt.Println("after:")
-	for _, s := range phi.State() {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// before:
-	// [0][  0]( 0.4472 0.0000i): 0.2000
-	// [1][  1]( 0.8944 0.0000i): 0.8000
-	// after:
-	// [110][  6]( 0.4472 0.0000i): 0.2000
-	// [111][  7]( 0.8944 0.0000i): 0.8000
-}
-
-func Example_quantumTeleportation2() {
-	phi := qubit.New(1, 2)
-	phi.Rand = rand.Const()
-
-	fmt.Println("before:")
-	for _, s := range phi.State() {
-		fmt.Println(s)
-	}
-
-	bell := qubit.Zero(2).Apply(
-		matrix.TensorProduct(gate.H(), gate.I()),
-		gate.CNOT(2, 0, 1),
-	)
-	phi.TensorProduct(bell)
-
-	phi.Apply(
-		gate.CNOT(3, 0, 1),
-		matrix.TensorProduct(gate.H(), gate.I(2)),
-		gate.CNOT(3, 1, 2),
-		gate.CZ(3, 0, 2),
-	)
-
-	phi.Measure(0)
-	phi.Measure(1)
-
-	fmt.Println("after:")
-	for _, s := range phi.State() {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// before:
-	// [0][  0]( 0.4472 0.0000i): 0.2000
-	// [1][  1]( 0.8944 0.0000i): 0.8000
-	// after:
-	// [110][  6]( 0.4472 0.0000i): 0.2000
-	// [111][  7]( 0.8944 0.0000i): 0.8000
-}
-
 func ExampleQubit_OuterProduct() {
-	v := qubit.New(1, 0)
+	v := qubit.Zero()
 	op := v.OuterProduct(v)
 
 	for _, r := range op.Seq2() {
@@ -411,7 +69,7 @@ func ExampleQubit_OuterProduct() {
 }
 
 func ExampleQubit_OuterProduct_operatorSum() {
-	v := qubit.New(1, 0)
+	v := qubit.Zero()
 	q := v.OuterProduct(v)
 	e := gate.X().Dagger().Apply(q.Apply(gate.X()))
 
@@ -496,6 +154,363 @@ func ExampleQubit_State_order() {
 	// [111 1][  7   1]( 0.2500 0.0000i): 0.0625
 }
 
+func Example_bellState() {
+	q := qubit.Zero(2).Apply(
+		gate.H().TensorProduct(gate.I()),
+		gate.CNOT(2, 0, 1),
+	)
+
+	for _, s := range q.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00][  0]( 0.7071 0.0000i): 0.5000
+	// [11][  3]( 0.7071 0.0000i): 0.5000
+}
+
+func Example_grover2qubit() {
+	oracle := gate.CZ(2, 0, 1)
+	amp := matrix.Apply(
+		gate.H(2),
+		gate.X(2),
+		gate.CZ(2, 0, 1),
+		gate.X(2),
+		gate.H(2),
+	)
+
+	q := qubit.Zero(2).Apply(
+		gate.H(2),
+		oracle,
+		amp,
+	)
+
+	q.Measure(0)
+	q.Measure(1)
+
+	for _, s := range q.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [11][  3](-1.0000 0.0000i): 1.0000
+}
+
+func Example_grover3qubit() {
+	oracle := matrix.Apply(
+		matrix.TensorProduct(gate.X(), gate.I(3)),
+		gate.ControlledNot(4, []int{0, 1, 2}, 3),
+		matrix.TensorProduct(gate.X(), gate.I(3)),
+	)
+
+	amp := matrix.Apply(
+		matrix.TensorProduct(gate.H(3), gate.H()),
+		matrix.TensorProduct(gate.X(3), gate.I()),
+		matrix.TensorProduct(gate.ControlledZ(3, []int{0, 1}, 2), gate.I()),
+		matrix.TensorProduct(gate.X(3), gate.I()),
+		matrix.TensorProduct(gate.H(3), gate.I()),
+	)
+
+	q := qubit.TensorProduct(
+		qubit.Zero(3),
+		qubit.One(),
+	).Apply(
+		gate.H(4),
+		oracle,
+		amp,
+	)
+
+	for _, s := range q.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [0001][  1](-0.1768 0.0000i): 0.0313
+	// [0011][  3](-0.1768 0.0000i): 0.0313
+	// [0101][  5](-0.1768 0.0000i): 0.0313
+	// [0111][  7](-0.8839 0.0000i): 0.7813
+	// [1001][  9](-0.1768 0.0000i): 0.0313
+	// [1011][ 11](-0.1768 0.0000i): 0.0313
+	// [1101][ 13](-0.1768 0.0000i): 0.0313
+	// [1111][ 15](-0.1768 0.0000i): 0.0313
+}
+
+func Example_errorCorrectionBitFlip() {
+	phi := qubit.New(vector.New(1, 2))
+
+	// encoding
+	phi.TensorProduct(qubit.Zero(2))
+	phi.Apply(
+		gate.CNOT(3, 0, 1),
+		gate.CNOT(3, 0, 2),
+	)
+
+	// error: first qubit is flipped
+	phi.Apply(matrix.TensorProduct(gate.X(), gate.I(2)))
+
+	// add ancilla qubit
+	phi.TensorProduct(qubit.Zero(2))
+
+	// z1z2
+	phi.Apply(
+		gate.CNOT(5, 0, 3),
+		gate.CNOT(5, 1, 3),
+	)
+
+	// z2z3
+	phi.Apply(
+		gate.CNOT(5, 1, 4),
+		gate.CNOT(5, 2, 4),
+	)
+
+	// measure
+	m3 := phi.Measure(3)
+	m4 := phi.Measure(4)
+
+	// recover
+	if m3.IsOne() && m4.IsZero() {
+		phi.Apply(matrix.TensorProduct(gate.X(), gate.I(4)))
+	}
+
+	if m3.IsOne() && m4.IsOne() {
+		phi.Apply(matrix.TensorProduct(gate.I(), gate.X(), gate.I(3)))
+	}
+
+	if m3.IsZero() && m4.IsOne() {
+		phi.Apply(matrix.TensorProduct(gate.I(2), gate.X(), gate.I(2)))
+	}
+
+	// decoding
+	phi.Apply(
+		gate.CNOT(5, 0, 2),
+		gate.CNOT(5, 0, 1),
+	)
+
+	for _, s := range phi.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00010][  2]( 0.4472 0.0000i): 0.2000
+	// [10010][ 18]( 0.8944 0.0000i): 0.8000
+}
+
+func Example_errorCorrectionPhaseFlip() {
+	phi := qubit.New(vector.New(1, 2))
+
+	// encoding
+	phi.TensorProduct(qubit.Zero(2))
+	phi.Apply(
+		gate.CNOT(3, 0, 1),
+		gate.CNOT(3, 0, 2),
+		gate.H(3),
+	)
+
+	// error: first qubit is flipped
+	phi.Apply(matrix.TensorProduct(gate.Z(), gate.I(2)))
+
+	// H
+	phi.Apply(gate.H(3))
+
+	// add ancilla qubit
+	phi.TensorProduct(qubit.Zero(2))
+
+	// x1x2
+	phi.Apply(
+		gate.CNOT(5, 0, 3),
+		gate.CNOT(5, 1, 3),
+	)
+
+	// x2x3
+	phi.Apply(
+		gate.CNOT(5, 1, 4),
+		gate.CNOT(5, 2, 4),
+	)
+
+	// H
+	phi.Apply(matrix.TensorProduct(gate.H(3), gate.I(2)))
+
+	// measure
+	m3 := phi.Measure(3)
+	m4 := phi.Measure(4)
+
+	// recover
+	if m3.IsOne() && m4.IsZero() {
+		phi.Apply(matrix.TensorProduct(gate.Z(), gate.I(4)))
+	}
+
+	if m3.IsOne() && m4.IsOne() {
+		phi.Apply(matrix.TensorProduct(gate.I(), gate.Z(), gate.I(3)))
+	}
+
+	if m3.IsZero() && m4.IsOne() {
+		phi.Apply(matrix.TensorProduct(gate.I(2), gate.Z(), gate.I(2)))
+	}
+
+	// decoding
+	phi.Apply(
+		matrix.TensorProduct(gate.H(3), gate.I(2)),
+		gate.CNOT(5, 0, 2),
+		gate.CNOT(5, 0, 1),
+	)
+
+	for _, s := range phi.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00010][  2]( 0.4472 0.0000i): 0.2000
+	// [10010][ 18]( 0.8944 0.0000i): 0.8000
+}
+
+func Example_quantumTeleportation() {
+	phi := qubit.New(vector.New(1, 2))
+	phi.Rand = rand.Const()
+
+	fmt.Println("before:")
+	for _, s := range phi.State() {
+		fmt.Println(s)
+	}
+
+	bell := qubit.Zero(2).Apply(
+		matrix.TensorProduct(gate.H(), gate.I()),
+		gate.CNOT(2, 0, 1),
+	)
+	phi.TensorProduct(bell)
+
+	phi.Apply(
+		gate.CNOT(3, 0, 1),
+		matrix.TensorProduct(gate.H(), gate.I(2)),
+	)
+
+	mz := phi.Measure(0)
+	mx := phi.Measure(1)
+
+	if mx.IsOne() {
+		phi.Apply(matrix.TensorProduct(gate.I(2), gate.X()))
+	}
+
+	if mz.IsOne() {
+		phi.Apply(matrix.TensorProduct(gate.I(2), gate.Z()))
+	}
+
+	fmt.Println("after:")
+	for _, s := range phi.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// before:
+	// [0][  0]( 0.4472 0.0000i): 0.2000
+	// [1][  1]( 0.8944 0.0000i): 0.8000
+	// after:
+	// [110][  6]( 0.4472 0.0000i): 0.2000
+	// [111][  7]( 0.8944 0.0000i): 0.8000
+}
+
+func Example_quantumTeleportation2() {
+	phi := qubit.New(vector.New(1, 2))
+	phi.Rand = rand.Const()
+
+	fmt.Println("before:")
+	for _, s := range phi.State() {
+		fmt.Println(s)
+	}
+
+	bell := qubit.Zero(2).Apply(
+		matrix.TensorProduct(gate.H(), gate.I()),
+		gate.CNOT(2, 0, 1),
+	)
+	phi.TensorProduct(bell)
+
+	phi.Apply(
+		gate.CNOT(3, 0, 1),
+		matrix.TensorProduct(gate.H(), gate.I(2)),
+		gate.CNOT(3, 1, 2),
+		gate.CZ(3, 0, 2),
+	)
+
+	phi.Measure(0)
+	phi.Measure(1)
+
+	fmt.Println("after:")
+	for _, s := range phi.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// before:
+	// [0][  0]( 0.4472 0.0000i): 0.2000
+	// [1][  1]( 0.8944 0.0000i): 0.8000
+	// after:
+	// [110][  6]( 0.4472 0.0000i): 0.2000
+	// [111][  7]( 0.8944 0.0000i): 0.8000
+}
+
+func Example_povm() {
+	E1 := gate.New(
+		[]complex128{0, 0},
+		[]complex128{0, 1},
+	).Mul(complex(math.Sqrt(2)/(1.0+math.Sqrt(2)), 0))
+
+	E2 := gate.New(
+		[]complex128{1, -1},
+		[]complex128{-1, 1},
+	).Mul(complex(math.Sqrt(2)/(1.0+math.Sqrt(2)), 0)).Mul(complex(0.5, 0))
+
+	E3 := gate.I().Sub(E1).Sub(E2)
+
+	add := E1.Add(E2).Add(E3)
+	fmt.Println(add.Equals(gate.I()))
+
+	{
+		q0 := qubit.Zero().Apply(E1) // E1|0>
+		q1 := qubit.Zero().Apply(E2) // E2|0>
+		q2 := qubit.Zero().Apply(E3) // E3|0>
+
+		fmt.Println("zero:")
+		fmt.Println(q0.InnerProduct(qubit.Zero())) // <0|E1|0>
+		fmt.Println(q1.InnerProduct(qubit.Zero())) // <0|E2|0>
+		fmt.Println(q2.InnerProduct(qubit.Zero())) // <0|E3|0>
+	}
+
+	{
+		q0 := qubit.Plus().Apply(E1) // E1|+>
+		q1 := qubit.Plus().Apply(E2) // E2|+>
+		q2 := qubit.Plus().Apply(E3) // E3|+>
+
+		fmt.Println("H(zero):")
+		fmt.Println(q0.InnerProduct(qubit.Plus())) // <+|E1|+>
+		fmt.Println(q1.InnerProduct(qubit.Plus())) // <+|E2|+>
+		fmt.Println(q2.InnerProduct(qubit.Plus())) // <+|E3|+>
+	}
+
+	// Output:
+	// true
+	// zero:
+	// (0+0i)
+	// (0.29289321881345254+0i)
+	// (0.7071067811865475+0i)
+	// H(zero):
+	// (0.29289321881345254+0i)
+	// (0+0i)
+	// (0.7071067811865477+0i)
+}
+
+func Example_round() {
+	qb := qubit.New(vector.New(
+		complex(1e-15, 0.5),
+		complex(0.5, 1e-15),
+	))
+	for _, s := range qb.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [0][  0]( 0.0000 0.7071i): 0.5000
+	// [1][  1]( 0.7071 0.0000i): 0.5000
+}
+
 func TestNumQubits(t *testing.T) {
 	for i := 1; i < 10; i++ {
 		if qubit.Zero(i).NumQubits() != i {
@@ -542,10 +557,10 @@ func TestNormalize(t *testing.T) {
 		want float64
 		eps  float64
 	}{
-		{qubit.New(1, 0), 1.0, epsilon.E13()},
-		{qubit.New(0, 1), 1.0, epsilon.E13()},
-		{qubit.New(4, 5), 1.0, epsilon.E13()},
-		{qubit.New(10, 5), 1.0, epsilon.E13()},
+		{qubit.Zero(), 1.0, epsilon.E13()},
+		{qubit.One(), 1.0, epsilon.E13()},
+		{qubit.New(vector.New(4, 5)), 1.0, epsilon.E13()},
+		{qubit.New(vector.New(10, 5)), 1.0, epsilon.E13()},
 	}
 
 	for _, c := range cases {

@@ -365,41 +365,6 @@ func ExampleQ_RZ() {
 	// [0][  0]( 0.0000-1.0000i): 1.0000
 }
 
-func Example_qft() {
-	qsim := q.New()
-
-	q0 := qsim.Zero()
-	q1 := qsim.Zero()
-	q2 := qsim.One()
-
-	qsim.H(q0)
-	qsim.CR(math.Pi/2, q0, q1)
-	qsim.CR(math.Pi/4, q0, q2)
-
-	qsim.H(q1)
-	qsim.CR(math.Pi/2, q1, q2)
-
-	qsim.H(q2)
-
-	qsim.CNOT(q0, q2)
-	qsim.CNOT(q2, q0)
-	qsim.CNOT(q0, q2)
-
-	for _, s := range qsim.State() {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [000][  0]( 0.3536 0.0000i): 0.1250
-	// [001][  1]( 0.2500 0.2500i): 0.1250
-	// [010][  2]( 0.0000 0.3536i): 0.1250
-	// [011][  3](-0.2500 0.2500i): 0.1250
-	// [100][  4](-0.3536 0.0000i): 0.1250
-	// [101][  5](-0.2500-0.2500i): 0.1250
-	// [110][  6]( 0.0000-0.3536i): 0.1250
-	// [111][  7]( 0.2500-0.2500i): 0.1250
-}
-
 func ExampleQ_QFT() {
 	qsim := q.New()
 
@@ -467,40 +432,6 @@ func ExampleQ_InvQFT() {
 	// [010][  2]( 1.0000 0.0000i): 1.0000
 }
 
-func ExampleQ_Clone() {
-	qsim := q.New()
-
-	clone := qsim.Clone()
-	clone.Zero()
-	clone.Zero()
-
-	q0 := qsim.Zero()
-	q1 := qsim.Zero()
-	qsim.X(q0, q1)
-
-	fmt.Println(clone)
-	fmt.Println(qsim)
-	fmt.Println(qsim.Clone())
-
-	// Output:
-	// [(1+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (1+0i)]
-	// [(0+0i) (0+0i) (0+0i) (1+0i)]
-}
-
-func ExampleQ_String() {
-	qsim := q.New()
-
-	q0 := qsim.Zero()
-	q1 := qsim.One()
-	qsim.X(q0, q1)
-
-	fmt.Println(qsim)
-
-	// Output:
-	// [(0+0i) (0+0i) (1+0i) (0+0i)]
-}
-
 func ExampleQ_C() {
 	qsim := q.New()
 
@@ -556,6 +487,52 @@ func ExampleQ_CondZ() {
 	// Output:
 	// [1][  1]( 1.0000 0.0000i): 1.0000
 	// [1][  1](-1.0000 0.0000i): 1.0000
+}
+
+func ExampleQ_Underlying() {
+	qsim := q.New()
+	qsim.Zero()
+
+	for _, s := range qsim.Underlying().State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [0][  0]( 1.0000 0.0000i): 1.0000
+}
+
+func ExampleQ_Clone() {
+	qsim := q.New()
+
+	clone := qsim.Clone()
+	clone.Zero()
+	clone.Zero()
+
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	qsim.X(q0, q1)
+
+	fmt.Println(clone)
+	fmt.Println(qsim)
+	fmt.Println(qsim.Clone())
+
+	// Output:
+	// [(1+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (1+0i)]
+	// [(0+0i) (0+0i) (0+0i) (1+0i)]
+}
+
+func ExampleQ_String() {
+	qsim := q.New()
+
+	q0 := qsim.Zero()
+	q1 := qsim.One()
+	qsim.X(q0, q1)
+
+	fmt.Println(qsim)
+
+	// Output:
+	// [(0+0i) (0+0i) (1+0i) (0+0i)]
 }
 
 func Example_bellState() {
@@ -662,98 +639,6 @@ func Example_quantumTeleportation2() {
 	// [0][  0]( 0.4472 0.0000i): 0.2000
 	// [1][  1]( 0.8944 0.0000i): 0.8000
 	// q1:
-	// [0][  0]( 0.4472 0.0000i): 0.2000
-	// [1][  1]( 0.8944 0.0000i): 0.8000
-}
-
-func Example_superDenseCoding() {
-	sdc := func(g *matrix.Matrix) string {
-		qsim := q.New()
-
-		// initial state
-		q0 := qsim.Zero()
-		q1 := qsim.Zero()
-
-		qsim.H(q0)
-		qsim.CNOT(q0, q1)
-
-		// encode
-		qsim.Apply(g, q0)
-
-		// decode
-		qsim.CNOT(q0, q1)
-		qsim.H(q0)
-
-		// measure
-		return qsim.M(q0, q1).BinaryString()
-	}
-
-	fmt.Printf("I : %v\n", sdc(gate.I()))
-	fmt.Printf("X : %v\n", sdc(gate.X()))
-	fmt.Printf("Z : %v\n", sdc(gate.Z()))
-	fmt.Printf("ZX: %v\n", sdc(gate.Z().Apply(gate.X())))
-
-	// Output:
-	// I : 00
-	// X : 01
-	// Z : 10
-	// ZX: 11
-}
-
-func Example_errorCorrection() {
-	qsim := q.New()
-
-	q0 := qsim.New(1, 2)
-
-	fmt.Println("q0:")
-	for _, s := range qsim.State(q0) {
-		fmt.Println(s)
-	}
-
-	// encoding
-	q1 := qsim.Zero()
-	q2 := qsim.Zero()
-	qsim.CNOT(q0, q1).CNOT(q0, q2)
-
-	// error: first qubit is flipped
-	qsim.X(q0)
-
-	fmt.Println("q0(flipped):")
-	for _, s := range qsim.State(q0) {
-		fmt.Println(s)
-	}
-
-	// add ancilla qubit
-	q3 := qsim.Zero()
-	q4 := qsim.Zero()
-
-	// error correction
-	qsim.CNOT(q0, q3).CNOT(q1, q3)
-	qsim.CNOT(q1, q4).CNOT(q2, q4)
-
-	m3 := qsim.Measure(q3)
-	m4 := qsim.Measure(q4)
-
-	qsim.CondX(m3.IsOne() && m4.IsZero(), q0)
-	qsim.CondX(m3.IsOne() && m4.IsOne(), q1)
-	qsim.CondX(m3.IsZero() && m4.IsOne(), q2)
-
-	// decoding
-	qsim.CNOT(q0, q2).CNOT(q0, q1)
-
-	fmt.Println("q0(corrected):")
-	for _, s := range qsim.State(q0) {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// q0:
-	// [0][  0]( 0.4472 0.0000i): 0.2000
-	// [1][  1]( 0.8944 0.0000i): 0.8000
-	// q0(flipped):
-	// [0][  0]( 0.8944 0.0000i): 0.8000
-	// [1][  1]( 0.4472 0.0000i): 0.2000
-	// q0(corrected):
 	// [0][  0]( 0.4472 0.0000i): 0.2000
 	// [1][  1]( 0.8944 0.0000i): 0.8000
 }
@@ -882,7 +767,42 @@ func Example_grover4qubit() {
 	// [111 1][  7   1]( 0.0508 0.0000i): 0.0026
 }
 
-func Example_qFT() {
+func Example_qft() {
+	qsim := q.New()
+
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.One()
+
+	qsim.H(q0)
+	qsim.CR(math.Pi/2, q0, q1)
+	qsim.CR(math.Pi/4, q0, q2)
+
+	qsim.H(q1)
+	qsim.CR(math.Pi/2, q1, q2)
+
+	qsim.H(q2)
+
+	qsim.CNOT(q0, q2)
+	qsim.CNOT(q2, q0)
+	qsim.CNOT(q0, q2)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [000][  0]( 0.3536 0.0000i): 0.1250
+	// [001][  1]( 0.2500 0.2500i): 0.1250
+	// [010][  2]( 0.0000 0.3536i): 0.1250
+	// [011][  3](-0.2500 0.2500i): 0.1250
+	// [100][  4](-0.3536 0.0000i): 0.1250
+	// [101][  5](-0.2500-0.2500i): 0.1250
+	// [110][  6]( 0.0000-0.3536i): 0.1250
+	// [111][  7]( 0.2500-0.2500i): 0.1250
+}
+
+func Example_qft2() {
 	qsim := q.New()
 
 	q0 := qsim.Zero()
@@ -1083,6 +1003,98 @@ func Example_shorFactoring85() {
 	// N=85, a=14. p=5, q=17. s/r=7/16 ([0.0111]~0.438)
 }
 
+func Example_superDenseCoding() {
+	sdc := func(g *matrix.Matrix) string {
+		qsim := q.New()
+
+		// initial state
+		q0 := qsim.Zero()
+		q1 := qsim.Zero()
+
+		qsim.H(q0)
+		qsim.CNOT(q0, q1)
+
+		// encode
+		qsim.Apply(g, q0)
+
+		// decode
+		qsim.CNOT(q0, q1)
+		qsim.H(q0)
+
+		// measure
+		return qsim.M(q0, q1).BinaryString()
+	}
+
+	fmt.Printf("I : %v\n", sdc(gate.I()))
+	fmt.Printf("X : %v\n", sdc(gate.X()))
+	fmt.Printf("Z : %v\n", sdc(gate.Z()))
+	fmt.Printf("ZX: %v\n", sdc(gate.Z().Apply(gate.X())))
+
+	// Output:
+	// I : 00
+	// X : 01
+	// Z : 10
+	// ZX: 11
+}
+
+func Example_errorCorrection() {
+	qsim := q.New()
+
+	q0 := qsim.New(1, 2)
+
+	fmt.Println("q0:")
+	for _, s := range qsim.State(q0) {
+		fmt.Println(s)
+	}
+
+	// encoding
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
+	qsim.CNOT(q0, q1).CNOT(q0, q2)
+
+	// error: first qubit is flipped
+	qsim.X(q0)
+
+	fmt.Println("q0(flipped):")
+	for _, s := range qsim.State(q0) {
+		fmt.Println(s)
+	}
+
+	// add ancilla qubit
+	q3 := qsim.Zero()
+	q4 := qsim.Zero()
+
+	// error correction
+	qsim.CNOT(q0, q3).CNOT(q1, q3)
+	qsim.CNOT(q1, q4).CNOT(q2, q4)
+
+	m3 := qsim.Measure(q3)
+	m4 := qsim.Measure(q4)
+
+	qsim.CondX(m3.IsOne() && m4.IsZero(), q0)
+	qsim.CondX(m3.IsOne() && m4.IsOne(), q1)
+	qsim.CondX(m3.IsZero() && m4.IsOne(), q2)
+
+	// decoding
+	qsim.CNOT(q0, q2).CNOT(q0, q1)
+
+	fmt.Println("q0(corrected):")
+	for _, s := range qsim.State(q0) {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// q0:
+	// [0][  0]( 0.4472 0.0000i): 0.2000
+	// [1][  1]( 0.8944 0.0000i): 0.8000
+	// q0(flipped):
+	// [0][  0]( 0.8944 0.0000i): 0.8000
+	// [1][  1]( 0.4472 0.0000i): 0.2000
+	// q0(corrected):
+	// [0][  0]( 0.4472 0.0000i): 0.2000
+	// [1][  1]( 0.8944 0.0000i): 0.8000
+}
+
 func Example_any() {
 	h := gate.U(math.Pi/2, 0, math.Pi)
 	x := gate.U(math.Pi, 0, math.Pi)
@@ -1101,16 +1113,4 @@ func Example_any() {
 	// Output:
 	// [00][  0]( 0.7071 0.0000i): 0.5000
 	// [11][  3]( 0.7071 0.0000i): 0.5000
-}
-
-func ExampleQ_Underlying() {
-	qsim := q.New()
-	qsim.Zero()
-
-	for _, s := range qsim.Underlying().State() {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [0][  0]( 1.0000 0.0000i): 1.0000
 }

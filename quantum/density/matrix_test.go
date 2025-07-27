@@ -8,6 +8,7 @@ import (
 
 	"github.com/itsubaki/q/math/epsilon"
 	"github.com/itsubaki/q/math/matrix"
+	"github.com/itsubaki/q/math/vector"
 	"github.com/itsubaki/q/quantum/density"
 	"github.com/itsubaki/q/quantum/gate"
 	"github.com/itsubaki/q/quantum/qubit"
@@ -558,7 +559,7 @@ func TestMatrix_IsZero(t *testing.T) {
 		},
 		{
 			density.New([]density.State{
-				{1.0, qubit.New(0, 0)},
+				{1.0, qubit.New(vector.Zero(2))},
 			}),
 			true,
 		},
