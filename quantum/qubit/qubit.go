@@ -11,6 +11,7 @@ import (
 	"github.com/itsubaki/q/math/number"
 	"github.com/itsubaki/q/math/rand"
 	"github.com/itsubaki/q/math/vector"
+	"github.com/itsubaki/q/quantum/gate"
 )
 
 // Qubit is a qubit.
@@ -151,6 +152,322 @@ func (q *Qubit) U(theta, phi, lambda float64, idx int) *Qubit {
 			q.state.Data[i+j] = cos*a - e1*sin*b
 			q.state.Data[i+j+stride] = e0*sin*a + e2*cos*b
 		}
+	}
+
+	return q
+}
+
+// I applies I gate.
+func (q *Qubit) I(idx int) *Qubit {
+	return q
+}
+
+// H applies H gate.
+func (q *Qubit) H(idx int) *Qubit {
+	stride := 1 << (q.NumQubits() - 1 - idx)
+	for i := 0; i < q.Dim(); i += 2 * stride {
+		for j := range stride {
+			a, b := q.state.Data[i+j], q.state.Data[i+j+stride]
+			q.state.Data[i+j] = (a + b) / complex(math.Sqrt2, 0)
+			q.state.Data[i+j+stride] = (a - b) / complex(math.Sqrt2, 0)
+		}
+	}
+
+	return q
+}
+
+// X applies X gate.
+func (q *Qubit) X(idx int) *Qubit {
+	stride := 1 << (q.NumQubits() - 1 - idx)
+	for i := 0; i < q.Dim(); i += 2 * stride {
+		for j := range stride {
+			q.state.Data[i+j], q.state.Data[i+j+stride] = q.state.Data[i+j+stride], q.state.Data[i+j]
+		}
+	}
+
+	return q
+}
+
+// Y applies Y gate.
+func (q *Qubit) Y(idx int) *Qubit {
+	stride := 1 << (q.NumQubits() - 1 - idx)
+	for i := 0; i < q.Dim(); i += 2 * stride {
+		for j := range stride {
+			a, b := q.state.Data[i+j], q.state.Data[i+j+stride]
+			q.state.Data[i+j] = b * complex(0, -1)
+			q.state.Data[i+j+stride] = a * complex(0, 1)
+		}
+	}
+
+	return q
+}
+
+// Z applies Z gate.
+func (q *Qubit) Z(idx int) *Qubit {
+	stride := 1 << (q.NumQubits() - 1 - idx)
+	for i := 0; i < q.Dim(); i += 2 * stride {
+		for j := range stride {
+			q.state.Data[i+j+stride] *= -1
+		}
+	}
+
+	return q
+}
+
+// R applies a phase rotation of theta.
+func (q *Qubit) R(theta float64, idx int) *Qubit {
+	mask := 1 << (q.NumQubits() - 1 - idx)
+
+	phase := cmplx.Exp(complex(0, theta))
+	for i := range q.Dim() {
+		if (i & mask) == 0 {
+			continue
+		}
+
+		q.state.Data[i] *= phase
+	}
+
+	return q
+}
+
+// S applies the S gate.
+func (q *Qubit) S(idx int) *Qubit {
+	return q.R(math.Pi/2, idx)
+}
+
+// T applies the T gate.
+func (q *Qubit) T(idx int) *Qubit {
+	return q.R(math.Pi/4, idx)
+}
+
+// RX applies the rotation around X-axis.
+func (q *Qubit) RX(theta float64, idx int) *Qubit {
+	cos := math.Cos(theta / 2)
+	sin := math.Sin(theta / 2)
+
+	stride := 1 << (q.NumQubits() - 1 - idx)
+	for i := 0; i < q.Dim(); i += 2 * stride {
+		for j := range stride {
+			a, b := q.state.Data[i+j], q.state.Data[i+j+stride]
+			q.state.Data[i+j] = complex(cos, 0)*a - complex(0, sin)*b
+			q.state.Data[i+j+stride] = -1*complex(0, sin)*a + complex(cos, 0)*b
+		}
+	}
+
+	return q
+}
+
+// RY applies the rotation around Y-axis.
+func (q *Qubit) RY(theta float64, idx int) *Qubit {
+	cos := math.Cos(theta / 2)
+	sin := math.Sin(theta / 2)
+
+	stride := 1 << (q.NumQubits() - 1 - idx)
+	for i := 0; i < q.Dim(); i += 2 * stride {
+		for j := range stride {
+			a, b := q.state.Data[i+j], q.state.Data[i+j+stride]
+			q.state.Data[i+j] = complex(cos, 0)*a - complex(sin, 0)*b
+			q.state.Data[i+j+stride] = complex(sin, 0)*a + complex(cos, 0)*b
+		}
+	}
+
+	return q
+}
+
+// RZ applies the rotation around Z-axis.
+func (q *Qubit) RZ(theta float64, idx int) *Qubit {
+	e0 := cmplx.Exp(complex(0, -theta/2))
+	e1 := cmplx.Exp(complex(0, theta/2))
+
+	stride := 1 << (q.NumQubits() - 1 - idx)
+	for i := 0; i < q.Dim(); i += 2 * stride {
+		for j := range stride {
+			q.state.Data[i+j] *= e0
+			q.state.Data[i+j+stride] *= e1
+		}
+	}
+
+	return q
+}
+
+// CH applies the controlled-H gate.
+func (q *Qubit) CH(control, target int) *Qubit {
+	return q.ControlledH([]int{control}, target)
+}
+
+// CX applies the controlled-X gate.
+func (q *Qubit) CX(control, target int) *Qubit {
+	return q.ControlledX([]int{control}, target)
+}
+
+// CZ applies the controlled-Z gate.
+func (q *Qubit) CZ(control, target int) *Qubit {
+	return q.ControlledZ([]int{control}, target)
+}
+
+// CR applies a controlled rotation around the Z-axis.
+func (q *Qubit) CR(thehta float64, control, target int) *Qubit {
+	return q.ControlledR(thehta, []int{control}, target)
+}
+
+// ControlledH applies the controlled Hadamard gate.
+func (q *Qubit) ControlledH(control []int, target int) *Qubit {
+	n := q.NumQubits()
+
+	var cmask int
+	for _, c := range control {
+		cmask |= 1 << (n - 1 - c)
+	}
+	tmask := 1 << (n - 1 - target)
+
+	// iterate over all states
+	sqrt2 := complex(1/math.Sqrt2, 0)
+	for i := range q.Dim() {
+		if (i & cmask) != cmask {
+			continue
+		}
+
+		j := i ^ tmask
+		if i > j {
+			continue
+		}
+
+		a, b := q.state.Data[i], q.state.Data[j]
+		q.state.Data[i] = (a + b) * sqrt2
+		q.state.Data[j] = (a - b) * sqrt2
+	}
+
+	return q
+}
+
+// ControlledX applies the controlled-X gate.
+func (q *Qubit) ControlledX(control []int, target int) *Qubit {
+	n := q.NumQubits()
+
+	var cmask int
+	for _, c := range control {
+		cmask |= 1 << (n - 1 - c)
+	}
+	tmask := 1 << (n - 1 - target)
+
+	// iterate over all states
+	for i := 0; i < q.Dim(); i++ {
+		if (i & cmask) != cmask {
+			continue
+		}
+
+		j := i ^ tmask
+		if i > j {
+			continue
+		}
+
+		// swap
+		q.state.Data[i], q.state.Data[j] = q.state.Data[j], q.state.Data[i]
+	}
+
+	return q
+}
+
+// ControlledZ applies the controlled-Z gate.
+func (q *Qubit) ControlledZ(control []int, target int) *Qubit {
+	n := q.NumQubits()
+
+	var cmask int
+	for _, c := range control {
+		cmask |= 1 << (n - 1 - c)
+	}
+
+	tmask := 1 << (n - 1 - target)
+
+	// iterate over all states
+	for i := 0; i < q.Dim(); i++ {
+		if (i & cmask) != cmask {
+			continue
+		}
+
+		if (i & tmask) == tmask {
+			q.state.Data[i] *= -1
+		}
+	}
+
+	return q
+}
+
+// ControlledR applies a controlled rotation around the Z-axis.
+func (q *Qubit) ControlledR(theta float64, control []int, target int) *Qubit {
+	n := q.NumQubits()
+
+	var cmask int
+	for _, c := range control {
+		cmask |= 1 << (n - 1 - c)
+	}
+	tmask := 1 << (n - 1 - target)
+
+	// iterate over all states
+	phase := cmplx.Exp(complex(0, theta))
+	for i := 0; i < q.Dim(); i++ {
+		if (i & cmask) != cmask {
+			continue
+		}
+
+		if (i & tmask) == tmask {
+			q.state.Data[i] *= phase
+		}
+	}
+
+	return q
+}
+
+// Swap swaps the states of two qubits.
+func (q *Qubit) Swap(i, j int) *Qubit {
+	q.CX(i, j)
+	q.CX(j, i)
+	q.CX(i, j)
+	return q
+}
+
+// QFT applies the quantum Fourier transform.
+func (q *Qubit) QFT(idx ...int) *Qubit {
+	if len(idx) == 0 {
+		n := q.NumQubits()
+		idx = make([]int, n)
+		for i := range n {
+			idx[i] = i
+		}
+	}
+
+	for i := range idx {
+		q.H(idx[i])
+
+		k := 2
+		for j := i + 1; j < len(idx); j++ {
+			q.CR(gate.Theta(k), idx[i], idx[j])
+			k++
+		}
+	}
+
+	return q
+}
+
+// InvQFT applies the inverse quantum Ffourier transform.
+func (q *Qubit) InvQFT(idx ...int) *Qubit {
+	if len(idx) == 0 {
+		n := q.NumQubits()
+		idx = make([]int, n)
+		for i := range n {
+			idx[i] = i
+		}
+	}
+
+	len := len(idx)
+	for i := len - 1; i > -1; i-- {
+		k := len - i
+		for j := len - 1; j > i; j-- {
+			q.CR(-1*gate.Theta(k), idx[j], idx[i])
+			k--
+		}
+
+		q.H(idx[i])
 	}
 
 	return q
