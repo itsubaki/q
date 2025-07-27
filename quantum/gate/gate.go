@@ -156,8 +156,8 @@ func CR(theta float64, n, c, t int) *matrix.Matrix {
 // u is a (2x2) unitary matrix and returns a (2**n x 2**n) matrix.
 func Controlled(u *matrix.Matrix, n int, c []int, t int) *matrix.Matrix {
 	var mask int
-	for _, bit := range c {
-		mask |= (1 << (n - 1 - bit))
+	for _, b := range c {
+		mask |= (1 << (n - 1 - b))
 	}
 
 	s := (1 << n)
@@ -189,8 +189,8 @@ func Controlled(u *matrix.Matrix, n int, c []int, t int) *matrix.Matrix {
 // ControlledNot returns a controlled-not gate.
 func ControlledNot(n int, c []int, t int) *matrix.Matrix {
 	var mask int
-	for _, bit := range c {
-		mask |= (1 << (n - 1 - bit))
+	for _, b := range c {
+		mask |= (1 << (n - 1 - b))
 	}
 
 	s := 1 << n
@@ -213,8 +213,8 @@ func ControlledNot(n int, c []int, t int) *matrix.Matrix {
 // ControlledZ returns a controlled-z gate.
 func ControlledZ(n int, c []int, t int) *matrix.Matrix {
 	var mask int
-	for _, bit := range c {
-		mask |= (1 << (n - 1 - bit))
+	for _, b := range c {
+		mask |= (1 << (n - 1 - b))
 	}
 
 	g := I(n)
@@ -230,8 +230,8 @@ func ControlledZ(n int, c []int, t int) *matrix.Matrix {
 // ControlledS returns a controlled-s gate.
 func ControlledS(n int, c []int, t int) *matrix.Matrix {
 	var mask int
-	for _, bit := range c {
-		mask |= (1 << (n - 1 - bit))
+	for _, b := range c {
+		mask |= (1 << (n - 1 - b))
 	}
 
 	g := I(n)
@@ -250,8 +250,8 @@ func ControlledR(theta float64, n int, c []int, t int) *matrix.Matrix {
 	e := cmplx.Exp(complex(0, theta))
 
 	var mask int
-	for _, bit := range c {
-		mask |= (1 << (n - 1 - bit))
+	for _, b := range c {
+		mask |= (1 << (n - 1 - b))
 	}
 
 	g := I(n)

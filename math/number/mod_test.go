@@ -31,14 +31,14 @@ func TestModExp(t *testing.T) {
 		want    int
 	}{
 		{0, 15, 1, 0},
-		{15, 0, 1, 1},
+		{15, 0, 1, 0},
 		{15, 3, 1, 0},
 	}
 
 	for _, c := range cases {
 		got := number.ModExp(c.a, c.r, c.N)
 		if got != c.want {
-			t.Errorf("got=%d, %d^%d) mod %d = %d\n", got, c.a, c.r, c.N, c.want)
+			t.Errorf("got=%d, want=%v; %d^%d mod %d\n", got, c.want, c.a, c.r, c.N)
 		}
 	}
 }

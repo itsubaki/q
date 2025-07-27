@@ -2,15 +2,7 @@ package number
 
 // ModExp returns a**r mod N.
 func ModExp(a, r, N int) int {
-	if a == 0 {
-		return 0
-	}
-
-	if r == 0 {
-		return 1
-	}
-
-	if N == 1 {
+	if a == 0 || N == 1 {
 		return 0
 	}
 

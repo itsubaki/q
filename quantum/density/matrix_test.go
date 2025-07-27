@@ -491,18 +491,18 @@ func TestPartialTrace(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		for _, cs := range c.cs {
-			got := density.New(c.s).PartialTrace(cs.idx)
+		for _, s := range c.cs {
+			got := density.New(c.s).PartialTrace(s.idx)
 
 			p, q := got.Dim()
-			if p != len(cs.want) || q != len(cs.want) {
-				t.Errorf("got=%v, %v want=%v", p, q, cs.want)
+			if p != len(s.want) || q != len(s.want) {
+				t.Errorf("got=%v, %v want=%v", p, q, s.want)
 			}
 
-			for i := range cs.want {
-				for j := range cs.want[0] {
-					if cmplx.Abs(got.At(i, j)-cs.want[i][j]) > c.eps {
-						t.Errorf("%v:%v, got=%v, want=%v", i, j, got.At(i, j), cs.want[i][j])
+			for i := range s.want {
+				for j := range s.want[0] {
+					if cmplx.Abs(got.At(i, j)-s.want[i][j]) > c.eps {
+						t.Errorf("%v:%v, got=%v, want=%v", i, j, got.At(i, j), s.want[i][j])
 					}
 				}
 			}

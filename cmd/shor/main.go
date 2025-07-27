@@ -84,22 +84,22 @@ func main() {
 	qsim.Measure(r1...)
 	print("measure reg1", qsim, r0, r1)
 
-	for _, st := range qsim.State(r0) {
-		i, m := st.Int(), st.BinaryString()
-		s, r, d, ok := number.FindOrder(a, N, fmt.Sprintf("0.%s", m))
+	for _, s := range qsim.State(r0) {
+		i, m := s.Int(), s.BinaryString()
+		ss, r, d, ok := number.FindOrder(a, N, fmt.Sprintf("0.%s", m))
 		if !ok || number.IsOdd(r) {
-			fmt.Printf("  i=%3d: N=%d, a=%d, t=%d; s/r=%2d/%2d ([0.%v]~%.4f);\n", i, N, a, t, s, r, m, d)
+			fmt.Printf("  i=%3d: N=%d, a=%d, t=%d; s/r=%2d/%2d ([0.%v]~%.4f);\n", i, N, a, t, ss, r, m, d)
 			continue
 		}
 
 		p0 := number.GCD(number.Pow(a, r/2)-1, N)
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
 		if number.IsTrivial(N, p0, p1) {
-			fmt.Printf("  i=%3d: N=%d, a=%d, t=%d; s/r=%2d/%2d ([0.%v]~%.4f); p=%v, q=%v.\n", i, N, a, t, s, r, m, d, p0, p1)
+			fmt.Printf("  i=%3d: N=%d, a=%d, t=%d; s/r=%2d/%2d ([0.%v]~%.4f); p=%v, q=%v.\n", i, N, a, t, ss, r, m, d, p0, p1)
 			continue
 		}
 
-		fmt.Printf("* i=%3d: N=%d, a=%d, t=%d; s/r=%2d/%2d ([0.%v]~%.4f); p=%v, q=%v.\n", i, N, a, t, s, r, m, d, p0, p1)
+		fmt.Printf("* i=%3d: N=%d, a=%d, t=%d; s/r=%2d/%2d ([0.%v]~%.4f); p=%v, q=%v.\n", i, N, a, t, ss, r, m, d, p0, p1)
 	}
 }
 
@@ -107,9 +107,9 @@ func print(desc string, qsim *q.Q, reg ...any) {
 	fmt.Println(desc)
 
 	max := slices.Max(qsim.Probability())
-	for _, st := range qsim.State(reg...) {
-		p := strings.Repeat("*", int(st.Probability()/max*32))
-		fmt.Printf("%s: %s\n", st, p)
+	for _, s := range qsim.State(reg...) {
+		p := strings.Repeat("*", int(s.Probability()/max*32))
+		fmt.Printf("%s: %s\n", s, p)
 	}
 
 	fmt.Println()

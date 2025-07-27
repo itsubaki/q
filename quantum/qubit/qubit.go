@@ -32,12 +32,18 @@ func New(v *vector.Vector) *Qubit {
 
 // Zero returns a qubit in the zero state.
 func Zero(n ...int) *Qubit {
-	return New(vector.TensorProductN(vector.New(1, 0), n...))
+	return New(vector.TensorProductN(
+		vector.New(1, 0),
+		n...,
+	))
 }
 
 // One returns a qubit in the one state.
 func One(n ...int) *Qubit {
-	return New(vector.TensorProductN(vector.New(0, 1), n...))
+	return New(vector.TensorProductN(
+		vector.New(0, 1),
+		n...,
+	))
 }
 
 // Plus returns a qubit in the plus state.
@@ -130,8 +136,8 @@ func (q *Qubit) TensorProduct(qb *Qubit) *Qubit {
 
 // Apply returns a qubit that is applied m.
 func (q *Qubit) Apply(m ...*matrix.Matrix) *Qubit {
-	for _, mm := range m {
-		q.state = q.state.Apply(mm)
+	for _, v := range m {
+		q.state = q.state.Apply(v)
 	}
 
 	return q
