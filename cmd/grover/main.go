@@ -43,9 +43,9 @@ import (
 // This aligns with Grover's algorithm, which assumes only a condition-checking black box (oracle),
 // not prior knowledge of the answer itself.
 func oracle(qsim *q.Q, r, s, a []q.Qubit) {
-	xor := func(x, y, t q.Qubit) {
-		qsim.CNOT(x, t)
-		qsim.CNOT(y, t)
+	xor := func(x, y, z q.Qubit) {
+		qsim.CNOT(x, z)
+		qsim.CNOT(y, z)
 	}
 
 	xor(r[0], r[1], s[0]) // a != b
