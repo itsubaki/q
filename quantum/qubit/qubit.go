@@ -137,9 +137,8 @@ func (q *Qubit) TensorProduct(qb *Qubit) *Qubit {
 
 // U applies a unitary gate.
 func (q *Qubit) U(theta, phi, lambda float64, idx int) *Qubit {
-	v := complex(theta/2, 0)
-	cos := cmplx.Cos(v)
-	sin := cmplx.Sin(v)
+	sin := cmplx.Sin(complex(theta/2, 0))
+	cos := cmplx.Cos(complex(theta/2, 0))
 
 	e0 := cmplx.Exp(complex(0, phi))
 	e1 := cmplx.Exp(complex(0, lambda))
