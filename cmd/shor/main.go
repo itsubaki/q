@@ -73,9 +73,9 @@ func main() {
 	qsim.H(r0...)
 	print("create superposition", qsim, r0, r1)
 
-	for i := range r0 {
-		ApplyControlledModExp2(qsim, a, i, N, r0[i], r1)
-		print(fmt.Sprintf("apply controlled-U[%d]", i), qsim, r0, r1)
+	for j := range r0 {
+		ApplyControlledModExp2(qsim, a, j, N, r0[j], r1)
+		print(fmt.Sprintf("apply controlled-U[%d]", j), qsim, r0, r1)
 	}
 
 	qsim.InvQFT(r0...)

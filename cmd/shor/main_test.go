@@ -11,7 +11,7 @@ import (
 	"github.com/itsubaki/q/quantum/gate"
 )
 
-func Example_controlledModExp2mod15() {
+func ExampleApplyControlledModExp2_mod15() {
 	qsim := q.New()
 	c := qsim.Zero()
 	t := qsim.ZeroLog2(15)
@@ -37,7 +37,7 @@ func Example_controlledModExp2mod15() {
 	// [1 1101][  1  13]( 1.0000 0.0000i): 1.0000
 }
 
-func Example_controlledModExp2mod21() {
+func ExampleApplyControlledModExp2_mod21() {
 	qsim := q.New()
 	c := qsim.Zero()
 	t := qsim.ZeroLog2(21)
