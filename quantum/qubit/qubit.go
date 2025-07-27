@@ -473,6 +473,11 @@ func (q *Qubit) InvQFT(idx ...int) *Qubit {
 	return q
 }
 
+// Update updates the state of the qubit.
+func (q *Qubit) Update(state *vector.Vector) {
+	q.state = state
+}
+
 // Apply returns a qubit that is applied m.
 func (q *Qubit) Apply(u ...*matrix.Matrix) *Qubit {
 	for _, v := range u {

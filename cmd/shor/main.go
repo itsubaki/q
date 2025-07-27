@@ -10,7 +10,9 @@ import (
 	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/math/number"
 	"github.com/itsubaki/q/math/rand"
+	"github.com/itsubaki/q/math/vector"
 	"github.com/itsubaki/q/quantum/gate"
+	"github.com/itsubaki/q/quantum/qubit"
 )
 
 // go run main.go --N 15
@@ -84,23 +86,27 @@ func main() {
 	qsim.Measure(r1...)
 	print("measure reg1", qsim, r0, r1)
 
+	var prop float64
 	for _, s := range qsim.State(r0) {
 		i, m := s.Int(), s.BinaryString()
 		ss, r, d, ok := number.FindOrder(a, N, fmt.Sprintf("0.%s", m))
 		if !ok || number.IsOdd(r) {
-			fmt.Printf("  i=%3d: N=%d, a=%d, t=%d; s/r=%2d/%2d ([0.%v]~%.4f);\n", i, N, a, t, ss, r, m, d)
+			fmt.Printf("  i=%4d: N=%d, a=%d, t=%d; s/r=%4d/%4d ([0.%v]~%.4f);\n", i, N, a, t, ss, r, m, d)
 			continue
 		}
 
 		p0 := number.GCD(number.Pow(a, r/2)-1, N)
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
 		if number.IsTrivial(N, p0, p1) {
-			fmt.Printf("  i=%3d: N=%d, a=%d, t=%d; s/r=%2d/%2d ([0.%v]~%.4f); p=%v, q=%v.\n", i, N, a, t, ss, r, m, d, p0, p1)
+			fmt.Printf("  i=%4d: N=%d, a=%d, t=%d; s/r=%4d/%4d ([0.%v]~%.4f); p=%v, q=%v.\n", i, N, a, t, ss, r, m, d, p0, p1)
 			continue
 		}
 
-		fmt.Printf("* i=%3d: N=%d, a=%d, t=%d; s/r=%2d/%2d ([0.%v]~%.4f); p=%v, q=%v.\n", i, N, a, t, ss, r, m, d, p0, p1)
+		fmt.Printf("* i=%4d: N=%d, a=%d, t=%d; s/r=%4d/%4d ([0.%v]~%.4f); p=%v, q=%v.\n", i, N, a, t, ss, r, m, d, p0, p1)
+		prop += s.Probability()
 	}
+
+	fmt.Printf("total probability: %.8f\n", prop)
 }
 
 func print(desc string, qsim *q.Q, reg ...any) {
@@ -115,17 +121,54 @@ func print(desc string, qsim *q.Q, reg ...any) {
 	fmt.Println()
 }
 
-// ApplyControlledModExp2 applies Controlled-ModExp2 gate.
+// ControlledModExp applies controlled modular exponentiation.
 func ApplyControlledModExp2(qsim *q.Q, a, j, N int, control q.Qubit, target []q.Qubit) {
-	n := qsim.NumQubits()
-	g := ControlledModExp2(n, a, j, N, control.Index(), q.Index(target...))
-	qsim.Apply(g)
+	ControlledModExp2(qsim.Underlying(), a, j, N, control.Index(), q.Index(target...))
+}
+
+// ControlledModExp2 applies the controlled modular exponentiation operation.
+// |j>|k> -> |j>|a**(2**j) * k mod N>.
+func ControlledModExp2(qb *qubit.Qubit, a, j, N, control int, target []int) {
+	n := qb.NumQubits()
+	state := qb.Amplitude()
+	a2jModN := number.ModExp2(a, j, N)
+	cmask := 1 << (n - 1 - control)
+
+	newState := make([]complex128, qb.Dim())
+	for i := range qb.Dim() {
+		if (i & cmask) == 0 {
+			newState[i] += state[i]
+			continue
+		}
+
+		// binary to integer
+		var k int
+		for j, t := range target {
+			k |= ((i >> (n - 1 - t)) & 1) << (len(target) - 1 - j)
+		}
+
+		// a**(2**j) * k mod N
+		a2jkModN := a2jModN * k % N
+
+		// integer to binary
+		newIdx := i
+		for j, t := range target {
+			bit := (a2jkModN >> (len(target) - 1 - j)) & 1
+			pos := n - 1 - t
+			newIdx = (newIdx & ^(1 << pos)) | (bit << pos)
+		}
+
+		// update the state
+		newState[newIdx] += state[i]
+	}
+
+	// update the qubit state
+	qb.Update(vector.New(newState...))
 }
 
 // ControlledModExp2 returns gate of controlled modular exponentiation operation.
 // |j>|k> -> |j>|a**(2**j) * k mod N>.
-// len(t) must be larger than log2(N).
-func ControlledModExp2(n, a, j, N, c int, t []int) *matrix.Matrix {
+func ControlledModExp2g(n, a, j, N, c int, t []int) *matrix.Matrix {
 	m := gate.I(n)
 	r1len := len(t)
 	a2jmodN := number.ModExp2(a, j, N)
