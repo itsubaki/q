@@ -242,15 +242,15 @@ func (q *Qubit) T(idx int) *Qubit {
 
 // RX applies the rotation around X-axis.
 func (q *Qubit) RX(theta float64, idx int) *Qubit {
-	cos := math.Cos(theta / 2)
-	sin := math.Sin(theta / 2)
+	sin := cmplx.Sin(complex(theta/2, 0))
+	cos := cmplx.Cos(complex(theta/2, 0))
 
 	stride := 1 << (q.NumQubits() - 1 - idx)
 	for i := 0; i < q.Dim(); i += 2 * stride {
 		for j := range stride {
 			a, b := q.state.Data[i+j], q.state.Data[i+j+stride]
-			q.state.Data[i+j] = complex(cos, 0)*a - complex(0, sin)*b
-			q.state.Data[i+j+stride] = -1*complex(0, sin)*a + complex(cos, 0)*b
+			q.state.Data[i+j] = cos*a - 1i*sin*b
+			q.state.Data[i+j+stride] = -1i*sin*a + cos*b
 		}
 	}
 
@@ -259,15 +259,15 @@ func (q *Qubit) RX(theta float64, idx int) *Qubit {
 
 // RY applies the rotation around Y-axis.
 func (q *Qubit) RY(theta float64, idx int) *Qubit {
-	cos := math.Cos(theta / 2)
-	sin := math.Sin(theta / 2)
+	sin := cmplx.Sin(complex(theta/2, 0))
+	cos := cmplx.Cos(complex(theta/2, 0))
 
 	stride := 1 << (q.NumQubits() - 1 - idx)
 	for i := 0; i < q.Dim(); i += 2 * stride {
 		for j := range stride {
 			a, b := q.state.Data[i+j], q.state.Data[i+j+stride]
-			q.state.Data[i+j] = complex(cos, 0)*a - complex(sin, 0)*b
-			q.state.Data[i+j+stride] = complex(sin, 0)*a + complex(cos, 0)*b
+			q.state.Data[i+j] = cos*a - 1*sin*b
+			q.state.Data[i+j+stride] = sin*a + cos*b
 		}
 	}
 
