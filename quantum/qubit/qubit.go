@@ -227,13 +227,11 @@ func (q *Qubit) String() string {
 // If no index is provided, it returns the state vector of all qubits.
 func (q *Qubit) State(idx ...[]int) []State {
 	if len(idx) < 1 {
-		n := q.NumQubits()
-		all := make([]int, n)
-		for i := range n {
-			all[i] = i
+		idx = make([][]int, 1)
+		idx[0] = make([]int, q.NumQubits())
+		for i := range idx[0] {
+			idx[0][i] = i
 		}
-
-		idx = append(idx, all)
 	}
 
 	n := q.NumQubits()
