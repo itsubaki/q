@@ -134,15 +134,6 @@ func (q *Qubit) TensorProduct(qb *Qubit) *Qubit {
 	return q
 }
 
-// Apply returns a qubit that is applied m.
-func (q *Qubit) Apply(m ...*matrix.Matrix) *Qubit {
-	for _, v := range m {
-		q.state = q.state.Apply(v)
-	}
-
-	return q
-}
-
 // U applies a unitary gate.
 func (q *Qubit) U(theta, phi, lambda float64, idx int) *Qubit {
 	v := complex(theta/2, 0)
@@ -160,6 +151,15 @@ func (q *Qubit) U(theta, phi, lambda float64, idx int) *Qubit {
 			q.state.Data[i+j] = cos*a - e1*sin*b
 			q.state.Data[i+j+stride] = e0*sin*a + e2*cos*b
 		}
+	}
+
+	return q
+}
+
+// Apply returns a qubit that is applied m.
+func (q *Qubit) Apply(u ...*matrix.Matrix) *Qubit {
+	for _, v := range u {
+		q.state = q.state.Apply(v)
 	}
 
 	return q
