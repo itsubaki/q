@@ -476,6 +476,7 @@ func (q *Qubit) InvQFT(idx ...int) *Qubit {
 // Update updates the state of the qubit.
 func (q *Qubit) Update(state *vector.Vector) {
 	q.state = state
+	q.Normalize()
 }
 
 // Apply returns a qubit that is applied m.

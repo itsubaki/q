@@ -362,6 +362,19 @@ func ExampleQubit_InvQFT() {
 	// [001][  1]( 1.0000 0.0000i): 1.0000
 }
 
+func ExampleQubit_Update() {
+	qb := qubit.Zero(2)
+	qb.Update(vector.New(1, 0, 0, 1))
+
+	for _, s := range qb.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00][  0]( 0.7071 0.0000i): 0.5000
+	// [11][  3]( 0.7071 0.0000i): 0.5000
+}
+
 func ExampleQubit_State() {
 	v := qubit.Zero(4).Apply(gate.H(4))
 
