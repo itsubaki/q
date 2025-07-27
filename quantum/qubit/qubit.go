@@ -135,8 +135,8 @@ func (q *Qubit) TensorProduct(qb *Qubit) *Qubit {
 }
 
 // Apply returns a qubit that is applied m.
-func (q *Qubit) Apply(m ...*matrix.Matrix) *Qubit {
-	for _, v := range m {
+func (q *Qubit) Apply(u ...*matrix.Matrix) *Qubit {
+	for _, v := range u {
 		q.state = q.state.Apply(v)
 	}
 
