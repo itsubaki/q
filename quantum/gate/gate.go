@@ -5,7 +5,6 @@ import (
 	"math/cmplx"
 
 	"github.com/itsubaki/q/math/matrix"
-	"github.com/itsubaki/q/math/number"
 )
 
 // Theta returns 2 * pi / 2**k
@@ -299,44 +298,6 @@ func QFT(n int) *matrix.Matrix {
 	}
 
 	return g
-}
-
-// ControlledModExp2 returns gate of controlled modular exponentiation operation.
-// |j>|k> -> |j>|a**(2**j) * k mod N>.
-// len(t) must be larger than log2(N).
-func ControlledModExp2(n, a, j, N, c int, t []int) *matrix.Matrix {
-	m := I(n)
-	r1len := len(t)
-	a2jmodN := number.ModExp2(a, j, N)
-
-	d, _ := m.Dim()
-	idx := make([]int, d)
-	for i := range d {
-		if (i>>(n-1-c))&1 == 0 {
-			// control bit is 0, then do nothing
-			idx[i] = i
-			continue
-		}
-
-		// r1len bits of i
-		mask := (1 << r1len) - 1
-		k := i & mask
-		if k > N-1 {
-			idx[i] = i
-			continue
-		}
-
-		// r0len bits of i + a2jkmodN bits
-		a2jkmodN := a2jmodN * k % N
-		idx[i] = (i >> r1len << r1len) | a2jkmodN
-	}
-
-	data := make([][]complex128, d)
-	for i, j := range idx {
-		data[j] = m.Row(i)
-	}
-
-	return matrix.New(data...)
 }
 
 // TensorProduct returns the tensor product of 'u' at specified indices over 'n' qubits.

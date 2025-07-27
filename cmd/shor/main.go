@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/itsubaki/q"
+	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/math/number"
 	"github.com/itsubaki/q/math/rand"
 	"github.com/itsubaki/q/quantum/gate"
@@ -73,7 +74,7 @@ func main() {
 	print("create superposition", qsim, r0, r1)
 
 	for i := range r0 {
-		ControlledModExp2(qsim, a, i, N, r0[i], r1)
+		ApplyControlledModExp2(qsim, a, i, N, r0[i], r1)
 		print(fmt.Sprintf("apply controlled-U[%d]", i), qsim, r0, r1)
 	}
 
@@ -114,9 +115,47 @@ func print(desc string, qsim *q.Q, reg ...any) {
 	fmt.Println()
 }
 
-// ControlledModExp2 applies Controlled-ModExp2 gate.
-func ControlledModExp2(qsim *q.Q, a, j, N int, control q.Qubit, target []q.Qubit) {
+// ApplyControlledModExp2 applies Controlled-ModExp2 gate.
+func ApplyControlledModExp2(qsim *q.Q, a, j, N int, control q.Qubit, target []q.Qubit) {
 	n := qsim.NumQubits()
-	g := gate.ControlledModExp2(n, a, j, N, control.Index(), q.Index(target...))
+	g := ControlledModExp2(n, a, j, N, control.Index(), q.Index(target...))
 	qsim.Apply(g)
+}
+
+// ControlledModExp2 returns gate of controlled modular exponentiation operation.
+// |j>|k> -> |j>|a**(2**j) * k mod N>.
+// len(t) must be larger than log2(N).
+func ControlledModExp2(n, a, j, N, c int, t []int) *matrix.Matrix {
+	m := gate.I(n)
+	r1len := len(t)
+	a2jmodN := number.ModExp2(a, j, N)
+
+	d, _ := m.Dim()
+	idx := make([]int, d)
+	for i := range d {
+		if (i>>(n-1-c))&1 == 0 {
+			// control bit is 0, then do nothing
+			idx[i] = i
+			continue
+		}
+
+		// r1len bits of i
+		mask := (1 << r1len) - 1
+		k := i & mask
+		if k > N-1 {
+			idx[i] = i
+			continue
+		}
+
+		// r0len bits of i + a2jkmodN bits
+		a2jkmodN := a2jmodN * k % N
+		idx[i] = (i >> r1len << r1len) | a2jkmodN
+	}
+
+	data := make([][]complex128, d)
+	for i, j := range idx {
+		data[j] = m.Row(i)
+	}
+
+	return matrix.New(data...)
 }
