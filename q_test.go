@@ -96,7 +96,7 @@ func ExampleQ_Reset() {
 	qsim := q.New()
 
 	r := qsim.Zeros(2)
-	qsim.H(r...)
+	qsim.X(r[0])
 	qsim.Reset(r...)
 
 	for _, s := range qsim.State() {
