@@ -289,6 +289,16 @@ func (q *Qubit) RZ(theta float64, idx int) *Qubit {
 	return q
 }
 
+// C applies a controlled gate.
+func (q *Qubit) C(u *matrix.Matrix, control, target int) *Qubit {
+	return q.Controlled(u, []int{control}, target)
+}
+
+// CU applies a controlled unitary operation.
+func (q *Qubit) CU(theta, phi, lambda float64, control, target int) *Qubit {
+	return q.ControlledU(theta, phi, lambda, []int{control}, target)
+}
+
 // CH applies the controlled-H gate.
 func (q *Qubit) CH(control, target int) *Qubit {
 	return q.ControlledH([]int{control}, target)
@@ -307,6 +317,69 @@ func (q *Qubit) CZ(control, target int) *Qubit {
 // CR applies a controlled rotation around the Z-axis.
 func (q *Qubit) CR(thehta float64, control, target int) *Qubit {
 	return q.ControlledR(thehta, []int{control}, target)
+}
+
+// ControlledU applies a controlled 2x2 unitary gate U to the target qubit.
+func (q *Qubit) Controlled(u *matrix.Matrix, control []int, target int) *Qubit {
+	n := q.NumQubits()
+
+	var cmask int
+	for _, c := range control {
+		cmask |= 1 << (n - 1 - c)
+	}
+	tmask := 1 << (n - 1 - target)
+
+	for i := range q.Dim() {
+		if (i & cmask) != cmask {
+			continue
+		}
+
+		j := i ^ tmask
+		if i > j {
+			continue
+		}
+
+		a, b := q.state.Data[i], q.state.Data[j]
+		q.state.Data[i] = u.At(0, 0)*a + u.At(0, 1)*b
+		q.state.Data[j] = u.At(1, 0)*a + u.At(1, 1)*b
+	}
+
+	return q
+}
+
+// ControlledU applies a controlled unitary operation.
+func (q *Qubit) ControlledU(theta, phi, lambda float64, control []int, target int) *Qubit {
+	n := q.NumQubits()
+
+	var cmask int
+	for _, c := range control {
+		cmask |= 1 << (n - 1 - c)
+	}
+	tmask := 1 << (n - 1 - target)
+
+	sin := cmplx.Sin(complex(theta/2, 0))
+	cos := cmplx.Cos(complex(theta/2, 0))
+
+	e0 := cmplx.Exp(complex(0, phi))
+	e1 := cmplx.Exp(complex(0, lambda))
+	e2 := cmplx.Exp(complex(0, phi+lambda))
+
+	for i := range q.Dim() {
+		if (i & cmask) != cmask {
+			continue
+		}
+
+		j := i ^ tmask
+		if i > j {
+			continue
+		}
+
+		a, b := q.state.Data[i], q.state.Data[j]
+		q.state.Data[i] = cos*a - e1*sin*b
+		q.state.Data[j] = e0*sin*a + e2*cos*b
+	}
+
+	return q
 }
 
 // ControlledH applies the controlled Hadamard gate.

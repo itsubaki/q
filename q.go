@@ -225,6 +225,21 @@ func (q *Q) RZ(theta float64, qb ...Qubit) *Q {
 	return q
 }
 
+// C applies controlled operation.
+func (q *Q) C(u *matrix.Matrix, control, target Qubit) *Q {
+	return q.Controlled(u, []Qubit{control}, []Qubit{target})
+}
+
+// CU applies controlled unitary operation.
+func (q *Q) CU(theta, phi, lambda float64, control, target Qubit) *Q {
+	return q.ControlledU(theta, phi, lambda, []Qubit{control}, []Qubit{target})
+}
+
+// CX applies CNOT gate.
+func (q *Q) CX(control, target Qubit) *Q {
+	return q.ControlledNot([]Qubit{control}, []Qubit{target})
+}
+
 // CNOT applies CNOT gate.
 func (q *Q) CNOT(control, target Qubit) *Q {
 	return q.ControlledNot([]Qubit{control}, []Qubit{target})
@@ -251,6 +266,24 @@ func (q *Q) CCZ(control0, control1, target Qubit) *Q {
 // CR applies Controlled-R gate.
 func (q *Q) CR(theta float64, control, target Qubit) *Q {
 	return q.ControlledR(theta, []Qubit{control}, []Qubit{target})
+}
+
+// Controlled applies controlled operation.
+func (q *Q) Controlled(u *matrix.Matrix, control, target []Qubit) *Q {
+	for i := range target {
+		q.qb.Controlled(u, Index(control...), target[i].Index())
+	}
+
+	return q
+}
+
+// ControlledU applies controlled unitary operation.
+func (q *Q) ControlledU(theta, phi, lambda float64, control, target []Qubit) *Q {
+	for i := range target {
+		q.qb.ControlledU(theta, phi, lambda, Index(control...), target[i].Index())
+	}
+
+	return q
 }
 
 // ControlledH applies controlled-Hadamard gate.
@@ -306,28 +339,22 @@ func (q *Q) Apply(u *matrix.Matrix, qb ...Qubit) *Q {
 	return q
 }
 
-func (q *Q) C(u *matrix.Matrix, control, target Qubit) *Q {
-	return q.Controlled(u, []Qubit{control}, []Qubit{target})
-}
-
-func (q *Q) Controlled(u *matrix.Matrix, control, target []Qubit) *Q {
-	n := q.NumQubits()
-	for _, t := range target {
-		g := gate.Controlled(u, n, Index(control...), t.Index())
-		q.qb.Apply(g)
+// CondX applies X gate if condition is true.
+func (q *Q) CondX(condition bool, qb ...Qubit) *Q {
+	if condition {
+		return q.X(qb...)
 	}
 
 	return q
 }
 
-// CondX applies X gate if condition is true.
-func (q *Q) CondX(condition bool, qb ...Qubit) *Q {
-	return q.Cond(condition, gate.X(), qb...)
-}
-
 // CondZ applies Z gate if condition is true.
 func (q *Q) CondZ(condition bool, qb ...Qubit) *Q {
-	return q.Cond(condition, gate.Z(), qb...)
+	if condition {
+		return q.Z(qb...)
+	}
+
+	return q
 }
 
 // Cond applies m if condition is true.

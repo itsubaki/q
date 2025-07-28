@@ -96,13 +96,7 @@ func ExampleQ_Reset() {
 	qsim := q.New()
 
 	r := qsim.Zeros(2)
-	qsim.Reset(r...)
-
-	for _, s := range qsim.State() {
-		fmt.Println(s)
-	}
-
-	qsim.X(r...)
+	qsim.H(r...)
 	qsim.Reset(r...)
 
 	for _, s := range qsim.State() {
@@ -110,7 +104,6 @@ func ExampleQ_Reset() {
 	}
 
 	// Output:
-	// [00][  0]( 1.0000 0.0000i): 1.0000
 	// [00][  0]( 1.0000 0.0000i): 1.0000
 }
 
@@ -256,7 +249,8 @@ func ExampleQ_X() {
 func ExampleQ_Y() {
 	qsim := q.New()
 
-	q0 := qsim.One()
+	q0 := qsim.Zero()
+	qsim.H(q0)
 	qsim.Y(q0)
 
 	for _, s := range qsim.State() {
@@ -264,13 +258,15 @@ func ExampleQ_Y() {
 	}
 
 	// Output:
-	// [0][  0]( 0.0000-1.0000i): 1.0000
+	// [0][  0]( 0.0000-0.7071i): 0.5000
+	// [1][  1]( 0.0000 0.7071i): 0.5000
 }
 
 func ExampleQ_Z() {
 	qsim := q.New()
 
-	q0 := qsim.One()
+	q0 := qsim.Zero()
+	qsim.H(q0)
 	qsim.Z(q0)
 
 	for _, s := range qsim.State() {
@@ -278,13 +274,15 @@ func ExampleQ_Z() {
 	}
 
 	// Output:
-	// [1][  1](-1.0000 0.0000i): 1.0000
+	// [0][  0]( 0.7071 0.0000i): 0.5000
+	// [1][  1](-0.7071 0.0000i): 0.5000
 }
 
 func ExampleQ_S() {
 	qsim := q.New()
 
-	q0 := qsim.One()
+	q0 := qsim.Zero()
+	qsim.H(q0)
 	qsim.S(q0)
 
 	for _, s := range qsim.State() {
@@ -292,13 +290,15 @@ func ExampleQ_S() {
 	}
 
 	// Output:
-	// [1][  1]( 0.0000 1.0000i): 1.0000
+	// [0][  0]( 0.7071 0.0000i): 0.5000
+	// [1][  1]( 0.0000 0.7071i): 0.5000
 }
 
 func ExampleQ_T() {
 	qsim := q.New()
 
-	q0 := qsim.One()
+	q0 := qsim.Zero()
+	qsim.H(q0)
 	qsim.T(q0)
 
 	for _, s := range qsim.State() {
@@ -306,13 +306,15 @@ func ExampleQ_T() {
 	}
 
 	// Output:
-	// [1][  1]( 0.7071 0.7071i): 1.0000
+	// [0][  0]( 0.7071 0.0000i): 0.5000
+	// [1][  1]( 0.5000 0.5000i): 0.5000
 }
 
 func ExampleQ_R() {
 	qsim := q.New()
 
-	q0 := qsim.One()
+	q0 := qsim.Zero()
+	qsim.H(q0)
 	qsim.R(2*math.Pi/4, q0)
 
 	for _, s := range qsim.State() {
@@ -320,13 +322,15 @@ func ExampleQ_R() {
 	}
 
 	// Output:
-	// [1][  1]( 0.0000 1.0000i): 1.0000
+	// [0][  0]( 0.7071 0.0000i): 0.5000
+	// [1][  1]( 0.0000 0.7071i): 0.5000
 }
 
 func ExampleQ_RX() {
 	qsim := q.New()
 
 	q0 := qsim.Zero()
+	qsim.H(q0)
 	qsim.RX(math.Pi, q0)
 
 	for _, s := range qsim.State() {
@@ -334,13 +338,15 @@ func ExampleQ_RX() {
 	}
 
 	// Output:
-	// [1][  1]( 0.0000-1.0000i): 1.0000
+	// [0][  0]( 0.0000-0.7071i): 0.5000
+	// [1][  1]( 0.0000-0.7071i): 0.5000
 }
 
 func ExampleQ_RY() {
 	qsim := q.New()
 
 	q0 := qsim.Zero()
+	qsim.H(q0)
 	qsim.RY(math.Pi, q0)
 
 	for _, s := range qsim.State() {
@@ -348,13 +354,15 @@ func ExampleQ_RY() {
 	}
 
 	// Output:
-	// [1][  1]( 1.0000 0.0000i): 1.0000
+	// [0][  0](-0.7071 0.0000i): 0.5000
+	// [1][  1]( 0.7071 0.0000i): 0.5000
 }
 
 func ExampleQ_RZ() {
 	qsim := q.New()
 
 	q0 := qsim.Zero()
+	qsim.H(q0)
 	qsim.RZ(math.Pi, q0)
 
 	for _, s := range qsim.State() {
@@ -362,16 +370,69 @@ func ExampleQ_RZ() {
 	}
 
 	// Output:
-	// [0][  0]( 0.0000-1.0000i): 1.0000
+	// [0][  0]( 0.0000-0.7071i): 0.5000
+	// [1][  1]( 0.0000 0.7071i): 0.5000
+}
+
+func ExampleQ_C() {
+	qsim := q.New()
+
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+
+	qsim.H(q0)
+	qsim.C(gate.X(), q0, q1) // qsim.CNOT(q0, q1)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00][  0]( 0.7071 0.0000i): 0.5000
+	// [11][  3]( 0.7071 0.0000i): 0.5000
+}
+
+func ExampleQ_CU() {
+	qsim := q.New()
+	qb0 := qsim.Zero()
+	qb1 := qsim.Zero()
+
+	qsim.H(qb0)
+	qsim.CU(math.Pi, 0, math.Pi, qb0, qb1)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00][  0]( 0.7071 0.0000i): 0.5000
+	// [11][  3]( 0.7071 0.0000i): 0.5000
+}
+
+func ExampleQ_CX() {
+	qsim := q.New()
+	qb0 := qsim.Zero()
+	qb1 := qsim.Zero()
+
+	qsim.H(qb0)
+	qsim.CX(qb0, qb1)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00][  0]( 0.7071 0.0000i): 0.5000
+	// [11][  3]( 0.7071 0.0000i): 0.5000
 }
 
 func ExampleQ_ControlledH() {
 	qsim := q.New()
-	qb0 := qsim.Zeros(1)
-	qb1 := qsim.Zeros(1)
+	qb0 := qsim.Zero()
+	qb1 := qsim.Zero()
 
-	qsim.H(qb0...)
-	qsim.ControlledH(qb0, qb1)
+	qsim.H(qb0)
+	qsim.ControlledH([]q.Qubit{qb0}, []q.Qubit{qb1})
 
 	for _, s := range qsim.State() {
 		fmt.Println(s)
@@ -385,11 +446,11 @@ func ExampleQ_ControlledH() {
 
 func ExampleQ_ControlledX() {
 	qsim := q.New()
-	qb0 := qsim.Zeros(1)
-	qb1 := qsim.Zeros(1)
+	qb0 := qsim.Zero()
+	qb1 := qsim.Zero()
 
-	qsim.H(qb0...)
-	qsim.ControlledX(qb0, qb1)
+	qsim.H(qb0)
+	qsim.ControlledX([]q.Qubit{qb0}, []q.Qubit{qb1})
 
 	for _, s := range qsim.State() {
 		fmt.Println(s)
@@ -467,37 +528,16 @@ func ExampleQ_InvQFT() {
 	// [010][  2]( 1.0000 0.0000i): 1.0000
 }
 
-func ExampleQ_C() {
-	qsim := q.New()
-
-	q0 := qsim.Zero()
-	q1 := qsim.Zero()
-
-	qsim.H(q0)
-	qsim.C(gate.X(), q0, q1) // qsim.CNOT(q0, q1)
-
-	for _, s := range qsim.State() {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [00][  0]( 0.7071 0.0000i): 0.5000
-	// [11][  3]( 0.7071 0.0000i): 0.5000
-}
-
 func ExampleQ_CondX() {
 	qsim := q.New()
-
 	q0 := qsim.Zero()
 
-	qsim.CondX(false, q0)
-	for _, s := range qsim.State() {
-		fmt.Println(s)
-	}
+	for _, b := range []bool{false, true} {
+		qsim.CondX(b, q0)
 
-	qsim.CondX(true, q0)
-	for _, s := range qsim.State() {
-		fmt.Println(s)
+		for _, s := range qsim.State() {
+			fmt.Println(s)
+		}
 	}
 
 	// Output:
@@ -509,19 +549,34 @@ func ExampleQ_CondZ() {
 	qsim := q.New()
 	q0 := qsim.One()
 
-	qsim.CondZ(false, q0)
-	for _, s := range qsim.State() {
-		fmt.Println(s)
-	}
+	for _, b := range []bool{false, true} {
+		qsim.CondZ(b, q0)
 
-	qsim.CondZ(true, q0)
-	for _, s := range qsim.State() {
-		fmt.Println(s)
+		for _, s := range qsim.State() {
+			fmt.Println(s)
+		}
 	}
 
 	// Output:
 	// [1][  1]( 1.0000 0.0000i): 1.0000
 	// [1][  1](-1.0000 0.0000i): 1.0000
+}
+
+func ExampleQ_Cond() {
+	qsim := q.New()
+	q0 := qsim.Zero()
+
+	for _, b := range []bool{false, true} {
+		qsim.Cond(b, gate.X(), q0)
+
+		for _, s := range qsim.State() {
+			fmt.Println(s)
+		}
+	}
+
+	// Output:
+	// [0][  0]( 1.0000 0.0000i): 1.0000
+	// [1][  1]( 1.0000 0.0000i): 1.0000
 }
 
 func ExampleQ_Underlying() {
@@ -570,12 +625,28 @@ func ExampleQ_String() {
 	// [(0+0i) (0+0i) (1+0i) (0+0i)]
 }
 
-func Example_bellState() {
+func Example_bell() {
+	qsim := q.New()
+
+	qsim.Rand = rand.Const()
+	r := qsim.Zeros(2)
+	qsim.H(r[0])
+	qsim.CNOT(r[0], r[1])
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00][  0]( 0.7071 0.0000i): 0.5000
+	// [11][  3]( 0.7071 0.0000i): 0.5000
+}
+
+func Example_bellm() {
 	qsim := q.New()
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
-
 	qsim.H(q0).CNOT(q0, q1)
 
 	for _, s := range qsim.State() {
@@ -592,24 +663,7 @@ func Example_bellState() {
 	// true
 }
 
-func Example_bellState2() {
-	qsim := q.New()
-	qsim.Rand = rand.Const()
-
-	r := qsim.Zeros(2)
-
-	qsim.H(r[0])
-	qsim.CNOT(r[0], r[1])
-	for _, s := range qsim.State() {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [00][  0]( 0.7071 0.0000i): 0.5000
-	// [11][  3]( 0.7071 0.0000i): 0.5000
-}
-
-func Example_quantumTeleportation() {
+func Example_teleportation() {
 	qsim := q.New()
 
 	phi := qsim.New(1, 2)
@@ -643,7 +697,7 @@ func Example_quantumTeleportation() {
 	// [1][  1]( 0.8944 0.0000i): 0.8000
 }
 
-func Example_quantumTeleportation2() {
+func Example_teleportationCond() {
 	qsim := q.New()
 
 	phi := qsim.New(1, 2)
@@ -715,7 +769,7 @@ func Example_deutschJozsa() {
 	// Correct!
 }
 
-func Example_grover3qubit() {
+func Example_grover3() {
 	// NOTE: C. Figgatt, D. Maslov, K. A. Landsman, N. M. Linke, S. Debnath, and C. Monroe. Complete 3-Qubit Grover Search on a Programmable Quantum Computer.
 	qsim := q.New()
 
@@ -749,7 +803,7 @@ func Example_grover3qubit() {
 	// [111 1][  7   1](-0.1768 0.0000i): 0.0312
 }
 
-func Example_grover4qubit() {
+func Example_grover4() {
 	// NOTE: Eric R. Johnson, Nic Harrigan, and Merecedes Gimeno-Segovia. Programming Quantum Computers. O'Reilly.
 	qsim := q.New()
 
@@ -802,7 +856,7 @@ func Example_grover4qubit() {
 	// [111 1][  7   1]( 0.0508 0.0000i): 0.0026
 }
 
-func Example_qft() {
+func Example_qft001() {
 	qsim := q.New()
 
 	q0 := qsim.Zero()
@@ -837,7 +891,7 @@ func Example_qft() {
 	// [111][  7]( 0.2500-0.2500i): 0.1250
 }
 
-func Example_qft2() {
+func Example_qft010() {
 	qsim := q.New()
 
 	q0 := qsim.Zero()
@@ -867,7 +921,7 @@ func Example_qft2() {
 	// [111][  7]( 0.0000-0.3536i): 0.1250
 }
 
-func Example_shorFactoring15() {
+func Example_shor15() {
 	// NOTE: Zhengjun Cao, Zhenfu Cao, Lihua Liu. Remarks on Quantum Modular Exponentiation and Some Experimental Demonstrations of Shor’s Algorithm.
 	N := 15
 	a := 7
@@ -924,7 +978,7 @@ func Example_shorFactoring15() {
 	// N=15, a=7. p=3, q=5. s/r=3/4 ([0.110]~0.750)
 }
 
-func Example_shorFactoring51() {
+func Example_shor51() {
 	// NOTE: Michael R. Geller, Zhongyuan Zhou. Factoring 51 and 85 with 8 qubits.
 	N := 51
 	a := 5 // 5, 7, 10, 11, 14, 20, 22, 23, 28, 29, 31, 37, 40, 41, 44, 46
@@ -984,7 +1038,7 @@ func Example_shorFactoring51() {
 	// N=51, a=5. p=3, q=17. s/r=7/16 ([0.0111]~0.438)
 }
 
-func Example_shorFactoring85() {
+func Example_shor85() {
 	// NOTE: Michael R. Geller, Zhongyuan Zhou. Factoring 51 and 85 with 8 qubits.
 	N := 85
 	a := 14
@@ -1072,7 +1126,7 @@ func Example_superDenseCoding() {
 	// ZX: 11
 }
 
-func Example_errorCorrection() {
+func Example_ecc() {
 	qsim := q.New()
 
 	q0 := qsim.New(1, 2)

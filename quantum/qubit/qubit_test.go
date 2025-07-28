@@ -249,6 +249,34 @@ func ExampleQubit_RZ() {
 	// [1][  1]( 0.0000 0.7071i): 0.5000
 }
 
+func ExampleQubit_C() {
+	qb := qubit.Zero(2)
+	qb.H(0)
+	qb.C(gate.X(), 0, 1)
+
+	for _, s := range qb.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00][  0]( 0.7071 0.0000i): 0.5000
+	// [11][  3]( 0.7071 0.0000i): 0.5000
+}
+
+func ExampleQubit_CU() {
+	qb := qubit.Zero(2)
+	qb.H(0)
+	qb.CU(math.Pi, 0, math.Pi, 0, 1)
+
+	for _, s := range qb.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00][  0]( 0.7071 0.0000i): 0.5000
+	// [11][  3]( 0.7071 0.0000i): 0.5000
+}
+
 func ExampleQubit_CH() {
 	qb := qubit.Zero(2)
 	qb.H(0)
@@ -262,6 +290,20 @@ func ExampleQubit_CH() {
 	// [00][  0]( 0.7071 0.0000i): 0.5000
 	// [10][  2]( 0.5000 0.0000i): 0.2500
 	// [11][  3]( 0.5000 0.0000i): 0.2500
+}
+
+func ExampleQubit_CX() {
+	qb := qubit.Zero(2)
+	qb.H(0)
+	qb.CX(0, 1)
+
+	for _, s := range qb.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00][  0]( 0.7071 0.0000i): 0.5000
+	// [11][  3]( 0.7071 0.0000i): 0.5000
 }
 
 func ExampleQubit_CZ() {
@@ -447,7 +489,7 @@ func ExampleQubit_State_order() {
 	// [111 1][  7   1]( 0.2500 0.0000i): 0.0625
 }
 
-func Example_bellState() {
+func Example_bell() {
 	q := qubit.Zero(2).Apply(
 		gate.H().TensorProduct(gate.I()),
 		gate.CNOT(2, 0, 1),
@@ -462,7 +504,7 @@ func Example_bellState() {
 	// [11][  3]( 0.7071 0.0000i): 0.5000
 }
 
-func Example_grover2qubit() {
+func Example_grover2() {
 	oracle := gate.CZ(2, 0, 1)
 	amp := matrix.Apply(
 		gate.H(2),
@@ -489,7 +531,7 @@ func Example_grover2qubit() {
 	// [11][  3](-1.0000 0.0000i): 1.0000
 }
 
-func Example_grover3qubit() {
+func Example_grover3() {
 	oracle := matrix.Apply(
 		matrix.TensorProduct(gate.X(), gate.I(3)),
 		gate.ControlledNot(4, []int{0, 1, 2}, 3),
@@ -528,7 +570,7 @@ func Example_grover3qubit() {
 	// [1111][ 15](-0.1768 0.0000i): 0.0313
 }
 
-func Example_errorCorrectionBitFlip() {
+func Example_eccBitFlip() {
 	phi := qubit.New(vector.New(1, 2))
 
 	// encoding
@@ -588,7 +630,7 @@ func Example_errorCorrectionBitFlip() {
 	// [10010][ 18]( 0.8944 0.0000i): 0.8000
 }
 
-func Example_errorCorrectionPhaseFlip() {
+func Example_eccPhaseFlip() {
 	phi := qubit.New(vector.New(1, 2))
 
 	// encoding
@@ -655,8 +697,46 @@ func Example_errorCorrectionPhaseFlip() {
 	// [00010][  2]( 0.4472 0.0000i): 0.2000
 	// [10010][ 18]( 0.8944 0.0000i): 0.8000
 }
+func Example_teleportation() {
+	phi := qubit.New(vector.New(1, 2))
+	phi.Rand = rand.Const()
 
-func Example_quantumTeleportation() {
+	fmt.Println("before:")
+	for _, s := range phi.State() {
+		fmt.Println(s)
+	}
+
+	bell := qubit.Zero(2).Apply(
+		matrix.TensorProduct(gate.H(), gate.I()),
+		gate.CNOT(2, 0, 1),
+	)
+	phi.TensorProduct(bell)
+
+	phi.Apply(
+		gate.CNOT(3, 0, 1),
+		matrix.TensorProduct(gate.H(), gate.I(2)),
+		gate.CNOT(3, 1, 2),
+		gate.CZ(3, 0, 2),
+	)
+
+	phi.Measure(0)
+	phi.Measure(1)
+
+	fmt.Println("after:")
+	for _, s := range phi.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// before:
+	// [0][  0]( 0.4472 0.0000i): 0.2000
+	// [1][  1]( 0.8944 0.0000i): 0.8000
+	// after:
+	// [110][  6]( 0.4472 0.0000i): 0.2000
+	// [111][  7]( 0.8944 0.0000i): 0.8000
+}
+
+func Example_teleportationCond() {
 	phi := qubit.New(vector.New(1, 2))
 	phi.Rand = rand.Const()
 
@@ -686,45 +766,6 @@ func Example_quantumTeleportation() {
 	if mz.IsOne() {
 		phi.Apply(matrix.TensorProduct(gate.I(2), gate.Z()))
 	}
-
-	fmt.Println("after:")
-	for _, s := range phi.State() {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// before:
-	// [0][  0]( 0.4472 0.0000i): 0.2000
-	// [1][  1]( 0.8944 0.0000i): 0.8000
-	// after:
-	// [110][  6]( 0.4472 0.0000i): 0.2000
-	// [111][  7]( 0.8944 0.0000i): 0.8000
-}
-
-func Example_quantumTeleportation2() {
-	phi := qubit.New(vector.New(1, 2))
-	phi.Rand = rand.Const()
-
-	fmt.Println("before:")
-	for _, s := range phi.State() {
-		fmt.Println(s)
-	}
-
-	bell := qubit.Zero(2).Apply(
-		matrix.TensorProduct(gate.H(), gate.I()),
-		gate.CNOT(2, 0, 1),
-	)
-	phi.TensorProduct(bell)
-
-	phi.Apply(
-		gate.CNOT(3, 0, 1),
-		matrix.TensorProduct(gate.H(), gate.I(2)),
-		gate.CNOT(3, 1, 2),
-		gate.CZ(3, 0, 2),
-	)
-
-	phi.Measure(0)
-	phi.Measure(1)
 
 	fmt.Println("after:")
 	for _, s := range phi.State() {
