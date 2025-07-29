@@ -135,6 +135,27 @@ func (q *Qubit) TensorProduct(qb *Qubit) *Qubit {
 	return q
 }
 
+// Apply applies a unitary matrix to the qubit.
+func (q *Qubit) Apply(u ...*matrix.Matrix) *Qubit {
+	for _, v := range u {
+		q.state = q.state.Apply(v)
+	}
+
+	return q
+}
+
+// ApplyAt applies a unitary matrix to the qubit at the given index.
+func (q *Qubit) ApplyAt(u *matrix.Matrix, idx int) {
+	stride := 1 << (q.NumQubits() - 1 - idx)
+	for i := 0; i < q.Dim(); i += 2 * stride {
+		for j := range stride {
+			a, b := q.state.Data[i+j], q.state.Data[i+j+stride]
+			q.state.Data[i+j] = u.At(0, 0)*a + u.At(0, 1)*b
+			q.state.Data[i+j+stride] = u.At(1, 0)*a + u.At(1, 1)*b
+		}
+	}
+}
+
 // U applies a unitary gate.
 func (q *Qubit) U(theta, phi, lambda float64, idx int) *Qubit {
 	sin := cmplx.Sin(complex(theta/2, 0))
@@ -521,7 +542,7 @@ func (q *Qubit) QFT(idx ...int) *Qubit {
 	return q
 }
 
-// InvQFT applies the inverse quantum Ffourier transform.
+// InvQFT applies the inverse quantum Fourier transform.
 func (q *Qubit) InvQFT(idx ...int) *Qubit {
 	if len(idx) == 0 {
 		n := q.NumQubits()
@@ -549,15 +570,6 @@ func (q *Qubit) InvQFT(idx ...int) *Qubit {
 func (q *Qubit) Update(state *vector.Vector) {
 	q.state = state
 	q.Normalize()
-}
-
-// Apply returns a qubit that is applied m.
-func (q *Qubit) Apply(u ...*matrix.Matrix) *Qubit {
-	for _, v := range u {
-		q.state = q.state.Apply(v)
-	}
-
-	return q
 }
 
 // Measure returns a measured qubit.

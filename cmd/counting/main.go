@@ -81,7 +81,7 @@ func main() {
 		}
 	}
 
-	// inverse quantum fourier transform
+	// inverse quantum Fourier transform
 	qsim.InvQFT(c...)
 
 	// measure unused registers
