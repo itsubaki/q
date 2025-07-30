@@ -11,7 +11,7 @@ import (
 	"github.com/itsubaki/q/quantum/gate"
 )
 
-func ExampleApplyControlledModExp2_mod15() {
+func ExampleCModExp2_mod15() {
 	qsim := q.New()
 	c := qsim.Zero()
 	t := qsim.ZeroLog2(15)
@@ -23,8 +23,8 @@ func ExampleApplyControlledModExp2_mod15() {
 	}
 
 	a, N := 7, 15
-	for i := range 3 {
-		ApplyControlledModExp2(qsim, a, i, N, c, t)
+	for j := range 3 {
+		CModExp2(qsim, a, j, N, c, t)
 		for _, s := range qsim.State(c, t) {
 			fmt.Println(s)
 		}
@@ -37,7 +37,7 @@ func ExampleApplyControlledModExp2_mod15() {
 	// [1 1101][  1  13]( 1.0000 0.0000i): 1.0000
 }
 
-func ExampleApplyControlledModExp2_mod21() {
+func ExampleCModExp2_mod21() {
 	qsim := q.New()
 	c := qsim.Zero()
 	t := qsim.ZeroLog2(21)
@@ -50,8 +50,8 @@ func ExampleApplyControlledModExp2_mod21() {
 	}
 
 	a, N := 2, 21
-	for i := range 4 {
-		ApplyControlledModExp2(qsim, a, i, N, c, t)
+	for j := range 4 {
+		CModExp2(qsim, a, j, N, c, t)
 		for _, s := range qsim.State(c, t) {
 			fmt.Println(s)
 		}

@@ -76,7 +76,7 @@ func main() {
 	print("create superposition", qsim, r0, r1)
 
 	for j := range r0 {
-		ApplyControlledModExp2(qsim, a, j, N, r0[j], r1)
+		CModExp2(qsim, a, j, N, r0[j], r1)
 		print(fmt.Sprintf("apply controlled-U[%d]", j), qsim, r0, r1)
 	}
 
@@ -121,8 +121,8 @@ func print(desc string, qsim *q.Q, reg ...any) {
 	fmt.Println()
 }
 
-// ApplyControlledModExp2 applies controlled modular exponentiation.
-func ApplyControlledModExp2(qsim *q.Q, a, j, N int, control q.Qubit, target []q.Qubit) {
+// CModExp2 applies controlled modular exponentiation operation.
+func CModExp2(qsim *q.Q, a, j, N int, control q.Qubit, target []q.Qubit) {
 	ControlledModExp2(qsim.Underlying(), a, j, N, control.Index(), q.Index(target...))
 }
 
