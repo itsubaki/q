@@ -117,64 +117,142 @@ func (q *Q) Reset(qb ...Qubit) {
 	}
 }
 
+// Apply applies a unitary matrix to the qubit.
+func (q *Q) Apply(u ...*matrix.Matrix) *Q {
+	q.qb.Apply(u...)
+	return q
+}
+
+// ApplyAt applies unitary matrix to qubits at the given indices.
+func (q *Q) ApplyAt(u *matrix.Matrix, qb ...Qubit) *Q {
+	for i := range qb {
+		q.qb.ApplyAt(u, qb[i].Index())
+	}
+
+	return q
+}
+
 // U applies U gate.
 func (q *Q) U(theta, phi, lambda float64, qb ...Qubit) *Q {
-	return q.Apply(gate.U(theta, phi, lambda), qb...)
+	for i := range qb {
+		q.qb.U(theta, phi, lambda, qb[i].Index())
+	}
+
+	return q
 }
 
 // I applies I gate.
 func (q *Q) I(qb ...Qubit) *Q {
-	return q.Apply(gate.I(), qb...)
+	for i := range qb {
+		q.qb.I(qb[i].Index())
+	}
+
+	return q
 }
 
 // X applies X gate.
 func (q *Q) X(qb ...Qubit) *Q {
-	return q.Apply(gate.X(), qb...)
+	for i := range qb {
+		q.qb.X(qb[i].Index())
+	}
+
+	return q
 }
 
 // Y applies Y gate.
 func (q *Q) Y(qb ...Qubit) *Q {
-	return q.Apply(gate.Y(), qb...)
+	for i := range qb {
+		q.qb.Y(qb[i].Index())
+	}
+
+	return q
 }
 
 // Z applies Z gate.
 func (q *Q) Z(qb ...Qubit) *Q {
-	return q.Apply(gate.Z(), qb...)
+	for i := range qb {
+		q.qb.Z(qb[i].Index())
+	}
+
+	return q
 }
 
 // H applies H gate.
 func (q *Q) H(qb ...Qubit) *Q {
-	return q.Apply(gate.H(), qb...)
+	for i := range qb {
+		q.qb.H(qb[i].Index())
+	}
+
+	return q
 }
 
 // S applies S gate.
 func (q *Q) S(qb ...Qubit) *Q {
-	return q.Apply(gate.S(), qb...)
+	for i := range qb {
+		q.qb.S(qb[i].Index())
+	}
+
+	return q
 }
 
 // T applies T gate.
 func (q *Q) T(qb ...Qubit) *Q {
-	return q.Apply(gate.T(), qb...)
+	for i := range qb {
+		q.qb.T(qb[i].Index())
+	}
+
+	return q
 }
 
 // R applies R gate with theta.
 func (q *Q) R(theta float64, qb ...Qubit) *Q {
-	return q.Apply(gate.R(theta), qb...)
+	for i := range qb {
+		q.qb.R(theta, qb[i].Index())
+	}
+
+	return q
 }
 
 // RX applies RX gate with theta.
 func (q *Q) RX(theta float64, qb ...Qubit) *Q {
-	return q.Apply(gate.RX(theta), qb...)
+	for i := range qb {
+		q.qb.RX(theta, qb[i].Index())
+	}
+
+	return q
 }
 
 // RY applies RY gate with theta.
 func (q *Q) RY(theta float64, qb ...Qubit) *Q {
-	return q.Apply(gate.RY(theta), qb...)
+	for i := range qb {
+		q.qb.RY(theta, qb[i].Index())
+	}
+
+	return q
 }
 
 // RZ applies RZ gate with theta.
 func (q *Q) RZ(theta float64, qb ...Qubit) *Q {
-	return q.Apply(gate.RZ(theta), qb...)
+	for i := range qb {
+		q.qb.RZ(theta, qb[i].Index())
+	}
+
+	return q
+}
+
+// C applies controlled operation.
+func (q *Q) C(u *matrix.Matrix, control, target Qubit) *Q {
+	return q.Controlled(u, []Qubit{control}, []Qubit{target})
+}
+
+// CU applies controlled unitary operation.
+func (q *Q) CU(theta, phi, lambda float64, control, target Qubit) *Q {
+	return q.ControlledU(theta, phi, lambda, []Qubit{control}, []Qubit{target})
+}
+
+// CX applies CNOT gate.
+func (q *Q) CX(control, target Qubit) *Q {
+	return q.ControlledNot([]Qubit{control}, []Qubit{target})
 }
 
 // CNOT applies CNOT gate.
@@ -192,10 +270,12 @@ func (q *Q) CCCNOT(control0, control1, control2, target Qubit) *Q {
 	return q.ControlledNot([]Qubit{control0, control1, control2}, []Qubit{target})
 }
 
+// CZ applies Controlled-Z gate.
 func (q *Q) CZ(control, target Qubit) *Q {
 	return q.ControlledZ([]Qubit{control}, []Qubit{target})
 }
 
+// CCZ applies CCZ gate with two controls.
 func (q *Q) CCZ(control0, control1, target Qubit) *Q {
 	return q.ControlledZ([]Qubit{control0, control1}, []Qubit{target})
 }
@@ -205,12 +285,42 @@ func (q *Q) CR(theta float64, control, target Qubit) *Q {
 	return q.ControlledR(theta, []Qubit{control}, []Qubit{target})
 }
 
+// Controlled applies controlled operation.
+func (q *Q) Controlled(u *matrix.Matrix, control, target []Qubit) *Q {
+	for i := range target {
+		q.qb.Controlled(u, Index(control...), target[i].Index())
+	}
+
+	return q
+}
+
+// ControlledU applies controlled unitary operation.
+func (q *Q) ControlledU(theta, phi, lambda float64, control, target []Qubit) *Q {
+	for i := range target {
+		q.qb.ControlledU(theta, phi, lambda, Index(control...), target[i].Index())
+	}
+
+	return q
+}
+
+// ControlledH applies controlled-Hadamard gate.
+func (q *Q) ControlledH(control, target []Qubit) *Q {
+	for i := range target {
+		q.qb.ControlledH(Index(control...), target[i].Index())
+	}
+
+	return q
+}
+
+// ControlledX applies CNOT gate.
+func (q *Q) ControlledX(control, target []Qubit) *Q {
+	return q.ControlledNot(control, target)
+}
+
 // ControlledNot applies CNOT gate.
 func (q *Q) ControlledNot(control, target []Qubit) *Q {
-	n := q.NumQubits()
-	for _, t := range target {
-		g := gate.ControlledNot(n, Index(control...), t.Index())
-		q.qb.Apply(g)
+	for i := range target {
+		q.qb.ControlledX(Index(control...), target[i].Index())
 	}
 
 	return q
@@ -218,46 +328,17 @@ func (q *Q) ControlledNot(control, target []Qubit) *Q {
 
 // ControlledZ applies Controlled-Z gate.
 func (q *Q) ControlledZ(control, target []Qubit) *Q {
-	n := q.NumQubits()
-	for _, t := range target {
-		g := gate.ControlledZ(n, Index(control...), t.Index())
-		q.qb.Apply(g)
+	for i := range target {
+		q.qb.ControlledZ(Index(control...), target[i].Index())
 	}
 
 	return q
 }
 
+// ControlledR applies Controlled-R gate.
 func (q *Q) ControlledR(theta float64, control, target []Qubit) *Q {
-	n := q.NumQubits()
-	for _, t := range target {
-		g := gate.ControlledR(theta, n, Index(control...), t.Index())
-		q.qb.Apply(g)
-	}
-	return q
-}
-
-// Apply applies matrix to qubits.
-func (q *Q) Apply(u *matrix.Matrix, qb ...Qubit) *Q {
-	if len(qb) < 1 {
-		q.qb.Apply(u)
-		return q
-	}
-
-	n := q.NumQubits()
-	g := gate.TensorProduct(u, n, Index(qb...))
-	q.qb.Apply(g)
-	return q
-}
-
-func (q *Q) C(u *matrix.Matrix, control, target Qubit) *Q {
-	return q.Controlled(u, []Qubit{control}, []Qubit{target})
-}
-
-func (q *Q) Controlled(u *matrix.Matrix, control, target []Qubit) *Q {
-	n := q.NumQubits()
-	for _, t := range target {
-		g := gate.Controlled(u, n, Index(control...), t.Index())
-		q.qb.Apply(g)
+	for i := range target {
+		q.qb.ControlledR(theta, Index(control...), target[i].Index())
 	}
 
 	return q
@@ -265,18 +346,26 @@ func (q *Q) Controlled(u *matrix.Matrix, control, target []Qubit) *Q {
 
 // CondX applies X gate if condition is true.
 func (q *Q) CondX(condition bool, qb ...Qubit) *Q {
-	return q.Cond(condition, gate.X(), qb...)
+	if condition {
+		return q.X(qb...)
+	}
+
+	return q
 }
 
 // CondZ applies Z gate if condition is true.
 func (q *Q) CondZ(condition bool, qb ...Qubit) *Q {
-	return q.Cond(condition, gate.Z(), qb...)
+	if condition {
+		return q.Z(qb...)
+	}
+
+	return q
 }
 
 // Cond applies m if condition is true.
 func (q *Q) Cond(condition bool, u *matrix.Matrix, qb ...Qubit) *Q {
 	if condition {
-		return q.Apply(u, qb...)
+		return q.ApplyAt(u, qb...)
 	}
 
 	return q
@@ -284,13 +373,10 @@ func (q *Q) Cond(condition bool, u *matrix.Matrix, qb ...Qubit) *Q {
 
 // Swap applies Swap gate.
 func (q *Q) Swap(qb ...Qubit) *Q {
-	n := q.NumQubits()
 	l := len(qb)
-
 	for i := range l / 2 {
 		q0, q1 := qb[i], qb[(l-1)-i]
-		g := gate.Swap(n, q0.Index(), q1.Index())
-		q.qb.Apply(g)
+		q.qb.Swap(q0.Index(), q1.Index())
 	}
 
 	return q
@@ -298,33 +384,13 @@ func (q *Q) Swap(qb ...Qubit) *Q {
 
 // QFT applies Quantum Fourier Transform.
 func (q *Q) QFT(qb ...Qubit) *Q {
-	l := len(qb)
-	for i := range l {
-		q.H(qb[i])
-
-		k := 2
-		for j := i + 1; j < l; j++ {
-			q.CR(Theta(k), qb[j], qb[i])
-			k++
-		}
-	}
-
+	q.qb.QFT(Index(qb...)...)
 	return q
 }
 
 // InvQFT applies Inverse Quantum Fourier Transform.
 func (q *Q) InvQFT(qb ...Qubit) *Q {
-	l := len(qb)
-	for i := l - 1; i > -1; i-- {
-		k := l - i
-		for j := l - 1; j > i; j-- {
-			q.CR(-1*Theta(k), qb[j], qb[i])
-			k--
-		}
-
-		q.H(qb[i])
-	}
-
+	q.qb.InvQFT(Index(qb...)...)
 	return q
 }
 

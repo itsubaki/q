@@ -8,7 +8,6 @@ import (
 
 	"github.com/itsubaki/q"
 	"github.com/itsubaki/q/math/number"
-	"github.com/itsubaki/q/quantum/gate"
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
@@ -41,11 +40,11 @@ func oracle(qsim *q.Q, c q.Qubit, r, s, a []q.Qubit) {
 }
 
 func amplify(qsim *q.Q, c q.Qubit, r []q.Qubit) {
-	qsim.Controlled(gate.H(), []q.Qubit{c}, r)
-	qsim.Controlled(gate.X(), []q.Qubit{c}, r)
+	qsim.ControlledH([]q.Qubit{c}, r)
+	qsim.ControlledX([]q.Qubit{c}, r)
 	qsim.ControlledZ([]q.Qubit{c, r[0], r[1], r[2]}, []q.Qubit{r[3]})
-	qsim.Controlled(gate.X(), []q.Qubit{c}, r)
-	qsim.Controlled(gate.H(), []q.Qubit{c}, r)
+	qsim.ControlledX([]q.Qubit{c}, r)
+	qsim.ControlledH([]q.Qubit{c}, r)
 }
 
 func top(s []qubit.State, n int) []qubit.State {
@@ -82,7 +81,7 @@ func main() {
 		}
 	}
 
-	// inverse quantum fourier transform
+	// inverse quantum Fourier transform
 	qsim.InvQFT(c...)
 
 	// measure unused registers

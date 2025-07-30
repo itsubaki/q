@@ -14,7 +14,7 @@ doc:
 	godoc -http=:6060
 
 shor:
-	go run cmd/shor/main.go --N=21 --t=5
+	go run cmd/shor/main.go --N=21 --t=10
 
 grover:
 	go run cmd/grover/main.go

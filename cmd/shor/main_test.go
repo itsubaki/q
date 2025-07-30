@@ -65,9 +65,9 @@ func ExampleApplyControlledModExp2_mod21() {
 	// [1 01000][  1   8]( 1.0000 0.0000i): 1.0000
 }
 
-func ExampleControlledModExp2() {
+func ExampleControlledModExp2g() {
 	n, a, j, N := 5, 7, 0, 15
-	g := ControlledModExp2(n, a, j, N, 0, []int{1, 2, 3, 4})
+	g := ControlledModExp2g(n, a, j, N, 0, []int{1, 2, 3, 4})
 
 	for i, r := range g.Transpose().Seq2() {
 		bin := fmt.Sprintf("%0*b", n, i)
@@ -137,7 +137,7 @@ func TestControlledModExp2(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := ControlledModExp2(c.n, c.a, c.j, c.N, c.c, c.t)
+		got := ControlledModExp2g(c.n, c.a, c.j, c.N, c.c, c.t)
 		if !got.IsUnitary() {
 			t.Errorf("modexp is not unitary")
 		}
