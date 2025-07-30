@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"strconv"
+	"math/cmplx"
 	"testing"
 
 	"github.com/itsubaki/q"
+	"github.com/itsubaki/q/math/epsilon"
 	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/math/number"
 	"github.com/itsubaki/q/quantum/gate"
@@ -69,29 +70,29 @@ func ExampleControlledModExp2g() {
 	n, a, j, N := 5, 7, 0, 15
 	g := ControlledModExp2g(n, a, j, N, 0, []int{1, 2, 3, 4})
 
+	mask := (1 << (n - 1)) - 1
+	a2j := number.ModExp2(a, j, N)
+
 	for i, r := range g.Transpose().Seq2() {
-		bin := fmt.Sprintf("%0*b", n, i)
-		if bin[:1] == "0" { // control qubit is |0>
+		if (i>>(n-1))&1 == 0 {
+			// control qubit is zero
 			continue
 		}
 
 		// decimal number representation of target qubits
-		k := number.Must(strconv.ParseInt(bin[1:], 2, 64))
-		if k >= int64(N) {
+		k := i & mask
+		if k >= N {
 			continue
 		}
 
 		for l, e := range r {
-			if e == complex(0, 0) {
+			if cmplx.Abs(e) < epsilon.E13() {
 				continue
 			}
 
-			// decimal number representation of a^2^j * k mod N
-			a2jkmodNs := fmt.Sprintf("%0*s", n, strconv.FormatInt(int64(l), 2)[1:])
-			a2jkmodN := number.Must(strconv.ParseInt(a2jkmodNs, 2, 64))
-			got := (int64(number.ModExp2(a, j, N)) * k) % int64(N)
-
-			fmt.Printf("%s:%s=%2d %s:%s=%2d %2d\n", bin[:1], bin[1:], k, bin[:1], a2jkmodNs[1:], a2jkmodN, got)
+			expected := l & mask
+			got := (a2j * k) % N
+			fmt.Printf("1:%04b=%2d 1:%04b=%2d %2d\n", k, k, expected, expected, got)
 		}
 	}
 
