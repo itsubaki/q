@@ -813,7 +813,7 @@ func Example_povm() {
 	E3 := gate.I().Sub(E1).Sub(E2)
 
 	add := E1.Add(E2).Add(E3)
-	fmt.Println(add.Equals(gate.I()))
+	fmt.Println("euqlas:", add.Equals(gate.I()))
 
 	{
 		q0 := qubit.Zero().Apply(E1) // E1|0>
@@ -821,9 +821,9 @@ func Example_povm() {
 		q2 := qubit.Zero().Apply(E3) // E3|0>
 
 		fmt.Println("zero:")
-		fmt.Println(q0.InnerProduct(qubit.Zero())) // <0|E1|0>
-		fmt.Println(q1.InnerProduct(qubit.Zero())) // <0|E2|0>
-		fmt.Println(q2.InnerProduct(qubit.Zero())) // <0|E3|0>
+		fmt.Printf("%.4v\n", q0.InnerProduct(qubit.Zero())) // <0|E1|0>
+		fmt.Printf("%.4v\n", q1.InnerProduct(qubit.Zero())) // <0|E2|0>
+		fmt.Printf("%.4v\n", q2.InnerProduct(qubit.Zero())) // <0|E3|0>
 	}
 
 	{
@@ -832,21 +832,21 @@ func Example_povm() {
 		q2 := qubit.Plus().Apply(E3) // E3|+>
 
 		fmt.Println("H(zero):")
-		fmt.Println(q0.InnerProduct(qubit.Plus())) // <+|E1|+>
-		fmt.Println(q1.InnerProduct(qubit.Plus())) // <+|E2|+>
-		fmt.Println(q2.InnerProduct(qubit.Plus())) // <+|E3|+>
+		fmt.Printf("%.4v\n", q0.InnerProduct(qubit.Plus())) // <+|E1|+>
+		fmt.Printf("%.4v\n", q1.InnerProduct(qubit.Plus())) // <+|E2|+>
+		fmt.Printf("%.4v\n", q2.InnerProduct(qubit.Plus())) // <+|E3|+>
 	}
 
 	// Output:
-	// true
+	// euqlas: true
 	// zero:
 	// (0+0i)
-	// (0.29289321881345254+0i)
-	// (0.7071067811865475+0i)
+	// (0.2929+0i)
+	// (0.7071+0i)
 	// H(zero):
-	// (0.29289321881345254+0i)
+	// (0.2929+0i)
 	// (0+0i)
-	// (0.7071067811865477+0i)
+	// (0.7071+0i)
 }
 
 func Example_round() {

@@ -31,38 +31,53 @@ func New(v *vector.Vector) *Qubit {
 	return q
 }
 
+// NewWithIndex returns a new qubit with the given index.
+func NewWithIndex(n, idx int) *Qubit {
+	len := 1 << n
+	s := make([]complex128, len)
+	s[idx] = 1
+
+	return New(vector.New(s...))
+}
+
 // Zero returns a qubit in the zero state.
 func Zero(n ...int) *Qubit {
-	return New(vector.TensorProductN(
-		vector.New(1, 0),
-		n...,
-	))
+	if len(n) == 0 {
+		n = []int{1}
+	}
+
+	return NewWithIndex(n[0], 0)
 }
 
 // One returns a qubit in the one state.
 func One(n ...int) *Qubit {
-	return New(vector.TensorProductN(
-		vector.New(0, 1),
-		n...,
-	))
+	if len(n) == 0 {
+		n = []int{1}
+	}
+
+	return NewWithIndex(n[0], (1<<n[0])-1)
 }
 
 // Plus returns a qubit in the plus state.
 // The plus state is defined as (|0> + |1>) / sqrt(2).
 func Plus(n ...int) *Qubit {
-	return New(vector.TensorProductN(vector.New(
-		complex(1/math.Sqrt2, 0),
-		complex(1/math.Sqrt2, 0),
-	), n...))
+	qb := Zero(n...)
+	for i := range qb.NumQubits() {
+		qb.H(i)
+	}
+
+	return qb
 }
 
 // Minus returns a qubit in the minus state.
 // The minus state is defined as (|0> - |1>) / sqrt(2).
 func Minus(n ...int) *Qubit {
-	return New(vector.TensorProductN(vector.New(
-		complex(1/math.Sqrt2, 0),
-		complex(1/math.Sqrt2, 0)*-1,
-	), n...))
+	qb := One(n...)
+	for i := range qb.NumQubits() {
+		qb.H(i)
+	}
+
+	return qb
 }
 
 // NewFrom returns a new qubit from a binary string.
@@ -89,6 +104,11 @@ func (q *Qubit) NumQubits() int {
 	return number.Log2(q.Dim())
 }
 
+// Dim returns the dimension of q.
+func (q *Qubit) Dim() int {
+	return len(q.state.Data)
+}
+
 // IsZero returns true if q is zero qubit.
 func (q *Qubit) IsZero(eps ...float64) bool {
 	return q.Equals(Zero(), eps...)
@@ -97,11 +117,6 @@ func (q *Qubit) IsZero(eps ...float64) bool {
 // IsOne returns true if q is one qubit.
 func (q *Qubit) IsOne(eps ...float64) bool {
 	return q.Equals(One(), eps...)
-}
-
-// Dim returns the dimension of q.
-func (q *Qubit) Dim() int {
-	return len(q.state.Data)
 }
 
 // Amplitude returns the amplitude of q.
