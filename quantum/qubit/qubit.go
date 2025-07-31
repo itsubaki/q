@@ -528,9 +528,30 @@ func (q *Qubit) ControlledR(theta float64, control []int, target int) *Qubit {
 
 // Swap swaps the states of two qubits.
 func (q *Qubit) Swap(i, j int) *Qubit {
-	q.CX(i, j)
-	q.CX(j, i)
-	q.CX(i, j)
+	if i == j {
+		return q
+	}
+
+	n := q.NumQubits()
+	imask := 1 << (n - 1 - i)
+	jmask := 1 << (n - 1 - j)
+
+	for k := range q.Dim() {
+		ibit := (k & imask) >> (n - 1 - i)
+		jbit := (k & jmask) >> (n - 1 - j)
+
+		if ibit == jbit {
+			continue
+		}
+
+		l := k ^ (imask | jmask)
+		if k > l {
+			continue
+		}
+
+		q.state.Data[k], q.state.Data[l] = q.state.Data[l], q.state.Data[k]
+	}
+
 	return q
 }
 

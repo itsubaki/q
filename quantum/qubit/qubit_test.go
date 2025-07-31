@@ -387,6 +387,32 @@ func ExampleQubit_ControlledZ() {
 	// [11][  3](-0.5000 0.0000i): 0.2500
 }
 
+func ExampleQubit_Swap() {
+	qb := qubit.Zero(2)
+	qb.X(0)
+
+	qb.Swap(0, 1)
+	for _, s := range qb.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [01][  1]( 1.0000 0.0000i): 1.0000
+}
+
+func ExampleQubit_Swap_eq() {
+	qb := qubit.Zero(2)
+	qb.X(0)
+
+	qb.Swap(0, 0)
+	for _, s := range qb.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [10][  2]( 1.0000 0.0000i): 1.0000
+}
+
 func ExampleQubit_QFT() {
 	qb := qubit.Zero(3)
 	qb.X(2)
