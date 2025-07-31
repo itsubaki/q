@@ -232,13 +232,28 @@ func (m *Matrix) PartialTrace(idx ...Qubit) *Matrix {
 // Depolarizing returns the depolarizing channel.
 // It applies the identity with probability (1 - p),
 // and applies each of the Pauli gates X, Y, and Z with probability p/3.
-func (m *Matrix) Depolarizing(p float64) *Matrix {
+func (m *Matrix) Depolarizing(p float64, qb ...Qubit) *Matrix {
 	n := m.NumQubits()
+	if len(qb) == 0 {
+		qb = make([]Qubit, n)
+		for i := range n {
+			qb[i] = Qubit(i)
+		}
+	}
+
+	idx := make([]int, len(qb))
+	for i, v := range qb {
+		idx[i] = v.Index()
+	}
 
 	id := m.rho.Mul(complex(1-p, 0))
-	x := matrix.MatMul(gate.X(n), m.rho, gate.X(n)).Mul(complex(p/3, 0))
-	y := matrix.MatMul(gate.Y(n), m.rho, gate.Y(n)).Mul(complex(p/3, 0))
-	z := matrix.MatMul(gate.Z(n), m.rho, gate.Z(n)).Mul(complex(p/3, 0))
+	xg := gate.TensorProduct(gate.X(), n, idx)
+	yg := gate.TensorProduct(gate.Y(), n, idx)
+	zg := gate.TensorProduct(gate.Z(), n, idx)
+
+	x := matrix.MatMul(xg, m.rho, xg).Mul(complex(p/3, 0))
+	y := matrix.MatMul(yg, m.rho, yg).Mul(complex(p/3, 0))
+	z := matrix.MatMul(zg, m.rho, zg).Mul(complex(p/3, 0))
 
 	return &Matrix{
 		rho: id.Add(x).Add(y).Add(z),
