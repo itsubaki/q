@@ -16,6 +16,7 @@ import (
 
 // Qubit is a qubit.
 type Qubit struct {
+	n     int
 	state *vector.Vector
 	Rand  func() float64 // Random number generator
 }
@@ -23,6 +24,7 @@ type Qubit struct {
 // New returns a new qubit.
 func New(v *vector.Vector) *Qubit {
 	q := &Qubit{
+		n:     number.Log2(len(v.Data)),
 		state: v,
 		Rand:  rand.Float64,
 	}
@@ -101,7 +103,7 @@ func NewFrom(binary string) *Qubit {
 
 // NumQubits returns the number of qubits.
 func (q *Qubit) NumQubits() int {
-	return number.Log2(q.Dim())
+	return q.n
 }
 
 // Dim returns the dimension of q.
@@ -146,6 +148,7 @@ func (q *Qubit) OuterProduct(qb *Qubit) *matrix.Matrix {
 
 // TensorProduct returns the tensor product of q and qb.
 func (q *Qubit) TensorProduct(qb *Qubit) *Qubit {
+	q.n = q.n + qb.n
 	q.state = q.state.TensorProduct(qb.state)
 	return q
 }
@@ -604,6 +607,7 @@ func (q *Qubit) InvQFT(idx ...int) *Qubit {
 
 // Update updates the state of the qubit.
 func (q *Qubit) Update(state *vector.Vector) {
+	q.n = number.Log2(len(state.Data))
 	q.state = state
 	q.Normalize()
 }
@@ -652,6 +656,7 @@ func (q *Qubit) Normalize() *Qubit {
 // Clone returns a clone of q.
 func (q *Qubit) Clone() *Qubit {
 	return &Qubit{
+		n:     q.n,
 		state: q.state.Clone(),
 		Rand:  q.Rand,
 	}
