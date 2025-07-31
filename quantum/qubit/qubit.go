@@ -150,23 +150,23 @@ func (q *Qubit) TensorProduct(qb *Qubit) *Qubit {
 	return q
 }
 
-// Apply applies a unitary matrix to the qubit.
-func (q *Qubit) Apply(u ...*matrix.Matrix) *Qubit {
-	for _, v := range u {
+// Apply applies a list of gates to the qubit.
+func (q *Qubit) Apply(g ...*matrix.Matrix) *Qubit {
+	for _, v := range g {
 		q.state = q.state.Apply(v)
 	}
 
 	return q
 }
 
-// ApplyAt applies a unitary matrix to the qubit at the given index.
-func (q *Qubit) ApplyAt(u *matrix.Matrix, idx int) {
+// G applies a gate to the qubit at the given index.
+func (q *Qubit) G(g *matrix.Matrix, idx int) {
 	stride := 1 << (q.NumQubits() - 1 - idx)
 	for i := 0; i < q.Dim(); i += 2 * stride {
 		for j := range stride {
 			a, b := q.state.Data[i+j], q.state.Data[i+j+stride]
-			q.state.Data[i+j] = u.At(0, 0)*a + u.At(0, 1)*b
-			q.state.Data[i+j+stride] = u.At(1, 0)*a + u.At(1, 1)*b
+			q.state.Data[i+j] = g.At(0, 0)*a + g.At(0, 1)*b
+			q.state.Data[i+j+stride] = g.At(1, 0)*a + g.At(1, 1)*b
 		}
 	}
 }
@@ -326,8 +326,8 @@ func (q *Qubit) RZ(theta float64, idx int) *Qubit {
 }
 
 // C applies a controlled gate.
-func (q *Qubit) C(u *matrix.Matrix, control, target int) *Qubit {
-	return q.Controlled(u, []int{control}, target)
+func (q *Qubit) C(g *matrix.Matrix, control, target int) *Qubit {
+	return q.Controlled(g, []int{control}, target)
 }
 
 // CU applies a controlled unitary operation.
@@ -356,7 +356,7 @@ func (q *Qubit) CR(thehta float64, control, target int) *Qubit {
 }
 
 // ControlledU applies a controlled 2x2 unitary gate U to the target qubit.
-func (q *Qubit) Controlled(u *matrix.Matrix, control []int, target int) *Qubit {
+func (q *Qubit) Controlled(g *matrix.Matrix, control []int, target int) *Qubit {
 	n := q.NumQubits()
 
 	var cmask int
@@ -376,8 +376,8 @@ func (q *Qubit) Controlled(u *matrix.Matrix, control []int, target int) *Qubit {
 		}
 
 		a, b := q.state.Data[i], q.state.Data[j]
-		q.state.Data[i] = u.At(0, 0)*a + u.At(0, 1)*b
-		q.state.Data[j] = u.At(1, 0)*a + u.At(1, 1)*b
+		q.state.Data[i] = g.At(0, 0)*a + g.At(0, 1)*b
+		q.state.Data[j] = g.At(1, 0)*a + g.At(1, 1)*b
 	}
 
 	return q

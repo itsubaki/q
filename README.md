@@ -241,7 +241,7 @@ qsim := q.New()
 q0 := qsim.Zero()
 q1 := qsim.Zero()
 
-qsim.ApplyAt(h, q0)
+qsim.G(h, q0)
 qsim.C(x, q0, q1)
 
 for _, s := range qsim.State() {

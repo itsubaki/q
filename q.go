@@ -117,16 +117,16 @@ func (q *Q) Reset(qb ...Qubit) {
 	}
 }
 
-// Apply applies a unitary matrix to the qubit.
-func (q *Q) Apply(u ...*matrix.Matrix) *Q {
-	q.qb.Apply(u...)
+// Apply applies a list of gates to the qubit.
+func (q *Q) Apply(g ...*matrix.Matrix) *Q {
+	q.qb.Apply(g...)
 	return q
 }
 
-// ApplyAt applies unitary matrix to qubits at the given indices.
-func (q *Q) ApplyAt(u *matrix.Matrix, qb ...Qubit) *Q {
+// G applies a gate.
+func (q *Q) G(g *matrix.Matrix, qb ...Qubit) *Q {
 	for i := range qb {
-		q.qb.ApplyAt(u, qb[i].Index())
+		q.qb.G(g, qb[i].Index())
 	}
 
 	return q
@@ -240,9 +240,9 @@ func (q *Q) RZ(theta float64, qb ...Qubit) *Q {
 	return q
 }
 
-// C applies controlled operation.
-func (q *Q) C(u *matrix.Matrix, control, target Qubit) *Q {
-	return q.Controlled(u, []Qubit{control}, []Qubit{target})
+// C applies controlled operation with a gate.
+func (q *Q) C(g *matrix.Matrix, control, target Qubit) *Q {
+	return q.Controlled(g, []Qubit{control}, []Qubit{target})
 }
 
 // CU applies controlled unitary operation.
@@ -285,10 +285,10 @@ func (q *Q) CR(theta float64, control, target Qubit) *Q {
 	return q.ControlledR(theta, []Qubit{control}, []Qubit{target})
 }
 
-// Controlled applies controlled operation.
-func (q *Q) Controlled(u *matrix.Matrix, control, target []Qubit) *Q {
+// Controlled applies controlled operation with a gate.
+func (q *Q) Controlled(g *matrix.Matrix, control, target []Qubit) *Q {
 	for i := range target {
-		q.qb.Controlled(u, Index(control...), target[i].Index())
+		q.qb.Controlled(g, Index(control...), target[i].Index())
 	}
 
 	return q
@@ -362,10 +362,10 @@ func (q *Q) CondZ(condition bool, qb ...Qubit) *Q {
 	return q
 }
 
-// Cond applies m if condition is true.
-func (q *Q) Cond(condition bool, u *matrix.Matrix, qb ...Qubit) *Q {
+// Cond applies gate if condition is true.
+func (q *Q) Cond(condition bool, g *matrix.Matrix, qb ...Qubit) *Q {
 	if condition {
-		return q.ApplyAt(u, qb...)
+		return q.G(g, qb...)
 	}
 
 	return q

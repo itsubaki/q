@@ -521,7 +521,7 @@ func TestPartialTrace(t *testing.T) {
 func TestApply(t *testing.T) {
 	cases := []struct {
 		s    []density.State
-		g    *matrix.Matrix
+		u    *matrix.Matrix
 		m    *qubit.Qubit
 		want float64
 	}{
@@ -540,7 +540,7 @@ func TestApply(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if density.New(c.s).Apply(c.g).Probability(c.m) != c.want {
+		if density.New(c.s).Apply(c.u).Probability(c.m) != c.want {
 			t.Fail()
 		}
 	}

@@ -195,7 +195,7 @@ func ExampleQ_Apply() {
 	h := gate.H()
 	cnot := gate.CNOT(n, q0.Index(), q1.Index())
 
-	qsim.ApplyAt(h, q0)
+	qsim.G(h, q0)
 	qsim.Apply(cnot)
 
 	for _, s := range qsim.State() {
@@ -1107,7 +1107,7 @@ func Example_superDenseCoding() {
 		qsim.CNOT(q0, q1)
 
 		// encode
-		qsim.ApplyAt(g, q0)
+		qsim.G(g, q0)
 
 		// decode
 		qsim.CNOT(q0, q1)
@@ -1195,7 +1195,7 @@ func Example_any() {
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 
-	qsim.ApplyAt(h, q0)
+	qsim.G(h, q0)
 	qsim.C(x, q0, q1)
 
 	for _, s := range qsim.State() {

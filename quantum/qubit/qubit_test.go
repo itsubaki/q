@@ -82,13 +82,13 @@ func ExampleQubit_OuterProduct_operatorSum() {
 	// [(0+0i) (1+0i)]
 }
 
-func ExampleQubit_ApplyAt() {
+func ExampleQubit_G() {
 	qb := qubit.Zero(2)
 
 	h := gate.H()
 	cnot := gate.CNOT(2, 0, 1)
 
-	qb.ApplyAt(h, 0)
+	qb.G(h, 0)
 	qb.Apply(cnot)
 
 	for _, s := range qb.State() {
