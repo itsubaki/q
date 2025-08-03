@@ -148,3 +148,53 @@ func TestControlledModExp2(t *testing.T) {
 		}
 	}
 }
+
+func TestEigenVector(t *testing.T) {
+	cases := []struct {
+		N, a, t int
+		bin     []string
+		amp     []complex128
+		eps     float64
+	}{
+		{
+			15, 7, 3,
+			[]string{"0001", "0100", "0111", "1101"},
+			[]complex128{1, 0, 0, 0},
+			epsilon.E13(),
+		},
+	}
+
+	for _, c := range cases {
+		qsim := q.New()
+		r0 := qsim.Zeros(c.t)
+		r1 := qsim.ZeroLog2(c.N)
+
+		qsim.X(r1[len(r1)-1])
+		qsim.H(r0...)
+		for j := range r0 {
+			CModExp2(qsim, c.a, j, c.N, r0[j], r1)
+		}
+		qsim.InvQFT(r0...)
+
+		us := make(map[string]complex128)
+		for _, s := range qsim.State(r1) {
+			m := s.BinaryString()
+			if v, ok := us[m]; ok {
+				us[m] = v + s.Amplitude()
+				continue
+			}
+
+			us[m] = s.Amplitude()
+		}
+
+		if len(us) != len(c.bin) {
+			t.Fail()
+		}
+
+		for i := range c.bin {
+			if cmplx.Abs(us[c.bin[i]]-c.amp[i]) > c.eps {
+				t.Fail()
+			}
+		}
+	}
+}
