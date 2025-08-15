@@ -63,7 +63,7 @@ func oracle(qsim *q.Q, r, s, a []q.Qubit) {
 	xor(r[1], r[0], s[0])
 }
 
-func amplify(qsim *q.Q, r []q.Qubit) {
+func diffuser(qsim *q.Q, r []q.Qubit) {
 	qsim.H(r...)
 	qsim.X(r...)
 	qsim.ControlledZ([]q.Qubit{r[0], r[1], r[2]}, []q.Qubit{r[3]})
@@ -99,7 +99,7 @@ func main() {
 	// iterations
 	for range R {
 		oracle(qsim, r, s, a)
-		amplify(qsim, r)
+		diffuser(qsim, r)
 	}
 
 	// quantum states

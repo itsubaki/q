@@ -144,7 +144,7 @@ for range int(r) {
   qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)
   qsim.X(q2, q3)
 
-  // amplification
+  // diffuser
   qsim.H(q0, q1, q2, q3)
   qsim.X(q0, q1, q2, q3)
   qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)

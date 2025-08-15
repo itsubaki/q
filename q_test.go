@@ -786,7 +786,7 @@ func Example_grover3() {
 	// oracle for |011>|1>
 	qsim.X(r[0]).CCCNOT(r[0], r[1], r[2], a).X(r[0])
 
-	// amplification
+	// diffuser
 	qsim.H(r...).H(a)
 	qsim.X(r...).CCZ(r[0], r[1], r[2]).X(r...)
 	qsim.H(r...)
@@ -828,7 +828,7 @@ func Example_grover4() {
 		qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)
 		qsim.X(q2, q3)
 
-		// amplification
+		// diffuser
 		qsim.H(q0, q1, q2, q3)
 		qsim.X(q0, q1, q2, q3)
 		qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)
