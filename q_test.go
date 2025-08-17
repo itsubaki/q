@@ -736,40 +736,37 @@ func Example_teleportationCond() {
 }
 
 func Example_deutschJozsa() {
-	type FuncType int
-	const (
-		Constant FuncType = iota
-		Balanced
-	)
+	constant := func(qsim *q.Q, q0, q1 q.Qubit) string {
+		return "Constant"
+	}
 
-	oracle := func(qsim *q.Q, q0, q1 q.Qubit) FuncType {
-		if rand.Float64() > 0.5 {
-			return Constant
+	balanced := func(qsim *q.Q, q0, q1 q.Qubit) string {
+		qsim.CNOT(q0, q1)
+		return "Balanced"
+	}
+
+	deutschJozsa := func(oracle func(qsim *q.Q, q0, q1 q.Qubit) string) (string, int) {
+		qsim := q.New()
+		q0 := qsim.Zero()
+		q1 := qsim.One()
+
+		qsim.H(q0, q1)
+		ans := oracle(qsim, q0, q1)
+		qsim.H(q0)
+
+		if qsim.M(q0).IsZero() {
+			return ans, 0
 		}
 
-		qsim.CNOT(q0, q1)
-		return Balanced
+		return ans, 1
 	}
 
-	qsim := q.New()
-	q0 := qsim.Zero()
-	q1 := qsim.One()
-
-	qsim.H(q0, q1)
-	ans := oracle(qsim, q0, q1)
-	qsim.H(q0)
-	m0 := qsim.M(q0)
-
-	if m0.IsZero() && ans == Constant {
-		fmt.Println("Correct!")
-	}
-
-	if m0.IsOne() && ans == Balanced {
-		fmt.Println("Correct!")
-	}
+	fmt.Println(deutschJozsa(constant))
+	fmt.Println(deutschJozsa(balanced))
 
 	// Output:
-	// Correct!
+	// Constant 0
+	// Balanced 1
 }
 
 func Example_grover3() {
