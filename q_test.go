@@ -954,6 +954,12 @@ func Example_shor15() {
 	qsim.Swap(q0, q2)
 	qsim.InvQFT(q0, q1, q2)
 
+	// debug
+	qsim.Measure(q3, q4, q5, q6)
+	for _, s := range qsim.State([]q.Qubit{q0, q1, q2}) {
+		fmt.Println(s)
+	}
+
 	// measure q0, q1, q2
 	m := qsim.Measure(q0, q1, q2).BinaryString()
 
@@ -975,7 +981,11 @@ func Example_shor15() {
 	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d ([0.%v]~%.3f)\n", N, a, p0, p1, s, r, m, d)
 
 	// Output:
-	// N=15, a=7. p=3, q=5. s/r=3/4 ([0.110]~0.750)
+	// [000][  0]( 0.5000 0.0000i): 0.2500
+	// [010][  2]( 0.0000 0.5000i): 0.2500
+	// [100][  4](-0.5000 0.0000i): 0.2500
+	// [110][  6]( 0.0000-0.5000i): 0.2500
+	// N=15, a=7. p=3, q=5. s/r=1/4 ([0.010]~0.250)
 }
 
 func Example_superDenseCoding() {
