@@ -736,22 +736,22 @@ func Example_teleportationCond() {
 }
 
 func Example_deutschJozsa() {
-	constant := func(qsim *q.Q, q0, q1 q.Qubit) string {
+	constant := func(qsim *q.Q, q0 q.Qubit) string {
 		return "Constant"
 	}
 
-	balanced := func(qsim *q.Q, q0, q1 q.Qubit) string {
-		qsim.CNOT(q0, q1)
+	balanced := func(qsim *q.Q, q0 q.Qubit) string {
+		qsim.Z(q0)
 		return "Balanced"
 	}
 
-	deutschJozsa := func(oracle func(qsim *q.Q, q0, q1 q.Qubit) string) (string, int) {
+	deutschJozsa := func(oracle func(qsim *q.Q, q0 q.Qubit) string) (string, int) {
 		qsim := q.New()
 		q0 := qsim.Zero()
 		q1 := qsim.One()
 
 		qsim.H(q0, q1)
-		ans := oracle(qsim, q0, q1)
+		ans := oracle(qsim, q0)
 		qsim.H(q0)
 
 		if qsim.M(q0).IsZero() {
