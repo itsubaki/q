@@ -107,6 +107,13 @@ func ExampleQ_Reset() {
 	// [00][  0]( 1.0000 0.0000i): 1.0000
 }
 
+func ExampleQ_NumQubits_empty() {
+	fmt.Println(q.New().NumQubits())
+
+	// Output:
+	// 0
+}
+
 func ExampleQ_Amplitude() {
 	qsim := q.New()
 

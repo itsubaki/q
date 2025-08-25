@@ -95,6 +95,10 @@ func (q *Q) ZeroLog2(N int) []Qubit {
 
 // NumQubits returns the number of qubits.
 func (q *Q) NumQubits() int {
+	if q.qb == nil {
+		return 0
+	}
+
 	return q.qb.NumQubits()
 }
 
