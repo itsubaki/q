@@ -35,8 +35,7 @@ func New(v *vector.Vector) *Qubit {
 
 // NewWithIndex returns a new qubit with the given index.
 func NewWithIndex(n, idx int) *Qubit {
-	len := 1 << n
-	s := make([]complex128, len)
+	s := make([]complex128, 1<<n)
 	s[idx] = 1
 
 	return New(vector.New(s...))
@@ -705,7 +704,7 @@ func (q *Qubit) State(idx ...[]int) []State {
 	}
 
 	n := q.NumQubits()
-	state := make([]State, 0)
+	var state []State
 	for i, a := range q.Amplitude() {
 		amp, ok := round(a)
 		if !ok {

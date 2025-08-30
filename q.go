@@ -447,7 +447,7 @@ func (q *Q) String() string {
 
 // State returns the state of qubits.
 func (q *Q) State(reg ...any) []qubit.State {
-	idx := make([][]int, 0)
+	var idx [][]int
 	for _, r := range reg {
 		switch r := r.(type) {
 		case Qubit:

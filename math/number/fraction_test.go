@@ -37,6 +37,15 @@ func ExampleConvergent() {
 	// [0 6 170 1 1]: 341/2048=0.16650390625
 }
 
+func ExampleConvergent_n0() {
+	var cfx []int
+	s, r, d := number.Convergent(cfx)
+	fmt.Println(s, r, d)
+
+	// Output:
+	// 0 1 0
+}
+
 func TestContinuedFraction(t *testing.T) {
 	cases := []struct {
 		in   float64

@@ -14,32 +14,36 @@ func ContinuedFraction(real float64, eps ...float64) []int {
 		return []int{0}
 	}
 
-	list := make([]int, 0)
+	var cf []int
 	r := real
 	for {
-		list = append(list, int(r))
+		intv, frac := math.Modf(r)
+		cf = append(cf, int(intv))
 
-		diff := r - math.Trunc(r)
-		if diff < e {
+		if frac < e {
 			break
 		}
 
-		r = 1.0 / diff
+		r = 1.0 / frac
 	}
 
-	return list
+	return cf
 }
 
 // Convergent returns a convergent of continued fraction.
 func Convergent(cfx []int) (int, int, float64) {
-	l := len(cfx)
-	if l == 1 {
+	n := len(cfx)
+	if n == 0 {
+		return 0, 1, 0.0
+	}
+
+	if n == 1 {
 		return cfx[0], 1, float64(cfx[0])
 	}
 
-	s, r := 1, cfx[l-1]
-	for i := 2; i < l; i++ {
-		s, r = r, cfx[l-i]*r+s
+	s, r := 1, cfx[n-1]
+	for i := 2; i < n; i++ {
+		s, r = r, cfx[n-i]*r+s
 	}
 	s = s + cfx[0]*r
 
