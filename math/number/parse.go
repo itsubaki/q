@@ -25,7 +25,7 @@ func ParseFloat(binary string) (float64, error) {
 	bin := strings.Split(binary, ".")
 	p, err := strconv.ParseUint(bin[0], 2, 64)
 	if err != nil {
-		return 0, fmt.Errorf("parse binary=%q: %w", binary, err)
+		return 0, fmt.Errorf("parse binary=%q: %v: %w", binary, err, ErrInvalidParameter)
 	}
 
 	if len(bin) == 1 {

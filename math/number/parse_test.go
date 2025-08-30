@@ -3,6 +3,7 @@ package number_test
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/itsubaki/q/math/number"
@@ -42,6 +43,7 @@ func TestParseFloat(t *testing.T) {
 		{"0.bbb", 0, number.ErrInvalidParameter},
 		{"0.1.0", 0, number.ErrInvalidParameter},
 		{"", 0, number.ErrInvalidParameter},
+		{strings.Repeat("1", 65), 0, number.ErrInvalidParameter},
 	}
 
 	for _, c := range cases {
