@@ -3,7 +3,6 @@ package number
 import (
 	"errors"
 	"fmt"
-	"math"
 	"strconv"
 	"strings"
 )
@@ -12,36 +11,36 @@ var ErrInvalidParameter = errors.New("invalid parameter")
 
 // ParseFloat returns float64 from binary string.
 func ParseFloat(binary string) (float64, error) {
+	if binary == "" || strings.Count(binary, ".") > 1 {
+		return 0, fmt.Errorf("binary=%q: %w", binary, ErrInvalidParameter)
+	}
+
 	for _, b := range binary {
-		if b == '0' || b == '1' || b == '.' {
-			continue
+		if b != '0' && b != '1' && b != '.' {
+			return 0, fmt.Errorf("binary=%q: %w", binary, ErrInvalidParameter)
 		}
-
-		return 0, ErrInvalidParameter
 	}
 
+	// integer part
 	bin := strings.Split(binary, ".")
-	p, err := strconv.ParseInt(bin[0], 2, 0)
+	p, err := strconv.ParseUint(bin[0], 2, 64)
 	if err != nil {
-		return 0, fmt.Errorf("parse int: %w", err)
+		return 0, fmt.Errorf("parse binary=%q: %w", binary, err)
 	}
 
-	v := float64(p)
 	if len(bin) == 1 {
-		return v, nil
+		return float64(p), nil
 	}
 
-	if len(bin) != 2 {
-		return 0, ErrInvalidParameter
-	}
-
-	for i, b := range bin[1] {
-		if b == '0' {
-			continue
+	// fractional part
+	frac, f := 0.0, 0.5
+	for _, b := range bin[1] {
+		if b == '1' {
+			frac += f
 		}
 
-		v = v + math.Pow(0.5, float64(i+1))
+		f *= 0.5
 	}
 
-	return v, nil
+	return float64(p) + frac, nil
 }
