@@ -7,7 +7,7 @@ import (
 	"github.com/itsubaki/q/math/number"
 )
 
-var ErrSomtingWentWrong = errors.New("something went wrong")
+var ErrSomethingWentWrong = errors.New("something went wrong")
 
 func TestMustPanic(t *testing.T) {
 	defer func() {
@@ -17,12 +17,12 @@ func TestMustPanic(t *testing.T) {
 				t.Fail()
 			}
 
-			if !errors.Is(err, ErrSomtingWentWrong) {
+			if !errors.Is(err, ErrSomethingWentWrong) {
 				t.Fail()
 			}
 		}
 	}()
 
-	number.Must(-1, ErrSomtingWentWrong)
+	number.Must(-1, ErrSomethingWentWrong)
 	t.Fail()
 }
