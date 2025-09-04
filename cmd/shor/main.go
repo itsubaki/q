@@ -137,7 +137,7 @@ func ControlledModExp2(qb *qubit.Qubit, a, j, N, control int, target []int) {
 	newState := make([]complex128, qb.Dim())
 	for i := range qb.Dim() {
 		if (i & cmask) == 0 {
-			newState[i] += state[i]
+			newState[i] = state[i]
 			continue
 		}
 
@@ -147,8 +147,8 @@ func ControlledModExp2(qb *qubit.Qubit, a, j, N, control int, target []int) {
 			k |= ((i >> (n - 1 - t)) & 1) << (len(target) - 1 - j)
 		}
 
-		// a**(2**j) * k mod N
-		a2jkModN := a2jModN * k % N
+		// (a**(2**j) * k) mod N
+		a2jkModN := (a2jModN * k) % N
 
 		// integer to binary
 		newIdx := i
