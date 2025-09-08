@@ -112,12 +112,12 @@ func (q *Qubit) Dim() int {
 
 // IsZero returns true if q is zero qubit.
 func (q *Qubit) IsZero(eps ...float64) bool {
-	return q.Equals(Zero(), eps...)
+	return q.Equal(Zero(), eps...)
 }
 
 // IsOne returns true if q is one qubit.
 func (q *Qubit) IsOne(eps ...float64) bool {
-	return q.Equals(One(), eps...)
+	return q.Equal(One(), eps...)
 }
 
 // Amplitude returns the amplitude of q.
@@ -661,9 +661,9 @@ func (q *Qubit) Clone() *Qubit {
 	}
 }
 
-// Equals returns true if q and qb are equal.
-func (q *Qubit) Equals(qb *Qubit, eps ...float64) bool {
-	return q.state.Equals(qb.state, eps...)
+// Equal returns true if q and qb are equal.
+func (q *Qubit) Equal(qb *Qubit, eps ...float64) bool {
+	return q.state.Equal(qb.state, eps...)
 }
 
 // BinaryString measures the quantum state and returns its binary string representation.

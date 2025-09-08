@@ -157,9 +157,9 @@ func (m *Matrix) Dagger() *Matrix {
 	return out
 }
 
-// Equals returns true if m equals n.
+// Equal returns true if m equals n.
 // If eps is not given, epsilon.E13 is used.
-func (m *Matrix) Equals(n *Matrix, eps ...float64) bool {
+func (m *Matrix) Equal(n *Matrix, eps ...float64) bool {
 	p, q := m.Dim()
 	a, b := n.Dim()
 
@@ -184,12 +184,12 @@ func (m *Matrix) IsSquare() bool {
 
 // IsHermitian returns true if m is hermitian matrix.
 func (m *Matrix) IsHermite(eps ...float64) bool {
-	return m.IsSquare() && m.Equals(m.Dagger(), eps...)
+	return m.IsSquare() && m.Equal(m.Dagger(), eps...)
 }
 
 // IsUnitary returns true if m is unitary matrix.
 func (m *Matrix) IsUnitary(eps ...float64) bool {
-	return m.IsSquare() && m.MatMul(m.Dagger()).Equals(Identity(m.Rows), eps...)
+	return m.IsSquare() && m.MatMul(m.Dagger()).Equal(Identity(m.Rows), eps...)
 }
 
 // Apply returns a matrix product of m and n.

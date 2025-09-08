@@ -143,7 +143,7 @@ func TestControlledModExp2(t *testing.T) {
 			t.Errorf("modexp is not unitary")
 		}
 
-		if !got.Equals(c.want) {
+		if !got.Equal(c.want) {
 			t.Fail()
 		}
 	}

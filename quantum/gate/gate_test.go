@@ -119,7 +119,7 @@ func TestU(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if !c.in.Equals(c.want) {
+		if !c.in.Equal(c.want) {
 			t.Fail()
 		}
 	}
@@ -141,7 +141,7 @@ func TestC(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if !c.in.Equals(c.want) {
+		if !c.in.Equal(c.want) {
 			t.Fail()
 		}
 	}
@@ -161,7 +161,7 @@ func TestControlled(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if !c.in.Equals(c.want) {
+		if !c.in.Equal(c.want) {
 			t.Fail()
 		}
 	}
@@ -177,7 +177,7 @@ func TestInverse(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if !c.in.Apply(c.in.Inverse()).Equals(c.want) {
+		if !c.in.Apply(c.in.Inverse()).Equal(c.want) {
 			t.Fail()
 		}
 	}
@@ -326,7 +326,7 @@ func TestMultiQubitGate(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if !c.in.Equals(c.want) {
+		if !c.in.Equal(c.want) {
 			t.Errorf("got=%v, want=%v", c.in, c.want)
 		}
 	}

@@ -124,9 +124,9 @@ func (v *Vector) Apply(m *matrix.Matrix) *Vector {
 	}
 }
 
-// Equals returns true if v and w are equal.
+// Equal returns true if v and w are equal.
 // If eps is not given, epsilon.E13 is used.
-func (v *Vector) Equals(w *Vector, eps ...float64) bool {
+func (v *Vector) Equal(w *Vector, eps ...float64) bool {
 	if len(v.Data) != len(w.Data) {
 		return false
 	}

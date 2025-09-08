@@ -347,7 +347,7 @@ func TestMatrix_Inverse(t *testing.T) {
 
 	for _, c := range cases {
 		got := c.in.Apply(c.in.Inverse())
-		if !got.Equals(c.want) {
+		if !got.Equal(c.want) {
 			t.Fail()
 		}
 	}
@@ -372,7 +372,7 @@ func TestMatrix_Swap(t *testing.T) {
 
 	for _, c := range cases {
 		got := c.in.Swap(0, 1)
-		if !got.Equals(c.want) {
+		if !got.Equal(c.want) {
 			t.Fail()
 		}
 	}
@@ -426,13 +426,13 @@ func TestMatrix_Dagger(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if !c.in.Dagger().Equals(c.in.Transpose().Conjugate()) {
+		if !c.in.Dagger().Equal(c.in.Transpose().Conjugate()) {
 			t.Fail()
 		}
 	}
 }
 
-func TestMatrix_Equals(t *testing.T) {
+func TestMatrix_Equal(t *testing.T) {
 	cases := []struct {
 		m0, m1 *matrix.Matrix
 		want   bool
@@ -483,7 +483,7 @@ func TestMatrix_Equals(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if c.m0.Equals(c.m1) != c.want {
+		if c.m0.Equal(c.m1) != c.want {
 			t.Fail()
 		}
 	}
@@ -628,7 +628,7 @@ func TestTensorProductN(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if !matrix.TensorProductN(c.in).Equals(c.in) {
+		if !matrix.TensorProductN(c.in).Equal(c.in) {
 			t.Fail()
 		}
 	}
@@ -656,7 +656,7 @@ func TestCommutator(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if !matrix.Commutator(c.x, c.y).Equals(c.want) {
+		if !matrix.Commutator(c.x, c.y).Equal(c.want) {
 			t.Fail()
 		}
 	}
@@ -681,7 +681,7 @@ func TestAntiCommutator(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if !matrix.AntiCommutator(c.x, c.y).Equals(c.want) {
+		if !matrix.AntiCommutator(c.x, c.y).Equal(c.want) {
 			t.Fail()
 		}
 	}

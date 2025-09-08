@@ -839,7 +839,7 @@ func Example_povm() {
 	E3 := gate.I().Sub(E1).Sub(E2)
 
 	add := E1.Add(E2).Add(E3)
-	fmt.Println("euqlas:", add.Equals(gate.I()))
+	fmt.Println("euqlas:", add.Equal(gate.I()))
 
 	{
 		q0 := qubit.Zero().Apply(E1) // E1|0>
@@ -985,7 +985,7 @@ func TestClone(t *testing.T) {
 	in := qubit.Zero(2).Apply(gate.H(2))
 	got := in.Clone()
 
-	if !in.Equals(got) {
+	if !in.Equal(got) {
 		t.Fail()
 	}
 }

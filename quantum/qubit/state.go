@@ -69,9 +69,9 @@ func (s State) String() string {
 	)
 }
 
-// Equals returns true if s equals v.
+// Equal returns true if s equals v.
 // If eps is not given, epsilon.E13 is used.
-func (s State) Equals(v State, eps ...float64) bool {
+func (s State) Equal(v State, eps ...float64) bool {
 	if len(s.binaryString) != len(v.binaryString) {
 		return false
 	}
@@ -85,15 +85,15 @@ func (s State) Equals(v State, eps ...float64) bool {
 	return cmplx.Abs(s.amp-v.amp) < epsilon.E13(eps...)
 }
 
-// Equals returns true if s equals v.
+// Equal returns true if s equals v.
 // If eps is not given, epsilon.E13 is used.
-func Equals(s, v []State, eps ...float64) bool {
+func Equal(s, v []State, eps ...float64) bool {
 	if len(s) != len(v) {
 		return false
 	}
 
 	for i := range s {
-		if !s[i].Equals(v[i], eps...) {
+		if !s[i].Equal(v[i], eps...) {
 			return false
 		}
 	}

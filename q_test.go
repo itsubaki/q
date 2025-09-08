@@ -665,7 +665,7 @@ func Example_bellm() {
 
 	m0 := qsim.Measure(q0)
 	m1 := qsim.Measure(q1)
-	fmt.Println(m0.Equals(m1))
+	fmt.Println(m0.Equal(m1))
 
 	// Output:
 	// [00][  0]( 0.7071 0.0000i): 0.5000

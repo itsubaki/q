@@ -26,7 +26,7 @@ func ExampleState() {
 	// (1+0i) 1
 }
 
-func TestState_Equals(t *testing.T) {
+func TestState_Equal(t *testing.T) {
 	cases := []struct {
 		s    qubit.State
 		v    qubit.State
@@ -60,14 +60,14 @@ func TestState_Equals(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := c.s.Equals(c.v)
+		got := c.s.Equal(c.v)
 		if got != c.want {
 			t.Errorf("got=%v want=%v", got, c.want)
 		}
 	}
 }
 
-func TestEquals(t *testing.T) {
+func TestEqual(t *testing.T) {
 	cases := []struct {
 		s    []qubit.State
 		v    []qubit.State
@@ -91,7 +91,7 @@ func TestEquals(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := qubit.Equals(c.s, c.v)
+		got := qubit.Equal(c.s, c.v)
 		if got != c.want {
 			t.Errorf("got=%v want=%v", got, c.want)
 		}

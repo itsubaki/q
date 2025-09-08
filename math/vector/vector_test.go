@@ -164,7 +164,7 @@ func TestMul(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if !c.v.Mul(c.c).Equals(c.want) {
+		if !c.v.Mul(c.c).Equal(c.want) {
 			t.Fail()
 		}
 	}
@@ -174,7 +174,7 @@ func TestClone(t *testing.T) {
 	in := vector.New(1, 2, 3, 4, 5, 6)
 	got := in.Clone()
 
-	if !in.Equals(got) {
+	if !in.Equal(got) {
 		t.Fail()
 	}
 }
@@ -187,13 +187,13 @@ func TestTensorProductN(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if !vector.TensorProductN(c.in).Equals(c.in) {
+		if !vector.TensorProductN(c.in).Equal(c.in) {
 			t.Fail()
 		}
 	}
 }
 
-func TestEquals(t *testing.T) {
+func TestEqual(t *testing.T) {
 	cases := []struct {
 		v0, v1 *vector.Vector
 		want   bool
@@ -204,7 +204,7 @@ func TestEquals(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if c.v0.Equals(c.v1) != c.want {
+		if c.v0.Equal(c.v1) != c.want {
 			t.Fail()
 		}
 	}
