@@ -8,6 +8,12 @@
 - Quantum computation simulator for Go
 - Pure Go implementation using only the standard library
 
+## Installation
+
+```shell
+go get github.com/itsubaki/q
+```
+
 ## Examples
 
 ### Bell state
