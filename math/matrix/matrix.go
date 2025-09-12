@@ -158,8 +158,7 @@ func (m *Matrix) Dagger() *Matrix {
 }
 
 // Equal returns true if m equals n.
-// If eps is not given, epsilon.E13 is used.
-func (m *Matrix) Equal(n *Matrix, eps ...float64) bool {
+func (m *Matrix) Equal(n *Matrix, tol ...float64) bool {
 	p, q := m.Dim()
 	a, b := n.Dim()
 
@@ -167,9 +166,10 @@ func (m *Matrix) Equal(n *Matrix, eps ...float64) bool {
 		return false
 	}
 
-	e := epsilon.E13(eps...)
+	atol, rtol := epsilon.Tol(tol...)
 	for i := range m.Data {
-		if cmplx.Abs(m.Data[i]-n.Data[i]) > e {
+		diff := cmplx.Abs(m.Data[i] - n.Data[i])
+		if diff > atol+rtol*cmplx.Abs(n.Data[i]) {
 			return false
 		}
 	}
