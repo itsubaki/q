@@ -67,6 +67,6 @@ func FuzzParseFloat(f *testing.F) {
 	}
 
 	f.Fuzz(func(t *testing.T, v string) {
-		number.ParseFloat(v)
+		_, _ = number.ParseFloat(v)
 	})
 }
