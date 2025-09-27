@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math/cmplx"
 	"testing"
 
 	"github.com/itsubaki/q"
@@ -86,7 +85,7 @@ func ExampleControlledModExp2g() {
 		}
 
 		for l, e := range r {
-			if cmplx.Abs(e) < epsilon.E13() {
+			if epsilon.IsClose(e, 0) {
 				continue
 			}
 
@@ -154,13 +153,11 @@ func TestEigenVector(t *testing.T) {
 		N, a, t int
 		bin     []string
 		amp     []complex128
-		eps     float64
 	}{
 		{
 			15, 7, 3,
 			[]string{"0001", "0100", "0111", "1101"},
 			[]complex128{1, 0, 0, 0},
-			epsilon.E13(),
 		},
 	}
 
@@ -192,7 +189,7 @@ func TestEigenVector(t *testing.T) {
 		}
 
 		for i := range c.bin {
-			if cmplx.Abs(us[c.bin[i]]-c.amp[i]) > c.eps {
+			if !epsilon.IsClose(us[c.bin[i]], c.amp[i]) {
 				t.Fail()
 			}
 		}

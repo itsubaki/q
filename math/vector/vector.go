@@ -125,14 +125,13 @@ func (v *Vector) Apply(m *matrix.Matrix) *Vector {
 }
 
 // Equal returns true if v and w are equal.
-func (v *Vector) Equal(w *Vector, eps ...float64) bool {
+func (v *Vector) Equal(w *Vector, tol ...float64) bool {
 	if len(v.Data) != len(w.Data) {
 		return false
 	}
 
-	e := epsilon.E3(eps...)
 	for i := range v.Data {
-		if cmplx.Abs(v.Data[i]-w.Data[i]) > e {
+		if !epsilon.IsClose(v.Data[i], w.Data[i], tol...) {
 			return false
 		}
 	}

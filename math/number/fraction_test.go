@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/itsubaki/q/math/epsilon"
 	"github.com/itsubaki/q/math/number"
 )
 
@@ -52,23 +51,90 @@ func TestContinuedFraction(t *testing.T) {
 		cf   []int
 		s, r int
 		d    float64
-		eps  float64
+		tol  []float64
 	}{
-		{1.0 / 16.0, []int{0, 16}, 1, 16, 0.0625, epsilon.E3()},
-		{4.0 / 16.0, []int{0, 4}, 1, 4, 0.25, epsilon.E3()},
-		{7.0 / 16.0, []int{0, 2, 3, 1, 1}, 7, 16, 0.4375, epsilon.E3()},
-		{13.0 / 16.0, []int{0, 1, 4, 3}, 13, 16, 0.8125, epsilon.E3()},
-		{0.42857, []int{0, 2, 2, 1}, 3, 7, 0.42857142857142855, epsilon.E3()},
-		{0.166656494140625, []int{0, 6}, 1, 6, 0.16666666666666666, epsilon.E3()},
-		{2.38461538462, []int{2, 2, 1, 1, 2}, 31, 13, 2.3846153846153846, epsilon.E3()},
-		{0.0, []int{0}, 0, 1, 0, epsilon.E3()},
-		{1.0, []int{1}, 1, 1, 1, epsilon.E3()},
-		{1.5, []int{1, 2}, 3, 2, 1.5, epsilon.E3()},
-		{2.0, []int{2}, 2, 1, 2.0, epsilon.E3()},
+		{
+			in: 1.0 / 16.0,
+			cf: []int{0, 16},
+			s:  1,
+			r:  16,
+			d:  0.0625},
+		{
+			in: 4.0 / 16.0,
+			cf: []int{0, 4},
+			s:  1,
+			r:  4,
+			d:  0.25,
+		},
+		{
+			in: 7.0 / 16.0,
+			cf: []int{0, 2, 3, 1, 1},
+			s:  7,
+			r:  16,
+			d:  0.4375,
+		},
+		{
+			in: 13.0 / 16.0,
+			cf: []int{0, 1, 4, 3},
+			s:  13,
+			r:  16,
+			d:  0.8125,
+		},
+		{
+			in:  0.42857,
+			cf:  []int{0, 2, 2, 1},
+			s:   3,
+			r:   7,
+			d:   0.42857142857142855,
+			tol: []float64{1e-3, 1e-3},
+		},
+		{
+			in:  0.166656494140625,
+			cf:  []int{0, 6},
+			s:   1,
+			r:   6,
+			d:   0.16666666666666666,
+			tol: []float64{1e-3, 1e-3},
+		},
+		{
+			in: 2.38461538462,
+			cf: []int{2, 2, 1, 1, 2},
+			s:  31,
+			r:  13,
+			d:  2.3846153846153846,
+		},
+		{
+			in: 0.0,
+			cf: []int{0},
+			s:  0,
+			r:  1,
+			d:  0,
+		},
+		{
+			in: 1.0,
+			cf: []int{1},
+			s:  1,
+			r:  1,
+			d:  1,
+		},
+		{
+			in: 1.5,
+			cf: []int{1, 2},
+			s:  3,
+			r:  2,
+			d:  1.5,
+		},
+		{
+			in: 2.0,
+			cf: []int{2},
+			s:  2,
+			r:  1,
+			d:  2.0,
+		},
 	}
 
 	for _, c := range cases {
-		f := number.ContinuedFraction(c.in, c.eps)
+		f := number.ContinuedFraction(c.in, c.tol...)
 		for i := range c.cf {
 			if f[i] == c.cf[i] {
 				continue

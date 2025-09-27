@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"iter"
 	"math"
-	"math/cmplx"
 	"strconv"
 	"strings"
 
@@ -103,30 +102,18 @@ func (m *Matrix) Dim() (rows int, cols int) {
 }
 
 // IsPure returns true if the density matrix is pure.
-func (m *Matrix) IsPure(eps ...float64) bool {
-	return math.Abs(1-m.Purity()) < epsilon.E13(eps...)
+func (m *Matrix) IsPure(tol ...float64) bool {
+	return epsilon.IsCloseF64(1-m.Purity(), 0, tol...)
 }
 
 // IsMixed returns true if the density matrix is mixed.
-func (m *Matrix) IsMixed(eps ...float64) bool {
-	return !m.IsPure(eps...)
+func (m *Matrix) IsMixed(tol ...float64) bool {
+	return !m.IsPure(tol...)
 }
 
 // IsHermite returns true if the density matrix is Hermitian.
-func (m *Matrix) IsHermite(eps ...float64) bool {
-	return m.rho.IsHermite(eps...)
-}
-
-// IsZero returns true if the density matrix is zero.
-func (m *Matrix) IsZero(eps ...float64) bool {
-	e := epsilon.E13(eps...)
-	for i := range m.rho.Data {
-		if cmplx.Abs(m.rho.Data[i]) > e {
-			return false
-		}
-	}
-
-	return true
+func (m *Matrix) IsHermite(tol ...float64) bool {
+	return m.rho.IsHermite(tol...)
 }
 
 // NumQubits returns the number of qubits.
@@ -149,9 +136,9 @@ func (m *Matrix) Probability(q *qubit.Qubit) float64 {
 }
 
 // Project returns the probability and post-measurement density matrix.
-func (m *Matrix) Project(q *qubit.Qubit, eps ...float64) (float64, *Matrix) {
+func (m *Matrix) Project(q *qubit.Qubit, tol ...float64) (float64, *Matrix) {
 	p := m.Probability(q)
-	if math.Abs(p) < epsilon.E13(eps...) {
+	if epsilon.IsCloseF64(p, 0.0, tol...) {
 		return 0, &Matrix{
 			rho: matrix.ZeroLike(m.rho),
 		}

@@ -158,7 +158,7 @@ func (m *Matrix) Dagger() *Matrix {
 }
 
 // Equal returns true if m equals n.
-func (m *Matrix) Equal(n *Matrix, eps ...float64) bool {
+func (m *Matrix) Equal(n *Matrix, tol ...float64) bool {
 	p, q := m.Dim()
 	a, b := n.Dim()
 
@@ -166,9 +166,8 @@ func (m *Matrix) Equal(n *Matrix, eps ...float64) bool {
 		return false
 	}
 
-	e := epsilon.E3(eps...)
 	for i := range m.Data {
-		if cmplx.Abs(m.Data[i]-n.Data[i]) > e {
+		if !epsilon.IsClose(m.Data[i], n.Data[i], tol...) {
 			return false
 		}
 	}
@@ -182,13 +181,13 @@ func (m *Matrix) IsSquare() bool {
 }
 
 // IsHermitian returns true if m is hermitian matrix.
-func (m *Matrix) IsHermite(eps ...float64) bool {
-	return m.IsSquare() && m.Equal(m.Dagger(), eps...)
+func (m *Matrix) IsHermite(tol ...float64) bool {
+	return m.IsSquare() && m.Equal(m.Dagger(), tol...)
 }
 
 // IsUnitary returns true if m is unitary matrix.
-func (m *Matrix) IsUnitary(eps ...float64) bool {
-	return m.IsSquare() && m.MatMul(m.Dagger()).Equal(Identity(m.Rows), eps...)
+func (m *Matrix) IsUnitary(tol ...float64) bool {
+	return m.IsSquare() && m.MatMul(m.Dagger()).Equal(Identity(m.Rows), tol...)
 }
 
 // Apply returns a matrix product of m and n.
@@ -288,17 +287,16 @@ func (m *Matrix) Imag() [][]float64 {
 }
 
 // Inverse returns an inverse matrix of m.
-func (m *Matrix) Inverse(eps ...float64) *Matrix {
+func (m *Matrix) Inverse(tol ...float64) *Matrix {
 	p, q := m.Dim()
 	mm := m.Clone()
-	e := epsilon.E13(eps...)
 
 	out := Identity(p)
 	for i := range p {
-		if cmplx.Abs(mm.At(i, i)) < e {
+		if epsilon.IsClose(mm.At(i, i), 0, tol...) {
 			// swap rows
 			for r := i + 1; r < p; r++ {
-				if cmplx.Abs(mm.At(r, i)) < e {
+				if epsilon.IsClose(mm.At(r, i), 0, tol...) {
 					continue
 				}
 

@@ -933,42 +933,39 @@ func TestNormalize(t *testing.T) {
 	cases := []struct {
 		in   *qubit.Qubit
 		want float64
-		eps  float64
 	}{
-		{qubit.Zero(), 1.0, epsilon.E13()},
-		{qubit.One(), 1.0, epsilon.E13()},
-		{qubit.New(vector.New(4, 5)), 1.0, epsilon.E13()},
-		{qubit.New(vector.New(10, 5)), 1.0, epsilon.E13()},
+		{qubit.Zero(), 1.0},
+		{qubit.One(), 1.0},
+		{qubit.New(vector.New(4, 5)), 1.0},
+		{qubit.New(vector.New(10, 5)), 1.0},
 	}
 
 	for _, c := range cases {
 		got := number.Sum(c.in.Probability())
-		if math.Abs(got-c.want) > c.eps {
+		if !epsilon.IsCloseF64(got, c.want) {
 			t.Errorf("got=%v, want=%v", got, c.want)
 		}
 	}
 }
 
 func TestMeasure(t *testing.T) {
-	eps := epsilon.E13()
-
 	q := qubit.Zero(3).Apply(gate.H(3))
 	for _, p := range q.Probability() {
-		if p != 0 && math.Abs(p-0.125) > eps {
+		if p != 0 && !epsilon.IsCloseF64(p, 0.125) {
 			t.Errorf("probability=%v", q.Probability())
 		}
 	}
 
 	q.Measure(0)
 	for _, p := range q.Probability() {
-		if p != 0 && math.Abs(p-0.25) > eps {
+		if p != 0 && !epsilon.IsCloseF64(p, 0.25) {
 			t.Errorf("probability=%v", q.Probability())
 		}
 	}
 
 	q.Measure(1)
 	for _, p := range q.Probability() {
-		if p != 0 && math.Abs(p-0.5) > eps {
+		if p != 0 && !epsilon.IsCloseF64(p, 0.5) {
 			t.Errorf("probability=%v", q.Probability())
 		}
 	}

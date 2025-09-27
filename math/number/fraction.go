@@ -7,10 +7,8 @@ import (
 )
 
 // ContinuedFraction returns a continued fraction of real.
-// if eps is empty, epsilon.E3 is used.
-func ContinuedFraction(real float64, eps ...float64) []int {
-	e := epsilon.E3(eps...)
-	if real < e {
+func ContinuedFraction(real float64, tol ...float64) []int {
+	if epsilon.IsCloseF64(real, 0.0, tol...) {
 		return []int{0}
 	}
 
@@ -19,8 +17,7 @@ func ContinuedFraction(real float64, eps ...float64) []int {
 	for {
 		intv, frac := math.Modf(r)
 		cf = append(cf, int(intv))
-
-		if frac < e {
+		if epsilon.IsCloseF64(frac, 0.0, tol...) {
 			break
 		}
 

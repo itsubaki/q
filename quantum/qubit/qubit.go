@@ -722,19 +722,19 @@ func (q *Qubit) State(idx ...[]int) []State {
 	return state
 }
 
-func round(a complex128, eps ...float64) (complex128, bool) {
-	e := epsilon.E13(eps...)
+func round(a complex128, tol ...float64) (complex128, bool) {
 	r, i := math.Abs(real(a)), math.Abs(imag(a))
+	rc, ic := epsilon.IsCloseF64(r, 0, tol...), epsilon.IsCloseF64(i, 0, tol...)
 
-	if r < e && i < e {
+	if rc && ic {
 		return complex(0, 0), false
 	}
 
-	if r < e {
+	if rc {
 		a = complex(0, imag(a))
 	}
 
-	if i < e {
+	if ic {
 		a = complex(real(a), 0)
 	}
 

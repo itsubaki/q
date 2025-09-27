@@ -2,13 +2,10 @@ package density_test
 
 import (
 	"fmt"
-	"math"
-	"math/cmplx"
 	"testing"
 
 	"github.com/itsubaki/q/math/epsilon"
 	"github.com/itsubaki/q/math/matrix"
-	"github.com/itsubaki/q/math/vector"
 	"github.com/itsubaki/q/quantum/density"
 	"github.com/itsubaki/q/quantum/gate"
 	"github.com/itsubaki/q/quantum/qubit"
@@ -357,7 +354,6 @@ func TestExpectedValue(t *testing.T) {
 		tr, sqtr float64
 		m        *matrix.Matrix
 		v        float64
-		eps      float64
 	}{
 		{
 			[]density.State{
@@ -366,7 +362,6 @@ func TestExpectedValue(t *testing.T) {
 			},
 			1, 0.82,
 			gate.X(), 0.0,
-			epsilon.E13(),
 		},
 		{
 			[]density.State{
@@ -375,22 +370,21 @@ func TestExpectedValue(t *testing.T) {
 			},
 			1, 0.91,
 			gate.X(), 0.9,
-			epsilon.E13(),
 		},
 	}
 
 	for _, c := range cases {
 		rho := density.New(c.s)
 
-		if math.Abs(rho.Trace()-c.tr) > c.eps {
+		if !epsilon.IsCloseF64(rho.Trace(), c.tr) {
 			t.Errorf("trace=%v", rho.Trace())
 		}
 
-		if math.Abs(rho.Purity()-c.sqtr) > c.eps {
+		if !epsilon.IsCloseF64(rho.Purity(), c.sqtr) {
 			t.Errorf("purity=%v", rho.Purity())
 		}
 
-		if math.Abs(rho.ExpectedValue(c.m)-c.v) > c.eps {
+		if !epsilon.IsCloseF64(rho.ExpectedValue(c.m), c.v) {
 			t.Errorf("expected_value=%v", rho.ExpectedValue(c.m))
 		}
 	}
@@ -428,9 +422,8 @@ func TestPartialTrace(t *testing.T) {
 	}
 
 	cases := []struct {
-		s   []density.State
-		cs  []Case
-		eps float64
+		s  []density.State
+		cs []Case
 	}{
 		{
 			[]density.State{{1.0, qubit.Zero(2)}},
@@ -438,7 +431,6 @@ func TestPartialTrace(t *testing.T) {
 				{0, [][]complex128{{1, 0}, {0, 0}}},
 				{1, [][]complex128{{1, 0}, {0, 0}}},
 			},
-			epsilon.E13(),
 		},
 		{
 			[]density.State{{1.0, qubit.One(2)}},
@@ -446,7 +438,6 @@ func TestPartialTrace(t *testing.T) {
 				{0, [][]complex128{{0, 0}, {0, 1}}},
 				{1, [][]complex128{{0, 0}, {0, 1}}},
 			},
-			epsilon.E13(),
 		},
 		{
 			[]density.State{{1.0, qubit.Zero(2).Apply(gate.H(2))}},
@@ -454,7 +445,6 @@ func TestPartialTrace(t *testing.T) {
 				{0, [][]complex128{{0.5, 0.5}, {0.5, 0.5}}},
 				{1, [][]complex128{{0.5, 0.5}, {0.5, 0.5}}},
 			},
-			epsilon.E13(),
 		},
 		{
 			[]density.State{{0.5, qubit.Zero(2)}, {0.5, qubit.One(2)}},
@@ -462,7 +452,6 @@ func TestPartialTrace(t *testing.T) {
 				{0, [][]complex128{{0.5, 0}, {0, 0.5}}},
 				{1, [][]complex128{{0.5, 0}, {0, 0.5}}},
 			},
-			epsilon.E13(),
 		},
 		{
 			[]density.State{{0.5, qubit.Zero(2).Apply(gate.H(2))}, {0.5, qubit.One(2)}},
@@ -470,7 +459,6 @@ func TestPartialTrace(t *testing.T) {
 				{0, [][]complex128{{0.25, 0.25}, {0.25, 0.75}}},
 				{1, [][]complex128{{0.25, 0.25}, {0.25, 0.75}}},
 			},
-			epsilon.E13(),
 		},
 		{
 			[]density.State{{0.75, qubit.Zero(2).Apply(gate.H(2))}, {0.25, qubit.One(2).Apply(gate.H(2))}},
@@ -478,7 +466,6 @@ func TestPartialTrace(t *testing.T) {
 				{0, [][]complex128{{0.5, 0.25}, {0.25, 0.5}}},
 				{1, [][]complex128{{0.5, 0.25}, {0.25, 0.5}}},
 			},
-			epsilon.E13(),
 		},
 		{
 			[]density.State{{0.25, qubit.Zero(2).Apply(gate.H(2))}, {0.75, qubit.One(2).Apply(gate.H(2))}},
@@ -486,7 +473,6 @@ func TestPartialTrace(t *testing.T) {
 				{0, [][]complex128{{0.5, -0.25}, {-0.25, 0.5}}},
 				{1, [][]complex128{{0.5, -0.25}, {-0.25, 0.5}}},
 			},
-			epsilon.E13(),
 		},
 	}
 
@@ -501,18 +487,18 @@ func TestPartialTrace(t *testing.T) {
 
 			for i := range s.want {
 				for j := range s.want[0] {
-					if cmplx.Abs(got.At(i, j)-s.want[i][j]) > c.eps {
+					if !epsilon.IsClose(got.At(i, j), s.want[i][j]) {
 						t.Errorf("%v:%v, got=%v, want=%v", i, j, got.At(i, j), s.want[i][j])
 					}
 				}
 			}
 
-			if math.Abs(got.Trace()-1) > c.eps {
+			if !epsilon.IsCloseF64(got.Trace(), 1) {
 				t.Errorf("trace: got=%v, want=%v", got.Trace(), 1)
 			}
 
-			if got.Purity() > 1+c.eps {
-				t.Errorf("purity: got=%v > 1", got.Purity())
+			if got.Purity() > 1 && !epsilon.IsCloseF64(got.Purity(), 1) {
+				t.Errorf("purity: got=%v, want<=%v", got.Purity(), 1)
 			}
 		}
 	}
@@ -541,32 +527,6 @@ func TestApply(t *testing.T) {
 
 	for _, c := range cases {
 		if density.New(c.s).Apply(c.u).Probability(c.m) != c.want {
-			t.Fail()
-		}
-	}
-}
-
-func TestMatrix_IsZero(t *testing.T) {
-	cases := []struct {
-		in   *density.Matrix
-		want bool
-	}{
-		{
-			density.New([]density.State{
-				{1.0, qubit.Zero()},
-			}),
-			false,
-		},
-		{
-			density.New([]density.State{
-				{1.0, qubit.New(vector.Zero(2))},
-			}),
-			true,
-		},
-	}
-
-	for _, c := range cases {
-		if c.in.IsZero() != c.want {
 			t.Fail()
 		}
 	}
