@@ -85,7 +85,7 @@ func ExampleControlledModExp2g() {
 		}
 
 		for l, e := range r {
-			if epsilon.IsClose(e, 0) {
+			if epsilon.IsZero(e) {
 				continue
 			}
 

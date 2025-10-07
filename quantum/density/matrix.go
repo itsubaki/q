@@ -103,7 +103,7 @@ func (m *Matrix) Dim() (rows int, cols int) {
 
 // IsPure returns true if the density matrix is pure.
 func (m *Matrix) IsPure(tol ...float64) bool {
-	return epsilon.IsCloseF64(1-m.Purity(), 0, tol...)
+	return epsilon.IsZeroF64(1-m.Purity(), tol...)
 }
 
 // IsMixed returns true if the density matrix is mixed.
@@ -138,7 +138,7 @@ func (m *Matrix) Probability(q *qubit.Qubit) float64 {
 // Project returns the probability and post-measurement density matrix.
 func (m *Matrix) Project(q *qubit.Qubit, tol ...float64) (float64, *Matrix) {
 	p := m.Probability(q)
-	if epsilon.IsCloseF64(p, 0.0, tol...) {
+	if epsilon.IsZeroF64(p, tol...) {
 		return 0, &Matrix{
 			rho: matrix.ZeroLike(m.rho),
 		}

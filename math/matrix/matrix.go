@@ -293,10 +293,10 @@ func (m *Matrix) Inverse(tol ...float64) *Matrix {
 
 	out := Identity(p)
 	for i := range p {
-		if epsilon.IsClose(mm.At(i, i), 0, tol...) {
+		if epsilon.IsZero(mm.At(i, i), tol...) {
 			// swap rows
 			for r := i + 1; r < p; r++ {
-				if epsilon.IsClose(mm.At(r, i), 0, tol...) {
+				if epsilon.IsZero(mm.At(r, i), tol...) {
 					continue
 				}
 

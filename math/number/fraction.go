@@ -8,7 +8,7 @@ import (
 
 // ContinuedFraction returns a continued fraction of real.
 func ContinuedFraction(real float64, tol ...float64) []int {
-	if epsilon.IsCloseF64(real, 0.0, tol...) {
+	if epsilon.IsZeroF64(real, tol...) {
 		return []int{0}
 	}
 
@@ -17,7 +17,7 @@ func ContinuedFraction(real float64, tol ...float64) []int {
 	for {
 		intv, frac := math.Modf(r)
 		cf = append(cf, int(intv))
-		if epsilon.IsCloseF64(frac, 0.0, tol...) {
+		if epsilon.IsZeroF64(frac, tol...) {
 			break
 		}
 

@@ -1,10 +1,25 @@
 package epsilon_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/itsubaki/q/math/epsilon"
 )
+
+func ExampleIsZero() {
+	fmt.Println(epsilon.IsZero(complex(1e-13, 1e-13)))
+
+	// Output:
+	// true
+}
+
+func ExampleIsZeroF64() {
+	fmt.Println(epsilon.IsZeroF64(1e-13))
+
+	// Output:
+	// true
+}
 
 func TestTol(t *testing.T) {
 	cases := []struct {

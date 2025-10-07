@@ -724,7 +724,7 @@ func (q *Qubit) State(idx ...[]int) []State {
 
 func round(a complex128, tol ...float64) (complex128, bool) {
 	r, i := math.Abs(real(a)), math.Abs(imag(a))
-	rc, ic := epsilon.IsCloseF64(r, 0, tol...), epsilon.IsCloseF64(i, 0, tol...)
+	rc, ic := epsilon.IsZeroF64(r, tol...), epsilon.IsZeroF64(i, tol...)
 
 	if rc && ic {
 		return complex(0, 0), false
