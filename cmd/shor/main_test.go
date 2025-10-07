@@ -65,6 +65,54 @@ func ExampleCModExp2_mod21() {
 	// [1 01000][  1   8]( 1.0000 0.0000i): 1.0000
 }
 
+func TestEigenVector(t *testing.T) {
+	cases := []struct {
+		N, a, t int
+		bin     []string
+		amp     []complex128
+	}{
+		{
+			15, 7, 3,
+			[]string{"0001", "0100", "0111", "1101"},
+			[]complex128{1, 0, 0, 0},
+		},
+	}
+
+	for _, c := range cases {
+		qsim := q.New()
+		r0 := qsim.Zeros(c.t)
+		r1 := qsim.ZeroLog2(c.N)
+
+		qsim.X(r1[len(r1)-1])
+		qsim.H(r0...)
+		for j := range r0 {
+			CModExp2(qsim, c.a, j, c.N, r0[j], r1)
+		}
+		qsim.InvQFT(r0...)
+
+		us := make(map[string]complex128)
+		for _, s := range qsim.State(r1) {
+			m := s.BinaryString()
+			if v, ok := us[m]; ok {
+				us[m] = v + s.Amplitude()
+				continue
+			}
+
+			us[m] = s.Amplitude()
+		}
+
+		if len(us) != len(c.bin) {
+			t.Fail()
+		}
+
+		for i := range c.bin {
+			if !epsilon.IsClose(us[c.bin[i]], c.amp[i]) {
+				t.Fail()
+			}
+		}
+	}
+}
+
 func ExampleControlledModExp2g() {
 	n, a, j, N := 5, 7, 0, 15
 	g := ControlledModExp2g(n, a, j, N, 0, []int{1, 2, 3, 4})
@@ -113,7 +161,7 @@ func ExampleControlledModExp2g() {
 	// 1:1110=14 1:1000= 8  8
 }
 
-func TestControlledModExp2(t *testing.T) {
+func TestControlledModExp2g(t *testing.T) {
 	g1 := matrix.Apply(
 		gate.CNOT(7, 3, 5),
 		gate.CCNOT(7, 1, 5, 3),
@@ -148,50 +196,39 @@ func TestControlledModExp2(t *testing.T) {
 	}
 }
 
-func TestEigenVector(t *testing.T) {
-	cases := []struct {
-		N, a, t int
-		bin     []string
-		amp     []complex128
-	}{
-		{
-			15, 7, 3,
-			[]string{"0001", "0100", "0111", "1101"},
-			[]complex128{1, 0, 0, 0},
-		},
+// ControlledModExp2g returns gate of controlled modular exponentiation operation.
+// |j>|k> -> |j>|a**(2**j) * k mod N>.
+func ControlledModExp2g(n, a, j, N, c int, t []int) *matrix.Matrix {
+	m := gate.I(n)
+	r1len := len(t)
+	a2jmodN := number.ModExp2(a, j, N)
+
+	d, _ := m.Dim()
+	idx := make([]int, d)
+	for i := range d {
+		if (i>>(n-1-c))&1 == 0 {
+			// control bit is 0, then do nothing
+			idx[i] = i
+			continue
+		}
+
+		// r1len bits of i
+		mask := (1 << r1len) - 1
+		k := i & mask
+		if k > N-1 {
+			idx[i] = i
+			continue
+		}
+
+		// r0len bits of i + a2jkmodN bits
+		a2jkmodN := a2jmodN * k % N
+		idx[i] = (i >> r1len << r1len) | a2jkmodN
 	}
 
-	for _, c := range cases {
-		qsim := q.New()
-		r0 := qsim.Zeros(c.t)
-		r1 := qsim.ZeroLog2(c.N)
-
-		qsim.X(r1[len(r1)-1])
-		qsim.H(r0...)
-		for j := range r0 {
-			CModExp2(qsim, c.a, j, c.N, r0[j], r1)
-		}
-		qsim.InvQFT(r0...)
-
-		us := make(map[string]complex128)
-		for _, s := range qsim.State(r1) {
-			m := s.BinaryString()
-			if v, ok := us[m]; ok {
-				us[m] = v + s.Amplitude()
-				continue
-			}
-
-			us[m] = s.Amplitude()
-		}
-
-		if len(us) != len(c.bin) {
-			t.Fail()
-		}
-
-		for i := range c.bin {
-			if !epsilon.IsClose(us[c.bin[i]], c.amp[i]) {
-				t.Fail()
-			}
-		}
+	data := make([][]complex128, d)
+	for i, j := range idx {
+		data[j] = m.Row(i)
 	}
+
+	return matrix.New(data...)
 }

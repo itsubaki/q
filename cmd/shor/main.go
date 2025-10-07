@@ -7,11 +7,9 @@ import (
 	"strings"
 
 	"github.com/itsubaki/q"
-	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/math/number"
 	"github.com/itsubaki/q/math/rand"
 	"github.com/itsubaki/q/math/vector"
-	"github.com/itsubaki/q/quantum/gate"
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
@@ -164,41 +162,4 @@ func ControlledModExp2(qb *qubit.Qubit, a, j, N, control int, target []int) {
 
 	// update the qubit state
 	qb.Update(vector.New(newState...))
-}
-
-// ControlledModExp2g returns gate of controlled modular exponentiation operation.
-// |j>|k> -> |j>|a**(2**j) * k mod N>.
-func ControlledModExp2g(n, a, j, N, c int, t []int) *matrix.Matrix {
-	m := gate.I(n)
-	r1len := len(t)
-	a2jmodN := number.ModExp2(a, j, N)
-
-	d, _ := m.Dim()
-	idx := make([]int, d)
-	for i := range d {
-		if (i>>(n-1-c))&1 == 0 {
-			// control bit is 0, then do nothing
-			idx[i] = i
-			continue
-		}
-
-		// r1len bits of i
-		mask := (1 << r1len) - 1
-		k := i & mask
-		if k > N-1 {
-			idx[i] = i
-			continue
-		}
-
-		// r0len bits of i + a2jkmodN bits
-		a2jkmodN := a2jmodN * k % N
-		idx[i] = (i >> r1len << r1len) | a2jkmodN
-	}
-
-	data := make([][]complex128, d)
-	for i, j := range idx {
-		data[j] = m.Row(i)
-	}
-
-	return matrix.New(data...)
 }
