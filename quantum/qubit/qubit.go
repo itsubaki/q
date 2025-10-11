@@ -111,13 +111,13 @@ func (q *Qubit) Dim() int {
 }
 
 // IsZero returns true if q is zero qubit.
-func (q *Qubit) IsZero(eps ...float64) bool {
-	return q.Equal(Zero(), eps...)
+func (q *Qubit) IsZero(tol ...float64) bool {
+	return q.Equal(Zero(), tol...)
 }
 
 // IsOne returns true if q is one qubit.
-func (q *Qubit) IsOne(eps ...float64) bool {
-	return q.Equal(One(), eps...)
+func (q *Qubit) IsOne(tol ...float64) bool {
+	return q.Equal(One(), tol...)
 }
 
 // Amplitude returns the amplitude of q.
@@ -662,8 +662,8 @@ func (q *Qubit) Clone() *Qubit {
 }
 
 // Equal returns true if q and qb are equal.
-func (q *Qubit) Equal(qb *Qubit, eps ...float64) bool {
-	return q.state.Equal(qb.state, eps...)
+func (q *Qubit) Equal(qb *Qubit, tol ...float64) bool {
+	return q.state.Equal(qb.state, tol...)
 }
 
 // BinaryString measures the quantum state and returns its binary string representation.
@@ -723,18 +723,18 @@ func (q *Qubit) State(idx ...[]int) []State {
 }
 
 func round(a complex128, tol ...float64) (complex128, bool) {
-	r, i := math.Abs(real(a)), math.Abs(imag(a))
-	rc, ic := epsilon.IsZeroF64(r, tol...), epsilon.IsZeroF64(i, tol...)
+	ar, ai := math.Abs(real(a)), math.Abs(imag(a))
+	rzero, izero := epsilon.IsZeroF64(ar, tol...), epsilon.IsZeroF64(ai, tol...)
 
-	if rc && ic {
+	if rzero && izero {
 		return complex(0, 0), false
 	}
 
-	if rc {
+	if rzero {
 		a = complex(0, imag(a))
 	}
 
-	if ic {
+	if izero {
 		a = complex(real(a), 0)
 	}
 

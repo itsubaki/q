@@ -38,11 +38,13 @@ func Convergent(cfx []int) (int, int, float64) {
 		return cfx[0], 1, float64(cfx[0])
 	}
 
-	s, r := 1, cfx[n-1]
-	for i := 2; i < n; i++ {
-		s, r = r, cfx[n-i]*r+s
-	}
-	s = s + cfx[0]*r
+	p0, p1 := 1, cfx[0]
+	q0, q1 := 0, 1
 
-	return s, r, float64(s) / float64(r)
+	for i := 1; i < n; i++ {
+		p0, p1 = p1, cfx[i]*p1+p0
+		q0, q1 = q1, cfx[i]*q1+q0
+	}
+
+	return p1, q1, float64(p1) / float64(q1)
 }
