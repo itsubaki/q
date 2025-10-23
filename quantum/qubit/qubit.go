@@ -81,8 +81,8 @@ func Minus(n ...int) *Qubit {
 	return qb
 }
 
-// NewFrom returns a new qubit from a binary string.
-func NewFrom(binary string) *Qubit {
+// From returns a new qubit from a binary string.
+func From(binary string) *Qubit {
 	list := make([]*Qubit, len(binary))
 	for i, c := range binary {
 		switch c {

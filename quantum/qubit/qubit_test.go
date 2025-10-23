@@ -32,8 +32,8 @@ func ExampleZero() {
 	// z2:[00][  0]( 1.0000 0.0000i): 1.0000
 }
 
-func ExampleNewFrom() {
-	z := qubit.NewFrom("0011")
+func ExampleFrom() {
+	z := qubit.From("0011")
 	for _, s := range z.State() {
 		fmt.Println(s)
 	}
@@ -42,8 +42,8 @@ func ExampleNewFrom() {
 	// [0011][  3]( 1.0000 0.0000i): 1.0000
 }
 
-func ExampleNewFrom_plus() {
-	z := qubit.NewFrom("+-")
+func ExampleFrom_plus() {
+	z := qubit.From("+-")
 	for _, s := range z.State() {
 		fmt.Println(s)
 	}

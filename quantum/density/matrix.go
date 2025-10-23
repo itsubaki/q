@@ -75,7 +75,7 @@ func (m *Matrix) ComputationalBasis() []*qubit.Qubit {
 
 	basis := make([]*qubit.Qubit, 1<<n)
 	for i := range 1 << n {
-		basis[i] = qubit.NewFrom(fmt.Sprintf("%0*b", n, i))
+		basis[i] = qubit.From(fmt.Sprintf("%0*b", n, i))
 	}
 
 	return basis

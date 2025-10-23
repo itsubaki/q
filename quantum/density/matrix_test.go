@@ -188,8 +188,8 @@ func ExampleMatrix_TensorProduct() {
 
 func ExampleMatrix_PartialTrace() {
 	rho := density.New([]density.State{
-		{0.5, qubit.NewFrom("00")},
-		{0.5, qubit.NewFrom("10")},
+		{0.5, qubit.From("00")},
+		{0.5, qubit.From("10")},
 	})
 
 	for _, r := range rho.Seq2() {
@@ -265,8 +265,8 @@ func ExampleMatrix_ApplyChannel() {
 	qb := rho.Qubits()
 	x := rho.ApplyChannel(0.3, gate.X(), qb[0])
 
-	fmt.Printf("%.2f\n", x.Probability(qubit.NewFrom("00")))
-	fmt.Printf("%.2f\n", x.Probability(qubit.NewFrom("10")))
+	fmt.Printf("%.2f\n", x.Probability(qubit.From("00")))
+	fmt.Printf("%.2f\n", x.Probability(qubit.From("10")))
 
 	// Output:
 	// 0.70
@@ -279,8 +279,8 @@ func ExampleMatrix_ApplyChannel_qb1() {
 	qb := rho.Qubits()
 	x := rho.ApplyChannel(0.3, gate.X(), qb[1])
 
-	fmt.Printf("%.2f\n", x.Probability(qubit.NewFrom("00")))
-	fmt.Printf("%.2f\n", x.Probability(qubit.NewFrom("01")))
+	fmt.Printf("%.2f\n", x.Probability(qubit.From("00")))
+	fmt.Printf("%.2f\n", x.Probability(qubit.From("01")))
 
 	// Output:
 	// 0.70
