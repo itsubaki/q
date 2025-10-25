@@ -443,7 +443,7 @@ func TestProbability(t *testing.T) {
 
 func TestPartialTrace(t *testing.T) {
 	type Case struct {
-		idx  density.Qubit
+		idx  []density.Qubit
 		want [][]complex128
 	}
 
@@ -460,14 +460,14 @@ func TestPartialTrace(t *testing.T) {
 			},
 			cs: []Case{
 				{
-					idx: 0,
+					idx: []density.Qubit{0},
 					want: [][]complex128{
 						{1, 0},
 						{0, 0},
 					},
 				},
 				{
-					idx: 1,
+					idx: []density.Qubit{1},
 					want: [][]complex128{
 						{1, 0},
 						{0, 0},
@@ -484,14 +484,14 @@ func TestPartialTrace(t *testing.T) {
 			},
 			cs: []Case{
 				{
-					idx: 0,
+					idx: []density.Qubit{0},
 					want: [][]complex128{
 						{0, 0},
 						{0, 1},
 					},
 				},
 				{
-					idx: 1,
+					idx: []density.Qubit{1},
 					want: [][]complex128{
 						{0, 0},
 						{0, 1},
@@ -508,14 +508,14 @@ func TestPartialTrace(t *testing.T) {
 			},
 			cs: []Case{
 				{
-					idx: 0,
+					idx: []density.Qubit{0},
 					want: [][]complex128{
 						{0.5, 0.5},
 						{0.5, 0.5},
 					},
 				},
 				{
-					idx: 1,
+					idx: []density.Qubit{1},
 					want: [][]complex128{
 						{0.5, 0.5},
 						{0.5, 0.5},
@@ -536,14 +536,14 @@ func TestPartialTrace(t *testing.T) {
 			},
 			cs: []Case{
 				{
-					idx: 0,
+					idx: []density.Qubit{0},
 					want: [][]complex128{
 						{0.5, 0},
 						{0, 0.5},
 					},
 				},
 				{
-					idx: 1,
+					idx: []density.Qubit{1},
 					want: [][]complex128{
 						{0.5, 0},
 						{0, 0.5},
@@ -564,14 +564,14 @@ func TestPartialTrace(t *testing.T) {
 			},
 			cs: []Case{
 				{
-					idx: 0,
+					idx: []density.Qubit{0},
 					want: [][]complex128{
 						{0.25, 0.25},
 						{0.25, 0.75},
 					},
 				},
 				{
-					idx: 1,
+					idx: []density.Qubit{1},
 					want: [][]complex128{
 						{0.25, 0.25},
 						{0.25, 0.75},
@@ -592,14 +592,14 @@ func TestPartialTrace(t *testing.T) {
 			},
 			cs: []Case{
 				{
-					idx: 0,
+					idx: []density.Qubit{0},
 					want: [][]complex128{
 						{0.5, 0.25},
 						{0.25, 0.5},
 					},
 				},
 				{
-					idx: 1,
+					idx: []density.Qubit{1},
 					want: [][]complex128{
 						{0.5, 0.25},
 						{0.25, 0.5},
@@ -620,17 +620,89 @@ func TestPartialTrace(t *testing.T) {
 			},
 			cs: []Case{
 				{
-					idx: 0,
+					idx: []density.Qubit{0},
 					want: [][]complex128{
 						{0.5, -0.25},
 						{-0.25, 0.5},
 					},
 				},
 				{
-					idx: 1,
+					idx: []density.Qubit{1},
 					want: [][]complex128{
 						{0.5, -0.25},
 						{-0.25, 0.5},
+					},
+				},
+			},
+		},
+		{
+			s: []density.State{
+				{
+					Probability: 1.0,
+					Qubit:       qubit.Zero(3),
+				},
+			},
+			cs: []Case{
+				{
+					idx: []density.Qubit{0, 1},
+					want: [][]complex128{
+						{1, 0},
+						{0, 0},
+					},
+				},
+				{
+					idx: []density.Qubit{1, 2},
+					want: [][]complex128{
+						{1, 0},
+						{0, 0},
+					},
+				},
+			},
+		},
+		{
+			s: []density.State{
+				{
+					Probability: 1.0,
+					Qubit:       qubit.One(3),
+				},
+			},
+			cs: []Case{
+				{
+					idx: []density.Qubit{0, 1},
+					want: [][]complex128{
+						{0, 0},
+						{0, 1},
+					},
+				},
+				{
+					idx: []density.Qubit{1, 2},
+					want: [][]complex128{
+						{0, 0},
+						{0, 1},
+					},
+				},
+			},
+		},
+		{
+			s: []density.State{
+				{
+					Probability: 1.0,
+					Qubit:       qubit.Zero(3).Apply(gate.H(3)),
+				},
+			},
+			cs: []Case{
+				{
+					idx: []density.Qubit{0, 1},
+					want: [][]complex128{
+						{0.5, 0.5},
+						{0.5, 0.5},
+					},
+				},
+				{
+					idx: []density.Qubit{1, 2},
+					want: [][]complex128{
+						{0.5, 0.5},
+						{0.5, 0.5},
 					},
 				},
 			},
@@ -639,7 +711,7 @@ func TestPartialTrace(t *testing.T) {
 
 	for _, c := range cases {
 		for _, s := range c.cs {
-			got := density.New(c.s).PartialTrace(s.idx)
+			got := density.New(c.s).PartialTrace(s.idx...)
 
 			p, q := got.Dim()
 			if p != len(s.want) || q != len(s.want) {
