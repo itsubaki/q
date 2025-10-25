@@ -8,6 +8,7 @@ import (
 	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/math/number"
 	"github.com/itsubaki/q/math/rand"
+	"github.com/itsubaki/q/quantum/density"
 	"github.com/itsubaki/q/quantum/gate"
 )
 
@@ -1105,4 +1106,28 @@ func Example_any() {
 	// Output:
 	// [00][  0]( 0.7071 0.0000i): 0.5000
 	// [11][  3]( 0.7071 0.0000i): 0.5000
+}
+
+func Example_densityMatrix() {
+	qsim := q.New()
+	{
+		// bell state
+		qb := qsim.Zeros(2)
+		qsim.H(qb[0])
+		qsim.CNOT(qb[0], qb[1])
+	}
+
+	rho := density.NewPureState(qsim.Underlying())
+	qb := rho.Qubits()
+	s1 := rho.PartialTrace(qb[0])
+	s0 := rho.PartialTrace(qb[1])
+
+	fmt.Printf("trace: %.2v, purity: %.2v\n", rho.Trace(), rho.Purity())
+	fmt.Printf("trace: %.2v, purity: %.2v\n", s1.Trace(), s1.Purity())
+	fmt.Printf("trace: %.2v, purity: %.2v\n", s0.Trace(), s0.Purity())
+
+	// Output:
+	// trace: 1, purity: 1
+	// trace: 1, purity: 0.5
+	// trace: 1, purity: 0.5
 }
