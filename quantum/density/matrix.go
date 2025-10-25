@@ -178,7 +178,7 @@ func (m *Matrix) TensorProduct(n *Matrix) *Matrix {
 // where n is the number of qubits in the matrix.
 func (m *Matrix) PartialTrace(idx ...Qubit) *Matrix {
 	n := m.NumQubits()
-	d := number.Pow(2, n-1)
+	d := number.Pow(2, n-len(idx))
 	p, q := m.Dim()
 
 	rho := matrix.Zero(d, d)

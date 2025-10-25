@@ -356,20 +356,36 @@ func TestExpectedValue(t *testing.T) {
 		v        float64
 	}{
 		{
-			[]density.State{
-				{0.1, qubit.Zero()},
-				{0.9, qubit.One()},
+			s: []density.State{
+				{
+					Probability: 0.1,
+					Qubit:       qubit.Zero(),
+				},
+				{
+					Probability: 0.9,
+					Qubit:       qubit.One(),
+				},
 			},
-			1, 0.82,
-			gate.X(), 0.0,
+			tr:   1,
+			sqtr: 0.82,
+			m:    gate.X(),
+			v:    0.0,
 		},
 		{
-			[]density.State{
-				{0.1, qubit.Zero()},
-				{0.9, qubit.Plus()},
+			s: []density.State{
+				{
+					Probability: 0.1,
+					Qubit:       qubit.Zero(),
+				},
+				{
+					Probability: 0.9,
+					Qubit:       qubit.Plus(),
+				},
 			},
-			1, 0.91,
-			gate.X(), 0.9,
+			tr:   1,
+			sqtr: 0.91,
+			m:    gate.X(),
+			v:    0.9,
 		},
 	}
 
@@ -397,14 +413,24 @@ func TestProbability(t *testing.T) {
 		want float64
 	}{
 		{
-			[]density.State{{1, qubit.Zero()}},
-			qubit.Zero(),
-			1,
+			s: []density.State{
+				{
+					Probability: 1,
+					Qubit:       qubit.Zero(),
+				},
+			},
+			m:    qubit.Zero(),
+			want: 1,
 		},
 		{
-			[]density.State{{1, qubit.Zero()}},
-			qubit.One(),
-			0,
+			s: []density.State{
+				{
+					Probability: 1,
+					Qubit:       qubit.Zero(),
+				},
+			},
+			m:    qubit.One(),
+			want: 0,
 		},
 	}
 
@@ -512,16 +538,26 @@ func TestApply(t *testing.T) {
 		want float64
 	}{
 		{
-			[]density.State{{1, qubit.Zero()}},
-			gate.X(),
-			qubit.Zero(),
-			0,
+			s: []density.State{
+				{
+					Probability: 1,
+					Qubit:       qubit.Zero(),
+				},
+			},
+			u:    gate.X(),
+			m:    qubit.Zero(),
+			want: 0,
 		},
 		{
-			[]density.State{{1, qubit.Zero()}},
-			gate.X(),
-			qubit.One(),
-			1,
+			s: []density.State{
+				{
+					Probability: 1,
+					Qubit:       qubit.Zero(),
+				},
+			},
+			u:    gate.X(),
+			m:    qubit.One(),
+			want: 1,
 		},
 	}
 
