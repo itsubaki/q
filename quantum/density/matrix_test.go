@@ -452,52 +452,187 @@ func TestPartialTrace(t *testing.T) {
 		cs []Case
 	}{
 		{
-			[]density.State{{1.0, qubit.Zero(2)}},
-			[]Case{
-				{0, [][]complex128{{1, 0}, {0, 0}}},
-				{1, [][]complex128{{1, 0}, {0, 0}}},
+			s: []density.State{
+				{
+					Probability: 1.0,
+					Qubit:       qubit.Zero(2),
+				},
+			},
+			cs: []Case{
+				{
+					idx: 0,
+					want: [][]complex128{
+						{1, 0},
+						{0, 0},
+					},
+				},
+				{
+					idx: 1,
+					want: [][]complex128{
+						{1, 0},
+						{0, 0},
+					},
+				},
 			},
 		},
 		{
-			[]density.State{{1.0, qubit.One(2)}},
-			[]Case{
-				{0, [][]complex128{{0, 0}, {0, 1}}},
-				{1, [][]complex128{{0, 0}, {0, 1}}},
+			s: []density.State{
+				{
+					Probability: 1.0,
+					Qubit:       qubit.One(2),
+				},
+			},
+			cs: []Case{
+				{
+					idx: 0,
+					want: [][]complex128{
+						{0, 0},
+						{0, 1},
+					},
+				},
+				{
+					idx: 1,
+					want: [][]complex128{
+						{0, 0},
+						{0, 1},
+					},
+				},
 			},
 		},
 		{
-			[]density.State{{1.0, qubit.Zero(2).Apply(gate.H(2))}},
-			[]Case{
-				{0, [][]complex128{{0.5, 0.5}, {0.5, 0.5}}},
-				{1, [][]complex128{{0.5, 0.5}, {0.5, 0.5}}},
+			s: []density.State{
+				{
+					Probability: 1.0,
+					Qubit:       qubit.Zero(2).Apply(gate.H(2)),
+				},
+			},
+			cs: []Case{
+				{
+					idx: 0,
+					want: [][]complex128{
+						{0.5, 0.5},
+						{0.5, 0.5},
+					},
+				},
+				{
+					idx: 1,
+					want: [][]complex128{
+						{0.5, 0.5},
+						{0.5, 0.5},
+					},
+				},
 			},
 		},
 		{
-			[]density.State{{0.5, qubit.Zero(2)}, {0.5, qubit.One(2)}},
-			[]Case{
-				{0, [][]complex128{{0.5, 0}, {0, 0.5}}},
-				{1, [][]complex128{{0.5, 0}, {0, 0.5}}},
+			s: []density.State{
+				{
+					Probability: 0.5,
+					Qubit:       qubit.Zero(2),
+				},
+				{
+					Probability: 0.5,
+					Qubit:       qubit.One(2),
+				},
+			},
+			cs: []Case{
+				{
+					idx: 0,
+					want: [][]complex128{
+						{0.5, 0},
+						{0, 0.5},
+					},
+				},
+				{
+					idx: 1,
+					want: [][]complex128{
+						{0.5, 0},
+						{0, 0.5},
+					},
+				},
 			},
 		},
 		{
-			[]density.State{{0.5, qubit.Zero(2).Apply(gate.H(2))}, {0.5, qubit.One(2)}},
-			[]Case{
-				{0, [][]complex128{{0.25, 0.25}, {0.25, 0.75}}},
-				{1, [][]complex128{{0.25, 0.25}, {0.25, 0.75}}},
+			s: []density.State{
+				{
+					Probability: 0.5,
+					Qubit:       qubit.Zero(2).Apply(gate.H(2)),
+				},
+				{
+					Probability: 0.5,
+					Qubit:       qubit.One(2),
+				},
+			},
+			cs: []Case{
+				{
+					idx: 0,
+					want: [][]complex128{
+						{0.25, 0.25},
+						{0.25, 0.75},
+					},
+				},
+				{
+					idx: 1,
+					want: [][]complex128{
+						{0.25, 0.25},
+						{0.25, 0.75},
+					},
+				},
 			},
 		},
 		{
-			[]density.State{{0.75, qubit.Zero(2).Apply(gate.H(2))}, {0.25, qubit.One(2).Apply(gate.H(2))}},
-			[]Case{
-				{0, [][]complex128{{0.5, 0.25}, {0.25, 0.5}}},
-				{1, [][]complex128{{0.5, 0.25}, {0.25, 0.5}}},
+			s: []density.State{
+				{
+					Probability: 0.75,
+					Qubit:       qubit.Zero(2).Apply(gate.H(2)),
+				},
+				{
+					Probability: 0.25,
+					Qubit:       qubit.One(2).Apply(gate.H(2)),
+				},
+			},
+			cs: []Case{
+				{
+					idx: 0,
+					want: [][]complex128{
+						{0.5, 0.25},
+						{0.25, 0.5},
+					},
+				},
+				{
+					idx: 1,
+					want: [][]complex128{
+						{0.5, 0.25},
+						{0.25, 0.5},
+					},
+				},
 			},
 		},
 		{
-			[]density.State{{0.25, qubit.Zero(2).Apply(gate.H(2))}, {0.75, qubit.One(2).Apply(gate.H(2))}},
-			[]Case{
-				{0, [][]complex128{{0.5, -0.25}, {-0.25, 0.5}}},
-				{1, [][]complex128{{0.5, -0.25}, {-0.25, 0.5}}},
+			s: []density.State{
+				{
+					Probability: 0.25,
+					Qubit:       qubit.Zero(2).Apply(gate.H(2)),
+				},
+				{
+					Probability: 0.75,
+					Qubit:       qubit.One(2).Apply(gate.H(2)),
+				},
+			},
+			cs: []Case{
+				{
+					idx: 0,
+					want: [][]complex128{
+						{0.5, -0.25},
+						{-0.25, 0.5},
+					},
+				},
+				{
+					idx: 1,
+					want: [][]complex128{
+						{0.5, -0.25},
+						{-0.25, 0.5},
+					},
+				},
 			},
 		},
 	}
