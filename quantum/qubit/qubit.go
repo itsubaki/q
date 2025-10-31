@@ -695,19 +695,19 @@ func (q *Qubit) String() string {
 // State returns the state of the qubit at the given index.
 // If no index is provided, it returns the state vector of all qubits.
 func (q *Qubit) State(idx ...[]int) []State {
+	n := q.NumQubits()
 	if len(idx) < 1 {
 		idx = make([][]int, 1)
-		idx[0] = make([]int, q.NumQubits())
-		for i := range idx[0] {
+		idx[0] = make([]int, n)
+		for i := range n {
 			idx[0][i] = i
 		}
 	}
 
-	n := q.NumQubits()
 	var state []State
 	for i, a := range q.Amplitude() {
-		amp, ok := round(a)
-		if !ok {
+		amp, isZero := round(a)
+		if isZero {
 			continue
 		}
 
@@ -727,7 +727,7 @@ func round(a complex128, tol ...float64) (complex128, bool) {
 	rzero, izero := epsilon.IsZeroF64(ar, tol...), epsilon.IsZeroF64(ai, tol...)
 
 	if rzero && izero {
-		return complex(0, 0), false
+		return complex(0, 0), true
 	}
 
 	if rzero {
@@ -738,7 +738,7 @@ func round(a complex128, tol ...float64) (complex128, bool) {
 		a = complex(real(a), 0)
 	}
 
-	return a, true
+	return a, false
 }
 
 func take(n, i int, idx []int) string {
