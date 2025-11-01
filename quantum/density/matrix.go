@@ -238,9 +238,9 @@ func (m *Matrix) Depolarizing(p float64, qb ...Qubit) *Matrix {
 	yg := gate.TensorProduct(gate.Y(), n, idx)
 	zg := gate.TensorProduct(gate.Z(), n, idx)
 
-	x := matrix.MatMul(xg, m.rho, xg).Mul(complex(p/3, 0))
-	y := matrix.MatMul(yg, m.rho, yg).Mul(complex(p/3, 0))
-	z := matrix.MatMul(zg, m.rho, zg).Mul(complex(p/3, 0))
+	x := matrix.MatMul(xg, m.rho, xg.Dagger()).Mul(complex(p/3, 0))
+	y := matrix.MatMul(yg, m.rho, yg.Dagger()).Mul(complex(p/3, 0))
+	z := matrix.MatMul(zg, m.rho, zg.Dagger()).Mul(complex(p/3, 0))
 
 	return &Matrix{
 		rho: id.Add(x).Add(y).Add(z),
