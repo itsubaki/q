@@ -260,4 +260,4 @@ for _, s := range qsim.State() {
 
 ## References
 
-[1] M. A. Nielsen and I. L. Chuang, *Quantum Computation and Quantum Information*, 10th ed. Cambridge, U.K.: Cambridge University Press, 2010.
+ 1. M. A. Nielsen and I. L. Chuang, *Quantum Computation and Quantum Information*, 10th ed. Cambridge, U.K.: Cambridge University Press, 2010.
