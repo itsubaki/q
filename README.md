@@ -16,7 +16,7 @@ go get github.com/itsubaki/q
 
 ## Examples
 
-### Bell state
+### Bell State
 
 ```go
 qsim := q.New()
@@ -48,7 +48,7 @@ for _, s := range qsim.State() {
 // [11][  3]( 1.0000 0.0000i): 1.0000
 ```
 
-### Quantum teleportation
+### Quantum Teleportation
 
 ```go
 qsim := q.New()
@@ -69,11 +69,11 @@ for _, s := range qsim.State(phi) {
 qsim.H(q0).CNOT(q0, q1)
 qsim.CNOT(phi, q0).H(phi)
 
-// Alice send mz, mx to Bob
+// Alice sends mz, mx to Bob
 mz := qsim.Measure(phi)
 mx := qsim.Measure(q0)
 
-// Bob Apply X and Z
+// Bob Applies X and Z
 qsim.CondX(mx.IsOne(), q1)
 qsim.CondZ(mz.IsOne(), q1)
 
@@ -86,7 +86,7 @@ for _, s := range qsim.State(q1) {
 // [1][  1]( 0.8944 0.0000i): 0.8000
 ```
 
-### Error correction
+### Error Correction
 
 ```go
 qsim := q.New()
@@ -127,7 +127,7 @@ for _, s := range qsim.State(q0) {
 // [1][  1]( 0.8944 0.0000i): 0.8000
 ```
 
-### Grover's search algorithm
+### Grover's Search Algorithm
 
 ```go
 qsim := q.New()
@@ -180,7 +180,7 @@ for _, s := range qsim.State([]q.Qubit{q0, q1, q2}, q3) {
 // [111 1][  7   1]( 0.0508 0.0000i): 0.0026
 ```
 
-### Shor's factoring algorithm
+### Shor's Factoring Algorithm
 
 ```go
 N := 15
@@ -237,7 +237,7 @@ for i := range 10 {
 // i=2: N=15, a=7. p=3, q=5. s/r=1/4 ([0.010]~0.250)
 ```
 
-### Any 1-qubit quantum gate and its controlled gate
+### Any 1-qubit Quantum Gate and Its Controlled Gate
 
 ```go
 h := gate.U(math.Pi/2, 0, math.Pi)
@@ -260,4 +260,4 @@ for _, s := range qsim.State() {
 
 ## References
 
-[1] M. A. Nielsen and I. L. Chuang, *Quantum Computation and Quantum Information*, 10th ed. Cambridge, U.K.: Cambridge University Press, 2010.
+ 1. M. A. Nielsen and I. L. Chuang, *Quantum Computation and Quantum Information*, 10th ed. Cambridge, U.K.: Cambridge University Press, 2010.
