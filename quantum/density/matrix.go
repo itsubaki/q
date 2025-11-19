@@ -238,11 +238,7 @@ func (m *Matrix) Depolarizing(p float64, qb ...Qubit) *Matrix {
 		}
 	}
 
-	idx := make([]int, len(qb))
-	for i, v := range qb {
-		idx[i] = v.Index()
-	}
-
+	idx := Index(qb...)
 	id := m.rho.Mul(complex(1-p, 0))
 	xg := gate.TensorProduct(gate.X(), n, idx)
 	yg := gate.TensorProduct(gate.Y(), n, idx)
