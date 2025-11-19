@@ -22,6 +22,16 @@ func (q Qubit) Index() int {
 	return int(q)
 }
 
+// Index returns the indices of the given qubits.
+func Index(qb ...Qubit) []int {
+	idx := make([]int, len(qb))
+	for i, q := range qb {
+		idx[i] = q.Index()
+	}
+
+	return idx
+}
+
 // Matrix is a density matrix.
 type Matrix struct {
 	rho *matrix.Matrix
@@ -250,41 +260,17 @@ func (m *Matrix) Depolarizing(p float64, qb ...Qubit) *Matrix {
 // ApplyChannel applies a channel to the density matrix.
 // It applies the identity with probability 1-p, and applies the gate g with probability p.
 func (m *Matrix) ApplyChannel(p float64, u *matrix.Matrix, qb ...Qubit) *Matrix {
-	n, k := m.NumQubits(), len(qb)
-	id := gate.I()
+	n, idx := m.NumQubits(), Index(qb...)
+
 	e0 := gate.I().Mul(complex(math.Sqrt(1-p), 0))
 	e1 := u.Mul(complex(math.Sqrt(p), 0))
 
-	idx := make([]int, k)
-	for i, v := range qb {
-		idx[i] = v.Index()
-	}
+	k0 := gate.TensorProduct(e0, n, idx)
+	k1 := gate.TensorProduct(e1, n, idx)
 
-	// create kraus operators
-	kraus := make([]*matrix.Matrix, 1<<k)
-	for i := range 1 << k {
-		ops := make([]*matrix.Matrix, n)
-		for j := range n {
-			ops[j] = id
-		}
-
-		for j, v := range idx {
-			if (i>>j)&1 == 1 {
-				ops[v] = e1
-				continue
-			}
-
-			ops[v] = e0
-		}
-
-		kraus[i] = matrix.TensorProduct(ops...)
-	}
-
-	// E(rho) = sum(E * rho * E^dagger)
 	rho := matrix.ZeroLike(m.rho)
-	for _, e := range kraus {
-		rho = rho.Add(matrix.MatMul(e, m.rho, e.Dagger()))
-	}
+	rho = rho.Add(matrix.MatMul(k0, m.rho, k0.Dagger()))
+	rho = rho.Add(matrix.MatMul(k1, m.rho, k1.Dagger()))
 
 	return &Matrix{
 		rho: rho,
