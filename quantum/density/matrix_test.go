@@ -245,9 +245,11 @@ func ExampleMatrix_Depolarizing() {
 	fmt.Printf("1: %.2f\n", rho.Probability(qubit.One()))
 	fmt.Println()
 
+	qb := rho.Qubits()
+
 	// XrhoX = |1><1|, YrhoY = |1><1|, ZrhoZ = |0><0|
 	// E(rho) = 0.7|0><0| + 0.1|1><1| + 0.1|1><1| + 0.1|0><0| = 0.8|0><0| + 0.2|1><1|
-	dep := rho.Depolarizing(0.3)
+	dep := rho.Depolarizing(0.3, qb[0])
 	fmt.Printf("0: %.2f\n", dep.Probability(qubit.Zero()))
 	fmt.Printf("1: %.2f\n", dep.Probability(qubit.One()))
 
