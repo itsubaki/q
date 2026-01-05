@@ -461,7 +461,7 @@ func (q *Qubit) ControlledX(control []int, target int) *Qubit {
 	tmask := 1 << (n - 1 - target)
 
 	// iterate over all states
-	for i := 0; i < q.Dim(); i++ {
+	for i := range q.Dim() {
 		if (i & cmask) != cmask {
 			continue
 		}
@@ -490,7 +490,7 @@ func (q *Qubit) ControlledZ(control []int, target int) *Qubit {
 	tmask := 1 << (n - 1 - target)
 
 	// iterate over all states
-	for i := 0; i < q.Dim(); i++ {
+	for i := range q.Dim() {
 		if (i & cmask) != cmask {
 			continue
 		}
@@ -515,7 +515,7 @@ func (q *Qubit) ControlledR(theta float64, control []int, target int) *Qubit {
 
 	// iterate over all states
 	phase := cmplx.Exp(complex(0, theta))
-	for i := 0; i < q.Dim(); i++ {
+	for i := range q.Dim() {
 		if (i & cmask) != cmask {
 			continue
 		}
