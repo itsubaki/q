@@ -357,7 +357,7 @@ func (q *Qubit) CR(thehta float64, control, target int) *Qubit {
 	return q.ControlledR(thehta, []int{control}, target)
 }
 
-// ControlledU applies a controlled 2x2 unitary gate U to the target qubit.
+// Controlled applies a controlled 2x2 unitary gate U to the target qubit.
 func (q *Qubit) Controlled(g *matrix.Matrix, control []int, target int) *Qubit {
 	n := q.NumQubits()
 
