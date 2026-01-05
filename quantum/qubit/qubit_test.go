@@ -448,9 +448,9 @@ func ExampleQubit_InvQFT() {
 	// [001][  1]( 1.0000 0.0000i): 1.0000
 }
 
-func ExampleQubit_Update() {
+func ExampleQubit_Set() {
 	qb := qubit.Zero(2)
-	qb.Update(vector.New(1, 0, 0, 1))
+	qb.Set(vector.New(1, 0, 0, 1))
 
 	for _, s := range qb.State() {
 		fmt.Println(s)

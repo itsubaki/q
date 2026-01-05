@@ -604,8 +604,8 @@ func (q *Qubit) InvQFT(idx ...int) *Qubit {
 	return q
 }
 
-// Update updates the state of the qubit.
-func (q *Qubit) Update(state *vector.Vector) {
+// Set sets the state vector of the qubit and normalized it.
+func (q *Qubit) Set(state *vector.Vector) {
 	q.n = number.Log2(len(state.Data))
 	q.state = state
 	q.Normalize()

@@ -161,5 +161,5 @@ func ControlledModExp2(qb *qubit.Qubit, a, j, N, control int, target []int) {
 	}
 
 	// update the qubit state
-	qb.Update(vector.New(newState...))
+	qb.Set(vector.New(newState...))
 }
