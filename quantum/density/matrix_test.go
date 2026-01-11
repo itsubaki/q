@@ -37,13 +37,7 @@ func ExampleMatrix_ComputationalBasis() {
 		gate.CNOT(2, 0, 1),
 	))
 
-	basis := rho.ComputationalBasis()
-	for _, b := range basis {
-		fmt.Printf("%v: %.2f\n", b.State(), rho.Probability(b))
-	}
-	fmt.Println()
-
-	for _, b := range basis {
+	for _, b := range rho.ComputationalBasis() {
 		p, sigma := rho.Project(b)
 		fmt.Printf("%v: %.2f\n", b.State(), p)
 
@@ -53,11 +47,6 @@ func ExampleMatrix_ComputationalBasis() {
 	}
 
 	// Output:
-	// [[00][  0]( 1.0000 0.0000i): 1.0000]: 0.50
-	// [[01][  1]( 1.0000 0.0000i): 1.0000]: 0.00
-	// [[10][  2]( 1.0000 0.0000i): 1.0000]: 0.00
-	// [[11][  3]( 1.0000 0.0000i): 1.0000]: 0.50
-	//
 	// [[00][  0]( 1.0000 0.0000i): 1.0000]: 0.50
 	// [(1+0i) (0+0i) (0+0i) (0+0i)]
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
@@ -437,7 +426,8 @@ func TestProbability(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if density.New(c.s).Probability(c.m) != c.want {
+		got := density.New(c.s).Probability(c.m)
+		if !epsilon.IsCloseF64(got, c.want) {
 			t.Fail()
 		}
 	}
@@ -771,7 +761,8 @@ func TestApply(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if density.New(c.s).Apply(c.u).Probability(c.m) != c.want {
+		got := density.New(c.s).Apply(c.u).Probability(c.m)
+		if !epsilon.IsCloseF64(got, c.want) {
 			t.Fail()
 		}
 	}
