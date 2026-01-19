@@ -42,25 +42,25 @@ import (
 // a state is a valid solution **without knowing in advance what the solution is**.
 // This aligns with Grover's algorithm, which assumes only a condition-checking black box (oracle),
 // not prior knowledge of the answer itself.
-func oracle(qsim *q.Q, r, s, a []q.Qubit) {
+func oracle(qsim *q.Q, r, a []q.Qubit) {
 	xor := func(x, y, z q.Qubit) {
 		qsim.CNOT(x, z)
 		qsim.CNOT(y, z)
 	}
 
-	xor(r[0], r[1], s[0]) // a != b
-	xor(r[2], r[3], s[1]) // c != d
-	xor(r[0], r[2], s[2]) // a != c
-	xor(r[1], r[3], s[3]) // b != d
+	xor(r[0], r[1], a[0]) // a != b
+	xor(r[2], r[3], a[1]) // c != d
+	xor(r[0], r[2], a[2]) // a != c
+	xor(r[1], r[3], a[3]) // b != d
 
-	// apply Z if all s are 1
-	qsim.ControlledZ(s, a)
+	// apply Z if all a are 1
+	qsim.ControlledZ([]q.Qubit{a[0], a[1], a[2]}, []q.Qubit{a[3]})
 
 	// uncompute
-	xor(r[1], r[3], s[3])
-	xor(r[0], r[2], s[2])
-	xor(r[2], r[3], s[1])
-	xor(r[0], r[1], s[0])
+	xor(r[1], r[3], a[3])
+	xor(r[0], r[2], a[2])
+	xor(r[2], r[3], a[1])
+	xor(r[0], r[1], a[0])
 }
 
 func diffuser(qsim *q.Q, r []q.Qubit) {
@@ -84,12 +84,10 @@ func main() {
 
 	// initialize
 	r := qsim.Zeros(4)
-	s := qsim.Zeros(4)
-	a := qsim.Ones(1)
+	a := qsim.Zeros(4)
 
 	// superposition
 	qsim.H(r...)
-	qsim.H(a...)
 
 	// iteration count
 	N := float64(number.Pow(2, len(r)))
@@ -98,7 +96,7 @@ func main() {
 
 	// iterations
 	for range R {
-		oracle(qsim, r, s, a)
+		oracle(qsim, r, a)
 		diffuser(qsim, r)
 	}
 
