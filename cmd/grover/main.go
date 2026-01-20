@@ -20,7 +20,9 @@ import (
 //
 // The input `r` is a slice of 4 qubits representing the cells a, b, c, and d
 // in row-major order: [a, b, c, d].
-// The `a` slice must contain 4 ancilla qubits used for intermediate checks.
+// The `t` slice must contain 4 ancilla qubits used for intermediate checks.
+// The `a` qubit is the oracle’s phase flag (target) and should be initialized
+// to (|0> − |1>)/sqrt(2) before calling this function.
 //
 // The oracle checks the following uniqueness constraints:
 //
@@ -33,32 +35,32 @@ import (
 // the oracle applies a Z gate to qubit `a`, flipping the sign of the amplitude (−1 phase).
 // This marks the valid state for Grover’s amplitude amplification.
 //
-// Finally, the ancilla qubits `a` are uncomputed (returned to |0>) to clean up
+// Finally, the ancilla qubits `t` are uncomputed (returned to |0>) to clean up
 // any entanglement and avoid side effects in the rest of the algorithm.
 //
 // Note: The important aspect of this oracle is that it can verify whether
 // a state is a valid solution **without knowing in advance what the solution is**.
 // This aligns with Grover's algorithm, which assumes only a condition-checking black box (oracle),
 // not prior knowledge of the answer itself.
-func oracle(qsim *q.Q, r, a []q.Qubit) {
+func oracle(qsim *q.Q, r, s []q.Qubit, a q.Qubit) {
 	xor := func(x, y, z q.Qubit) {
 		qsim.CNOT(x, z)
 		qsim.CNOT(y, z)
 	}
 
-	xor(r[0], r[1], a[0]) // a != b
-	xor(r[2], r[3], a[1]) // c != d
-	xor(r[0], r[2], a[2]) // a != c
-	xor(r[1], r[3], a[3]) // b != d
+	xor(r[0], r[1], s[0]) // a != b
+	xor(r[2], r[3], s[1]) // c != d
+	xor(r[0], r[2], s[2]) // a != c
+	xor(r[1], r[3], s[3]) // b != d
 
-	// apply Z if all a are 1
-	qsim.ControlledZ([]q.Qubit{a[0], a[1], a[2]}, []q.Qubit{a[3]})
+	// apply Z if all s are 1
+	qsim.ControlledZ(s, []q.Qubit{a})
 
 	// uncompute
-	xor(r[1], r[3], a[3])
-	xor(r[0], r[2], a[2])
-	xor(r[2], r[3], a[1])
-	xor(r[0], r[1], a[0])
+	xor(r[1], r[3], s[3])
+	xor(r[0], r[2], s[2])
+	xor(r[2], r[3], s[1])
+	xor(r[0], r[1], s[0])
 }
 
 func diffuser(qsim *q.Q, r []q.Qubit) {
@@ -82,24 +84,34 @@ func main() {
 
 	// initialize
 	r := qsim.Zeros(4)
-	a := qsim.Zeros(4)
-
-	// superposition
-	qsim.H(r...)
+	s := qsim.Zeros(4)
+	a := qsim.Zero()
 
 	// iteration count
 	N := float64(number.Pow(2, len(r)))
 	M := float64(2)                        // there are 2 solutions: [0,1,1,0] and [1,0,0,1].
 	R := int(math.Pi / 4 * math.Sqrt(N/M)) // floor(pi/4 * sqrt(N/M))
 
+	// superposition
+	qsim.H(r...)
+	qsim.X(a)
+
 	// iterations
 	for range R {
-		oracle(qsim, r, a)
+		oracle(qsim, r, s, a)
 		diffuser(qsim, r)
 	}
 
 	// quantum states
 	for _, s := range top(qsim.State(r), 8) {
+		// [1001][  9]( 0.6875 0.0000i): 0.4727
+		// [0110][  6]( 0.6875 0.0000i): 0.4727
+		// [1000][  8](-0.0625 0.0000i): 0.0039
+		// [0111][  7](-0.0625 0.0000i): 0.0039
+		// [0001][  1](-0.0625 0.0000i): 0.0039
+		// [1111][ 15](-0.0625 0.0000i): 0.0039
+		// [1110][ 14](-0.0625 0.0000i): 0.0039
+		// [0000][  0](-0.0625 0.0000i): 0.0039
 		fmt.Println(s)
 	}
 
