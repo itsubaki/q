@@ -84,9 +84,14 @@ func main() {
 	// inverse quantum Fourier transform
 	qsim.InvQFT(c...)
 
+	// measurement
+	qsim.Measure(r...)
+	qsim.Measure(s...)
+	qsim.Measure(a)
+
 	// results
 	N, size := 1<<len(r), 1<<t
-	for _, s := range top(qsim.State(c, r, s, a), 16) {
+	for _, s := range top(qsim.State(c), 16) {
 		phi := float64(s.Int()) / float64(size)        // phi = k / 2**t
 		theta := math.Pi * phi                         // theta = pi * phi
 		M := float64(N) * math.Pow(math.Sin(theta), 2) // M = N * (sin(pi * theta))**2
@@ -95,7 +100,6 @@ func main() {
 		// [111][  7]( 0.2024 0.4886i): 0.2797; phi=0.8750, theta=2.7489, M=2.3431
 		// [011][  3](-0.3279 0.0350i): 0.1087; phi=0.3750, theta=1.1781, M=13.6569
 		// [101][  5](-0.3279-0.0350i): 0.1087; phi=0.6250, theta=1.9635, M=13.6569
-		// ...
 		fmt.Printf("%v; phi=%.4f, theta=%.4f, M=%.4f\n", s, phi, theta, M)
 	}
 }
