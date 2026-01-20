@@ -94,7 +94,7 @@ func main() {
 	for _, s := range top(qsim.State(c), 16) {
 		phi := float64(s.Int()) / float64(size)        // phi = k / 2**t
 		theta := math.Pi * phi                         // theta = pi * phi
-		M := float64(N) * math.Pow(math.Sin(theta), 2) // M = N * (sin(pi * theta))**2
+		M := float64(N) * math.Pow(math.Sin(theta), 2) // M = N * (sin(theta))**2
 
 		// [001][  1]( 0.2024-0.4886i): 0.2797; phi=0.1250, theta=0.3927, M=2.3431
 		// [111][  7]( 0.2024 0.4886i): 0.2797; phi=0.8750, theta=2.7489, M=2.3431
