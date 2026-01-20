@@ -28,8 +28,8 @@ func oracle(qsim *q.Q, c q.Qubit, r, s []q.Qubit, a q.Qubit) {
 	xor(r[0], r[2], s[2]) // a != c
 	xor(r[1], r[3], s[3]) // b != d
 
-	// apply Z if all a are 1
-	qsim.ControlledZ([]q.Qubit{c, s[0], s[1], s[2], s[3]}, []q.Qubit{a})
+	// apply X if all a are 1
+	qsim.ControlledX([]q.Qubit{c, s[0], s[1], s[2], s[3]}, []q.Qubit{a})
 
 	// uncompute
 	xor(r[1], r[3], s[3])
@@ -70,8 +70,7 @@ func main() {
 	// superposition
 	qsim.H(c...)
 	qsim.H(r...)
-	qsim.X(a)
-	qsim.H(a) // for phase kickback
+	qsim.X(a).H(a)
 
 	// phase estimation
 	for i := range c {
@@ -96,10 +95,6 @@ func main() {
 		theta := math.Pi * phi                         // theta = pi * phi
 		M := float64(N) * math.Pow(math.Sin(theta), 2) // M = N * (sin(theta))**2
 
-		// [001][  1]( 0.2500-0.6036i): 0.4268; phi=0.1250, theta=0.3927, M=2.3431
-		// [111][  7]( 0.2500 0.6036i): 0.4268; phi=0.8750, theta=2.7489, M=2.3431
-		// [011][  3]( 0.2500-0.1036i): 0.0732; phi=0.3750, theta=1.1781, M=13.6569
-		// [101][  5]( 0.2500 0.1036i): 0.0732; phi=0.6250, theta=1.9635, M=13.6569
 		fmt.Printf("%v; phi=%.4f, theta=%.4f, M=%.4f\n", s, phi, theta, M)
 	}
 }
