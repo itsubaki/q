@@ -12,12 +12,12 @@ import (
 
 // controlledG applies the Grover operator for 2x2 mini-sudoku solutions.
 // The number of solutions `M` is 2.
-func controlledG(qsim *q.Q, c q.Qubit, r, s []q.Qubit, a q.Qubit) {
-	oracle(qsim, c, r, s, a)
+func controlledG(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
+	oracle(qsim, r, s, c, a)
 	diffuser(qsim, r)
 }
 
-func oracle(qsim *q.Q, c q.Qubit, r, s []q.Qubit, a q.Qubit) {
+func oracle(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
 	xor := func(x, y, z q.Qubit) {
 		qsim.CNOT(x, z)
 		qsim.CNOT(y, z)
@@ -28,8 +28,8 @@ func oracle(qsim *q.Q, c q.Qubit, r, s []q.Qubit, a q.Qubit) {
 	xor(r[0], r[2], s[2]) // a != c
 	xor(r[1], r[3], s[3]) // b != d
 
-	// apply X if all a are 1
-	qsim.ControlledX([]q.Qubit{c, s[0], s[1], s[2], s[3]}, []q.Qubit{a})
+	// apply Z if all a are 1
+	qsim.ControlledZ([]q.Qubit{c, s[0], s[1], s[2], s[3]}, []q.Qubit{a})
 
 	// uncompute
 	xor(r[1], r[3], s[3])
@@ -70,17 +70,18 @@ func main() {
 	// superposition
 	qsim.H(c...)
 	qsim.H(r...)
-	qsim.X(a).H(a)
+	qsim.X(a)
 
 	// phase estimation
 	for i := range c {
 		// apply controlled-G**(2**i) where control is c[len(c)-1-i]
 		for range 1 << i {
-			controlledG(qsim, c[len(c)-1-i], r, s, a)
+			controlledG(qsim, r, s, c[len(c)-1-i], a)
 		}
 	}
 
 	// inverse quantum Fourier transform
+	qsim.Swap(c...)
 	qsim.InvQFT(c...)
 
 	// measurement
@@ -90,7 +91,7 @@ func main() {
 
 	// results
 	N, size := 1<<len(r), 1<<t
-	for _, s := range top(qsim.State(c), 16) {
+	for _, s := range top(qsim.State(c), 8) {
 		phi := float64(s.Int()) / float64(size)        // phi = k / 2**t
 		theta := math.Pi * phi                         // theta = pi * phi
 		M := float64(N) * math.Pow(math.Sin(theta), 2) // M = N * (sin(theta))**2

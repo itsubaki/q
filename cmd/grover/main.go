@@ -32,7 +32,7 @@ import (
 //   - b != d
 //
 // If **all** constraints are satisfied (i.e., the input represents a valid mini-sudoku solution),
-// the oracle applies a X gate to qubit `a`, flipping the sign of the amplitude (−1 phase).
+// the oracle applies a Z gate to qubit `a`, flipping the sign of the amplitude (−1 phase).
 // This marks the valid state for Grover’s amplitude amplification.
 //
 // Finally, the ancilla qubits `t` are uncomputed (returned to |0>) to clean up
@@ -53,8 +53,8 @@ func oracle(qsim *q.Q, r, s []q.Qubit, a q.Qubit) {
 	xor(r[0], r[2], s[2]) // a != c
 	xor(r[1], r[3], s[3]) // b != d
 
-	// apply X if all s are 1
-	qsim.ControlledX(s, []q.Qubit{a})
+	// apply Z if all s are 1
+	qsim.ControlledZ(s, []q.Qubit{a})
 
 	// uncompute
 	xor(r[1], r[3], s[3])
@@ -94,9 +94,9 @@ func main() {
 
 	// superposition
 	qsim.H(r...)
-	qsim.X(a).H(a)
 
 	// iterations
+	qsim.X(a)
 	for range R {
 		oracle(qsim, r, s, a)
 		diffuser(qsim, r)
@@ -108,14 +108,14 @@ func main() {
 
 	// quantum states
 	for _, s := range top(qsim.State(r), 8) {
-		// [0110][  6](-0.6875 0.0000i): 0.4727
-		// [1001][  9](-0.6875 0.0000i): 0.4727
-		// [1000][  8]( 0.0625 0.0000i): 0.0039
-		// [0111][  7]( 0.0625 0.0000i): 0.0039
-		// [0100][  4]( 0.0625 0.0000i): 0.0039
-		// [1011][ 11]( 0.0625 0.0000i): 0.0039
-		// [0000][  0]( 0.0625 0.0000i): 0.0039
-		// [0011][  3]( 0.0625 0.0000i): 0.0039
+		// [1001][  9]( 0.6875 0.0000i): 0.4727
+		// [0110][  6]( 0.6875 0.0000i): 0.4727
+		// [1000][  8](-0.0625 0.0000i): 0.0039
+		// [0111][  7](-0.0625 0.0000i): 0.0039
+		// [0001][  1](-0.0625 0.0000i): 0.0039
+		// [1111][ 15](-0.0625 0.0000i): 0.0039
+		// [1110][ 14](-0.0625 0.0000i): 0.0039
+		// [0000][  0](-0.0625 0.0000i): 0.0039
 		fmt.Println(s)
 	}
 
