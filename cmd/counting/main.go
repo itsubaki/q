@@ -56,7 +56,7 @@ func top(s []qubit.State, n int) []qubit.State {
 
 func main() {
 	var t int
-	flag.IntVar(&t, "t", 3, "precision bits")
+	flag.IntVar(&t, "t", 8, "precision bits")
 	flag.Parse()
 
 	qsim := q.New()
