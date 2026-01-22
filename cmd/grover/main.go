@@ -20,7 +20,7 @@ import (
 //
 // The input `r` is a slice of 4 qubits representing the cells a, b, c, and d
 // in row-major order: [a, b, c, d].
-// The `t` slice must contain 4 ancilla qubits used for intermediate checks.
+// The `s` slice must contain 4 ancilla qubits used for intermediate checks.
 // The `a` qubit is the oracle’s phase flag (target) and should be initialized
 // to (|0> − |1>)/sqrt(2) before calling this function.
 //
