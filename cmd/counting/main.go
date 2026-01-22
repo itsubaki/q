@@ -67,7 +67,7 @@ func main() {
 	s := qsim.Zeros(4) // ancilla qubits for comparing Sudoku constraints
 	a := qsim.Zero()   // ancilla qubit for oracle
 
-	// superposition
+	// initialize
 	qsim.H(c...)
 	qsim.H(r...)
 	qsim.X(a)

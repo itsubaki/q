@@ -92,11 +92,11 @@ func main() {
 	M := float64(2)                        // there are 2 solutions: [0,1,1,0] and [1,0,0,1].
 	R := int(math.Pi / 4 * math.Sqrt(N/M)) // floor(pi/4 * sqrt(N/M))
 
-	// superposition
+	// initialize
 	qsim.H(r...)
+	qsim.X(a)
 
 	// iterations
-	qsim.X(a)
 	for range R {
 		oracle(qsim, r, s, a)
 		diffuser(qsim, r)
