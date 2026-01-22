@@ -35,7 +35,7 @@ import (
 // the oracle applies a Z gate to qubit `a`, flipping the sign of the amplitude (−1 phase).
 // This marks the valid state for Grover’s amplitude amplification.
 //
-// Finally, the ancilla qubits `t` are uncomputed (returned to |0>) to clean up
+// Finally, the ancilla qubits `s` are uncomputed (returned to |0>) to clean up
 // any entanglement and avoid side effects in the rest of the algorithm.
 //
 // Note: The important aspect of this oracle is that it can verify whether
