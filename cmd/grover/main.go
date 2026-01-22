@@ -22,7 +22,7 @@ import (
 // in row-major order: [a, b, c, d].
 // The `s` slice must contain 4 ancilla qubits used for intermediate checks.
 // The `a` qubit is the oracle’s phase flag (target) and should be initialized
-// to (|0> − |1>)/sqrt(2) before calling this function.
+// to |1> before calling this function.
 //
 // The oracle checks the following uniqueness constraints:
 //
