@@ -20,9 +20,9 @@ import (
 //
 // The input `r` is a slice of 4 qubits representing the cells a, b, c, and d
 // in row-major order: [a, b, c, d].
-// The `t` slice must contain 4 ancilla qubits used for intermediate checks.
+// The `s` slice must contain 4 ancilla qubits used for intermediate checks.
 // The `a` qubit is the oracle’s phase flag (target) and should be initialized
-// to (|0> − |1>)/sqrt(2) before calling this function.
+// to |1> before calling this function.
 //
 // The oracle checks the following uniqueness constraints:
 //
@@ -35,7 +35,7 @@ import (
 // the oracle applies a Z gate to qubit `a`, flipping the sign of the amplitude (−1 phase).
 // This marks the valid state for Grover’s amplitude amplification.
 //
-// Finally, the ancilla qubits `t` are uncomputed (returned to |0>) to clean up
+// Finally, the ancilla qubits `s` are uncomputed (returned to |0>) to clean up
 // any entanglement and avoid side effects in the rest of the algorithm.
 //
 // Note: The important aspect of this oracle is that it can verify whether
