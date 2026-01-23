@@ -14,7 +14,7 @@ import (
 // The number of solutions `M` is 2.
 func controlledG(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
 	oracle(qsim, r, s, c, a)
-	diffuser(qsim, r)
+	diffuser(qsim, r, a)
 }
 
 func oracle(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
@@ -38,10 +38,10 @@ func oracle(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
 	xor(r[0], r[1], s[0])
 }
 
-func diffuser(qsim *q.Q, r []q.Qubit) {
+func diffuser(qsim *q.Q, r []q.Qubit, a q.Qubit) {
 	qsim.H(r...)
 	qsim.X(r...)
-	qsim.ControlledZ([]q.Qubit{r[0], r[1], r[2]}, []q.Qubit{r[3]})
+	qsim.ControlledZ(r, []q.Qubit{a})
 	qsim.X(r...)
 	qsim.H(r...)
 }
@@ -56,7 +56,7 @@ func top(s []qubit.State, n int) []qubit.State {
 
 func main() {
 	var t int
-	flag.IntVar(&t, "t", 8, "precision bits")
+	flag.IntVar(&t, "t", 7, "precision bits")
 	flag.Parse()
 
 	qsim := q.New()
@@ -71,6 +71,7 @@ func main() {
 	qsim.H(c...)
 	qsim.H(r...)
 	qsim.X(a)
+	qsim.H(a)
 
 	// phase estimation
 	for i := range c {
@@ -84,11 +85,6 @@ func main() {
 	qsim.Swap(c...)
 	qsim.InvQFT(c...)
 
-	// measurement
-	qsim.Measure(r...)
-	qsim.Measure(s...)
-	qsim.Measure(a)
-
 	// results
 	N, size := 1<<len(r), 1<<t
 	for _, s := range top(qsim.State(c), 8) {
@@ -96,6 +92,6 @@ func main() {
 		theta := math.Pi * phi                         // theta = pi * phi
 		M := float64(N) * math.Pow(math.Sin(theta), 2) // M = N * (sin(theta))**2
 
-		fmt.Printf("%v; phi=%.4f, theta=%.4f, M=%.4f\n", s, phi, theta, M)
+		fmt.Printf("%v; phi=%.4f, theta=%.4f, M=%.4f, eps=%.4f\n", s, phi, theta, M, math.Abs(2-M))
 	}
 }

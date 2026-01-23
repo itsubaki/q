@@ -63,10 +63,12 @@ func oracle(qsim *q.Q, r, s []q.Qubit, a q.Qubit) {
 	xor(r[0], r[1], s[0])
 }
 
-func diffuser(qsim *q.Q, r []q.Qubit) {
+func diffuser(qsim *q.Q, r []q.Qubit, a q.Qubit) {
 	qsim.H(r...)
 	qsim.X(r...)
-	qsim.ControlledZ([]q.Qubit{r[0], r[1], r[2]}, []q.Qubit{r[3]})
+	qsim.H(a)
+	qsim.ControlledZ(r, []q.Qubit{a})
+	qsim.H(a)
 	qsim.X(r...)
 	qsim.H(r...)
 }
@@ -95,11 +97,12 @@ func main() {
 	// initialize
 	qsim.H(r...)
 	qsim.X(a)
+	qsim.H(a)
 
 	// iterations
 	for range R {
 		oracle(qsim, r, s, a)
-		diffuser(qsim, r)
+		diffuser(qsim, r, a)
 	}
 
 	// measurement
@@ -108,14 +111,6 @@ func main() {
 
 	// quantum states
 	for _, s := range top(qsim.State(r), 8) {
-		// [1001][  9]( 0.6875 0.0000i): 0.4727
-		// [0110][  6]( 0.6875 0.0000i): 0.4727
-		// [1000][  8](-0.0625 0.0000i): 0.0039
-		// [0111][  7](-0.0625 0.0000i): 0.0039
-		// [0001][  1](-0.0625 0.0000i): 0.0039
-		// [1111][ 15](-0.0625 0.0000i): 0.0039
-		// [1110][ 14](-0.0625 0.0000i): 0.0039
-		// [0000][  0](-0.0625 0.0000i): 0.0039
 		fmt.Println(s)
 	}
 
