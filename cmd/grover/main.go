@@ -1,13 +1,12 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"math"
-	"sort"
 
 	"github.com/itsubaki/q"
 	"github.com/itsubaki/q/math/number"
-	"github.com/itsubaki/q/quantum/qubit"
 )
 
 // oracle constructs a Grover oracle for validating 2x2 mini-sudoku solutions.
@@ -71,15 +70,11 @@ func diffuser(qsim *q.Q, r []q.Qubit) {
 	qsim.H(r...)
 }
 
-func top(s []qubit.State, n int) []qubit.State {
-	sort.Slice(s, func(i, j int) bool {
-		return s[i].Probability() > s[j].Probability()
-	})
-
-	return s[:min(n, len(s))]
-}
-
 func main() {
+	var top int
+	flag.IntVar(&top, "top", 8, "top results")
+	flag.Parse()
+
 	qsim := q.New()
 
 	// initialize
@@ -104,7 +99,7 @@ func main() {
 	}
 
 	// quantum states
-	for _, s := range top(qsim.State(r), 8) {
+	for _, s := range q.Top(qsim.State(r, s, a), top) {
 		fmt.Println(s)
 	}
 

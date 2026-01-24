@@ -20,7 +20,7 @@ shor:
 	go run cmd/shor/main.go --N=21 --t=10
 
 grover:
-	go run cmd/grover/main.go
+	go run cmd/grover/main.go -top=8
 
 counting:
-	go run cmd/counting/main.go
+	go run cmd/counting/main.go -t=7 -top=8

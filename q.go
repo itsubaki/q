@@ -1,6 +1,8 @@
 package q
 
 import (
+	"sort"
+
 	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/math/number"
 	"github.com/itsubaki/q/math/rand"
@@ -458,4 +460,18 @@ func (q *Q) State(reg ...any) []qubit.State {
 	}
 
 	return q.qb.State(idx...)
+}
+
+// Top returns the top n states by probability.
+// if n < 0, returns input states.
+func Top(s []qubit.State, n int) []qubit.State {
+	if n < 0 {
+		return s
+	}
+
+	sort.Slice(s, func(i, j int) bool {
+		return s[i].Probability() > s[j].Probability()
+	})
+
+	return s[:min(n, len(s))]
 }

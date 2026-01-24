@@ -4,10 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"math"
-	"sort"
 
 	"github.com/itsubaki/q"
-	"github.com/itsubaki/q/quantum/qubit"
 )
 
 // controlledG applies the Grover operator for 2x2 mini-sudoku solutions.
@@ -46,17 +44,10 @@ func diffuser(qsim *q.Q, r []q.Qubit) {
 	qsim.H(r...)
 }
 
-func top(s []qubit.State, n int) []qubit.State {
-	sort.Slice(s, func(i, j int) bool {
-		return s[i].Probability() > s[j].Probability()
-	})
-
-	return s[:min(n, len(s))]
-}
-
 func main() {
-	var t int
+	var t, top int
 	flag.IntVar(&t, "t", 7, "precision bits")
+	flag.IntVar(&top, "top", 8, "top results")
 	flag.Parse()
 
 	qsim := q.New()
@@ -87,7 +78,7 @@ func main() {
 
 	// results
 	N, size := 1<<len(r), 1<<t
-	for _, s := range top(qsim.State(c), 8) {
+	for _, s := range q.Top(qsim.State(c, r, s, a), top) {
 		phi := float64(s.Int()) / float64(size)        // phi = k / 2**t
 		theta := math.Pi * phi                         // theta = pi * phi
 		M := float64(N) * math.Pow(math.Sin(theta), 2) // M = N * (sin(theta))**2
