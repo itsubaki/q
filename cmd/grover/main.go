@@ -66,9 +66,7 @@ func oracle(qsim *q.Q, r, s []q.Qubit, a q.Qubit) {
 func diffuser(qsim *q.Q, r []q.Qubit, a q.Qubit) {
 	qsim.H(r...)
 	qsim.X(r...)
-	qsim.H(a)
 	qsim.ControlledZ(r, []q.Qubit{a})
-	qsim.H(a)
 	qsim.X(r...)
 	qsim.H(r...)
 }
