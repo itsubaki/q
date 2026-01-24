@@ -103,10 +103,6 @@ func main() {
 		diffuser(qsim, r)
 	}
 
-	// measurement
-	qsim.Measure(s...)
-	qsim.Measure(a)
-
 	// quantum states
 	for _, s := range top(qsim.State(r), 8) {
 		fmt.Println(s)
