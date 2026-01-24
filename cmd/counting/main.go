@@ -14,7 +14,7 @@ import (
 // The number of solutions `M` is 2.
 func controlledG(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
 	oracle(qsim, r, s, c, a)
-	diffuser(qsim, r, c, a)
+	diffuser(qsim, r)
 }
 
 func oracle(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
@@ -28,8 +28,8 @@ func oracle(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
 	xor(r[0], r[2], s[2]) // a != c
 	xor(r[1], r[3], s[3]) // b != d
 
-	// apply Z if all a are 1
-	qsim.ControlledZ(append([]q.Qubit{c}, s...), []q.Qubit{a})
+	// apply Z if s and c are all 1
+	qsim.ControlledZ(append(s, c), []q.Qubit{a})
 
 	// uncompute
 	xor(r[1], r[3], s[3])
@@ -38,10 +38,10 @@ func oracle(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
 	xor(r[0], r[1], s[0])
 }
 
-func diffuser(qsim *q.Q, r []q.Qubit, c, a q.Qubit) {
+func diffuser(qsim *q.Q, r []q.Qubit) {
 	qsim.H(r...)
 	qsim.X(r...)
-	qsim.ControlledZ(append([]q.Qubit{c}, r...), []q.Qubit{a})
+	qsim.ControlledZ(r[:len(r)-1], []q.Qubit{r[len(r)-1]})
 	qsim.X(r...)
 	qsim.H(r...)
 }
