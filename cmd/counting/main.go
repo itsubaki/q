@@ -12,7 +12,7 @@ import (
 // The number of solutions `M` is 2.
 func controlledG(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
 	oracle(qsim, r, s, c, a)
-	diffuser(qsim, r, c, a)
+	diffuser(qsim, c, r)
 }
 
 func oracle(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
@@ -27,7 +27,9 @@ func oracle(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
 	xor(r[1], r[3], s[3]) // b != d
 
 	// apply Z if s and c are all 1
+	qsim.X(a)
 	qsim.ControlledZ([]q.Qubit{c, s[0], s[1], s[2], s[3]}, []q.Qubit{a})
+	qsim.X(a)
 
 	// uncompute
 	xor(r[1], r[3], s[3])
@@ -36,10 +38,10 @@ func oracle(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
 	xor(r[0], r[1], s[0])
 }
 
-func diffuser(qsim *q.Q, r []q.Qubit, c, a q.Qubit) {
+func diffuser(qsim *q.Q, c q.Qubit, r []q.Qubit) {
 	qsim.H(r...)
 	qsim.X(r...)
-	qsim.ControlledZ(append([]q.Qubit{c}, r...), []q.Qubit{a})
+	qsim.ControlledZ(append([]q.Qubit{c}, r[:len(r)-1]...), []q.Qubit{r[len(r)-1]})
 	qsim.X(r...)
 	qsim.H(r...)
 }
@@ -61,8 +63,6 @@ func main() {
 	// initialize
 	qsim.H(c...)
 	qsim.H(r...)
-	qsim.X(a)
-	qsim.H(a)
 
 	// phase estimation
 	for i := range c {
@@ -79,9 +79,9 @@ func main() {
 	// results
 	N, size := 1<<len(r), 1<<t
 	for _, s := range q.Top(qsim.State(c, r, s, a), top) {
-		phi := float64(s.Int()) / float64(size)        // phi = k / 2**t
-		theta := math.Pi * phi                         // theta = pi * phi
-		M := float64(N) * math.Pow(math.Sin(theta), 2) // M = N * (sin(theta))**2
+		phi := float64(s.Int()) / float64(size)            // phi = k / 2**t
+		theta := 2 * math.Pi * min(phi, math.Abs(phi-0.5)) // theta = 2pi * phi
+		M := float64(N) * math.Pow(math.Sin(theta/2), 2)   // M = N * (sin(theta/2))**2
 
 		fmt.Printf("%v; phi=%.4f, theta=%.4f, M=%.4f, eps=%.4f\n", s, phi, theta, M, math.Abs(2-M))
 	}

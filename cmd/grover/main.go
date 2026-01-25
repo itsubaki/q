@@ -20,8 +20,7 @@ import (
 // The input `r` is a slice of 4 qubits representing the cells a, b, c, and d
 // in row-major order: [a, b, c, d].
 // The `s` slice must contain 4 ancilla qubits used for intermediate checks.
-// The `a` qubit is the oracle’s phase flag (target) and should be initialized
-// to |1> before calling this function.
+// The `a` qubit is the oracle’s phase flag (target).
 //
 // The oracle checks the following uniqueness constraints:
 //
@@ -53,7 +52,9 @@ func oracle(qsim *q.Q, r, s []q.Qubit, a q.Qubit) {
 	xor(r[1], r[3], s[3]) // b != d
 
 	// apply Z if all s are 1
+	qsim.X(a)
 	qsim.ControlledZ(s, []q.Qubit{a})
+	qsim.X(a)
 
 	// uncompute
 	xor(r[1], r[3], s[3])
@@ -62,10 +63,10 @@ func oracle(qsim *q.Q, r, s []q.Qubit, a q.Qubit) {
 	xor(r[0], r[1], s[0])
 }
 
-func diffuser(qsim *q.Q, r []q.Qubit, a q.Qubit) {
+func diffuser(qsim *q.Q, r []q.Qubit) {
 	qsim.H(r...)
 	qsim.X(r...)
-	qsim.ControlledZ(r, []q.Qubit{a})
+	qsim.ControlledZ(r[:len(r)-1], []q.Qubit{r[len(r)-1]})
 	qsim.X(r...)
 	qsim.H(r...)
 }
@@ -89,13 +90,11 @@ func main() {
 
 	// initialize
 	qsim.H(r...)
-	qsim.X(a)
-	qsim.H(a)
 
 	// iterations
 	for range R {
 		oracle(qsim, r, s, a)
-		diffuser(qsim, r, a)
+		diffuser(qsim, r)
 	}
 
 	// quantum states
