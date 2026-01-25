@@ -63,6 +63,7 @@ func main() {
 	// initialize
 	qsim.H(c...)
 	qsim.H(r...)
+	qsim.H(a)
 
 	// phase estimation
 	for i := range c {

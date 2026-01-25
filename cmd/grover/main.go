@@ -95,6 +95,7 @@ func main() {
 
 	// initialize
 	qsim.H(r...)
+	qsim.H(a)
 
 	// iterations
 	for range R {
