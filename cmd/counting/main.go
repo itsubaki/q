@@ -80,8 +80,8 @@ func main() {
 	N, size := 1<<len(r), 1<<t
 	for _, s := range q.Top(qsim.State(c, r, s, a), top) {
 		phi := float64(s.Int()) / float64(size)            // phi = k / 2**t
-		theta := 2 * math.Pi * min(phi, math.Abs(phi-0.5)) // theta = 2pi * phi
-		M := float64(N) * math.Pow(math.Sin(theta/2), 2)   // M = N * (sin(theta/2))**2
+		theta := 2 * math.Pi * min(phi, math.Abs(phi-0.5)) // theta = 2*pi*phi
+		M := float64(N) * math.Pow(math.Sin(theta/2), 2)   // M = N*(sin(theta/2))**2
 
 		fmt.Printf("%v; phi=%.4f, theta=%.4f, M=%.4f, eps=%.4f\n", s, phi, theta, M, math.Abs(2-M))
 	}
