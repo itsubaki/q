@@ -20,9 +20,7 @@ func oracle(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
 	xor(r[1], r[3], s[3]) // b != d
 
 	// apply Z if s and c are all 1
-	qsim.X(a)
 	qsim.ControlledZ([]q.Qubit{c, s[0], s[1], s[2], s[3]}, []q.Qubit{a})
-	qsim.X(a)
 
 	// uncompute
 	xor(r[1], r[3], s[3])
