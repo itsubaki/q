@@ -71,6 +71,11 @@ func diffuser(qsim *q.Q, r []q.Qubit) {
 	qsim.H(r...)
 }
 
+func G(qsim *q.Q, r, s []q.Qubit, a q.Qubit) {
+	oracle(qsim, r, s, a)
+	diffuser(qsim, r)
+}
+
 func main() {
 	var top int
 	flag.IntVar(&top, "top", 8, "top results")
@@ -93,8 +98,7 @@ func main() {
 
 	// iterations
 	for range R {
-		oracle(qsim, r, s, a)
-		diffuser(qsim, r)
+		G(qsim, r, s, a)
 	}
 
 	// quantum states

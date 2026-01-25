@@ -8,13 +8,6 @@ import (
 	"github.com/itsubaki/q"
 )
 
-// controlledG applies the Grover operator for 2x2 mini-sudoku solutions.
-// The number of solutions `M` is 2.
-func controlledG(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
-	oracle(qsim, r, s, c, a)
-	diffuser(qsim, c, r)
-}
-
 func oracle(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
 	xor := func(x, y, z q.Qubit) {
 		qsim.CNOT(x, z)
@@ -44,6 +37,13 @@ func diffuser(qsim *q.Q, c q.Qubit, r []q.Qubit) {
 	qsim.ControlledZ(append([]q.Qubit{c}, r[:len(r)-1]...), []q.Qubit{r[len(r)-1]})
 	qsim.X(r...)
 	qsim.H(r...)
+}
+
+// controlledG applies the Grover operator for 2x2 mini-sudoku solutions.
+// The number of solutions `M` is 2.
+func controlledG(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
+	oracle(qsim, r, s, c, a)
+	diffuser(qsim, c, r)
 }
 
 func main() {
