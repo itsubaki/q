@@ -17,10 +17,10 @@ doc:
 	godoc -http=:6060
 
 shor:
-	go run cmd/shor/main.go --N=21 --t=10
+	go run cmd/shor/main.go --N 15
 
 grover:
-	go run cmd/grover/main.go -top=8
+	go run cmd/grover/main.go -top 8
 
 counting:
-	go run cmd/counting/main.go -t=7 -top=8
+	go run cmd/counting/main.go -t 7 -top 8
