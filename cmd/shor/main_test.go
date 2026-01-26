@@ -92,7 +92,7 @@ func TestEigenVector(t *testing.T) {
 
 		us := make(map[string]complex128)
 		for _, s := range qsim.State(r1) {
-			m := s.BinaryString()
+			m := s.BinaryString()[0]
 			if v, ok := us[m]; ok {
 				us[m] = v + s.Amplitude()
 				continue

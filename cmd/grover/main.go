@@ -21,6 +21,7 @@ import (
 // in row-major order: [a, b, c, d].
 // The `s` slice must contain 4 ancilla qubits used for intermediate checks.
 // The `a` qubit is the oracle’s phase flag (target).
+// THe `a` is initialized to |−> = (|0> − |1>)/√2 to facilitate phase kickback.
 //
 // The oracle checks the following uniqueness constraints:
 //
@@ -30,7 +31,7 @@ import (
 //   - b != d
 //
 // If **all** constraints are satisfied (i.e., the input represents a valid mini-sudoku solution),
-// the oracle applies a Z gate to qubit `a`, flipping the sign of the amplitude (−1 phase).
+// the oracle applies a X gate to qubit `a`, flipping the sign of the amplitude (−1 phase).
 // This marks the valid state for Grover’s amplitude amplification.
 //
 // Finally, the ancilla qubits `s` are uncomputed (returned to |0>) to clean up
@@ -51,8 +52,8 @@ func oracle(qsim *q.Q, r, s []q.Qubit, a q.Qubit) {
 	xor(r[0], r[2], s[2]) // a != c
 	xor(r[1], r[3], s[3]) // b != d
 
-	// apply Z if all s are 1
-	qsim.ControlledZ(s, []q.Qubit{a})
+	// apply X if all s are 1
+	qsim.ControlledX(s, []q.Qubit{a})
 
 	// uncompute
 	xor(r[1], r[3], s[3])
@@ -93,6 +94,7 @@ func main() {
 
 	// initialize
 	qsim.H(r...)
+	qsim.X(a)
 	qsim.H(a)
 
 	// iterations

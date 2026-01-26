@@ -19,8 +19,8 @@ func oracle(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
 	xor(r[0], r[2], s[2]) // a != c
 	xor(r[1], r[3], s[3]) // b != d
 
-	// apply Z if s and c are all 1
-	qsim.ControlledZ([]q.Qubit{c, s[0], s[1], s[2], s[3]}, []q.Qubit{a})
+	// apply X if c and s are all 1
+	qsim.ControlledX([]q.Qubit{c, s[0], s[1], s[2], s[3]}, []q.Qubit{a})
 
 	// uncompute
 	xor(r[1], r[3], s[3])
@@ -61,6 +61,7 @@ func main() {
 	// initialize
 	qsim.H(c...)
 	qsim.H(r...)
+	qsim.X(a)
 	qsim.H(a)
 
 	// phase estimation
@@ -78,7 +79,7 @@ func main() {
 	// results
 	N, size := 1<<len(r), 1<<t
 	for _, s := range q.Top(qsim.State(c, r, s, a), top) {
-		phi := float64(s.Int()) / float64(size)          // phi = k / 2**t
+		phi := float64(s.Int()[0]) / float64(size)       // phi = k / 2**t
 		theta := 2 * math.Pi * phi                       // theta = 2*pi*phi
 		M := float64(N) * math.Pow(math.Sin(theta/2), 2) // M = N*(sin(theta/2))**2
 
