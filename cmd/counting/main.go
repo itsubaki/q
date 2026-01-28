@@ -77,12 +77,16 @@ func main() {
 	qsim.InvQFT(c...)
 
 	// results
-	N, size := 1<<len(r), 1<<t
-	for _, s := range q.Top(qsim.State(c, r, s, a), top) {
-		phi := float64(s.Int()[0]) / float64(size)       // phi = k / 2**t
+	N := 1 << len(r)
+	for _, state := range q.Top(qsim.State(c, r, s, a), top) {
+		phi := ldexp(state.Int()[0], -t)                 // phi = k / 2**t
 		theta := 2 * math.Pi * phi                       // theta = 2*pi*phi
 		M := float64(N) * math.Pow(math.Sin(theta/2), 2) // M = N*(sin(theta/2))**2
 
-		fmt.Printf("%v; phi=%.4f, theta=%.4f, M=%.4f, M'=%.4f\n", s, phi, theta, M, float64(N)-M)
+		fmt.Printf("%v; phi=%.4f, theta=%.4f, M=%.4f, M'=%.4f\n", state, phi, theta, M, float64(N)-M)
 	}
+}
+
+func ldexp(a, b int) float64 {
+	return math.Ldexp(float64(a), b)
 }

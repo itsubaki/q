@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"iter"
 	"math"
-	"strconv"
 	"strings"
 
 	"github.com/itsubaki/q/math/epsilon"
@@ -202,8 +201,8 @@ func (m *Matrix) PartialTrace(idx ...Qubit) *Matrix {
 				continue
 			}
 
-			r := int(number.Must(strconv.ParseInt(kr, 2, 0)))
-			c := int(number.Must(strconv.ParseInt(lr, 2, 0)))
+			r := number.MustParseInt(kr)
+			c := number.MustParseInt(lr)
 			rho.AddAt(r, c, m.At(i, j))
 
 			// fmt.Printf("[%v][%v] = [%v][%v] + [%v][%v]\n", r, c, r, c, i, j)

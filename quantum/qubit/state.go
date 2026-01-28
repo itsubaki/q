@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"math/cmplx"
-	"strconv"
 
 	"github.com/itsubaki/q/math/epsilon"
 	"github.com/itsubaki/q/math/number"
@@ -15,14 +14,14 @@ type State struct {
 	amp          complex128
 	prob         float64
 	binaryString []string
-	intValue     []int64
+	intValue     []int
 }
 
 // NewState returns a new State.
 func NewState(amp complex128, binary ...string) State {
-	intv := make([]int64, len(binary))
+	intv := make([]int, len(binary))
 	for i, b := range binary {
-		intv[i] = number.Must(strconv.ParseInt(b, 2, 0))
+		intv[i] = number.MustParseInt(b)
 	}
 
 	return State{
@@ -45,7 +44,7 @@ func (s State) BinaryString() []string {
 	return s.binaryString
 }
 
-func (s State) Int() []int64 {
+func (s State) Int() []int {
 	return s.intValue
 }
 

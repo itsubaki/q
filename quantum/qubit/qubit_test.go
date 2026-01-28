@@ -990,7 +990,7 @@ func TestClone(t *testing.T) {
 func TestInt(t *testing.T) {
 	cases := []struct {
 		in   *qubit.Qubit
-		want int64
+		want int
 	}{
 		{qubit.Zero(), 0},
 		{qubit.One(), 1},

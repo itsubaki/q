@@ -103,8 +103,8 @@ func main() {
 	}
 
 	// quantum states
-	for _, s := range q.Top(qsim.State(r, s, a), top) {
-		fmt.Println(s)
+	for _, state := range q.Top(qsim.State(r, s, a), top) {
+		fmt.Println(state)
 	}
 
 	// measure

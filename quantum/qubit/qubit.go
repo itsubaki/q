@@ -3,7 +3,6 @@ package qubit
 import (
 	"math"
 	"math/cmplx"
-	"strconv"
 	"strings"
 
 	"github.com/itsubaki/q/math/epsilon"
@@ -683,8 +682,8 @@ func (q *Qubit) BinaryString() string {
 }
 
 // Int measures the quantum state and returns its int representation.
-func (q *Qubit) Int() int64 {
-	return number.Must(strconv.ParseInt(q.BinaryString(), 2, 0))
+func (q *Qubit) Int() int {
+	return number.MustParseInt(q.BinaryString())
 }
 
 // String returns the string representation of q.
