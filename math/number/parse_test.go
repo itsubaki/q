@@ -18,6 +18,13 @@ func ExampleParseFloat() {
 	// 0.625 <nil>
 }
 
+func ExampleMustParseInt() {
+	fmt.Println(number.MustParseInt("101"))
+
+	// Output:
+	// 5
+}
+
 func TestParseFloat(t *testing.T) {
 	cases := []struct {
 		in   string
