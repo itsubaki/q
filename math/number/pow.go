@@ -1,5 +1,12 @@
 package number
 
+import "math"
+
+// Ldexp returns a * 2**b.
+func Ldexp(a, b int) float64 {
+	return math.Ldexp(float64(a), b)
+}
+
 // Pow returns a**r, the base-a exponential of r.
 func Pow(a, r int) int {
 	if a == 0 {

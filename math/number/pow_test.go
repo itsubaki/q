@@ -7,6 +7,17 @@ import (
 	"github.com/itsubaki/q/math/number"
 )
 
+func ExampleLdexp() {
+	fmt.Println(number.Ldexp(1, -2))
+	fmt.Println(number.Ldexp(3, -2))
+	fmt.Println(number.Ldexp(3, 4))
+
+	// Output:
+	// 0.25
+	// 0.75
+	// 48
+}
+
 func ExampleBaseExp() {
 	a, b, ok := number.BaseExp(125)
 	fmt.Printf("%v^%v %v", a, b, ok)
