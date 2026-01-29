@@ -59,7 +59,6 @@ func main() {
 	s := qsim.Zeros(4) // ancilla qubits for comparing Sudoku constraints
 	a := qsim.Zero()   // ancilla qubit for oracle
 
-	// initialize
 	qsim.H(c...)
 	qsim.H(r...)
 	qsim.X(a)
@@ -78,12 +77,12 @@ func main() {
 	qsim.InvQFT(c...)
 
 	// estimate
-	N := 1 << len(r)
+	N := number.Ldexp(1, len(r)) // N = 2**len(r)
 	for _, state := range q.Top(qsim.State(c, r, s, a), top) {
-		phi := number.Ldexp(state.Int()[0], -t)          // phi = k / 2**t
-		theta := 2 * math.Pi * phi                       // theta = 2*pi*phi
-		M := float64(N) * math.Pow(math.Sin(theta/2), 2) // M = N*(sin(theta/2))**2
+		phi := number.Ldexp(state.Int()[0], -t) // phi = k/(2**t)
+		theta := 2 * math.Pi * phi              // theta = 2*pi*phi
+		M := N * math.Pow(math.Sin(theta/2), 2) // M = N*(sin(theta/2))**2
 
-		fmt.Printf("%v; phi=%.4f, theta=%.4f, M=%.4f, M'=%.4f\n", state, phi, theta, M, float64(N)-M)
+		fmt.Printf("%v; phi=%.4f, theta=%.4f, M=%.4f\n", state, phi, theta, min(M, N-M))
 	}
 }

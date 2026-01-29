@@ -23,6 +23,7 @@ func main() {
 	flag.Uint64Var(&seed, "seed", 0, "PRNG seed for measurements")
 	flag.Parse()
 
+	// prime number test
 	if N < 2 {
 		fmt.Printf("N=%d. N must be greater than 1.\n", N)
 		return
@@ -43,6 +44,7 @@ func main() {
 		return
 	}
 
+	// choose a coprime number of N
 	if a < 0 {
 		a = rand.Coprime(N)
 	}
@@ -59,11 +61,13 @@ func main() {
 
 	fmt.Printf("N=%d, a=%d, t=%d, seed=%d.\n\n", N, a, t, seed)
 
+	// quantum algorithm
 	qsim := q.New()
 	if seed > 0 {
 		qsim.Rand = rand.Const(seed)
 	}
 
+	// initialize
 	r0 := qsim.Zeros(t)
 	r1 := qsim.ZeroLog2(N)
 
