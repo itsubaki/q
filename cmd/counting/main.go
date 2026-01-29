@@ -6,6 +6,7 @@ import (
 	"math"
 
 	"github.com/itsubaki/q"
+	"github.com/itsubaki/q/math/number"
 )
 
 func oracle(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
@@ -77,9 +78,9 @@ func main() {
 	qsim.InvQFT(c...)
 
 	// estimate
-	N, Q := 1<<len(r), 1<<t
+	N := 1 << len(r)
 	for _, state := range q.Top(qsim.State(c, r, s, a), top) {
-		phi := float64(state.Int()[0]) / float64(Q)      // phi = k / 2**t
+		phi := number.Ldexp(state.Int()[0], -t)          // phi = k / 2**t
 		theta := 2 * math.Pi * phi                       // theta = 2*pi*phi
 		M := float64(N) * math.Pow(math.Sin(theta/2), 2) // M = N*(sin(theta/2))**2
 

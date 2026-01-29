@@ -999,10 +999,10 @@ func Example_shor15() {
 	}
 
 	// measure q0, q1, q2
-	m := qsim.Measure(q0, q1, q2).BinaryString()
+	m := qsim.Measure(q0, q1, q2)
 
 	// find s/r. 0.010 -> 0.25 -> 1/4, 0.110 -> 0.75 -> 3/4, ...
-	s, r, d, ok := number.FindOrder(a, N, fmt.Sprintf("0.%s", m))
+	s, r, d, ok := number.FindOrder(a, N, number.Ldexp(m.Int(), -3))
 	if !ok || number.IsOdd(r) {
 		return
 	}
@@ -1016,7 +1016,7 @@ func Example_shor15() {
 		return
 	}
 
-	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d ([0.%v]~%.3f)\n", N, a, p0, p1, s, r, m, d)
+	fmt.Printf("N=%d, a=%d. p=%v, q=%v. s/r=%d/%d ([0.%v]~%.3f)\n", N, a, p0, p1, s, r, m.BinaryString(), d)
 
 	// Output:
 	// [000][  0]( 0.5000 0.0000i): 0.2500

@@ -87,7 +87,7 @@ func main() {
 	var prop float64
 	for _, state := range qsim.State(r0) {
 		i, m := state.Int()[0], state.BinaryString()[0]
-		s, r, d, ok := number.FindOrder(a, N, fmt.Sprintf("0.%s", m))
+		s, r, d, ok := number.FindOrder(a, N, number.Ldexp(i, -t))
 		if !ok || number.IsOdd(r) {
 			fmt.Printf("  i=%4d: N=%d, a=%d, t=%d; s/r=%4d/%4d ([0.%v]~%.4f);\n", i, N, a, t, s, r, m, d)
 			continue

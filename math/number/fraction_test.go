@@ -17,18 +17,13 @@ func ExampleContinuedFraction() {
 }
 
 func ExampleConvergent() {
-	m := "0.00101010101"
-	v, err := number.ParseFloat(m)
-	fmt.Printf("%v=%v %v\n", m, v, err)
-
-	c := number.ContinuedFraction(v)
+	c := number.ContinuedFraction(number.Ldexp(341, -11))
 	for i := range c {
 		s, r, d := number.Convergent(c[:i+1])
 		fmt.Printf("%v: %v/%v=%v\n", c[:i+1], s, r, d)
 	}
 
 	// Output:
-	// 0.00101010101=0.16650390625 <nil>
 	// [0]: 0/1=0
 	// [0 6]: 1/6=0.16666666666666666
 	// [0 6 170]: 170/1021=0.1665034280117532
