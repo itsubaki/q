@@ -83,6 +83,6 @@ func main() {
 		theta := 2 * math.Pi * phi              // theta = 2*pi*phi
 		M := N * math.Pow(math.Sin(theta/2), 2) // M = N*(sin(theta/2))**2
 
-		fmt.Printf("%v; phi=%.4f, theta=%.4f, M=%.4f\n", state, phi, theta, min(M, N-M))
+		fmt.Printf("%v; phi=%.4f, theta=%.4f, M=%.4f, M'=%.4f\n", state, phi, theta, M, N-M)
 	}
 }
