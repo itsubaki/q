@@ -20,8 +20,9 @@ func oracle(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
 	xor(r[0], r[2], s[2]) // a != c
 	xor(r[1], r[3], s[3]) // b != d
 
-	// apply X if c and s are all 1
-	qsim.ControlledX([]q.Qubit{c, s[0], s[1], s[2], s[3]}, []q.Qubit{a})
+	// apply X if s and c are all 1
+	// r[4] is an extra qubit for search space expansion
+	qsim.ControlledX([]q.Qubit{s[0], s[1], s[2], s[3], c, r[4]}, []q.Qubit{a})
 
 	// uncompute
 	xor(r[1], r[3], s[3])
@@ -55,12 +56,18 @@ func main() {
 
 	// initialize
 	c := qsim.Zeros(t) // for phase estimation
-	r := qsim.Zeros(4) // data qubits for the Grover search space
+
+	// data qubits for the Grover search space
+	// technique for expanding the search space from N to 2N
+	r := qsim.Zeros(5)
 	s := qsim.Zeros(4) // ancilla qubits for comparing Sudoku constraints
 	a := qsim.Zero()   // ancilla qubit for oracle
 
+	// superposition
 	qsim.H(c...)
 	qsim.H(r...)
+
+	// prepare ancilla to minus state
 	qsim.X(a)
 	qsim.H(a)
 
@@ -83,6 +90,6 @@ func main() {
 		theta := 2 * math.Pi * phi              // theta = 2*pi*phi
 		M := N * math.Pow(math.Sin(theta/2), 2) // M = N*(sin(theta/2))**2
 
-		fmt.Printf("%v; phi=%.4f, theta=%.4f, M=%.4f, M'=%.4f\n", state, phi, theta, M, N-M)
+		fmt.Printf("%v; phi=%.4f, theta=%.4f, M=%.4f, eps=%.4f\n", state, phi, theta, min(M, N-M), math.Abs(min(M, N-M)-2))
 	}
 }
