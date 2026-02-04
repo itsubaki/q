@@ -17,9 +17,8 @@ func ExampleMatrix_bell() {
 		gate.CNOT(2, 0, 1),
 	))
 
-	qb := rho.Qubits()
-	s1 := rho.PartialTrace(qb[0]) // Partial trace over qubit 0: returns the reduced density matrix for qubit 1
-	s0 := rho.PartialTrace(qb[1]) // Partial trace over qubit 1: returns the reduced density matrix for qubit 0
+	s1 := rho.PartialTrace(0) // Partial trace over qubit 0: returns the reduced density matrix for qubit 1
+	s0 := rho.PartialTrace(1) // Partial trace over qubit 1: returns the reduced density matrix for qubit 0
 
 	fmt.Printf("trace: %.2v, purity: %.2v\n", rho.Trace(), rho.Purity())
 	fmt.Printf("trace: %.2v, purity: %.2v\n", s1.Trace(), s1.Purity())
@@ -31,19 +30,18 @@ func ExampleMatrix_bell() {
 	// trace: 1, purity: 0.5
 }
 
-func ExampleMatrix_ComputationalBasis() {
+func ExampleMatrix_Project() {
 	rho := density.NewPureState(qubit.Zero(2).Apply(
 		gate.H().TensorProduct(gate.I()),
 		gate.CNOT(2, 0, 1),
 	))
 
-	for _, b := range rho.ComputationalBasis() {
-		p, sigma := rho.Project(b)
-		fmt.Printf("%v: %.2f\n", b.State(), p)
+	basis := qubit.Zero(2)
+	p, sigma := rho.Project(basis)
 
-		for _, r := range sigma.Seq2() {
-			fmt.Println(r)
-		}
+	fmt.Printf("%v: %.2f\n", basis.State(), p)
+	for _, r := range sigma.Seq2() {
+		fmt.Println(r)
 	}
 
 	// Output:
@@ -52,21 +50,6 @@ func ExampleMatrix_ComputationalBasis() {
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [[01][  1]( 1.0000 0.0000i): 1.0000]: 0.00
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [[10][  2]( 1.0000 0.0000i): 1.0000]: 0.00
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [[11][  3]( 1.0000 0.0000i): 1.0000]: 0.50
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (1+0i)]
 }
 
 func ExampleMatrix_ExpectedValue() {
@@ -186,9 +169,8 @@ func ExampleMatrix_PartialTrace() {
 	}
 	fmt.Println()
 
-	qb := rho.Qubits()
-	s1 := rho.PartialTrace(qb[0])
-	s0 := rho.PartialTrace(qb[1])
+	s1 := rho.PartialTrace(0) // trace out qubit 0
+	s0 := rho.PartialTrace(1) // trace out qubit 1
 
 	fmt.Printf("trace: %.2v, purity: %.2v\n", rho.Trace(), rho.Purity())
 	fmt.Printf("trace: %.2v, purity: %.2v\n", s1.Trace(), s1.Purity())
@@ -211,10 +193,9 @@ func ExampleMatrix_PartialTrace_x8() {
 		gate.CNOT(3, 0, 1),
 	))
 
-	qb := rho.Qubits()
-	s12 := rho.PartialTrace(qb[0])
-	s02 := rho.PartialTrace(qb[1])
-	s01 := rho.PartialTrace(qb[2])
+	s12 := rho.PartialTrace(0) // trace out qubit 0
+	s02 := rho.PartialTrace(1) // trace out qubit 1
+	s01 := rho.PartialTrace(2) // trace out qubit 2
 
 	fmt.Printf("trace: %.2v, purity: %.2v\n", rho.Trace(), rho.Purity())
 	fmt.Printf("trace: %.2v, purity: %.2v\n", s12.Trace(), s12.Purity())
@@ -234,11 +215,9 @@ func ExampleMatrix_Depolarizing() {
 	fmt.Printf("1: %.2f\n", rho.Probability(qubit.One()))
 	fmt.Println()
 
-	qb := rho.Qubits()
-
 	// XrhoX = |1><1|, YrhoY = |1><1|, ZrhoZ = |0><0|
 	// E(rho) = 0.7|0><0| + 0.1|1><1| + 0.1|1><1| + 0.1|0><0| = 0.8|0><0| + 0.2|1><1|
-	dep := rho.Depolarizing(0.3, qb[0])
+	dep := rho.Depolarizing(0.3, 0)
 	fmt.Printf("0: %.2f\n", dep.Probability(qubit.Zero()))
 	fmt.Printf("1: %.2f\n", dep.Probability(qubit.One()))
 
@@ -252,12 +231,10 @@ func ExampleMatrix_Depolarizing() {
 
 func ExampleMatrix_ApplyChannel() {
 	rho := density.NewZeroState(2)
+	s1 := rho.ApplyChannel(0.3, gate.X(), 0)
 
-	qb := rho.Qubits()
-	x := rho.ApplyChannel(0.3, gate.X(), qb[0])
-
-	fmt.Printf("%.2f\n", x.Probability(qubit.From("00")))
-	fmt.Printf("%.2f\n", x.Probability(qubit.From("10")))
+	fmt.Printf("%.2f\n", s1.Probability(qubit.From("00")))
+	fmt.Printf("%.2f\n", s1.Probability(qubit.From("10")))
 
 	// Output:
 	// 0.70
@@ -266,12 +243,10 @@ func ExampleMatrix_ApplyChannel() {
 
 func ExampleMatrix_ApplyChannel_qb1() {
 	rho := density.NewZeroState(2)
+	s1 := rho.ApplyChannel(0.3, gate.X(), 1)
 
-	qb := rho.Qubits()
-	x := rho.ApplyChannel(0.3, gate.X(), qb[1])
-
-	fmt.Printf("%.2f\n", x.Probability(qubit.From("00")))
-	fmt.Printf("%.2f\n", x.Probability(qubit.From("01")))
+	fmt.Printf("%.2f\n", s1.Probability(qubit.From("00")))
+	fmt.Printf("%.2f\n", s1.Probability(qubit.From("01")))
 
 	// Output:
 	// 0.70
@@ -280,9 +255,7 @@ func ExampleMatrix_ApplyChannel_qb1() {
 
 func ExampleMatrix_BitFlip() {
 	rho := density.NewZeroState()
-
-	qb := rho.Qubits()
-	x := rho.BitFlip(0.3, qb[0])
+	x := rho.BitFlip(0.3, 0)
 
 	fmt.Printf("%.2f\n", x.Probability(qubit.Zero()))
 	fmt.Printf("%.2f\n", x.Probability(qubit.One()))
@@ -294,9 +267,7 @@ func ExampleMatrix_BitFlip() {
 
 func ExampleMatrix_BitPhaseFlip() {
 	rho := density.NewPureState(qubit.Plus())
-
-	qb := rho.Qubits()
-	y := rho.BitPhaseFlip(0.3, qb[0])
+	y := rho.BitPhaseFlip(0.3, 0)
 
 	fmt.Printf("%.2f\n", y.Probability(qubit.Plus()))
 	fmt.Printf("%.2f\n", y.Probability(qubit.Minus()))
@@ -308,9 +279,7 @@ func ExampleMatrix_BitPhaseFlip() {
 
 func ExampleMatrix_PhaseFlip() {
 	rho := density.NewPureState(qubit.Plus())
-
-	qb := rho.Qubits()
-	z := rho.PhaseFlip(0.3, qb[0])
+	z := rho.PhaseFlip(0.3, 0)
 
 	fmt.Printf("%.2f\n", z.Probability(qubit.Plus()))
 	fmt.Printf("%.2f\n", z.Probability(qubit.Minus()))
@@ -322,10 +291,8 @@ func ExampleMatrix_PhaseFlip() {
 
 func ExampleMatrix_phaseAndBitPhaseFlip() {
 	rho := density.NewZeroState()
-
-	qb := rho.Qubits()
-	y := rho.BitPhaseFlip(0.3, qb[0])
-	z := rho.PhaseFlip(0.3, qb[0])
+	y := rho.BitPhaseFlip(0.3, 0)
+	z := rho.PhaseFlip(0.3, 0)
 
 	fmt.Printf("%.2f\n", y.Probability(qubit.Zero()))
 	fmt.Printf("%.2f\n", y.Probability(qubit.One()))
@@ -435,7 +402,7 @@ func TestProbability(t *testing.T) {
 
 func TestPartialTrace(t *testing.T) {
 	type Case struct {
-		idx  []density.Qubit
+		qb   []int
 		want [][]complex128
 	}
 
@@ -452,14 +419,14 @@ func TestPartialTrace(t *testing.T) {
 			},
 			cs: []Case{
 				{
-					idx: []density.Qubit{0},
+					qb: []int{0},
 					want: [][]complex128{
 						{1, 0},
 						{0, 0},
 					},
 				},
 				{
-					idx: []density.Qubit{1},
+					qb: []int{1},
 					want: [][]complex128{
 						{1, 0},
 						{0, 0},
@@ -476,14 +443,14 @@ func TestPartialTrace(t *testing.T) {
 			},
 			cs: []Case{
 				{
-					idx: []density.Qubit{0},
+					qb: []int{0},
 					want: [][]complex128{
 						{0, 0},
 						{0, 1},
 					},
 				},
 				{
-					idx: []density.Qubit{1},
+					qb: []int{1},
 					want: [][]complex128{
 						{0, 0},
 						{0, 1},
@@ -500,14 +467,14 @@ func TestPartialTrace(t *testing.T) {
 			},
 			cs: []Case{
 				{
-					idx: []density.Qubit{0},
+					qb: []int{0},
 					want: [][]complex128{
 						{0.5, 0.5},
 						{0.5, 0.5},
 					},
 				},
 				{
-					idx: []density.Qubit{1},
+					qb: []int{1},
 					want: [][]complex128{
 						{0.5, 0.5},
 						{0.5, 0.5},
@@ -528,14 +495,14 @@ func TestPartialTrace(t *testing.T) {
 			},
 			cs: []Case{
 				{
-					idx: []density.Qubit{0},
+					qb: []int{0},
 					want: [][]complex128{
 						{0.5, 0},
 						{0, 0.5},
 					},
 				},
 				{
-					idx: []density.Qubit{1},
+					qb: []int{1},
 					want: [][]complex128{
 						{0.5, 0},
 						{0, 0.5},
@@ -556,14 +523,14 @@ func TestPartialTrace(t *testing.T) {
 			},
 			cs: []Case{
 				{
-					idx: []density.Qubit{0},
+					qb: []int{0},
 					want: [][]complex128{
 						{0.25, 0.25},
 						{0.25, 0.75},
 					},
 				},
 				{
-					idx: []density.Qubit{1},
+					qb: []int{1},
 					want: [][]complex128{
 						{0.25, 0.25},
 						{0.25, 0.75},
@@ -584,14 +551,14 @@ func TestPartialTrace(t *testing.T) {
 			},
 			cs: []Case{
 				{
-					idx: []density.Qubit{0},
+					qb: []int{0},
 					want: [][]complex128{
 						{0.5, 0.25},
 						{0.25, 0.5},
 					},
 				},
 				{
-					idx: []density.Qubit{1},
+					qb: []int{1},
 					want: [][]complex128{
 						{0.5, 0.25},
 						{0.25, 0.5},
@@ -612,14 +579,14 @@ func TestPartialTrace(t *testing.T) {
 			},
 			cs: []Case{
 				{
-					idx: []density.Qubit{0},
+					qb: []int{0},
 					want: [][]complex128{
 						{0.5, -0.25},
 						{-0.25, 0.5},
 					},
 				},
 				{
-					idx: []density.Qubit{1},
+					qb: []int{1},
 					want: [][]complex128{
 						{0.5, -0.25},
 						{-0.25, 0.5},
@@ -636,14 +603,14 @@ func TestPartialTrace(t *testing.T) {
 			},
 			cs: []Case{
 				{
-					idx: []density.Qubit{0, 1},
+					qb: []int{0, 1},
 					want: [][]complex128{
 						{1, 0},
 						{0, 0},
 					},
 				},
 				{
-					idx: []density.Qubit{1, 2},
+					qb: []int{1, 2},
 					want: [][]complex128{
 						{1, 0},
 						{0, 0},
@@ -660,14 +627,14 @@ func TestPartialTrace(t *testing.T) {
 			},
 			cs: []Case{
 				{
-					idx: []density.Qubit{0, 1},
+					qb: []int{0, 1},
 					want: [][]complex128{
 						{0, 0},
 						{0, 1},
 					},
 				},
 				{
-					idx: []density.Qubit{1, 2},
+					qb: []int{1, 2},
 					want: [][]complex128{
 						{0, 0},
 						{0, 1},
@@ -684,14 +651,14 @@ func TestPartialTrace(t *testing.T) {
 			},
 			cs: []Case{
 				{
-					idx: []density.Qubit{0, 1},
+					qb: []int{0, 1},
 					want: [][]complex128{
 						{0.5, 0.5},
 						{0.5, 0.5},
 					},
 				},
 				{
-					idx: []density.Qubit{1, 2},
+					qb: []int{1, 2},
 					want: [][]complex128{
 						{0.5, 0.5},
 						{0.5, 0.5},
@@ -703,7 +670,7 @@ func TestPartialTrace(t *testing.T) {
 
 	for _, c := range cases {
 		for _, s := range c.cs {
-			got := density.New(c.s).PartialTrace(s.idx...)
+			got := density.New(c.s).PartialTrace(s.qb...)
 
 			p, q := got.Dim()
 			if p != len(s.want) || q != len(s.want) {

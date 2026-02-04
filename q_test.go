@@ -1148,9 +1148,8 @@ func Example_densityMatrix() {
 	}
 
 	rho := density.NewPureState(qsim.Underlying())
-	qb := rho.Qubits()
-	s1 := rho.PartialTrace(qb[0])
-	s0 := rho.PartialTrace(qb[1])
+	s1 := rho.PartialTrace(0) // trace out qubit 0
+	s0 := rho.PartialTrace(1) // trace out qubit 1
 
 	fmt.Printf("trace: %.2v, purity: %.2v\n", rho.Trace(), rho.Purity())
 	fmt.Printf("trace: %.2v, purity: %.2v\n", s1.Trace(), s1.Purity())

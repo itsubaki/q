@@ -1,7 +1,6 @@
 package density
 
 import (
-	"fmt"
 	"iter"
 	"math"
 	"strings"
@@ -12,24 +11,6 @@ import (
 	"github.com/itsubaki/q/quantum/gate"
 	"github.com/itsubaki/q/quantum/qubit"
 )
-
-// Qubit is a quantum bit.
-type Qubit int
-
-// Index returns the index of qubit.
-func (q Qubit) Index() int {
-	return int(q)
-}
-
-// Index returns the indices of the given qubits.
-func Index(qb ...Qubit) []int {
-	idx := make([]int, len(qb))
-	for i, q := range qb {
-		idx[i] = q.Index()
-	}
-
-	return idx
-}
 
 // Matrix is a density matrix.
 type Matrix struct {
@@ -65,29 +46,6 @@ func NewPureState(qb *qubit.Qubit) *Matrix {
 // NewZeroState returns a new zero state density matrix for the given number of qubits.
 func NewZeroState(n ...int) *Matrix {
 	return NewPureState(qubit.Zero(n...))
-}
-
-// Qubits returns the qubits of the density matrix.
-func (m *Matrix) Qubits() []Qubit {
-	n := m.NumQubits()
-
-	qubits := make([]Qubit, n)
-	for i := range n {
-		qubits[i] = Qubit(i)
-	}
-
-	return qubits
-}
-
-func (m *Matrix) ComputationalBasis() []*qubit.Qubit {
-	n := m.NumQubits()
-
-	basis := make([]*qubit.Qubit, 1<<n)
-	for i := range 1 << n {
-		basis[i] = qubit.From(fmt.Sprintf("%0*b", n, i))
-	}
-
-	return basis
 }
 
 // At returns a value of matrix at (i,j).
@@ -185,17 +143,17 @@ func (m *Matrix) TensorProduct(n *Matrix) *Matrix {
 // PartialTrace returns the partial trace of the density matrix.
 // The length of index must be less than or equal to n - 1,
 // where n is the number of qubits in the matrix.
-func (m *Matrix) PartialTrace(idx ...Qubit) *Matrix {
+func (m *Matrix) PartialTrace(qb ...int) *Matrix {
 	n := m.NumQubits()
-	d := number.Pow(2, n-len(idx))
+	d := number.Pow(2, n-len(qb))
 	p, q := m.Dim()
 
 	rho := matrix.Zero(d, d)
 	for i := range p {
-		k, kr := take(n, i, idx)
+		k, kr := take(n, i, qb)
 
 		for j := range q {
-			l, lr := take(n, j, idx)
+			l, lr := take(n, j, qb)
 
 			if k != l {
 				continue
@@ -228,10 +186,10 @@ func (m *Matrix) PartialTrace(idx ...Qubit) *Matrix {
 // Depolarizing returns the depolarizing channel.
 // It applies the identity with probability (1 - p),
 // and applies each of the Pauli gates X, Y, and Z with probability p/3.
-func (m *Matrix) Depolarizing(p float64, qb Qubit) *Matrix {
+func (m *Matrix) Depolarizing(p float64, qb int) *Matrix {
 	n := m.NumQubits()
 
-	idx := Index(qb)
+	idx := []int{qb}
 	id := m.rho.Mul(complex(1-p, 0))
 	xg := gate.TensorProduct(gate.X(), n, idx)
 	yg := gate.TensorProduct(gate.Y(), n, idx)
@@ -248,14 +206,14 @@ func (m *Matrix) Depolarizing(p float64, qb Qubit) *Matrix {
 
 // ApplyChannel applies a channel to the density matrix.
 // It applies the identity with probability 1-p, and applies the gate g with probability p.
-func (m *Matrix) ApplyChannel(p float64, u *matrix.Matrix, qb ...Qubit) *Matrix {
-	n, idx := m.NumQubits(), Index(qb...)
+func (m *Matrix) ApplyChannel(p float64, u *matrix.Matrix, qb ...int) *Matrix {
+	n := m.NumQubits()
 
 	e0 := gate.I().Mul(complex(math.Sqrt(1-p), 0))
 	e1 := u.Mul(complex(math.Sqrt(p), 0))
 
-	k0 := gate.TensorProduct(e0, n, idx)
-	k1 := gate.TensorProduct(e1, n, idx)
+	k0 := gate.TensorProduct(e0, n, qb)
+	k1 := gate.TensorProduct(e1, n, qb)
 
 	rho := matrix.ZeroLike(m.rho)
 	rho = rho.Add(matrix.MatMul(k0, m.rho, k0.Dagger()))
@@ -267,24 +225,24 @@ func (m *Matrix) ApplyChannel(p float64, u *matrix.Matrix, qb ...Qubit) *Matrix 
 }
 
 // BitFlip applies a bit flip channel to the density matrix.
-func (m *Matrix) BitFlip(p float64, qb Qubit) *Matrix {
+func (m *Matrix) BitFlip(p float64, qb int) *Matrix {
 	return m.ApplyChannel(p, gate.X(), qb)
 }
 
 // BitPhaseFlip applies a bit-phase flip channel to the density matrix.
-func (m *Matrix) BitPhaseFlip(p float64, qb Qubit) *Matrix {
+func (m *Matrix) BitPhaseFlip(p float64, qb int) *Matrix {
 	return m.ApplyChannel(p, gate.Y(), qb)
 }
 
 // PhaseFlip applies a phase flip channel to the density matrix.
-func (m *Matrix) PhaseFlip(p float64, qb Qubit) *Matrix {
+func (m *Matrix) PhaseFlip(p float64, qb int) *Matrix {
 	return m.ApplyChannel(p, gate.Z(), qb)
 }
 
-func take(n, i int, idx []Qubit) (string, string) {
-	target := make(map[int]struct{}, len(idx))
-	for _, j := range idx {
-		target[j.Index()] = struct{}{}
+func take(n, i int, qb []int) (string, string) {
+	target := make(map[int]struct{}, len(qb))
+	for _, j := range qb {
+		target[j] = struct{}{}
 	}
 
 	var out, remain strings.Builder
