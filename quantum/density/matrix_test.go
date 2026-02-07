@@ -36,12 +36,20 @@ func ExampleMatrix_Project() {
 		gate.CNOT(2, 0, 1),
 	))
 
-	basis := qubit.Zero(2)
-	p, sigma := rho.Project(basis)
+	computationalBasis := []*qubit.Qubit{
+		qubit.From("00"),
+		qubit.From("01"),
+		qubit.From("10"),
+		qubit.From("11"),
+	}
 
-	fmt.Printf("%v: %.2f\n", basis.State(), p)
-	for _, r := range sigma.Seq2() {
-		fmt.Println(r)
+	for _, basis := range computationalBasis {
+		p, sigma := rho.Project(basis)
+
+		fmt.Printf("%v: %.2f\n", basis.State(), p)
+		for _, r := range sigma.Seq2() {
+			fmt.Println(r)
+		}
 	}
 
 	// Output:
@@ -50,6 +58,21 @@ func ExampleMatrix_Project() {
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [[01][  1]( 1.0000 0.0000i): 1.0000]: 0.00
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [[10][  2]( 1.0000 0.0000i): 1.0000]: 0.00
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [[11][  3]( 1.0000 0.0000i): 1.0000]: 0.50
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (1+0i)]
 }
 
 func ExampleMatrix_ExpectedValue() {
