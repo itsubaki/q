@@ -985,8 +985,13 @@ func Example_shor15() {
 	qsim.CNOT(q2, q5)
 
 	// Controlled-U^(2^1)
-	qsim.CNOT(q3, q5).CCNOT(q1, q5, q3).CNOT(q3, q5)
-	qsim.CNOT(q6, q4).CCNOT(q1, q4, q6).CNOT(q6, q4)
+	qsim.CNOT(q3, q5)
+	qsim.CCNOT(q1, q5, q3)
+	qsim.CNOT(q3, q5)
+
+	qsim.CNOT(q6, q4)
+	qsim.CCNOT(q1, q4, q6)
+	qsim.CNOT(q6, q4)
 
 	// inverse QFT
 	qsim.Swap(q0, q2)
@@ -1088,8 +1093,10 @@ func Example_ecc() {
 	q4 := qsim.Zero()
 
 	// error correction
-	qsim.CNOT(q0, q3).CNOT(q1, q3)
-	qsim.CNOT(q1, q4).CNOT(q2, q4)
+	qsim.CNOT(q0, q3)
+	qsim.CNOT(q1, q3)
+	qsim.CNOT(q1, q4)
+	qsim.CNOT(q2, q4)
 
 	m3 := qsim.Measure(q3)
 	m4 := qsim.Measure(q4)
@@ -1099,7 +1106,8 @@ func Example_ecc() {
 	qsim.CondX(m3.IsZero() && m4.IsOne(), q2)
 
 	// decoding
-	qsim.CNOT(q0, q2).CNOT(q0, q1)
+	qsim.CNOT(q0, q2)
+	qsim.CNOT(q0, q1)
 
 	fmt.Println("q0(corrected):")
 	for _, s := range qsim.State(q0) {
