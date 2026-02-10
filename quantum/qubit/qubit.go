@@ -162,12 +162,14 @@ func (q *Qubit) Apply(g ...*matrix.Matrix) *Qubit {
 
 // G applies a gate to the qubit at the given index.
 func (q *Qubit) G(g *matrix.Matrix, idx int) {
+	g0, g1, g2, g3 := g.Data[0], g.Data[1], g.Data[2], g.Data[3]
+
 	stride := 1 << (q.NumQubits() - 1 - idx)
 	for i := 0; i < q.Dim(); i += 2 * stride {
 		for j := range stride {
 			a, b := q.state.Data[i+j], q.state.Data[i+j+stride]
-			q.state.Data[i+j] = g.At(0, 0)*a + g.At(0, 1)*b
-			q.state.Data[i+j+stride] = g.At(1, 0)*a + g.At(1, 1)*b
+			q.state.Data[i+j] = g0*a + g1*b
+			q.state.Data[i+j+stride] = g2*a + g3*b
 		}
 	}
 }
@@ -366,6 +368,7 @@ func (q *Qubit) Controlled(g *matrix.Matrix, control []int, target int) *Qubit {
 	}
 	tmask := 1 << (n - 1 - target)
 
+	g0, g1, g2, g3 := g.Data[0], g.Data[1], g.Data[2], g.Data[3]
 	for i := range q.Dim() {
 		if (i & cmask) != cmask {
 			continue
@@ -377,8 +380,8 @@ func (q *Qubit) Controlled(g *matrix.Matrix, control []int, target int) *Qubit {
 		}
 
 		a, b := q.state.Data[i], q.state.Data[j]
-		q.state.Data[i] = g.At(0, 0)*a + g.At(0, 1)*b
-		q.state.Data[j] = g.At(1, 0)*a + g.At(1, 1)*b
+		q.state.Data[i] = g0*a + g1*b
+		q.state.Data[j] = g2*a + g3*b
 	}
 
 	return q
