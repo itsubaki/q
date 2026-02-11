@@ -35,8 +35,9 @@ func BenchmarkApplyConcurrencyN12(b *testing.B) {
 			go func(i int) {
 				defer wg.Done()
 
+				row := m.Row(i)
 				for j := range q {
-					data[i] += m.At(i, j) * v.Data[j]
+					data[i] += row[j] * v.Data[j]
 				}
 			}(i)
 		}
