@@ -53,8 +53,8 @@ func (m *Matrix) At(i, j int) complex128 {
 	return m.rho.At(i, j)
 }
 
-// Underlying returns the internal matrix.
-func (m *Matrix) Underlying() *matrix.Matrix {
+// Matrix returns the internal matrix.
+func (m *Matrix) Matrix() *matrix.Matrix {
 	return m.rho
 }
 

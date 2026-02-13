@@ -202,12 +202,14 @@ func (q *Qubit) I(idx int) *Qubit {
 
 // H applies H gate.
 func (q *Qubit) H(idx int) *Qubit {
+	sqrt2 := complex(1/math.Sqrt2, 0) // avoid runtime.complex128div
+
 	stride := 1 << (q.NumQubits() - 1 - idx)
 	for i := 0; i < q.Dim(); i += 2 * stride {
 		for j := range stride {
 			a, b := q.state.Data[i+j], q.state.Data[i+j+stride]
-			q.state.Data[i+j] = (a + b) / complex(math.Sqrt2, 0)
-			q.state.Data[i+j+stride] = (a - b) / complex(math.Sqrt2, 0)
+			q.state.Data[i+j] = (a + b) * sqrt2
+			q.state.Data[i+j+stride] = (a - b) * sqrt2
 		}
 	}
 

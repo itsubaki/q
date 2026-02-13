@@ -61,7 +61,7 @@ func main() {
 
 	fmt.Printf("N=%d, a=%d, t=%d, seed=%d.\n\n", N, a, t, seed)
 
-	// quantum algorithm
+	// quantum simulator
 	qsim := q.New()
 	if seed > 0 {
 		qsim.Rand = rand.Const(seed)
@@ -77,17 +77,21 @@ func main() {
 	qsim.H(r0...)
 	print("create superposition", qsim, r0, r1)
 
+	// controlled modular exponentiation
 	for j := range r0 {
 		CModExp2(qsim, a, j, N, r0[j], r1)
 		print(fmt.Sprintf("apply controlled-U[%d]", j), qsim, r0, r1)
 	}
 
+	// inverse QFT
 	qsim.InvQFT(r0...)
 	print("apply inverse QFT", qsim, r0, r1)
 
+	// measurement
 	qsim.Measure(r1...)
 	print("measure reg1", qsim, r0, r1)
 
+	// classical post-processing
 	var prop float64
 	for _, state := range qsim.State(r0) {
 		i, m := state.Int()[0], state.BinaryString()[0]
@@ -125,7 +129,7 @@ func print(desc string, qsim *q.Q, reg ...any) {
 
 // CModExp2 applies controlled modular exponentiation operation.
 func CModExp2(qsim *q.Q, a, j, N int, control q.Qubit, target []q.Qubit) {
-	ControlledModExp2(qsim.Underlying(), a, j, N, control.Index(), q.Index(target...))
+	ControlledModExp2(qsim.Qubit(), a, j, N, control.Index(), q.Index(target...))
 }
 
 // ControlledModExp2 applies the controlled modular exponentiation operation.

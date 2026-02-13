@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"math"
+	"os"
+	"runtime/pprof"
 
 	"github.com/itsubaki/q"
 	"github.com/itsubaki/q/math/number"
@@ -47,11 +49,22 @@ func controlledG(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
 }
 
 func main() {
+	f, err := os.Create("cpu.prof")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	pprof.StartCPUProfile(f)
+	defer pprof.StopCPUProfile()
+
+	// flags
 	var t, top int
 	flag.IntVar(&t, "t", 7, "precision bits")
 	flag.IntVar(&top, "top", 8, "top results")
 	flag.Parse()
 
+	// quantum simulator
 	qsim := q.New()
 
 	// initialize

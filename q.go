@@ -437,8 +437,8 @@ func (q *Q) Clone() *Q {
 	}
 }
 
-// Underlying returns the internal qubit.
-func (q *Q) Underlying() *qubit.Qubit {
+// Qubit returns the internal qubit.
+func (q *Q) Qubit() *qubit.Qubit {
 	return q.qb
 }
 

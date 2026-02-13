@@ -8,19 +8,19 @@ import (
 )
 
 func ExampleContinuedFraction() {
-	c := number.ContinuedFraction(0.8125)
-	s, r, d := number.Convergent(c)
-	fmt.Printf("%v %v/%v=%v\n", c, s, r, d)
+	cf := number.ContinuedFraction(0.8125)
+	s, r, d := number.Convergent(cf)
+	fmt.Printf("%v %v/%v=%v\n", cf, s, r, d)
 
 	// Output:
 	// [0 1 4 3] 13/16=0.8125
 }
 
 func ExampleConvergent() {
-	c := number.ContinuedFraction(number.Ldexp(341, -11))
-	for i := range c {
-		s, r, d := number.Convergent(c[:i+1])
-		fmt.Printf("%v: %v/%v=%v\n", c[:i+1], s, r, d)
+	cf := number.ContinuedFraction(number.Ldexp(341, -11))
+	for i := range cf {
+		s, r, d := number.Convergent(cf[:i+1])
+		fmt.Printf("%v: %v/%v=%v\n", cf[:i+1], s, r, d)
 	}
 
 	// Output:
@@ -32,8 +32,8 @@ func ExampleConvergent() {
 }
 
 func ExampleConvergent_n0() {
-	var cfx []int
-	s, r, d := number.Convergent(cfx)
+	var cf []int
+	s, r, d := number.Convergent(cf)
 	fmt.Println(s, r, d)
 
 	// Output:

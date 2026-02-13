@@ -80,6 +80,7 @@ func main() {
 	flag.IntVar(&top, "top", 8, "top results")
 	flag.Parse()
 
+	// quantum simulator
 	qsim := q.New()
 
 	// initialize
@@ -87,7 +88,10 @@ func main() {
 	s := qsim.Zeros(4)
 	a := qsim.Zero()
 
+	// superposition
 	qsim.H(r...)
+
+	// prepare minus state for phase kickback
 	qsim.X(a)
 	qsim.H(a)
 

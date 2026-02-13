@@ -29,3 +29,4 @@ oryxBuildBinary
 
 # etc
 *.patch
+*.prof

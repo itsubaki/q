@@ -590,11 +590,11 @@ func ExampleQ_Cond() {
 	// [1][  1]( 1.0000 0.0000i): 1.0000
 }
 
-func ExampleQ_Underlying() {
+func ExampleQ_Qubit() {
 	qsim := q.New()
 	qsim.Zero()
 
-	for _, s := range qsim.Underlying().State() {
+	for _, s := range qsim.Qubit().State() {
 		fmt.Println(s)
 	}
 
@@ -831,14 +831,14 @@ func Example_grover3() {
 	}
 
 	// Output:
-	// [000 1][  0   1](-0.1768 0.0000i): 0.0312
-	// [001 1][  1   1](-0.1768 0.0000i): 0.0312
-	// [010 1][  2   1](-0.1768 0.0000i): 0.0312
-	// [011 1][  3   1](-0.8839 0.0000i): 0.7812
-	// [100 1][  4   1](-0.1768 0.0000i): 0.0312
-	// [101 1][  5   1](-0.1768 0.0000i): 0.0312
-	// [110 1][  6   1](-0.1768 0.0000i): 0.0312
-	// [111 1][  7   1](-0.1768 0.0000i): 0.0312
+	// [000 1][  0   1](-0.1768 0.0000i): 0.0313
+	// [001 1][  1   1](-0.1768 0.0000i): 0.0313
+	// [010 1][  2   1](-0.1768 0.0000i): 0.0313
+	// [011 1][  3   1](-0.8839 0.0000i): 0.7813
+	// [100 1][  4   1](-0.1768 0.0000i): 0.0313
+	// [101 1][  5   1](-0.1768 0.0000i): 0.0313
+	// [110 1][  6   1](-0.1768 0.0000i): 0.0313
+	// [111 1][  7   1](-0.1768 0.0000i): 0.0313
 }
 
 func Example_grover4() {
@@ -1155,7 +1155,7 @@ func Example_densityMatrix() {
 		qsim.CNOT(qb[0], qb[1])
 	}
 
-	rho := density.NewPureState(qsim.Underlying())
+	rho := density.NewPureState(qsim.Qubit())
 	s1 := rho.PartialTrace(0) // trace out qubit 0
 	s0 := rho.PartialTrace(1) // trace out qubit 1
 

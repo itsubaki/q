@@ -16,6 +16,9 @@ bench:
 doc:
 	godoc -http=:6060
 
+pprof:
+	go tool pprof -http=:8080 cpu.prof
+
 shor:
 	go run cmd/shor/main.go --N 21 -t 5
 

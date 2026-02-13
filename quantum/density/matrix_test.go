@@ -91,13 +91,13 @@ func ExampleMatrix_ExpectedValue() {
 	// Z: 0.1
 }
 
-func ExampleMatrix_Underlying() {
+func ExampleMatrix_Matrix() {
 	rho := density.New([]density.State{
 		{0.1, qubit.Zero()},
 		{0.9, qubit.One()},
 	})
 
-	for _, r := range rho.Underlying().Seq2() {
+	for _, r := range rho.Matrix().Seq2() {
 		fmt.Println(r)
 	}
 
