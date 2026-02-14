@@ -26,7 +26,8 @@ q0 := qsim.Zero()
 q1 := qsim.Zero()
 
 // apply quantum circuit
-qsim.H(q0).CNOT(q0, q1)
+qsim.H(q0)
+qsim.CNOT(q0, q1)
 
 for _, s := range qsim.State() {
   fmt.Println(s)
@@ -66,8 +67,10 @@ for _, s := range qsim.State(phi) {
 // [0][  0]( 0.4472 0.0000i): 0.2000
 // [1][  1]( 0.8944 0.0000i): 0.8000
 
-qsim.H(q0).CNOT(q0, q1)
-qsim.CNOT(phi, q0).H(phi)
+qsim.H(q0)
+qsim.CNOT(q0, q1)
+qsim.CNOT(phi, q0)
+qsim.H(phi)
 
 // Alice sends mz, mx to Bob
 mz := qsim.Measure(phi)
@@ -96,7 +99,8 @@ q0 := qsim.New(1, 2) // (0.2, 0.8)
 // encoding
 q1 := qsim.Zero()
 q2 := qsim.Zero()
-qsim.CNOT(q0, q1).CNOT(q0, q2)
+qsim.CNOT(q0, q1)
+qsim.CNOT(q0, q2)
 
 // error: first qubit is flipped
 qsim.X(q0)
