@@ -7,6 +7,19 @@ import (
 	"github.com/itsubaki/q/math/number"
 )
 
+func ExampleContinuedFraction_tol() {
+	m := 0.39031982421875
+	cf := number.ContinuedFraction(m, 1e-5)
+	fmt.Println(cf)
+
+	s, r, d := number.Convergent(cf)
+	fmt.Printf("%v/%v=%v\n", s, r, d)
+
+	// Output:
+	// [0 2 1 1 3 1 1 7 3 1 1 1 4]
+	// 6395/16384=0.39031982421875
+}
+
 func ExampleContinuedFraction() {
 	cf := number.ContinuedFraction(0.8125)
 	s, r, d := number.Convergent(cf)

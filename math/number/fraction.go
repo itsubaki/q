@@ -15,8 +15,8 @@ func ContinuedFraction(real float64, tol ...float64) []int {
 	var cf []int
 	r := real
 	for {
-		intv, frac := math.Modf(r)
-		cf = append(cf, int(intv))
+		a, frac := math.Modf(r)
+		cf = append(cf, int(a))
 		if epsilon.IsZeroF64(frac, tol...) {
 			break
 		}
