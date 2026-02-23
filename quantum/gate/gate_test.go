@@ -3,6 +3,7 @@ package gate_test
 import (
 	"fmt"
 	"math"
+	"math/cmplx"
 	"testing"
 
 	"github.com/itsubaki/q/math/matrix"
@@ -103,6 +104,21 @@ func ExampleTensorProduct() {
 	// [(0+0i) (0+0i) (0+0i) (1+0i)]
 	// [(1+0i) (0+0i) (0+0i) (0+0i)]
 	// [(0+0i) (1+0i) (0+0i) (0+0i)]
+}
+
+func ExampleABC() {
+	theta, phi, lambda := math.Pi/2, math.Pi/4, math.Pi/8
+
+	a, b, c := gate.ABC(theta, phi, lambda)
+	fmt.Println(matrix.MatMul(a, b, c).Equal(gate.I()))
+
+	phase := cmplx.Exp(complex(0, (phi+lambda)/2))
+	axbxc := matrix.MatMul(a, gate.X(), b, gate.X(), c).Mul(phase)
+	fmt.Println(axbxc.Equal(gate.U(theta, phi, lambda)))
+
+	// Output:
+	// true
+	// true
 }
 
 func TestU(t *testing.T) {

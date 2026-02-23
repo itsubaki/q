@@ -27,6 +27,14 @@ func U(theta, phi, lambda float64) *matrix.Matrix {
 	)
 }
 
+// ABC returns three gates A, B, C such that ABC =I, AXBXC = U.
+func ABC(theta, phi, lambda float64) (*matrix.Matrix, *matrix.Matrix, *matrix.Matrix) {
+	A := matrix.MatMul(RZ(phi), RY(theta/2))
+	B := matrix.MatMul(RY(-theta/2), RZ(-(lambda+phi)/2))
+	C := RZ((lambda - phi) / 2)
+	return A, B, C
+}
+
 // I returns an identity gate.
 func I(n ...int) *matrix.Matrix {
 	return matrix.TensorProductN(matrix.New(
