@@ -109,16 +109,35 @@ func ExampleTensorProduct() {
 func ExampleABC() {
 	theta, phi, lambda := math.Pi/2, math.Pi/4, math.Pi/8
 
-	a, b, c := gate.ABC(theta, phi, lambda)
+	alpha, a, b, c := gate.ABC(theta, phi, lambda)
 	fmt.Println(matrix.MatMul(a, b, c).Equal(gate.I()))
 
-	phase := cmplx.Exp(complex(0, (phi+lambda)/2))
+	phase := cmplx.Exp(complex(0, alpha))
 	axbxc := matrix.MatMul(a, gate.X(), b, gate.X(), c).Mul(phase)
 	fmt.Println(axbxc.Equal(gate.U(theta, phi, lambda)))
 
 	// Output:
 	// true
 	// true
+}
+
+func FuzzABC(f *testing.F) {
+	f.Add(0.0, 0.0, 0.0)
+	f.Add(math.Pi, math.Pi, math.Pi)
+	f.Add(math.Pi/2, math.Pi/4, math.Pi/8)
+
+	f.Fuzz(func(t *testing.T, theta, phi, lambda float64) {
+		alpha, a, b, c := gate.ABC(theta, phi, lambda)
+		if !matrix.MatMul(a, b, c).Equal(gate.I()) {
+			t.Fatalf("ABC != I (theta=%v phi=%v lambda=%v)", theta, phi, lambda)
+		}
+
+		phase := cmplx.Exp(complex(0, alpha))
+		axbxc := matrix.MatMul(a, gate.X(), b, gate.X(), c).Mul(phase)
+		if !axbxc.Equal(gate.U(theta, phi, lambda)) {
+			t.Fatalf("AXBXC != U (theta=%v phi=%v lambda=%v)", theta, phi, lambda)
+		}
+	})
 }
 
 func TestU(t *testing.T) {

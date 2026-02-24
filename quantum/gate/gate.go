@@ -27,12 +27,13 @@ func U(theta, phi, lambda float64) *matrix.Matrix {
 	)
 }
 
-// ABC returns three gates A, B, C such that ABC =I, AXBXC = U.
-func ABC(theta, phi, lambda float64) (*matrix.Matrix, *matrix.Matrix, *matrix.Matrix) {
+// ABC returns alpha, A, B, C such that ABC = I, exp(i * alpha) * AXBXC = U(theta, phi, lambda).
+func ABC(theta, phi, lambda float64) (float64, *matrix.Matrix, *matrix.Matrix, *matrix.Matrix) {
+	alpha := (phi + lambda) / 2
 	A := matrix.MatMul(RZ(phi), RY(theta/2))
 	B := matrix.MatMul(RY(-theta/2), RZ(-(lambda+phi)/2))
 	C := RZ((lambda - phi) / 2)
-	return A, B, C
+	return alpha, A, B, C
 }
 
 // I returns an identity gate.
