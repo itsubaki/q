@@ -27,6 +27,21 @@ func U(theta, phi, lambda float64) *matrix.Matrix {
 	)
 }
 
+// SU returns a special unitary gate.
+func SU(theta, phi, lambda float64) *matrix.Matrix {
+	phase := cmplx.Exp(complex(0, -1*(phi+lambda)/2))
+	return U(theta, phi, lambda).Mul(phase)
+}
+
+// ABC returns alpha, A, B, C such that ABC = I, exp(i * alpha) * AXBXC = U(theta, phi, lambda).
+func ABC(theta, phi, lambda float64) (float64, *matrix.Matrix, *matrix.Matrix, *matrix.Matrix) {
+	alpha := (phi + lambda) / 2
+	A := matrix.MatMul(RZ(phi), RY(theta/2))
+	B := matrix.MatMul(RY(-theta/2), RZ(-(lambda+phi)/2))
+	C := RZ((lambda - phi) / 2)
+	return alpha, A, B, C
+}
+
 // I returns an identity gate.
 func I(n ...int) *matrix.Matrix {
 	return matrix.TensorProductN(matrix.New(
