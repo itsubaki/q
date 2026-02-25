@@ -53,9 +53,15 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil {
+			fmt.Println(err)
+		}
+	}()
 
-	pprof.StartCPUProfile(f)
+	if err := pprof.StartCPUProfile(f); err != nil {
+		panic(err)
+	}
 	defer pprof.StopCPUProfile()
 
 	// flags

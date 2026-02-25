@@ -106,17 +106,40 @@ func ExampleTensorProduct() {
 	// [(0+0i) (1+0i) (0+0i) (0+0i)]
 }
 
+func ExampleSU() {
+	u := gate.U(math.Pi/4, math.Pi/2, math.Pi/8)
+	su := gate.SU(math.Pi/4, math.Pi/2, math.Pi/8)
+
+	usud := matrix.MatMul(u, su.Dagger())
+	fmt.Println(usud.Mul(1 / usud.Data[0]).Equal(gate.I()))
+
+	det := func(m *matrix.Matrix) complex128 {
+		return m.Data[0]*m.Data[3] - m.Data[1]*m.Data[2]
+	}
+
+	fmt.Printf("%.4f\n", det(u))
+	fmt.Printf("%.4f\n", det(su))
+
+	// Output:
+	// true
+	// (-0.3827+0.9239i)
+	// (1.0000+0.0000i)
+}
+
 func ExampleABC() {
 	theta, phi, lambda := math.Pi/2, math.Pi/4, math.Pi/8
 
 	alpha, a, b, c := gate.ABC(theta, phi, lambda)
 	fmt.Println(matrix.MatMul(a, b, c).Equal(gate.I()))
 
-	phase := cmplx.Exp(complex(0, alpha))
-	axbxc := matrix.MatMul(a, gate.X(), b, gate.X(), c).Mul(phase)
-	fmt.Println(axbxc.Equal(gate.U(theta, phi, lambda)))
+	axbxc := matrix.MatMul(a, gate.X(), b, gate.X(), c)
+	fmt.Println(axbxc.Equal(gate.SU(theta, phi, lambda)))
+
+	axbxcp := axbxc.Mul(cmplx.Exp(complex(0, alpha)))
+	fmt.Println(axbxcp.Equal(gate.U(theta, phi, lambda)))
 
 	// Output:
+	// true
 	// true
 	// true
 }
