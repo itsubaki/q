@@ -839,7 +839,7 @@ func Example_povm() {
 	E3 := gate.I().Sub(E1).Sub(E2)
 
 	add := E1.Add(E2).Add(E3)
-	fmt.Println("euqlas:", add.Equal(gate.I()))
+	fmt.Println("equal:", add.Equal(gate.I()))
 
 	{
 		q0 := qubit.Zero().Apply(E1) // E1|0>
@@ -864,7 +864,7 @@ func Example_povm() {
 	}
 
 	// Output:
-	// euqlas: true
+	// equal: true
 	// zero:
 	// (0+0i)
 	// (0.2929+0i)
