@@ -355,9 +355,9 @@ func (q *Qubit) CZ(control, target int) *Qubit {
 	return q.ControlledZ([]int{control}, target)
 }
 
-// CR applies a controlled rotation around the Z-axis.
-func (q *Qubit) CR(thehta float64, control, target int) *Qubit {
-	return q.ControlledR(thehta, []int{control}, target)
+// CR applies a controlled rotation gate.
+func (q *Qubit) CR(theta float64, control, target int) *Qubit {
+	return q.ControlledR(theta, []int{control}, target)
 }
 
 // Controlled applies a controlled 2x2 unitary gate U to the target qubit.
@@ -507,7 +507,7 @@ func (q *Qubit) ControlledZ(control []int, target int) *Qubit {
 	return q
 }
 
-// ControlledR applies a controlled rotation around the Z-axis.
+// ControlledR applies a controlled rotation gate.
 func (q *Qubit) ControlledR(theta float64, control []int, target int) *Qubit {
 	n := q.NumQubits()
 
