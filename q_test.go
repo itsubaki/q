@@ -669,26 +669,10 @@ func ExampleTop() {
 func Example_bell() {
 	qsim := q.New()
 
-	qsim.Rand = rand.Const()
-	r := qsim.Zeros(2)
-	qsim.H(r[0])
-	qsim.CNOT(r[0], r[1])
-
-	for _, s := range qsim.State() {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [00][  0]( 0.7071 0.0000i): 0.5000
-	// [11][  3]( 0.7071 0.0000i): 0.5000
-}
-
-func Example_bellm() {
-	qsim := q.New()
-
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
-	qsim.H(q0).CNOT(q0, q1)
+	qsim.H(q0)
+	qsim.CNOT(q0, q1)
 
 	for _, s := range qsim.State() {
 		fmt.Println(s)
@@ -894,7 +878,7 @@ func Example_grover4() {
 	// [111 1][  7   1]( 0.0508 0.0000i): 0.0026
 }
 
-func Example_qft001() {
+func Example_qFT001() {
 	qsim := q.New()
 
 	q0 := qsim.Zero()
@@ -929,7 +913,7 @@ func Example_qft001() {
 	// [111][  7]( 0.2500-0.2500i): 0.1250
 }
 
-func Example_qft010() {
+func Example_qFT010() {
 	qsim := q.New()
 
 	q0 := qsim.Zero()
@@ -1065,7 +1049,7 @@ func Example_superDenseCoding() {
 	// ZX: 11
 }
 
-func Example_ecc() {
+func Example_eCC() {
 	qsim := q.New()
 
 	q0 := qsim.New(1, 2)
