@@ -19,11 +19,10 @@ type Matrix struct {
 
 // New returns a new density matrix.
 func New(ensemble []State) *Matrix {
-	normalized := Normalize(ensemble)
-	n := normalized[0].Qubit.Dim()
+	n := ensemble[0].Qubit.Dim()
 
 	rho := matrix.Zero(n, n)
-	for _, s := range normalized {
+	for _, s := range Normalize(ensemble) {
 		op := s.Qubit.OuterProduct(s.Qubit)
 		rho = rho.Add(op.Mul(complex(s.Probability, 0)))
 	}
