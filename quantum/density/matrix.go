@@ -42,11 +42,6 @@ func NewPureState(qb *qubit.Qubit) *Matrix {
 	})
 }
 
-// NewZeroState returns a new zero state density matrix for the given number of qubits.
-func NewZeroState(n ...int) *Matrix {
-	return NewPureState(qubit.Zero(n...))
-}
-
 // At returns a value of matrix at (i,j).
 func (m *Matrix) At(i, j int) complex128 {
 	return m.rho.At(i, j)

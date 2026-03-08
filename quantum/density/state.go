@@ -15,9 +15,13 @@ func Normalize(ensemble []State) []State {
 		sum += s.Probability
 	}
 
+	out := make([]State, len(ensemble))
 	for i := range ensemble {
-		ensemble[i].Probability = ensemble[i].Probability / sum
+		out[i] = State{
+			Probability: ensemble[i].Probability / sum,
+			Qubit:       ensemble[i].Qubit,
+		}
 	}
 
-	return ensemble
+	return out
 }
