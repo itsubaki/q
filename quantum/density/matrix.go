@@ -3,7 +3,6 @@ package density
 import (
 	"iter"
 	"math"
-	"strings"
 
 	"github.com/itsubaki/q/math/epsilon"
 	"github.com/itsubaki/q/math/matrix"
@@ -139,42 +138,33 @@ func (m *Matrix) TensorProduct(n *Matrix) *Matrix {
 // where n is the number of qubits in the matrix.
 func (m *Matrix) PartialTrace(qb ...int) *Matrix {
 	n := m.NumQubits()
-	d := number.Pow(2, n-len(qb))
-	p, q := m.Dim()
 
+	// mask for the qubits to be traced out
+	var mask int
+	for _, q := range qb {
+		mask |= 1 << (n - 1 - q)
+	}
+
+	p, q := m.Dim()
+	d := 1 << (n - len(qb))
 	rho := matrix.Zero(d, d)
 	for i := range p {
-		k, kr := take(n, i, qb)
+		ti, ki := split(i, n, mask)
 
 		for j := range q {
-			l, lr := take(n, j, qb)
+			tj, kj := split(j, n, mask)
 
-			if k != l {
+			if ti != tj {
 				continue
 			}
 
-			r := number.MustParseInt(kr)
-			c := number.MustParseInt(lr)
-			rho.AddAt(r, c, m.At(i, j))
-
-			// fmt.Printf("[%v][%v] = [%v][%v] + [%v][%v]\n", r, c, r, c, i, j)
-			//
-			// 4x4 explicit
-			// index -> 0
-			// out[0][0] = m.m[0][0] + m.m[2][2]
-			// out[0][1] = m.m[0][1] + m.m[2][3]
-			// out[1][0] = m.m[1][0] + m.m[3][2]
-			// out[1][1] = m.m[1][1] + m.m[3][3]
-			//
-			// index -> 1
-			// out[0][0] = m.m[0][0] + m.m[1][1]
-			// out[0][1] = m.m[0][2] + m.m[1][3]
-			// out[1][0] = m.m[2][0] + m.m[3][1]
-			// out[1][1] = m.m[2][2] + m.m[3][3]
+			rho.AddAt(ki, kj, m.At(i, j))
 		}
 	}
 
-	return &Matrix{rho: rho}
+	return &Matrix{
+		rho: rho,
+	}
 }
 
 // Depolarizing returns the depolarizing channel.
@@ -233,22 +223,40 @@ func (m *Matrix) PhaseFlip(p float64, qb int) *Matrix {
 	return m.ApplyChannel(p, gate.Z(), qb)
 }
 
-func take(n, i int, qb []int) (string, string) {
-	target := make(map[int]struct{}, len(qb))
-	for _, j := range qb {
-		target[j] = struct{}{}
-	}
+// split separates the bits of x into two integers according to mask.
+//
+// Bits where mask has value 1 are extracted into the returned trace value,
+// preserving their relative order. Bits where mask has value 0 are extracted
+// into the returned kept value.
+//
+// The n parameter specifies the number of bits of x to consider.
+//
+// For example:
+//
+//	n = 3
+//	x = 0b101
+//	mask = 0b010
+//
+// The bit at position 1 is traced out, so:
+//
+//	trace = 0b0
+//	kept  = 0b11
+//
+// This helper is used when computing partial traces of density matrices.
+func split(x, n, mask int) (int, int) {
+	var trace, kept, trPos, kpPos int
+	for i := range n {
+		bit := (x >> i) & 1
 
-	var out, remain strings.Builder
-	for j := range n {
-		s := byte('0' + ((i >> (n - 1 - j)) & 1))
-		if _, ok := target[j]; ok {
-			out.WriteByte(s)
+		if (mask>>i)&1 == 1 {
+			trace |= bit << trPos
+			trPos++
 			continue
 		}
 
-		remain.WriteByte(s)
+		kept |= bit << kpPos
+		kpPos++
 	}
 
-	return out.String(), remain.String()
+	return trace, kept
 }
