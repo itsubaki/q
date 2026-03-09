@@ -41,6 +41,27 @@ func NewPureState(qb *qubit.Qubit) *Matrix {
 	})
 }
 
+func IsValid(ensemble []State) bool {
+	if len(ensemble) == 0 {
+		return false
+	}
+
+	n := ensemble[0].Qubit.Dim()
+	for _, s := range ensemble {
+		if s.Qubit.Dim() != n {
+			return false
+		}
+	}
+
+	for _, s := range ensemble {
+		if s.Probability < 0 {
+			return false
+		}
+	}
+
+	return true
+}
+
 // At returns a value of matrix at (i,j).
 func (m *Matrix) At(i, j int) complex128 {
 	return m.rho.At(i, j)

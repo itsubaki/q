@@ -430,11 +430,11 @@ func TestPartialTrace(t *testing.T) {
 	}
 
 	cases := []struct {
-		state []density.State
-		cs    []Case
+		s  []density.State
+		cs []Case
 	}{
 		{
-			state: []density.State{
+			s: []density.State{
 				{
 					Probability: 1.0,
 					Qubit:       qubit.Zero(2),
@@ -458,7 +458,7 @@ func TestPartialTrace(t *testing.T) {
 			},
 		},
 		{
-			state: []density.State{
+			s: []density.State{
 				{
 					Probability: 1.0,
 					Qubit:       qubit.One(2),
@@ -482,7 +482,7 @@ func TestPartialTrace(t *testing.T) {
 			},
 		},
 		{
-			state: []density.State{
+			s: []density.State{
 				{
 					Probability: 1.0,
 					Qubit:       qubit.Zero(2).Apply(gate.H(2)),
@@ -506,7 +506,7 @@ func TestPartialTrace(t *testing.T) {
 			},
 		},
 		{
-			state: []density.State{
+			s: []density.State{
 				{
 					Probability: 0.5,
 					Qubit:       qubit.Zero(2),
@@ -534,7 +534,7 @@ func TestPartialTrace(t *testing.T) {
 			},
 		},
 		{
-			state: []density.State{
+			s: []density.State{
 				{
 					Probability: 0.5,
 					Qubit:       qubit.Zero(2).Apply(gate.H(2)),
@@ -562,7 +562,7 @@ func TestPartialTrace(t *testing.T) {
 			},
 		},
 		{
-			state: []density.State{
+			s: []density.State{
 				{
 					Probability: 0.75,
 					Qubit:       qubit.Zero(2).Apply(gate.H(2)),
@@ -590,7 +590,7 @@ func TestPartialTrace(t *testing.T) {
 			},
 		},
 		{
-			state: []density.State{
+			s: []density.State{
 				{
 					Probability: 0.25,
 					Qubit:       qubit.Zero(2).Apply(gate.H(2)),
@@ -618,7 +618,7 @@ func TestPartialTrace(t *testing.T) {
 			},
 		},
 		{
-			state: []density.State{
+			s: []density.State{
 				{
 					Probability: 1.0,
 					Qubit:       qubit.Zero(3),
@@ -642,7 +642,7 @@ func TestPartialTrace(t *testing.T) {
 			},
 		},
 		{
-			state: []density.State{
+			s: []density.State{
 				{
 					Probability: 1.0,
 					Qubit:       qubit.One(3),
@@ -666,7 +666,7 @@ func TestPartialTrace(t *testing.T) {
 			},
 		},
 		{
-			state: []density.State{
+			s: []density.State{
 				{
 					Probability: 1.0,
 					Qubit:       qubit.Zero(3).Apply(gate.H(3)),
@@ -693,7 +693,7 @@ func TestPartialTrace(t *testing.T) {
 
 	for _, c := range cases {
 		for _, s := range c.cs {
-			got := density.New(c.state).PartialTrace(s.qb...)
+			got := density.New(c.s).PartialTrace(s.qb...)
 
 			p, q := got.Dim()
 			if p != len(s.want) || q != len(s.want) {
@@ -754,6 +754,74 @@ func TestApply(t *testing.T) {
 		got := density.New(c.s).Apply(c.u).Probability(c.m)
 		if !epsilon.IsCloseF64(got, c.want) {
 			t.Fail()
+		}
+	}
+}
+
+func TestIsValid(t *testing.T) {
+	type Case struct {
+		s    []density.State
+		want bool
+	}
+
+	cases := []Case{
+		{
+			s: []density.State{},
+		},
+		{
+			s: []density.State{
+				{
+					Probability: 1,
+					Qubit:       qubit.Zero(),
+				},
+			},
+			want: true,
+		},
+		{
+			s: []density.State{
+				{
+					Probability: 0.5,
+					Qubit:       qubit.Zero(),
+				},
+				{
+					Probability: 0.5,
+					Qubit:       qubit.One(),
+				},
+			},
+			want: true,
+		},
+		{
+			s: []density.State{
+				{
+					Probability: -0.1,
+					Qubit:       qubit.Zero(),
+				},
+				{
+					Probability: 1.1,
+					Qubit:       qubit.One(),
+				},
+			},
+			want: false,
+		},
+		{
+			s: []density.State{
+				{
+					Probability: 0.5,
+					Qubit:       qubit.Zero(),
+				},
+				{
+					Probability: 0.5,
+					Qubit:       qubit.Zero(2),
+				},
+			},
+			want: false,
+		},
+	}
+
+	for _, c := range cases {
+		got := density.IsValid(c.s)
+		if got != c.want {
+			t.Errorf("got=%v, want=%v", got, c.want)
 		}
 	}
 }
