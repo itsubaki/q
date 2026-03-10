@@ -1,6 +1,7 @@
 package density
 
 import (
+	"errors"
 	"iter"
 	"math"
 
@@ -11,15 +12,20 @@ import (
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
+var ErrInvalidEnsemble = errors.New("invalid ensemble of states")
+
 // Matrix is a density matrix.
 type Matrix struct {
 	rho *matrix.Matrix
 }
 
 // New returns a new density matrix.
-func New(ensemble []State) *Matrix {
-	n := ensemble[0].Qubit.Dim()
+func New(ensemble []State) (*Matrix, error) {
+	if !IsValid(ensemble) {
+		return nil, ErrInvalidEnsemble
+	}
 
+	n := ensemble[0].Qubit.Dim()
 	rho := matrix.Zero(n, n)
 	for _, s := range Normalize(ensemble) {
 		op := s.Qubit.OuterProduct(s.Qubit)
@@ -28,11 +34,11 @@ func New(ensemble []State) *Matrix {
 
 	return &Matrix{
 		rho: rho,
-	}
+	}, nil
 }
 
 // NewPureState returns a new pure state density matrix for the given qubit.
-func NewPureState(qb *qubit.Qubit) *Matrix {
+func NewPureState(qb *qubit.Qubit) (*Matrix, error) {
 	return New([]State{
 		{
 			Probability: 1.0,
@@ -41,7 +47,13 @@ func NewPureState(qb *qubit.Qubit) *Matrix {
 	})
 }
 
-func IsValid(ensemble []State) bool {
+// IsValid checks if the given ensemble of states is valid for constructing a density matrix.
+// A valid ensemble must satisfy the following conditions:
+// 1. The ensemble must not be empty.
+// 2. All qubits in the ensemble must have the same dimension.
+// 3. All probabilities in the ensemble must be non-negative.
+// 4. The sum of probabilities in the ensemble must be equal to 1 (within a specified tolerance).
+func IsValid(ensemble []State, tol ...float64) bool {
 	if len(ensemble) == 0 {
 		return false
 	}
@@ -57,6 +69,15 @@ func IsValid(ensemble []State) bool {
 		if s.Probability < 0 {
 			return false
 		}
+	}
+
+	var sum float64
+	for _, s := range ensemble {
+		sum += s.Probability
+	}
+
+	if !epsilon.IsZeroF64(sum-1, tol...) {
+		return false
 	}
 
 	return true
