@@ -889,6 +889,41 @@ func Example_round() {
 	// [1][  1]( 0.7071 0.0000i): 0.5000
 }
 
+func TestBloch(t *testing.T) {
+	cases := []struct {
+		phi, theta float64
+		want       *qubit.Qubit
+	}{
+		{
+			phi:   0,
+			theta: 0,
+			want:  qubit.Zero(),
+		},
+		{
+			phi:   0,
+			theta: math.Pi,
+			want:  qubit.One(),
+		},
+		{
+			phi:   0,
+			theta: math.Pi / 2,
+			want:  qubit.Plus(),
+		},
+		{
+			phi:   math.Pi,
+			theta: math.Pi / 2,
+			want:  qubit.Minus(),
+		},
+	}
+
+	for _, c := range cases {
+		got := qubit.Bloch(c.phi, c.theta)
+		if !got.Equal(c.want) {
+			t.Errorf("got=%v, want=%v", got, c.want)
+		}
+	}
+}
+
 func TestNumQubits(t *testing.T) {
 	for i := 1; i < 10; i++ {
 		if qubit.Zero(i).NumQubits() != i {
