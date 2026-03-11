@@ -914,6 +914,11 @@ func TestBloch(t *testing.T) {
 			theta: math.Pi / 2,
 			want:  qubit.Minus(),
 		},
+		{
+			phi:   math.Pi / 2,
+			theta: math.Pi / 2,
+			want:  qubit.Zero().Apply(gate.H(), gate.S()),
+		},
 	}
 
 	for _, c := range cases {
