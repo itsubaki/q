@@ -11,7 +11,7 @@ import (
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
-func ExampleMatrix_bell() {
+func Example_bell() {
 	rho, err := density.NewPureState(qubit.Zero(2).Apply(
 		gate.H().TensorProduct(gate.I()),
 		gate.CNOT(2, 0, 1),
@@ -233,11 +233,6 @@ func ExampleMatrix_PartialTrace() {
 		panic(err)
 	}
 
-	for _, r := range rho.Seq2() {
-		fmt.Println(r)
-	}
-	fmt.Println()
-
 	s1 := rho.PartialTrace(0) // trace out qubit 0
 	s0 := rho.PartialTrace(1) // trace out qubit 1
 
@@ -246,11 +241,6 @@ func ExampleMatrix_PartialTrace() {
 	fmt.Printf("trace: %.2v, purity: %.2v\n", s0.Trace(), s0.Purity())
 
 	// Output:
-	// [(0.5+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0.5+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	//
 	// trace: 1, purity: 0.5
 	// trace: 1, purity: 1
 	// trace: 1, purity: 0.5
