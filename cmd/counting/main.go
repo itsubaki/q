@@ -92,14 +92,13 @@ func main() {
 
 	// phase estimation
 	for i := range c {
-		// apply controlled-G**(2**i) where control is c[len(c)-1-i]
+		// apply controlled-G**(2**i) where control is c[i]
 		for range 1 << i {
-			controlledG(qsim, r, s, c[len(c)-1-i], a)
+			controlledG(qsim, r, s, c[i], a)
 		}
 	}
 
 	// inverse quantum Fourier transform
-	qsim.Swap(c...)
 	qsim.InvQFT(c...)
 
 	// estimate
