@@ -891,38 +891,38 @@ func Example_round() {
 
 func TestBloch(t *testing.T) {
 	cases := []struct {
-		phi, theta float64
+		theta, phi float64
 		want       *qubit.Qubit
 	}{
 		{
-			phi:   0,
 			theta: 0,
+			phi:   0,
 			want:  qubit.Zero(),
 		},
 		{
-			phi:   0,
 			theta: math.Pi,
+			phi:   0,
 			want:  qubit.One(),
 		},
 		{
-			phi:   0,
 			theta: math.Pi / 2,
+			phi:   0,
 			want:  qubit.Plus(),
 		},
 		{
-			phi:   math.Pi,
 			theta: math.Pi / 2,
+			phi:   math.Pi,
 			want:  qubit.Minus(),
 		},
 		{
-			phi:   math.Pi / 2,
 			theta: math.Pi / 2,
+			phi:   math.Pi / 2,
 			want:  qubit.Zero().Apply(gate.H(), gate.S()),
 		},
 	}
 
 	for _, c := range cases {
-		got := qubit.Bloch(c.phi, c.theta)
+		got := qubit.Bloch(c.theta, c.phi)
 		if !got.Equal(c.want) {
 			t.Errorf("got=%v, want=%v", got, c.want)
 		}

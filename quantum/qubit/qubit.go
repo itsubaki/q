@@ -100,7 +100,7 @@ func From(binary string) *Qubit {
 }
 
 // Bloch returns a qubit from the given angles on the Bloch sphere.
-func Bloch(phi, theta float64) *Qubit {
+func Bloch(theta, phi float64) *Qubit {
 	c := cmplx.Cos(complex(theta/2, 0))
 	s := cmplx.Sin(complex(theta/2, 0))
 	return New(vector.New(c, cmplx.Exp(complex(0, phi))*s))
