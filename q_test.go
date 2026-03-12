@@ -878,7 +878,7 @@ func Example_grover4() {
 	// [111 1][  7   1]( 0.0508 0.0000i): 0.0026
 }
 
-func Example_qFT001() {
+func Example_qft001() {
 	qsim := q.New()
 
 	q0 := qsim.Zero()
@@ -913,7 +913,7 @@ func Example_qFT001() {
 	// [111][  7]( 0.2500-0.2500i): 0.1250
 }
 
-func Example_qFT010() {
+func Example_qft010() {
 	qsim := q.New()
 
 	q0 := qsim.Zero()
@@ -1049,7 +1049,7 @@ func Example_superDenseCoding() {
 	// ZX: 11
 }
 
-func Example_eCC() {
+func Example_ecc() {
 	qsim := q.New()
 
 	q0 := qsim.New(1, 2)
@@ -1062,7 +1062,8 @@ func Example_eCC() {
 	// encoding
 	q1 := qsim.Zero()
 	q2 := qsim.Zero()
-	qsim.CNOT(q0, q1).CNOT(q0, q2)
+	qsim.CNOT(q0, q1)
+	qsim.CNOT(q0, q2)
 
 	// error: first qubit is flipped
 	qsim.X(q0)
