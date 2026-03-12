@@ -295,13 +295,13 @@ func ExampleMatrix_Depolarizing() {
 	// 1: 0.20
 }
 
-func ExampleMatrix_ApplyChannel() {
+func ExampleMatrix_FlipChannel() {
 	rho, err := density.NewPureState(qubit.Zero(2))
 	if err != nil {
 		panic(err)
 	}
 
-	s1 := rho.ApplyChannel(0.3, gate.X(), 0)
+	s1 := rho.FlipChannel(0.3, gate.X(), 0)
 	fmt.Printf("%.2f\n", s1.Probability(qubit.From("00")))
 	fmt.Printf("%.2f\n", s1.Probability(qubit.From("10")))
 
@@ -310,13 +310,13 @@ func ExampleMatrix_ApplyChannel() {
 	// 0.30
 }
 
-func ExampleMatrix_ApplyChannel_qb1() {
+func ExampleMatrix_FlipChannel_qb1() {
 	rho, err := density.NewPureState(qubit.Zero(2))
 	if err != nil {
 		panic(err)
 	}
 
-	s1 := rho.ApplyChannel(0.3, gate.X(), 1)
+	s1 := rho.FlipChannel(0.3, gate.X(), 1)
 	fmt.Printf("%.2f\n", s1.Probability(qubit.From("00")))
 	fmt.Printf("%.2f\n", s1.Probability(qubit.From("01")))
 

@@ -210,29 +210,26 @@ func (m *Matrix) PartialTrace(qb ...int) *Matrix {
 }
 
 // Depolarizing returns the depolarizing channel.
-// It applies the identity with probability (1 - p),
-// and applies each of the Pauli gates X, Y, and Z with probability p/3.
+// It applies the identity with probability (1 - p), and applies each of the Pauli gates X, Y, and Z with probability p/3.
 func (m *Matrix) Depolarizing(p float64, qb int) *Matrix {
 	n := m.NumQubits()
 
-	idx := []int{qb}
-	id := m.rho.Mul(complex(1-p, 0))
-	xg := gate.TensorProduct(gate.X(), n, idx)
-	yg := gate.TensorProduct(gate.Y(), n, idx)
-	zg := gate.TensorProduct(gate.Z(), n, idx)
+	xg := gate.TensorProduct(gate.X(), n, []int{qb})
+	yg := gate.TensorProduct(gate.Y(), n, []int{qb})
+	zg := gate.TensorProduct(gate.Z(), n, []int{qb})
 
 	x := matrix.MatMul(xg, m.rho, xg.Dagger()).Mul(complex(p/3, 0))
 	y := matrix.MatMul(yg, m.rho, yg.Dagger()).Mul(complex(p/3, 0))
 	z := matrix.MatMul(zg, m.rho, zg.Dagger()).Mul(complex(p/3, 0))
 
 	return &Matrix{
-		rho: id.Add(x).Add(y).Add(z),
+		rho: m.rho.Mul(complex(1-p, 0)).Add(x).Add(y).Add(z),
 	}
 }
 
-// ApplyChannel applies a channel to the density matrix.
+// FlipChannel applies a channel to the density matrix.
 // It applies the identity with probability 1-p, and applies the gate g with probability p.
-func (m *Matrix) ApplyChannel(p float64, u *matrix.Matrix, qb ...int) *Matrix {
+func (m *Matrix) FlipChannel(p float64, u *matrix.Matrix, qb ...int) *Matrix {
 	n := m.NumQubits()
 
 	e0 := gate.I().Mul(complex(math.Sqrt(1-p), 0))
@@ -252,17 +249,17 @@ func (m *Matrix) ApplyChannel(p float64, u *matrix.Matrix, qb ...int) *Matrix {
 
 // BitFlip applies a bit flip channel to the density matrix.
 func (m *Matrix) BitFlip(p float64, qb int) *Matrix {
-	return m.ApplyChannel(p, gate.X(), qb)
+	return m.FlipChannel(p, gate.X(), qb)
 }
 
 // BitPhaseFlip applies a bit-phase flip channel to the density matrix.
 func (m *Matrix) BitPhaseFlip(p float64, qb int) *Matrix {
-	return m.ApplyChannel(p, gate.Y(), qb)
+	return m.FlipChannel(p, gate.Y(), qb)
 }
 
 // PhaseFlip applies a phase flip channel to the density matrix.
 func (m *Matrix) PhaseFlip(p float64, qb int) *Matrix {
-	return m.ApplyChannel(p, gate.Z(), qb)
+	return m.FlipChannel(p, gate.Z(), qb)
 }
 
 // split separates the bits of x into two integers according to mask.
