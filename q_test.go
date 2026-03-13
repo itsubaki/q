@@ -1065,11 +1065,16 @@ func Example_ecc() {
 	qsim.CNOT(q0, q1)
 	qsim.CNOT(q0, q2)
 
+	fmt.Println("q0(encoded):")
+	for _, s := range qsim.State(q0, []q.Qubit{q1, q2}) {
+		fmt.Println(s)
+	}
+
 	// error: first qubit is flipped
 	qsim.X(q0)
 
 	fmt.Println("q0(flipped):")
-	for _, s := range qsim.State(q0) {
+	for _, s := range qsim.State(q0, []q.Qubit{q1, q2}) {
 		fmt.Println(s)
 	}
 
@@ -1095,7 +1100,7 @@ func Example_ecc() {
 	qsim.CNOT(q0, q1)
 
 	fmt.Println("q0(corrected):")
-	for _, s := range qsim.State(q0) {
+	for _, s := range qsim.State(q0, []q.Qubit{q1, q2}, []q.Qubit{q3, q4}) {
 		fmt.Println(s)
 	}
 
@@ -1103,12 +1108,15 @@ func Example_ecc() {
 	// q0:
 	// [0][  0]( 0.4472 0.0000i): 0.2000
 	// [1][  1]( 0.8944 0.0000i): 0.8000
+	// q0(encoded):
+	// [0 00][  0   0]( 0.4472 0.0000i): 0.2000
+	// [1 11][  1   3]( 0.8944 0.0000i): 0.8000
 	// q0(flipped):
-	// [0][  0]( 0.8944 0.0000i): 0.8000
-	// [1][  1]( 0.4472 0.0000i): 0.2000
+	// [0 11][  0   3]( 0.8944 0.0000i): 0.8000
+	// [1 00][  1   0]( 0.4472 0.0000i): 0.2000
 	// q0(corrected):
-	// [0][  0]( 0.4472 0.0000i): 0.2000
-	// [1][  1]( 0.8944 0.0000i): 0.8000
+	// [0 00 10][  0   0   2]( 0.4472 0.0000i): 0.2000
+	// [1 00 10][  1   0   2]( 0.8944 0.0000i): 0.8000
 }
 
 func Example_any() {
