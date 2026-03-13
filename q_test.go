@@ -689,7 +689,7 @@ func Example_bell() {
 	// true
 }
 
-func Example_teleportation() {
+func Example_quantumTeleportation() {
 	qsim := q.New()
 
 	phi := qsim.New(1, 2)
@@ -723,7 +723,7 @@ func Example_teleportation() {
 	// [1][  1]( 0.8944 0.0000i): 0.8000
 }
 
-func Example_teleportationCond() {
+func Example_quantumTeleportationCond() {
 	qsim := q.New()
 
 	phi := qsim.New(1, 2)
@@ -1120,7 +1120,7 @@ func Example_ecc() {
 	// [1 00 10][  1   0   2]( 0.8944 0.0000i): 0.8000
 }
 
-func Example_magic() {
+func Example_gateTeleportation() {
 	qsim := q.New()
 
 	phi := qsim.New(1, 2)

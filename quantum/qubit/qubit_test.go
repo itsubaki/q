@@ -741,7 +741,7 @@ func Example_eccPhaseFlip() {
 	// [00010][  2]( 0.4472 0.0000i): 0.2000
 	// [10010][ 18]( 0.8944 0.0000i): 0.8000
 }
-func Example_teleportation() {
+func Example_quantumTeleportation() {
 	phi := qubit.New(vector.New(1, 2))
 	phi.Rand = rand.Const()
 
@@ -780,7 +780,7 @@ func Example_teleportation() {
 	// [111][  7]( 0.8944 0.0000i): 0.8000
 }
 
-func Example_teleportationCond() {
+func Example_quantumTeleportationCond() {
 	phi := qubit.New(vector.New(1, 2))
 	phi.Rand = rand.Const()
 
