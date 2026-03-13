@@ -40,6 +40,11 @@ func IsZeroF64(a float64, tol ...float64) bool {
 	return IsCloseF64(a, 0.0, tol...)
 }
 
+// IsOneF64 returns true if a float64 number is close to one within the given tolerances.
+func IsOneF64(a float64, tol ...float64) bool {
+	return IsCloseF64(a, 1.0, tol...)
+}
+
 // IsCloseF64 returns true if two float64 numbers are close within the given tolerances.
 func IsCloseF64(a, b float64, tol ...float64) bool {
 	atol, rtol := Tol(tol...)

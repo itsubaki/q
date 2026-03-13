@@ -87,3 +87,17 @@ func Equal(s, v []State, tol ...float64) bool {
 
 	return true
 }
+
+// EqualUpToGlobalPhase returns true if s equals v up to global phase.
+func EqualUpToGlobalPhase(s, v []State, tol ...float64) bool {
+	if len(s) != len(v) {
+		return false
+	}
+
+	var dot complex128
+	for i := range s {
+		dot += s[i].amp * cmplx.Conj(v[i].amp)
+	}
+
+	return epsilon.IsOneF64(cmplx.Abs(dot), tol...)
+}

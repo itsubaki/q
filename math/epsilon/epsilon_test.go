@@ -21,6 +21,13 @@ func ExampleIsZeroF64() {
 	// true
 }
 
+func ExampleIsOneF64() {
+	fmt.Println(epsilon.IsOneF64(1.00000001))
+
+	// Output:
+	// true
+}
+
 func TestTol(t *testing.T) {
 	cases := []struct {
 		in   []float64

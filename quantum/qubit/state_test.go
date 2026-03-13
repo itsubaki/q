@@ -2,6 +2,7 @@ package qubit_test
 
 import (
 	"fmt"
+	"math"
 	"testing"
 
 	"github.com/itsubaki/q/quantum/qubit"
@@ -76,14 +77,59 @@ func TestEqual(t *testing.T) {
 			false,
 		},
 		{
-			[]qubit.State{qubit.NewState(complex(1, 0))},
-			[]qubit.State{qubit.NewState(complex(0, 1))},
+			[]qubit.State{
+				qubit.NewState(1, "000"),
+			},
+			[]qubit.State{
+				qubit.NewState(1/math.Sqrt2, "000"),
+				qubit.NewState(1/math.Sqrt2, "111"),
+			},
+			false,
+		},
+		{
+			[]qubit.State{
+				qubit.NewState(complex(1, 0), "000"),
+			},
+			[]qubit.State{
+				qubit.NewState(complex(0, 1), "000"),
+			},
 			false,
 		},
 	}
 
 	for _, c := range cases {
 		got := qubit.Equal(c.s, c.v)
+		if got != c.want {
+			t.Errorf("got=%v want=%v", got, c.want)
+		}
+	}
+}
+
+func TestEqualUpToGlobalPhase(t *testing.T) {
+	cases := []struct {
+		s    []qubit.State
+		v    []qubit.State
+		want bool
+	}{
+		{
+			s:    []qubit.State{qubit.NewState(0.5)},
+			v:    []qubit.State{},
+			want: false,
+		},
+		{
+			s:    []qubit.State{qubit.NewState(complex(1, 0))},
+			v:    []qubit.State{qubit.NewState(complex(1, 0))},
+			want: true,
+		},
+		{
+			s:    []qubit.State{qubit.NewState(complex(1, 0))},
+			v:    []qubit.State{qubit.NewState(complex(0, 1))},
+			want: true,
+		},
+	}
+
+	for _, c := range cases {
+		got := qubit.EqualUpToGlobalPhase(c.s, c.v)
 		if got != c.want {
 			t.Errorf("got=%v want=%v", got, c.want)
 		}

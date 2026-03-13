@@ -10,6 +10,7 @@ import (
 	"github.com/itsubaki/q/math/rand"
 	"github.com/itsubaki/q/quantum/density"
 	"github.com/itsubaki/q/quantum/gate"
+	"github.com/itsubaki/q/quantum/qubit"
 )
 
 func ExampleQ_Zero() {
@@ -1117,6 +1118,33 @@ func Example_ecc() {
 	// q0(corrected):
 	// [0 00 10][  0   0   2]( 0.4472 0.0000i): 0.2000
 	// [1 00 10][  1   0   2]( 0.8944 0.0000i): 0.8000
+}
+
+func Example_magic() {
+	qsim := q.New()
+
+	phi := qsim.New(1, 2)
+	a := qsim.Zero()
+	qsim.H(a)
+	qsim.T(a) // magic state
+
+	// teleportation of T gate
+	qsim.CNOT(a, phi)
+	m0 := qsim.Measure(phi)
+	qsim.Cond(m0.IsOne(), gate.X(), a)
+	qsim.Cond(m0.IsOne(), gate.S(), a)
+
+	{
+		// check
+		qs := q.New()
+		qb := qs.New(1, 2)
+		qs.T(qb)
+
+		fmt.Println(qubit.EqualUpToGlobalPhase(qsim.State(a), qs.State(qb)))
+	}
+
+	// Output:
+	// true
 }
 
 func Example_any() {
