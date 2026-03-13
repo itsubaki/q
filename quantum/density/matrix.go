@@ -76,11 +76,7 @@ func IsValid(ensemble []State, tol ...float64) bool {
 		sum += s.Probability
 	}
 
-	if !epsilon.IsZeroF64(sum-1, tol...) {
-		return false
-	}
-
-	return true
+	return epsilon.IsZeroF64(sum-1, tol...)
 }
 
 // At returns a value of matrix at (i,j).
