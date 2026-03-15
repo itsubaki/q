@@ -227,10 +227,11 @@ for i := range 10 {
   qsim.InvQFT(q0, q1, q2)
 
   // measure q0, q1, q2
-  m := qsim.Measure(q0, q1, q2).BinaryString()
+  m := qsim.Measure(q0, q1, q2)
+  phi := number.Ldexp(m.Int(), -m.NumQubits())
 
   // find s/r. 0.010 -> 0.25 -> 1/4, 0.110 -> 0.75 -> 3/4, ...
-  s, r, d, ok := number.FindOrder(a, N, fmt.Sprintf("0.%s", m))
+  s, r, d, ok := number.FindOrder(a, N, phi)
   if !ok || number.IsOdd(r) {
     continue
   }
