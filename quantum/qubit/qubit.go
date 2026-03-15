@@ -724,7 +724,7 @@ func (q *Qubit) State(idx ...[]int) []State {
 
 		var binary []string
 		for _, j := range idx {
-			binary = append(binary, take(n, i, j))
+			binary = append(binary, bits(n, i, j))
 		}
 
 		state = append(state, NewState(amp, binary...))
@@ -751,18 +751,18 @@ func round(a complex128, tol ...float64) (complex128, bool) {
 	return a, false
 }
 
-func take(n, i int, idx []int) string {
-	var sb strings.Builder
-	for _, j := range idx {
+func bits(n, i int, idx []int) string {
+	bytes := make([]byte, len(idx))
+	for k, j := range idx {
 		if (i & (1 << (n - 1 - j))) == 0 {
-			sb.WriteByte('0')
+			bytes[k] = '0'
 			continue
 		}
 
-		sb.WriteByte('1')
+		bytes[k] = '1'
 	}
 
-	return sb.String()
+	return string(bytes)
 }
 
 func TensorProduct(qb ...*Qubit) *Qubit {
