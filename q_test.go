@@ -1061,7 +1061,7 @@ func Example_ecc() {
 		fmt.Println(s)
 	}
 
-	// encoding
+	// encode
 	q1 := qsim.Zero()
 	q2 := qsim.Zero()
 	qsim.CNOT(q0, q1)
@@ -1097,7 +1097,7 @@ func Example_ecc() {
 	qsim.CondX(m3.IsOne() && m4.IsOne(), q1)
 	qsim.CondX(m3.IsZero() && m4.IsOne(), q2)
 
-	// decoding
+	// decode
 	qsim.CNOT(q0, q2)
 	qsim.CNOT(q0, q1)
 
