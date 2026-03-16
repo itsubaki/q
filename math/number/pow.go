@@ -8,7 +8,7 @@ func Ldexp(a, b int) float64 {
 }
 
 // Pow returns a**r, the base-a exponential of r.
-func Pow[T int | int64](a, r T) T {
+func Pow(a, r int) int {
 	if a == 0 {
 		return 0
 	}
@@ -18,7 +18,7 @@ func Pow[T int | int64](a, r T) T {
 	}
 
 	// exponentiation by squaring
-	p := T(1)
+	p := 1
 	for r > 0 {
 		if r&1 == 1 {
 			p = p * a

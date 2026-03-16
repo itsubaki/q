@@ -58,6 +58,7 @@ func TestPow(t *testing.T) {
 	}{
 		{0, 4, 0},
 		{2, 0, 1},
+		{2, 3, 8},
 	}
 
 	for _, c := range cases {
