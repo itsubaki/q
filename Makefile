@@ -25,5 +25,8 @@ shor:
 grover:
 	go run cmd/grover/main.go -top 8
 
+approx1qb:
+	go run cmd/approx1qb/main.go -seq
+
 counting:
 	go run cmd/counting/main.go -t 7 -top 8
