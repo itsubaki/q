@@ -14,8 +14,9 @@ import (
 )
 
 const (
-	H uint64 = 0
-	T uint64 = 1
+	H      uint64 = 0
+	T      uint64 = 1
+	maxLen int    = 6
 )
 
 func main() {
@@ -25,7 +26,7 @@ func main() {
 	flag.BoolVar(&seq, "seq", false, "print sequences")
 	flag.Parse()
 
-	if n >= 64 {
+	if n > 1<<maxLen-1 {
 		panic("n must be < 64")
 	}
 
@@ -93,7 +94,7 @@ func GenerateSequences(n int) []Seq {
 	var dfs func(bits uint64, length int, depth int)
 	dfs = func(bits uint64, length int, depth int) {
 		if length > 0 {
-			key := (bits << 6) | uint64(length)
+			key := (bits << maxLen) | uint64(length)
 			if _, ok := visited[key]; !ok {
 				visited[key] = struct{}{}
 				result = append(result, Seq{
