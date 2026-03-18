@@ -88,16 +88,16 @@ func (s Seq) String() string {
 }
 
 func GenerateSequences(n int) []Seq {
-	visited := make(map[uint64]struct{})
-	var result []Seq
-
 	var dfs func(bits uint64, length int, depth int)
+	var seqs []Seq
+	visited := make(map[uint64]struct{})
+
 	dfs = func(bits uint64, length int, depth int) {
 		if length > 0 {
 			key := (bits << maxLen) | uint64(length)
 			if _, ok := visited[key]; !ok {
 				visited[key] = struct{}{}
-				result = append(result, Seq{
+				seqs = append(seqs, Seq{
 					bits,
 					length,
 				})
@@ -115,19 +115,20 @@ func GenerateSequences(n int) []Seq {
 		}
 	}
 
-	// depth first search
 	dfs(0, 0, 0)
+	return Sort(seqs)
+}
 
-	// sort
-	sort.Slice(result, func(i, j int) bool {
-		if result[i].length != result[j].length {
-			return result[i].length < result[j].length
+func Sort(seqs []Seq) []Seq {
+	sort.Slice(seqs, func(i, j int) bool {
+		if seqs[i].length != seqs[j].length {
+			return seqs[i].length < seqs[j].length
 		}
 
-		return result[i].bits < result[j].bits
+		return seqs[i].bits < seqs[j].bits
 	})
 
-	return result
+	return seqs
 }
 
 func Simplify(bits uint64, length int) (uint64, int) {
