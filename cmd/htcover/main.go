@@ -17,9 +17,10 @@ import (
 const (
 	H       uint64 = 0
 	T       uint64 = 1
+	None    uint64 = 2
 	HCancel int    = 2 // HH = I
 	TCancel int    = 4 // TTTT = I
-	maxLen  int    = 6
+	maxLen  int    = 6 // 2^6 = 64
 )
 
 func main() {
@@ -168,7 +169,7 @@ func Simplify(bits uint64, length int) (uint64, int) {
 		}
 	}
 
-	var prev uint64 = 2
+	var prev uint64 = None
 	var count int
 	for i := range length {
 		b := (bits >> (length - 1 - i)) & 1
