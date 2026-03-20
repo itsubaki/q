@@ -7,6 +7,7 @@ import (
 	"math"
 	"math/cmplx"
 	"os"
+	"runtime/pprof"
 	"sort"
 
 	"github.com/itsubaki/q"
@@ -20,14 +21,29 @@ const (
 )
 
 func main() {
+	f, err := os.Create("cpu.prof")
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		if err := f.Close(); err != nil {
+			fmt.Println(err)
+		}
+	}()
+
+	if err := pprof.StartCPUProfile(f); err != nil {
+		panic(err)
+	}
+	defer pprof.StopCPUProfile()
+
 	var n int
 	var seq bool
 	flag.IntVar(&n, "n", 16, "positive integer")
 	flag.BoolVar(&seq, "seq", false, "print sequences")
 	flag.Parse()
 
-	if n > 1<<maxLen-1 {
-		panic("n must be < 64")
+	if n > 1<<maxLen-1 || n < 1 {
+		panic("n must be in [1, 63]")
 	}
 
 	seqs := GenerateSequences(n)
@@ -132,41 +148,44 @@ func Sort(seqs []Seq) []Seq {
 }
 
 func Simplify(bits uint64, length int) (uint64, int) {
-	for {
-		prevBits, prevLen := bits, length
-		bits, length = reduce(bits, length, H, 2) // HH = I
-		bits, length = reduce(bits, length, T, 4) // TTTT = I
-		if bits == prevBits && length == prevLen {
-			return bits, length
+	var out uint64
+	var outLen int
+	flush := func(bit uint64, cnt int) {
+		var mod int
+		switch bit {
+		case H:
+			mod = 2
+		case T:
+			mod = 4
+		default:
+			panic("invalid bit")
+		}
+
+		k := cnt % mod
+		for range k {
+			out = (out << 1) | bit
+			outLen++
 		}
 	}
-}
 
-func reduce(bits uint64, length int, target uint64, mod int) (uint64, int) {
-	var out uint64
-	var outLen, count int
+	var prev uint64 = 2
+	var count int
 	for i := range length {
 		b := (bits >> (length - 1 - i)) & 1
-		if b == target {
+		if b == prev {
 			count++
 			continue
 		}
 
-		for range count % mod {
-			out = (out << 1) | target
-			outLen++
+		if count > 0 {
+			flush(prev, count)
 		}
 
-		out = (out << 1) | b
-		outLen++
-
-		// reset
-		count = 0
+		prev, count = b, 1
 	}
 
-	for range count % mod {
-		out = (out << 1) | target
-		outLen++
+	if count > 0 {
+		flush(prev, count)
 	}
 
 	return out, outLen
