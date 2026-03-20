@@ -752,17 +752,17 @@ func round(a complex128, tol ...float64) (complex128, bool) {
 }
 
 func bits(n, i int, idx []int) string {
-	bytes := make([]byte, len(idx))
+	bits := make([]byte, len(idx))
 	for k, j := range idx {
 		if (i & (1 << (n - 1 - j))) == 0 {
-			bytes[k] = '0'
+			bits[k] = '0'
 			continue
 		}
 
-		bytes[k] = '1'
+		bits[k] = '1'
 	}
 
-	return string(bytes)
+	return string(bits)
 }
 
 func TensorProduct(qb ...*Qubit) *Qubit {
