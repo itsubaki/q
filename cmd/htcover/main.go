@@ -15,9 +15,11 @@ import (
 )
 
 const (
-	H      uint64 = 0
-	T      uint64 = 1
-	maxLen int    = 6
+	H       uint64 = 0
+	T       uint64 = 1
+	HCancel int    = 2 // HH = I
+	TCancel int    = 4 // TTTT = I
+	maxLen  int    = 6
 )
 
 func main() {
@@ -154,11 +156,9 @@ func Simplify(bits uint64, length int) (uint64, int) {
 		var mod int
 		switch bit {
 		case H:
-			mod = 2
+			mod = HCancel
 		case T:
-			mod = 4
-		default:
-			panic("invalid bit")
+			mod = TCancel
 		}
 
 		k := cnt % mod
