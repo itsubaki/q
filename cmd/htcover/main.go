@@ -18,8 +18,8 @@ const (
 	H       uint64 = 0
 	T       uint64 = 1
 	None    uint64 = 2
-	HCancel int    = 2 // HH = I
-	TCancel int    = 4 // TTTT = I
+	HCancel int    = 2 // H^2 = I
+	TCancel int    = 8 // T^8 = I
 	maxLen  int    = 6 // 2^6 = 64
 )
 
