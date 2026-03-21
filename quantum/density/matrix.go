@@ -76,7 +76,7 @@ func IsValid(states []State, tol ...float64) bool {
 		sum += s.Probability
 	}
 
-	return epsilon.IsZeroF64(sum-1, tol...)
+	return epsilon.IsOneF64(sum, tol...)
 }
 
 // At returns a value of matrix at (i,j).
@@ -101,7 +101,7 @@ func (m *Matrix) Dim() (rows int, cols int) {
 
 // IsPure returns true if the density matrix is pure.
 func (m *Matrix) IsPure(tol ...float64) bool {
-	return epsilon.IsZeroF64(1-m.Purity(), tol...)
+	return epsilon.IsOneF64(m.Purity(), tol...)
 }
 
 // IsMixed returns true if the density matrix is mixed.
