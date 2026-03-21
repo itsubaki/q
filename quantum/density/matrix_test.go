@@ -47,6 +47,8 @@ func ExampleMatrix_Add() {
 		panic(err)
 	}
 
+	// normalize the density matrix
+	// 1.0 |0><0| + 0.25 |1><1| -> 0.8 |0><0| + 0.2 |1><1|
 	for _, s := range rho.Ensemble() {
 		fmt.Printf("p: %.2f, q: %v\n", s.Probability, s.Qubit)
 	}
