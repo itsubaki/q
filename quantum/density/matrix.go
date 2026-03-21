@@ -16,6 +16,7 @@ var ErrInvalidEnsemble = errors.New("invalid ensemble of states")
 
 // Matrix is a density matrix.
 type Matrix struct {
+	s   []State
 	rho *matrix.Matrix
 }
 
@@ -33,6 +34,7 @@ func New(ensemble []State) (*Matrix, error) {
 	}
 
 	return &Matrix{
+		s:   ensemble,
 		rho: rho,
 	}, nil
 }
@@ -77,6 +79,19 @@ func IsValid(ensemble []State, tol ...float64) bool {
 	}
 
 	return epsilon.IsZeroF64(sum-1, tol...)
+}
+
+// Ensemble returns the ensemble of states that make up the density matrix.
+func (m *Matrix) Ensemble() []State {
+	return m.s
+}
+
+// Add adds a new state to the density matrix and returns a new density matrix.
+// The new density matrix is constructed from the original ensemble of states plus the new state, and then normalized.
+func (m *Matrix) Add(s State) (*Matrix, error) {
+	ensemble := append([]State{}, m.s...)
+	ensemble = append(ensemble, s)
+	return New(Normalize(ensemble))
 }
 
 // At returns a value of matrix at (i,j).
