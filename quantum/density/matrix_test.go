@@ -33,31 +33,6 @@ func Example_bell() {
 	// trace: 1, purity: 0.5
 }
 
-func ExampleMatrix_Add() {
-	s, err := density.NewPureState(qubit.Zero())
-	if err != nil {
-		panic(err)
-	}
-
-	rho, err := s.Add(density.State{
-		Probability: 0.25,
-		Qubit:       qubit.One(),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	// normalize the density matrix
-	// 1.0 |0><0| + 0.25 |1><1| -> 0.8 |0><0| + 0.2 |1><1|
-	for _, s := range rho.Ensemble() {
-		fmt.Printf("p: %.2f, q: %v\n", s.Probability, s.Qubit)
-	}
-
-	// Output:
-	// p: 0.80, q: [(1+0i) (0+0i)]
-	// p: 0.20, q: [(0+0i) (1+0i)]
-}
-
 func ExampleMatrix_Project() {
 	rho, err := density.NewPureState(qubit.Zero(2).Apply(
 		gate.H().TensorProduct(gate.I()),

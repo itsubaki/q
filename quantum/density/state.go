@@ -8,18 +8,18 @@ type State struct {
 	Qubit       *qubit.Qubit
 }
 
-// Normalize normalizes the probabilities of an ensemble.
-func Normalize(ensemble []State) []State {
+// Normalize normalizes the probabilities of a set of states.
+func Normalize(states []State) []State {
 	var sum float64
-	for _, s := range ensemble {
+	for _, s := range states {
 		sum += s.Probability
 	}
 
-	out := make([]State, len(ensemble))
-	for i := range ensemble {
+	out := make([]State, len(states))
+	for i := range states {
 		out[i] = State{
-			Probability: ensemble[i].Probability / sum,
-			Qubit:       ensemble[i].Qubit,
+			Probability: states[i].Probability / sum,
+			Qubit:       states[i].Qubit,
 		}
 	}
 

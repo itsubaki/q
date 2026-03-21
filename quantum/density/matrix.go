@@ -12,29 +12,27 @@ import (
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
-var ErrInvalidEnsemble = errors.New("invalid ensemble of states")
+var ErrInvalidStates = errors.New("invalid states")
 
 // Matrix is a density matrix.
 type Matrix struct {
-	s   []State
 	rho *matrix.Matrix
 }
 
 // New returns a new density matrix.
-func New(ensemble []State) (*Matrix, error) {
-	if !IsValid(ensemble) {
-		return nil, ErrInvalidEnsemble
+func New(states []State) (*Matrix, error) {
+	if !IsValid(states) {
+		return nil, ErrInvalidStates
 	}
 
-	n := ensemble[0].Qubit.Dim()
+	n := states[0].Qubit.Dim()
 	rho := matrix.Zero(n, n)
-	for _, s := range Normalize(ensemble) {
+	for _, s := range Normalize(states) {
 		op := s.Qubit.OuterProduct(s.Qubit)
 		rho = rho.Add(op.Mul(complex(s.Probability, 0)))
 	}
 
 	return &Matrix{
-		s:   ensemble,
 		rho: rho,
 	}, nil
 }
@@ -49,49 +47,36 @@ func NewPureState(qb *qubit.Qubit) (*Matrix, error) {
 	})
 }
 
-// IsValid checks if the given ensemble of states is valid for constructing a density matrix.
-// A valid ensemble must satisfy the following conditions:
-// 1. The ensemble must not be empty.
-// 2. All qubits in the ensemble must have the same dimension.
-// 3. All probabilities in the ensemble must be non-negative.
-// 4. The sum of probabilities in the ensemble must be equal to 1 (within a specified tolerance).
-func IsValid(ensemble []State, tol ...float64) bool {
-	if len(ensemble) == 0 {
+// IsValid checks if the given set of states is valid for constructing a density matrix.
+// A valid set must satisfy the following conditions:
+// 1. The set must not be empty.
+// 2. All qubits in the set must have the same dimension.
+// 3. All probabilities in the set must be non-negative.
+// 4. The sum of probabilities in the set must be equal to 1 (within a specified tolerance).
+func IsValid(states []State, tol ...float64) bool {
+	if len(states) == 0 {
 		return false
 	}
 
-	n := ensemble[0].Qubit.Dim()
-	for _, s := range ensemble {
+	n := states[0].Qubit.Dim()
+	for _, s := range states {
 		if s.Qubit.Dim() != n {
 			return false
 		}
 	}
 
-	for _, s := range ensemble {
+	for _, s := range states {
 		if s.Probability < 0 {
 			return false
 		}
 	}
 
 	var sum float64
-	for _, s := range ensemble {
+	for _, s := range states {
 		sum += s.Probability
 	}
 
 	return epsilon.IsZeroF64(sum-1, tol...)
-}
-
-// Ensemble returns the ensemble of states that make up the density matrix.
-func (m *Matrix) Ensemble() []State {
-	return m.s
-}
-
-// Add adds a new state to the density matrix and returns a new density matrix.
-// The new density matrix is constructed from the original ensemble of states plus the new state, and then normalized.
-func (m *Matrix) Add(s State) (*Matrix, error) {
-	ensemble := append([]State{}, m.s...)
-	ensemble = append(ensemble, s)
-	return New(Normalize(ensemble))
 }
 
 // At returns a value of matrix at (i,j).
