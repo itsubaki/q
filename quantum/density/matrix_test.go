@@ -31,6 +31,19 @@ func Example_bell() {
 	// trace: 1, purity: 0.5
 }
 
+func Example_channel() {
+	rho := density.NewPureState(qubit.Zero()).
+		Depolarizing(0.1, 0).
+		AmplitudeDamping(0.7, 0).
+		PhaseDamping(0.7, 0).
+		BitFlip(0.1, 0)
+
+	fmt.Printf("%.4f\n", rho.Probability(qubit.Zero()))
+
+	// Output:
+	// 0.8840
+}
+
 func ExampleMatrix_Matrix() {
 	rho := density.New([]density.State{
 		{0.1, qubit.Zero()},
@@ -243,9 +256,9 @@ func ExampleMatrix_Depolarizing() {
 	// 1: 0.20
 }
 
-func ExampleMatrix_FlipChannel() {
+func ExampleMatrix_Flip() {
 	rho := density.NewPureState(qubit.Zero(2))
-	s1 := rho.FlipChannel(0.3, gate.X(), 0)
+	s1 := rho.Flip(0.3, gate.X(), 0)
 
 	fmt.Printf("%.2f\n", s1.Probability(qubit.From("00")))
 	fmt.Printf("%.2f\n", s1.Probability(qubit.From("10")))
@@ -255,9 +268,9 @@ func ExampleMatrix_FlipChannel() {
 	// 0.30
 }
 
-func ExampleMatrix_FlipChannel_qb1() {
+func ExampleMatrix_Flip_qb1() {
 	rho := density.NewPureState(qubit.Zero(2))
-	s1 := rho.FlipChannel(0.3, gate.X(), 1)
+	s1 := rho.Flip(0.3, gate.X(), 1)
 
 	fmt.Printf("%.2f\n", s1.Probability(qubit.From("00")))
 	fmt.Printf("%.2f\n", s1.Probability(qubit.From("01")))
@@ -911,6 +924,102 @@ func TestPhaseDamping(t *testing.T) {
 		}).PhaseDamping(c.g, 0)
 		if !epsilon.IsCloseF64(got.Probability(c.m), c.want) {
 			t.Errorf("got %v, want %v", got.Probability(c.m), c.want)
+		}
+	}
+}
+
+func TestPauli(t *testing.T) {
+	type Case struct {
+		s    *qubit.Qubit
+		px   float64
+		py   float64
+		pz   float64
+		m    *qubit.Qubit
+		want float64
+	}
+
+	cases := []Case{
+		{
+			s:    qubit.Zero(),
+			px:   0,
+			py:   0,
+			pz:   0,
+			m:    qubit.Zero(),
+			want: 1.0,
+		},
+		{
+			s:    qubit.Zero(),
+			px:   1.0,
+			py:   0,
+			pz:   0,
+			m:    qubit.One(),
+			want: 1.0,
+		},
+		{
+			s:    qubit.Zero(),
+			px:   0.5,
+			py:   0,
+			pz:   0,
+			m:    qubit.Zero(),
+			want: 0.5,
+		},
+		{
+			s:    qubit.Zero(),
+			px:   0.5,
+			py:   0,
+			pz:   0,
+			m:    qubit.One(),
+			want: 0.5,
+		},
+		{
+			s:    qubit.Zero(),
+			px:   0,
+			py:   0,
+			pz:   1.0,
+			m:    qubit.Zero(),
+			want: 1.0,
+		},
+		{
+			s:    qubit.Plus(),
+			px:   0,
+			py:   0,
+			pz:   1.0,
+			m:    qubit.Minus(),
+			want: 1.0,
+		},
+		{
+			s:    qubit.Zero(),
+			px:   0,
+			py:   1.0,
+			pz:   0,
+			m:    qubit.One(),
+			want: 1.0,
+		},
+		{
+			s:    qubit.Zero(),
+			px:   1.0 / 3,
+			py:   1.0 / 3,
+			pz:   1.0 / 3,
+			m:    qubit.Zero(),
+			want: 1.0 / 3,
+		},
+		{
+			s:    qubit.Zero(),
+			px:   1.0 / 3,
+			py:   1.0 / 3,
+			pz:   1.0 / 3,
+			m:    qubit.One(),
+			want: 1.0/3 + 1.0/3,
+		},
+	}
+
+	for _, c := range cases {
+		got := density.
+			NewPureState(c.s).
+			Pauli(c.px, c.py, c.pz, 0).
+			Probability(c.m)
+		if !epsilon.IsCloseF64(got, c.want) {
+			t.Errorf("got %v, want %v", got, c.want)
 		}
 	}
 }
