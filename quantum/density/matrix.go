@@ -10,8 +10,6 @@ import (
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
-var ErrInvalidStates = errors.New("invalid states")
-
 // Matrix is a density matrix.
 type Matrix struct {
 	rho *matrix.Matrix
