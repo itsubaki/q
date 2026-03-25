@@ -1177,13 +1177,9 @@ func Example_densityMatrix() {
 		qsim.CNOT(qb[0], qb[1])
 	}
 
-	rho, err := density.NewPureState(qsim.Qubit())
-	if err != nil {
-		panic(err)
-	}
-
-	s0 := rho.PartialTrace(1) // trace out qubit 1
-	s1 := rho.PartialTrace(0) // trace out qubit 0
+	rho := density.NewPureState(qsim.Qubit())
+	s0 := rho.TraceOut(1) // trace out qubit 1
+	s1 := rho.TraceOut(0) // trace out qubit 0
 
 	fmt.Printf("trace: %.2v, purity: %.2v\n", rho.Trace(), rho.Purity())
 	fmt.Printf("trace: %.2v, purity: %.2v\n", s0.Trace(), s0.Purity())

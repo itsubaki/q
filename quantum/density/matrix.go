@@ -20,11 +20,7 @@ type Matrix struct {
 }
 
 // New returns a new density matrix.
-func New(states []State) (*Matrix, error) {
-	if !IsValid(states) {
-		return nil, ErrInvalidStates
-	}
-
+func New(states []State) *Matrix {
 	n := states[0].Qubit.Dim()
 	rho := matrix.Zero(n, n)
 	for _, s := range states {
@@ -34,11 +30,11 @@ func New(states []State) (*Matrix, error) {
 
 	return &Matrix{
 		rho: rho,
-	}, nil
+	}
 }
 
 // NewPureState returns a new pure state density matrix for the given qubit.
-func NewPureState(qb *qubit.Qubit) (*Matrix, error) {
+func NewPureState(qb *qubit.Qubit) *Matrix {
 	return New([]State{
 		{
 			Probability: 1.0,
