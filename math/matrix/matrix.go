@@ -180,7 +180,12 @@ func (m *Matrix) IsSquare() bool {
 	return m.Rows == m.Cols
 }
 
-// IsHermitian returns true if m is hermitian matrix.
+// IsIdentity returns true if m is identity matrix.
+func (m *Matrix) IsIdentity(tol ...float64) bool {
+	return m.IsSquare() && m.Equal(Identity(m.Rows), tol...)
+}
+
+// IsHermite returns true if m is hermitian matrix.
 func (m *Matrix) IsHermite(tol ...float64) bool {
 	return m.IsSquare() && m.Equal(m.Dagger(), tol...)
 }

@@ -2,6 +2,7 @@ package density_test
 
 import (
 	"fmt"
+	"math"
 	"testing"
 
 	"github.com/itsubaki/q/math/epsilon"
@@ -20,12 +21,12 @@ func Example_bell() {
 		panic(err)
 	}
 
-	s1 := rho.PartialTrace(0) // Partial trace over qubit 0: returns the reduced density matrix for qubit 1
-	s0 := rho.PartialTrace(1) // Partial trace over qubit 1: returns the reduced density matrix for qubit 0
+	s0 := rho.TraceOut(1)
+	s1 := rho.TraceOut(0)
 
 	fmt.Printf("trace: %.2v, purity: %.2v\n", rho.Trace(), rho.Purity())
-	fmt.Printf("trace: %.2v, purity: %.2v\n", s1.Trace(), s1.Purity())
 	fmt.Printf("trace: %.2v, purity: %.2v\n", s0.Trace(), s0.Purity())
+	fmt.Printf("trace: %.2v, purity: %.2v\n", s1.Trace(), s1.Purity())
 
 	// Output:
 	// trace: 1, purity: 1
@@ -33,52 +34,22 @@ func Example_bell() {
 	// trace: 1, purity: 0.5
 }
 
-func ExampleMatrix_Project() {
-	rho, err := density.NewPureState(qubit.Zero(2).Apply(
-		gate.H().TensorProduct(gate.I()),
-		gate.CNOT(2, 0, 1),
-	))
+func ExampleMatrix_Matrix() {
+	rho, err := density.New([]density.State{
+		{0.1, qubit.Zero()},
+		{0.9, qubit.One()},
+	})
 	if err != nil {
 		panic(err)
 	}
 
-	computationalBasis := []*qubit.Qubit{
-		qubit.From("00"),
-		qubit.From("01"),
-		qubit.From("10"),
-		qubit.From("11"),
-	}
-
-	for _, basis := range computationalBasis {
-		p, sigma := rho.Project(basis)
-
-		fmt.Printf("%v: %.2f\n", basis.State(), p)
-		for _, r := range sigma.Seq2() {
-			fmt.Println(r)
-		}
+	for _, r := range rho.Matrix().Seq2() {
+		fmt.Println(r)
 	}
 
 	// Output:
-	// [[00][  0]( 1.0000 0.0000i): 1.0000]: 0.50
-	// [(1+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [[01][  1]( 1.0000 0.0000i): 1.0000]: 0.00
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [[10][  2]( 1.0000 0.0000i): 1.0000]: 0.00
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [[11][  3]( 1.0000 0.0000i): 1.0000]: 0.50
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (1+0i)]
+	// [(0.1+0i) (0+0i)]
+	// [(0+0i) (0.9+0i)]
 }
 
 func ExampleMatrix_ExpectedValue() {
@@ -98,24 +69,6 @@ func ExampleMatrix_ExpectedValue() {
 	// X: 0.9
 	// Y: 0
 	// Z: 0.1
-}
-
-func ExampleMatrix_Matrix() {
-	rho, err := density.New([]density.State{
-		{0.1, qubit.Zero()},
-		{0.9, qubit.One()},
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	for _, r := range rho.Matrix().Seq2() {
-		fmt.Println(r)
-	}
-
-	// Output:
-	// [(0.1+0i) (0+0i)]
-	// [(0+0i) (0.9+0i)]
 }
 
 func ExampleMatrix_Probability() {
@@ -224,7 +177,55 @@ func ExampleMatrix_TensorProduct() {
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
 }
 
-func ExampleMatrix_PartialTrace() {
+func ExampleMatrix_Project() {
+	rho, err := density.NewPureState(qubit.Zero(2).Apply(
+		gate.H().TensorProduct(gate.I()),
+		gate.CNOT(2, 0, 1),
+	))
+	if err != nil {
+		panic(err)
+	}
+
+	computationalBasis := []*qubit.Qubit{
+		qubit.From("00"),
+		qubit.From("01"),
+		qubit.From("10"),
+		qubit.From("11"),
+	}
+
+	for _, basis := range computationalBasis {
+		p, sigma := rho.Project(basis)
+
+		fmt.Printf("%v: %.2f\n", basis.State(), p)
+		for _, r := range sigma.Seq2() {
+			fmt.Println(r)
+		}
+	}
+
+	// Output:
+	// [[00][  0]( 1.0000 0.0000i): 1.0000]: 0.50
+	// [(1+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [[01][  1]( 1.0000 0.0000i): 1.0000]: 0.00
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [[10][  2]( 1.0000 0.0000i): 1.0000]: 0.00
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [[11][  3]( 1.0000 0.0000i): 1.0000]: 0.50
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (1+0i)]
+}
+
+func ExampleMatrix_TraceOut() {
 	rho, err := density.New([]density.State{
 		{0.5, qubit.From("00")},
 		{0.5, qubit.From("10")},
@@ -233,17 +234,17 @@ func ExampleMatrix_PartialTrace() {
 		panic(err)
 	}
 
-	s1 := rho.PartialTrace(0) // trace out qubit 0
-	s0 := rho.PartialTrace(1) // trace out qubit 1
+	s0 := rho.TraceOut(1) // trace out qubit 1
+	s1 := rho.TraceOut(0) // trace out qubit 0
 
 	fmt.Printf("trace: %.2v, purity: %.2v\n", rho.Trace(), rho.Purity())
-	fmt.Printf("trace: %.2v, purity: %.2v\n", s1.Trace(), s1.Purity())
 	fmt.Printf("trace: %.2v, purity: %.2v\n", s0.Trace(), s0.Purity())
+	fmt.Printf("trace: %.2v, purity: %.2v\n", s1.Trace(), s1.Purity())
 
 	// Output:
 	// trace: 1, purity: 0.5
-	// trace: 1, purity: 1
 	// trace: 1, purity: 0.5
+	// trace: 1, purity: 1
 }
 
 func ExampleMatrix_PartialTrace_x8() {
@@ -283,9 +284,9 @@ func ExampleMatrix_Depolarizing() {
 
 	// XrhoX = |1><1|, YrhoY = |1><1|, ZrhoZ = |0><0|
 	// E(rho) = 0.7|0><0| + 0.1|1><1| + 0.1|1><1| + 0.1|0><0| = 0.8|0><0| + 0.2|1><1|
-	erho := rho.Depolarizing(0.3, 0)
-	fmt.Printf("0: %.2f\n", erho.Probability(qubit.Zero()))
-	fmt.Printf("1: %.2f\n", erho.Probability(qubit.One()))
+	s0 := rho.Depolarizing(0.3, 0)
+	fmt.Printf("0: %.2f\n", s0.Probability(qubit.Zero()))
+	fmt.Printf("1: %.2f\n", s0.Probability(qubit.One()))
 
 	// Output:
 	// 0: 1.00
@@ -368,27 +369,6 @@ func ExampleMatrix_PhaseFlip() {
 	// Output:
 	// 0.70
 	// 0.30
-}
-
-func ExampleMatrix_phaseAndBitPhaseFlip() {
-	rho, err := density.NewPureState(qubit.Zero())
-	if err != nil {
-		panic(err)
-	}
-
-	y := rho.BitPhaseFlip(0.3, 0)
-	z := rho.PhaseFlip(0.3, 0)
-
-	fmt.Printf("%.2f\n", y.Probability(qubit.Zero()))
-	fmt.Printf("%.2f\n", y.Probability(qubit.One()))
-	fmt.Printf("%.2f\n", z.Probability(qubit.Zero()))
-	fmt.Printf("%.2f\n", z.Probability(qubit.One()))
-
-	// Output:
-	// 0.70
-	// 0.30
-	// 1.00
-	// 0.00
 }
 
 func TestExpectedValue(t *testing.T) {
@@ -963,6 +943,174 @@ func TestNew(t *testing.T) {
 
 		if !rho.Matrix().Equal(c.want) {
 			t.Errorf("got=%v, want=%v", rho.Matrix(), c.want)
+		}
+	}
+}
+
+func TestAmplitudeDamping(t *testing.T) {
+	type Case struct {
+		s    *qubit.Qubit
+		p    float64
+		m    *qubit.Qubit
+		want float64
+	}
+
+	cases := []Case{
+		{
+			s:    qubit.One(),
+			p:    0.3,
+			m:    qubit.Zero(),
+			want: 0.3,
+		},
+		{
+			s:    qubit.One(),
+			p:    0.3,
+			m:    qubit.One(),
+			want: 0.7,
+		},
+		{
+			s:    qubit.Zero(),
+			p:    0.3,
+			m:    qubit.Zero(),
+			want: 1.0,
+		},
+		{
+			s:    qubit.Zero(),
+			p:    0.3,
+			m:    qubit.One(),
+			want: 0.0,
+		},
+		{
+			s:    qubit.Plus(),
+			p:    0.3,
+			m:    qubit.Zero(),
+			want: 0.5 + 0.3*0.5,
+		},
+		{
+			s:    qubit.Plus(),
+			p:    0.3,
+			m:    qubit.One(),
+			want: 0.5 * (1 - 0.3),
+		},
+		{
+			s:    qubit.Plus(),
+			p:    0.3,
+			m:    qubit.Plus(),
+			want: 0.5 + 0.5*math.Sqrt(1-0.3),
+		},
+		{
+			s:    qubit.One(),
+			p:    0.0,
+			m:    qubit.One(),
+			want: 1.0,
+		},
+		{
+			s:    qubit.One(),
+			p:    1.0,
+			m:    qubit.Zero(),
+			want: 1.0,
+		},
+		{
+			s:    qubit.Plus(),
+			p:    1.0,
+			m:    qubit.Zero(),
+			want: 1.0,
+		},
+	}
+
+	for _, c := range cases {
+		rho, err := density.New([]density.State{
+			{
+				Probability: 1,
+				Qubit:       c.s,
+			},
+		})
+		if err != nil {
+			t.Errorf("unexpected error: %v", err)
+			continue
+		}
+
+		got := rho.AmplitudeDamping(c.p, 0)
+		if !epsilon.IsCloseF64(got.Probability(c.m), c.want) {
+			t.Fail()
+		}
+	}
+}
+
+func TestPhaseDamping(t *testing.T) {
+	type Case struct {
+		s    *qubit.Qubit
+		g    float64
+		m    *qubit.Qubit
+		want float64
+	}
+
+	cases := []Case{
+		{
+			s:    qubit.Zero(),
+			g:    0.3,
+			m:    qubit.Zero(),
+			want: 1.0,
+		},
+		{
+			s:    qubit.One(),
+			g:    0.3,
+			m:    qubit.One(),
+			want: 1.0,
+		},
+		{
+			s:    qubit.Plus(),
+			g:    0.3,
+			m:    qubit.Zero(),
+			want: 0.5,
+		},
+		{
+			s:    qubit.Plus(),
+			g:    0.3,
+			m:    qubit.One(),
+			want: 0.5,
+		},
+		{
+			s:    qubit.Plus(),
+			g:    0.3,
+			m:    qubit.Plus(),
+			want: 0.5 + 0.5*math.Sqrt(1-0.3),
+		},
+		{
+			s:    qubit.Plus(),
+			g:    0.3,
+			m:    qubit.Minus(),
+			want: 0.5 - 0.5*math.Sqrt(1-0.3),
+		},
+		{
+			s:    qubit.Plus(),
+			g:    0.0,
+			m:    qubit.Plus(),
+			want: 1.0,
+		},
+		{
+			s:    qubit.Plus(),
+			g:    1.0,
+			m:    qubit.Plus(),
+			want: 0.5,
+		},
+	}
+
+	for _, c := range cases {
+		rho, err := density.New([]density.State{
+			{
+				Probability: 1,
+				Qubit:       c.s,
+			},
+		})
+		if err != nil {
+			t.Errorf("unexpected error: %v", err)
+			continue
+		}
+
+		got := rho.PhaseDamping(c.g, 0)
+		if !epsilon.IsCloseF64(got.Probability(c.m), c.want) {
+			t.Errorf("got %v, want %v", got.Probability(c.m), c.want)
 		}
 	}
 }
