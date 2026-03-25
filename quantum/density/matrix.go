@@ -1,7 +1,6 @@
 package density
 
 import (
-	"errors"
 	"iter"
 
 	"github.com/itsubaki/q/math/epsilon"
