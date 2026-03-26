@@ -7,6 +7,7 @@ import (
 	"github.com/itsubaki/q/quantum/gate"
 )
 
+// ChannelFunc is a function type that generates a quantum channel for a given number of qubits.
 type ChannelFunc func(n int) *Channel
 
 // Channel represents a quantum channel defined by Kraus operators.
