@@ -7,6 +7,8 @@ import (
 	"github.com/itsubaki/q/quantum/gate"
 )
 
+type ChannelFunc func(n int) *Channel
+
 // Channel represents a quantum channel defined by Kraus operators.
 type Channel struct {
 	Kraus []*matrix.Matrix
@@ -20,79 +22,87 @@ func NewChannel(kraus ...*matrix.Matrix) *Channel {
 }
 
 // Pauli returns a new quantum channel that applies a Pauli channel to the specified qubit.
-func Pauli(px, py, pz float64, n, qb int) *Channel {
-	e0 := gate.I().Mul(complex(math.Sqrt(1-px-py-pz), 0))
-	e1 := gate.X().Mul(complex(math.Sqrt(px), 0))
-	e2 := gate.Y().Mul(complex(math.Sqrt(py), 0))
-	e3 := gate.Z().Mul(complex(math.Sqrt(pz), 0))
+func Pauli(px, py, pz float64, qb int) ChannelFunc {
+	return func(n int) *Channel {
+		e0 := gate.I().Mul(complex(math.Sqrt(1-px-py-pz), 0))
+		e1 := gate.X().Mul(complex(math.Sqrt(px), 0))
+		e2 := gate.Y().Mul(complex(math.Sqrt(py), 0))
+		e3 := gate.Z().Mul(complex(math.Sqrt(pz), 0))
 
-	k0 := gate.TensorProduct(e0, n, []int{qb})
-	k1 := gate.TensorProduct(e1, n, []int{qb})
-	k2 := gate.TensorProduct(e2, n, []int{qb})
-	k3 := gate.TensorProduct(e3, n, []int{qb})
-	return NewChannel(k0, k1, k2, k3)
+		k0 := gate.TensorProduct(e0, n, []int{qb})
+		k1 := gate.TensorProduct(e1, n, []int{qb})
+		k2 := gate.TensorProduct(e2, n, []int{qb})
+		k3 := gate.TensorProduct(e3, n, []int{qb})
+		return NewChannel(k0, k1, k2, k3)
+	}
 }
 
 // Depolarizing returns a new quantum channel that applies a depolarizing channel to the specified qubit.
-func Depolarizing(p float64, n, qb int) *Channel {
-	return Pauli(p/3, p/3, p/3, n, qb)
+func Depolarizing(p float64, qb int) ChannelFunc {
+	return Pauli(p/3, p/3, p/3, qb)
 }
 
 // Flip returns a new quantum channel that applies a flip channel to the specified qubit.
-func Flip(p float64, u *matrix.Matrix, n, qb int) *Channel {
-	e0 := gate.I().Mul(complex(math.Sqrt(1-p), 0))
-	e1 := u.Mul(complex(math.Sqrt(p), 0))
+func Flip(p float64, u *matrix.Matrix, qb int) ChannelFunc {
+	return func(n int) *Channel {
+		e0 := gate.I().Mul(complex(math.Sqrt(1-p), 0))
+		e1 := u.Mul(complex(math.Sqrt(p), 0))
 
-	k0 := gate.TensorProduct(e0, n, []int{qb})
-	k1 := gate.TensorProduct(e1, n, []int{qb})
-	return NewChannel(k0, k1)
+		k0 := gate.TensorProduct(e0, n, []int{qb})
+		k1 := gate.TensorProduct(e1, n, []int{qb})
+		return NewChannel(k0, k1)
+	}
 }
 
 // BitFlip returns a new quantum channel that applies a bit flip channel to the specified qubit.
-func BitFlip(p float64, n, qb int) *Channel {
-	return Flip(p, gate.X(), n, qb)
+func BitFlip(p float64, qb int) ChannelFunc {
+	return Flip(p, gate.X(), qb)
 }
 
 // PhaseFlip returns a new quantum channel that applies a phase flip channel to the specified qubit.
-func PhaseFlip(p float64, n, qb int) *Channel {
-	return Flip(p, gate.Z(), n, qb)
+func PhaseFlip(p float64, qb int) ChannelFunc {
+	return Flip(p, gate.Z(), qb)
 }
 
 // BitPhaseFlip returns a new quantum channel that applies a bit-phase flip channel to the specified qubit.
-func BitPhaseFlip(p float64, n, qb int) *Channel {
-	return Flip(p, gate.Y(), n, qb)
+func BitPhaseFlip(p float64, qb int) ChannelFunc {
+	return Flip(p, gate.Y(), qb)
 }
 
 // AmplitudeDamping returns a new quantum channel that applies an amplitude damping channel to the specified qubit.
-func AmplitudeDamping(gamma float64, n, qb int) *Channel {
-	e0 := matrix.New(
-		[]complex128{1, 0},
-		[]complex128{0, complex(math.Sqrt(1-gamma), 0)},
-	)
+func AmplitudeDamping(gamma float64, qb int) ChannelFunc {
+	return func(n int) *Channel {
+		e0 := matrix.New(
+			[]complex128{1, 0},
+			[]complex128{0, complex(math.Sqrt(1-gamma), 0)},
+		)
 
-	e1 := matrix.New(
-		[]complex128{0, complex(math.Sqrt(gamma), 0)},
-		[]complex128{0, 0},
-	)
+		e1 := matrix.New(
+			[]complex128{0, complex(math.Sqrt(gamma), 0)},
+			[]complex128{0, 0},
+		)
 
-	k0 := gate.TensorProduct(e0, n, []int{qb})
-	k1 := gate.TensorProduct(e1, n, []int{qb})
-	return NewChannel(k0, k1)
+		k0 := gate.TensorProduct(e0, n, []int{qb})
+		k1 := gate.TensorProduct(e1, n, []int{qb})
+		return NewChannel(k0, k1)
+	}
 }
 
 // PhaseDamping returns a new quantum channel that applies a phase damping channel to the specified qubit.
-func PhaseDamping(gamma float64, n, qb int) *Channel {
-	e0 := matrix.New(
-		[]complex128{1, 0},
-		[]complex128{0, complex(math.Sqrt(1-gamma), 0)},
-	)
+func PhaseDamping(gamma float64, qb int) ChannelFunc {
+	return func(n int) *Channel {
+		e0 := matrix.New(
+			[]complex128{1, 0},
+			[]complex128{0, complex(math.Sqrt(1-gamma), 0)},
+		)
 
-	e1 := matrix.New(
-		[]complex128{0, 0},
-		[]complex128{0, complex(math.Sqrt(gamma), 0)},
-	)
+		e1 := matrix.New(
+			[]complex128{0, 0},
+			[]complex128{0, complex(math.Sqrt(gamma), 0)},
+		)
 
-	k0 := gate.TensorProduct(e0, n, []int{qb})
-	k1 := gate.TensorProduct(e1, n, []int{qb})
-	return NewChannel(k0, k1)
+		k0 := gate.TensorProduct(e0, n, []int{qb})
+		k1 := gate.TensorProduct(e1, n, []int{qb})
+		return NewChannel(k0, k1)
+	}
 }

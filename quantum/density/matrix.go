@@ -169,49 +169,59 @@ func (m *Matrix) TraceOut(qb ...int) *Matrix {
 
 // Pauli returns the density matrix after applying a Pauli channel to the specified qubit.
 func (m *Matrix) Pauli(px, py, pz float64, qb int) *Matrix {
-	return m.ApplyChannel(Pauli(px, py, pz, m.NumQubits(), qb))
+	return m.ApplyChannelFunc(Pauli(px, py, pz, qb))
 }
 
 // Depolarizing returns the density matrix after applying a depolarizing channel to the specified qubit.
 func (m *Matrix) Depolarizing(p float64, qb int) *Matrix {
-	return m.ApplyChannel(Depolarizing(p, m.NumQubits(), qb))
+	return m.ApplyChannelFunc(Depolarizing(p, qb))
 }
 
 // PhaseDamping returns the density matrix after applying a phase damping channel to the specified qubit.
 func (m *Matrix) AmplitudeDamping(gamma float64, qb int) *Matrix {
-	return m.ApplyChannel(AmplitudeDamping(gamma, m.NumQubits(), qb))
+	return m.ApplyChannelFunc(AmplitudeDamping(gamma, qb))
 }
 
 // PhaseDamping returns the density matrix after applying a phase damping channel to the specified qubit.
 func (m *Matrix) PhaseDamping(gamma float64, qb int) *Matrix {
-	return m.ApplyChannel(PhaseDamping(gamma, m.NumQubits(), qb))
+	return m.ApplyChannelFunc(PhaseDamping(gamma, qb))
 }
 
 // Flip returns the density matrix after applying a flip channel to the specified qubit.
 func (m *Matrix) Flip(p float64, u *matrix.Matrix, qb int) *Matrix {
-	return m.ApplyChannel(Flip(p, u, m.NumQubits(), qb))
+	return m.ApplyChannelFunc(Flip(p, u, qb))
 }
 
 // BitFlip returns the density matrix after applying a bit flip channel to the specified qubit.
 func (m *Matrix) BitFlip(p float64, qb int) *Matrix {
-	return m.ApplyChannel(BitFlip(p, m.NumQubits(), qb))
+	return m.ApplyChannelFunc(BitFlip(p, qb))
 }
 
 // PhaseFlip returns the density matrix after applying a phase flip channel to the specified qubit.
 func (m *Matrix) PhaseFlip(p float64, qb int) *Matrix {
-	return m.ApplyChannel(PhaseFlip(p, m.NumQubits(), qb))
+	return m.ApplyChannelFunc(PhaseFlip(p, qb))
 }
 
 // BitPhaseFlip returns the density matrix after applying a bit-phase flip channel to the specified qubit.
 func (m *Matrix) BitPhaseFlip(p float64, qb int) *Matrix {
-	return m.ApplyChannel(BitPhaseFlip(p, m.NumQubits(), qb))
+	return m.ApplyChannelFunc(BitPhaseFlip(p, qb))
+}
+
+// ApplyChannelFunc returns the density matrix after applying a quantum channel.
+func (m *Matrix) ApplyChannelFunc(channel ...ChannelFunc) *Matrix {
+	ch := make([]*Channel, len(channel))
+	for i, f := range channel {
+		ch[i] = f(m.NumQubits())
+	}
+
+	return m.ApplyChannel(ch...)
 }
 
 // ApplyChannel returns the density matrix after applying a quantum channel.
 func (m *Matrix) ApplyChannel(channel ...*Channel) *Matrix {
 	rho := m.Clone()
-	for _, c := range channel {
-		rho = rho.ApplyKraus(c.Kraus...)
+	for _, ch := range channel {
+		rho = rho.ApplyKraus(ch.Kraus...)
 	}
 
 	return rho
