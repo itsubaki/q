@@ -242,7 +242,7 @@ func TestInverse(t *testing.T) {
 	}
 }
 
-func TestIsHermite(t *testing.T) {
+func TestIsHermitian(t *testing.T) {
 	cases := []struct {
 		in   *matrix.Matrix
 		want bool
@@ -258,7 +258,7 @@ func TestIsHermite(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if c.in.IsHermite() != c.want {
+		if c.in.IsHermitian() != c.want {
 			t.Fail()
 		}
 	}

@@ -552,7 +552,7 @@ func TestMatrix_IsSquare(t *testing.T) {
 	}
 }
 
-func TestMatrix_IsHermite(t *testing.T) {
+func TestMatrix_IsHermitian(t *testing.T) {
 	cases := []struct {
 		in   *matrix.Matrix
 		want bool
@@ -595,7 +595,7 @@ func TestMatrix_IsHermite(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if c.in.IsHermite() != c.want {
+		if c.in.IsHermitian() != c.want {
 			t.Fail()
 		}
 	}

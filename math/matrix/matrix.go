@@ -185,8 +185,8 @@ func (m *Matrix) IsIdentity(tol ...float64) bool {
 	return m.IsSquare() && m.Equal(Identity(m.Rows), tol...)
 }
 
-// IsHermite returns true if m is hermitian matrix.
-func (m *Matrix) IsHermite(tol ...float64) bool {
+// IsHermitian returns true if m is hermitian matrix.
+func (m *Matrix) IsHermitian(tol ...float64) bool {
 	return m.IsSquare() && m.Equal(m.Dagger(), tol...)
 }
 

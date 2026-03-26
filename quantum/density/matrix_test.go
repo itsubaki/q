@@ -89,15 +89,15 @@ func ExampleMatrix_Probability() {
 	// 1: 0.9
 }
 
-func ExampleMatrix_IsHermite() {
+func ExampleMatrix_IsHermitian() {
 	s0 := density.NewPureState(qubit.Zero())
 	s1 := density.New([]density.State{
 		{0.1, qubit.Zero()},
 		{0.9, qubit.One()},
 	})
 
-	fmt.Println(s0.IsHermite())
-	fmt.Println(s1.IsHermite())
+	fmt.Println(s0.IsHermitian())
+	fmt.Println(s1.IsHermitian())
 
 	// Output:
 	// true

@@ -68,9 +68,9 @@ func (m *Matrix) IsMixed(tol ...float64) bool {
 	return !m.IsPure(tol...)
 }
 
-// IsHermite returns true if the density matrix is Hermitian.
-func (m *Matrix) IsHermite(tol ...float64) bool {
-	return m.rho.IsHermite(tol...)
+// IsHermitian returns true if the density matrix is Hermitian.
+func (m *Matrix) IsHermitian(tol ...float64) bool {
+	return m.rho.IsHermitian(tol...)
 }
 
 // NumQubits returns the number of qubits.
