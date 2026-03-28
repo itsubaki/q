@@ -28,8 +28,8 @@ func FromStates(states []WeightedState) *DensityMatrix {
 	}
 }
 
-// FromQubit returns a density matrix constructed from a pure state represented by a qubit.
-func FromQubit(qb *qubit.Qubit) *DensityMatrix {
+// From returns a density matrix constructed from a pure state represented by a qubit.
+func From(qb *qubit.Qubit) *DensityMatrix {
 	return FromStates([]WeightedState{
 		{
 			Probability: 1.0,
