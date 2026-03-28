@@ -5,22 +5,22 @@ import (
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
-// State is a quantum state.
-type State struct {
+// WeightedState is a quantum state with an associated probability.
+type WeightedState struct {
 	Probability float64
 	Qubit       *qubit.Qubit
 }
 
 // Normalize normalizes the probabilities of a set of states.
-func Normalize(states []State) []State {
+func Normalize(states []WeightedState) []WeightedState {
 	var sum float64
 	for _, s := range states {
 		sum += s.Probability
 	}
 
-	out := make([]State, len(states))
+	out := make([]WeightedState, len(states))
 	for i := range states {
-		out[i] = State{
+		out[i] = WeightedState{
 			Probability: states[i].Probability / sum,
 			Qubit:       states[i].Qubit,
 		}
@@ -35,7 +35,7 @@ func Normalize(states []State) []State {
 // 2. All qubits in the set must have the same dimension.
 // 3. All probabilities in the set must be non-negative.
 // 4. The sum of probabilities in the set must be equal to 1 (within a specified tolerance).
-func IsValid(states []State, tol ...float64) bool {
+func IsValid(states []WeightedState, tol ...float64) bool {
 	if len(states) == 0 {
 		return false
 	}

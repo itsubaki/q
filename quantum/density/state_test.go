@@ -9,13 +9,12 @@ import (
 )
 
 func ExampleNormalize() {
-	states := []density.State{
+	normalized := density.Normalize([]density.WeightedState{
 		{Probability: 1, Qubit: qubit.Zero()},
 		{Probability: 2, Qubit: qubit.One()},
 		{Probability: 3, Qubit: qubit.Plus()},
-	}
+	})
 
-	normalized := density.Normalize(states)
 	for _, s := range normalized {
 		fmt.Printf("%.4f\n", s.Probability)
 	}
@@ -28,16 +27,16 @@ func ExampleNormalize() {
 
 func TestIsValid(t *testing.T) {
 	type Case struct {
-		s    []density.State
+		s    []density.WeightedState
 		want bool
 	}
 
 	cases := []Case{
 		{
-			s: []density.State{},
+			s: []density.WeightedState{},
 		},
 		{
-			s: []density.State{
+			s: []density.WeightedState{
 				{
 					Probability: 1,
 					Qubit:       qubit.Zero(),
@@ -46,7 +45,7 @@ func TestIsValid(t *testing.T) {
 			want: true,
 		},
 		{
-			s: []density.State{
+			s: []density.WeightedState{
 				{
 					Probability: 0.5,
 					Qubit:       qubit.Zero(),
@@ -59,7 +58,7 @@ func TestIsValid(t *testing.T) {
 			want: true,
 		},
 		{
-			s: []density.State{
+			s: []density.WeightedState{
 				{
 					Probability: -0.1,
 					Qubit:       qubit.Zero(),
@@ -72,7 +71,7 @@ func TestIsValid(t *testing.T) {
 			want: false,
 		},
 		{
-			s: []density.State{
+			s: []density.WeightedState{
 				{
 					Probability: 0.5,
 					Qubit:       qubit.Zero(),
@@ -85,7 +84,7 @@ func TestIsValid(t *testing.T) {
 			want: false,
 		},
 		{
-			s: []density.State{
+			s: []density.WeightedState{
 				{
 					Probability: 0.5,
 					Qubit:       qubit.Zero(),

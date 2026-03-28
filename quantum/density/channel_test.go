@@ -8,7 +8,7 @@ import (
 )
 
 func ExampleChannel() {
-	rho := density.NewPureState(qubit.Zero())
+	rho := density.FromQubit(qubit.Zero())
 	s0 := rho.ApplyChannelFunc([]density.ChannelFunc{
 		density.Depolarizing(0.1, 0),
 		density.AmplitudeDamping(0.7, 0),
