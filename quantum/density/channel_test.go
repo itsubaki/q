@@ -5,19 +5,13 @@ import (
 	"math"
 	"testing"
 
-	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/quantum/density"
+	"github.com/itsubaki/q/quantum/gate"
 )
 
-func ExamplePauli() {
+func ExampleChannel_IsValid() {
 	pauli := density.Pauli(0.3, 0.3, 0.3, 0)(1)
-
-	sum := matrix.Zero(2, 2)
-	for _, k := range pauli.Kraus {
-		sum = sum.Add(matrix.MatMul(k.Dagger(), k))
-	}
-
-	fmt.Println(sum.Equal(matrix.Identity(2)))
+	fmt.Println(pauli.IsValid())
 
 	// Output:
 	// true
@@ -42,14 +36,48 @@ func FuzzPauli(f *testing.F) {
 		}
 
 		pauli := density.Pauli(pX, pY, pZ, 0)(1)
-
-		sum := matrix.Zero(2, 2)
-		for _, k := range pauli.Kraus {
-			sum = sum.Add(matrix.MatMul(k.Dagger(), k))
-		}
-
-		if !sum.Equal(matrix.Identity(2)) {
+		if !pauli.IsValid() {
 			t.Errorf("pX=%v pY=%v pZ=%v", pX, pY, pZ)
 		}
 	})
+}
+
+func TestChannel_IsValid(t *testing.T) {
+	type Case struct {
+		channel *density.Channel
+		want    bool
+	}
+
+	cases := []Case{
+		{
+			channel: density.NewChannel(),
+			want:    false,
+		},
+		{
+			channel: density.Pauli(0.3, 0.3, 0.3, 0)(1),
+			want:    true,
+		},
+		{
+			channel: density.Depolarizing(0.5, 0)(1),
+			want:    true,
+		},
+		{
+			channel: density.PhaseDamping(0.5, 0)(1),
+			want:    true,
+		},
+		{
+			channel: density.AmplitudeDamping(0.5, 0)(1),
+			want:    true,
+		},
+		{
+			channel: density.Flip(0.5, gate.Z(), 0)(1),
+			want:    true,
+		},
+	}
+
+	for _, c := range cases {
+		if c.channel.IsValid() != c.want {
+			t.Errorf("channel=%v want=%v", c.channel, c.want)
+		}
+	}
 }

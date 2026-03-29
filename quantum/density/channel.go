@@ -22,6 +22,21 @@ func NewChannel(kraus ...*matrix.Matrix) *Channel {
 	}
 }
 
+// IsValid returns true if the quantum channel is valid.
+// A quantum channel is valid if the sum of the products of the Kraus operators and their conjugate transposes equals the identity matrix.
+func (c *Channel) IsValid(tol ...float64) bool {
+	if len(c.Kraus) == 0 {
+		return false
+	}
+
+	sum := matrix.ZeroLike(c.Kraus[0])
+	for _, k := range c.Kraus {
+		sum = sum.Add(matrix.MatMul(k.Dagger(), k))
+	}
+
+	return sum.Equal(matrix.Identity(sum.Rows), tol...)
+}
+
 // Pauli returns a new quantum channel that applies a Pauli channel to the specified qubit.
 func Pauli(pX, pY, pZ float64, qb int) ChannelFunc {
 	return func(n int) *Channel {
