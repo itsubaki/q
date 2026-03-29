@@ -34,7 +34,7 @@ func (c *Channel) IsValid(tol ...float64) bool {
 		sum = sum.Add(matrix.MatMul(k.Dagger(), k))
 	}
 
-	return sum.Equal(matrix.Identity(sum.Rows), tol...)
+	return sum.IsIdentity(tol...)
 }
 
 // Pauli returns a new quantum channel that applies a Pauli channel to the specified qubit.
