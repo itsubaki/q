@@ -150,6 +150,7 @@ func Sort(seqs []Seq) []Seq {
 	return seqs
 }
 
+// Simplify returns a simplified sequence by applying cancellation rules (H**2 = I and T**8 = I).
 func Simplify(bits uint64, length int) (uint64, int) {
 	var out uint64
 	var outLen int
@@ -192,6 +193,7 @@ func Simplify(bits uint64, length int) (uint64, int) {
 	return out, outLen
 }
 
+// Bloch returns the polar(theta) and azimuthal(phi) angles of the state on the Bloch sphere.
 func Bloch(alpha, beta complex128) (float64, float64) {
 	if epsilon.IsZeroF64(cmplx.Abs(alpha)) {
 		return math.Pi, 0
