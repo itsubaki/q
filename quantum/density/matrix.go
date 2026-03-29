@@ -219,16 +219,24 @@ func (m *DensityMatrix) ApplyChannelFunc(channel ...ChannelFunc) *DensityMatrix 
 
 // ApplyChannel returns the density matrix after applying a quantum channel.
 func (m *DensityMatrix) ApplyChannel(channel ...*Channel) *DensityMatrix {
-	rho := m.Clone()
-	for _, ch := range channel {
-		rho = rho.ApplyKraus(ch.Kraus...)
+	if len(channel) == 0 {
+		return m.Clone()
 	}
 
-	return rho
+	out := m.ApplyKraus(channel[0].Kraus...)
+	for _, ch := range channel[1:] {
+		out = out.ApplyKraus(ch.Kraus...)
+	}
+
+	return out
 }
 
 // ApplyKraus returns the density matrix after applying a set of Kraus operators.
 func (m *DensityMatrix) ApplyKraus(ops ...*matrix.Matrix) *DensityMatrix {
+	if len(ops) == 0 {
+		return m.Clone()
+	}
+
 	rho := matrix.ZeroLike(m.rho)
 	for _, k := range ops {
 		rho = rho.Add(matrix.MatMul(k, m.rho, k.Dagger()))

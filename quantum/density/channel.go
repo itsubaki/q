@@ -23,12 +23,12 @@ func NewChannel(kraus ...*matrix.Matrix) *Channel {
 }
 
 // Pauli returns a new quantum channel that applies a Pauli channel to the specified qubit.
-func Pauli(px, py, pz float64, qb int) ChannelFunc {
+func Pauli(pX, pY, pZ float64, qb int) ChannelFunc {
 	return func(n int) *Channel {
-		e0 := gate.I().Mul(complex(math.Sqrt(1-px-py-pz), 0))
-		e1 := gate.X().Mul(complex(math.Sqrt(px), 0))
-		e2 := gate.Y().Mul(complex(math.Sqrt(py), 0))
-		e3 := gate.Z().Mul(complex(math.Sqrt(pz), 0))
+		e0 := gate.I().Mul(complex(math.Sqrt(1-pX-pY-pZ), 0))
+		e1 := gate.X().Mul(complex(math.Sqrt(pX), 0))
+		e2 := gate.Y().Mul(complex(math.Sqrt(pY), 0))
+		e3 := gate.Z().Mul(complex(math.Sqrt(pZ), 0))
 
 		k0 := gate.TensorProduct(e0, n, []int{qb})
 		k1 := gate.TensorProduct(e1, n, []int{qb})

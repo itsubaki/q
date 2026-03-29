@@ -2,22 +2,54 @@ package density_test
 
 import (
 	"fmt"
+	"math"
+	"testing"
 
+	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/quantum/density"
-	"github.com/itsubaki/q/quantum/qubit"
 )
 
-func ExampleChannel() {
-	rho := density.From(qubit.Zero())
-	s0 := rho.ApplyChannelFunc([]density.ChannelFunc{
-		density.Depolarizing(0.1, 0),
-		density.AmplitudeDamping(0.7, 0),
-		density.PhaseDamping(0.7, 0),
-		density.BitFlip(0.1, 0),
-	}...)
+func ExamplePauli() {
+	pauli := density.Pauli(0.3, 0.3, 0.3, 0)(1)
 
-	fmt.Printf("%.4f\n", s0.Probability(qubit.Zero()))
+	sum := matrix.Zero(2, 2)
+	for _, k := range pauli.Kraus {
+		sum = sum.Add(matrix.MatMul(k.Dagger(), k))
+	}
+
+	fmt.Println(sum.Equal(matrix.Identity(2)))
 
 	// Output:
-	// 0.8840
+	// true
+}
+
+func FuzzPauli(f *testing.F) {
+	f.Add(0.0, 0.0, 0.0)
+	f.Add(0.1, 0.2, 0.3)
+	f.Add(0.3, 0.3, 0.3)
+
+	f.Fuzz(func(t *testing.T, pX, pY, pZ float64) {
+		if math.IsNaN(pX) || math.IsNaN(pY) || math.IsNaN(pZ) {
+			return
+		}
+
+		if math.IsInf(pX, 0) || math.IsInf(pY, 0) || math.IsInf(pZ, 0) {
+			return
+		}
+
+		if pX < 0 || pY < 0 || pZ < 0 || pX+pY+pZ > 1 {
+			return
+		}
+
+		pauli := density.Pauli(pX, pY, pZ, 0)(1)
+
+		sum := matrix.Zero(2, 2)
+		for _, k := range pauli.Kraus {
+			sum = sum.Add(matrix.MatMul(k.Dagger(), k))
+		}
+
+		if !sum.Equal(matrix.Identity(2)) {
+			t.Errorf("pX=%v pY=%v pZ=%v", pX, pY, pZ)
+		}
+	})
 }
