@@ -27,8 +27,14 @@ func Example_channel() {
 
 func ExampleDensityMatrix_Matrix() {
 	rho := density.FromStates([]density.WeightedState{
-		{0.1, qubit.Zero()},
-		{0.9, qubit.One()},
+		{
+			Probability: 0.1,
+			Qubit:       qubit.Zero(),
+		},
+		{
+			Probability: 0.9,
+			Qubit:       qubit.One(),
+		},
 	})
 
 	for _, r := range rho.Matrix().Seq2() {
@@ -42,8 +48,14 @@ func ExampleDensityMatrix_Matrix() {
 
 func ExampleDensityMatrix_ExpectedValue() {
 	rho := density.FromStates([]density.WeightedState{
-		{0.1, qubit.Zero()},
-		{0.9, qubit.Plus()},
+		{
+			Probability: 0.1,
+			Qubit:       qubit.Zero(),
+		},
+		{
+			Probability: 0.9,
+			Qubit:       qubit.Plus(),
+		},
 	})
 
 	fmt.Printf("X: %.2v\n", rho.ExpectedValue(gate.X()))
@@ -58,8 +70,14 @@ func ExampleDensityMatrix_ExpectedValue() {
 
 func ExampleDensityMatrix_Probability() {
 	rho := density.FromStates([]density.WeightedState{
-		{0.1, qubit.Zero()},
-		{0.9, qubit.One()},
+		{
+			Probability: 0.1,
+			Qubit:       qubit.Zero(),
+		},
+		{
+			Probability: 0.9,
+			Qubit:       qubit.One(),
+		},
 	})
 
 	fmt.Printf("0: %.2v\n", rho.Probability(qubit.Zero()))
@@ -73,8 +91,14 @@ func ExampleDensityMatrix_Probability() {
 func ExampleDensityMatrix_IsHermitian() {
 	s0 := density.From(qubit.Zero())
 	s1 := density.FromStates([]density.WeightedState{
-		{0.1, qubit.Zero()},
-		{0.9, qubit.One()},
+		{
+			Probability: 0.1,
+			Qubit:       qubit.Zero(),
+		},
+		{
+			Probability: 0.9,
+			Qubit:       qubit.One(),
+		},
 	})
 
 	fmt.Println(s0.IsHermitian())
@@ -88,8 +112,14 @@ func ExampleDensityMatrix_IsHermitian() {
 func ExampleDensityMatrix_Trace() {
 	s0 := density.From(qubit.Zero())
 	s1 := density.FromStates([]density.WeightedState{
-		{0.1, qubit.Zero()},
-		{0.9, qubit.One()},
+		{
+			Probability: 0.1,
+			Qubit:       qubit.Zero(),
+		},
+		{
+			Probability: 0.9,
+			Qubit:       qubit.One(),
+		},
 	})
 
 	fmt.Printf("pure : %.2f\n", s0.Trace())
@@ -103,8 +133,14 @@ func ExampleDensityMatrix_Trace() {
 func ExampleDensityMatrix_Purity() {
 	s0 := density.From(qubit.Zero())
 	s1 := density.FromStates([]density.WeightedState{
-		{0.1, qubit.Zero()},
-		{0.9, qubit.One()},
+		{
+			Probability: 0.1,
+			Qubit:       qubit.Zero(),
+		},
+		{
+			Probability: 0.9,
+			Qubit:       qubit.One(),
+		},
 	})
 
 	fmt.Printf("pure : %.2f, %v\n", s0.Purity(), s0.IsPure())
@@ -178,8 +214,14 @@ func ExampleDensityMatrix_Project() {
 
 func ExampleDensityMatrix_TraceOut() {
 	rho := density.FromStates([]density.WeightedState{
-		{0.5, qubit.From("00")},
-		{0.5, qubit.From("10")},
+		{
+			Probability: 0.5,
+			Qubit:       qubit.From("00"),
+		},
+		{
+			Probability: 0.5,
+			Qubit:       qubit.From("10"),
+		},
 	})
 
 	s0 := rho.TraceOut(1) // trace out qubit 1
@@ -195,15 +237,15 @@ func ExampleDensityMatrix_TraceOut() {
 	// trace: 1, purity: 1
 }
 
-func ExampleDensityMatrix_PartialTrace_x8() {
+func ExampleDensityMatrix_TraceOut_x8() {
 	rho := density.From(qubit.Zero(3).Apply(
 		matrix.TensorProduct(gate.H(), gate.I(), gate.I()),
 		gate.CNOT(3, 0, 1),
 	))
 
-	s12 := rho.PartialTrace(0) // trace out qubit 0
-	s02 := rho.PartialTrace(1) // trace out qubit 1
-	s01 := rho.PartialTrace(2) // trace out qubit 2
+	s12 := rho.TraceOut(0)
+	s02 := rho.TraceOut(1)
+	s01 := rho.TraceOut(2)
 
 	fmt.Printf("trace: %.2v, purity: %.2v\n", rho.Trace(), rho.Purity())
 	fmt.Printf("trace: %.2v, purity: %.2v\n", s12.Trace(), s12.Purity())
@@ -390,7 +432,7 @@ func TestProbability(t *testing.T) {
 	}
 }
 
-func TestPartialTrace(t *testing.T) {
+func TestTraceOut(t *testing.T) {
 	type Case struct {
 		qb   []int
 		want [][]complex128
@@ -660,7 +702,7 @@ func TestPartialTrace(t *testing.T) {
 
 	for _, c := range cases {
 		for _, s := range c.cs {
-			got := density.FromStates(c.s).PartialTrace(s.qb...)
+			got := density.FromStates(c.s).TraceOut(s.qb...)
 			p, q := got.Dim()
 			if p != len(s.want) || q != len(s.want) {
 				t.Errorf("got=%v, %v want=%v", p, q, s.want)
@@ -755,72 +797,72 @@ func TestNewMixedState(t *testing.T) {
 
 func TestAmplitudeDamping(t *testing.T) {
 	type Case struct {
-		s    *qubit.Qubit
-		p    float64
-		m    *qubit.Qubit
-		want float64
+		qubit *qubit.Qubit
+		p     float64
+		m     *qubit.Qubit
+		want  float64
 	}
 
 	cases := []Case{
 		{
-			s:    qubit.One(),
-			p:    0.3,
-			m:    qubit.Zero(),
-			want: 0.3,
+			qubit: qubit.One(),
+			p:     0.3,
+			m:     qubit.Zero(),
+			want:  0.3,
 		},
 		{
-			s:    qubit.One(),
-			p:    0.3,
-			m:    qubit.One(),
-			want: 0.7,
+			qubit: qubit.One(),
+			p:     0.3,
+			m:     qubit.One(),
+			want:  0.7,
 		},
 		{
-			s:    qubit.Zero(),
-			p:    0.3,
-			m:    qubit.Zero(),
-			want: 1.0,
+			qubit: qubit.Zero(),
+			p:     0.3,
+			m:     qubit.Zero(),
+			want:  1.0,
 		},
 		{
-			s:    qubit.Zero(),
-			p:    0.3,
-			m:    qubit.One(),
-			want: 0.0,
+			qubit: qubit.Zero(),
+			p:     0.3,
+			m:     qubit.One(),
+			want:  0.0,
 		},
 		{
-			s:    qubit.Plus(),
-			p:    0.3,
-			m:    qubit.Zero(),
-			want: 0.5 + 0.3*0.5,
+			qubit: qubit.Plus(),
+			p:     0.3,
+			m:     qubit.Zero(),
+			want:  0.5 + 0.3*0.5,
 		},
 		{
-			s:    qubit.Plus(),
-			p:    0.3,
-			m:    qubit.One(),
-			want: 0.5 * (1 - 0.3),
+			qubit: qubit.Plus(),
+			p:     0.3,
+			m:     qubit.One(),
+			want:  0.5 * (1 - 0.3),
 		},
 		{
-			s:    qubit.Plus(),
-			p:    0.3,
-			m:    qubit.Plus(),
-			want: 0.5 + 0.5*math.Sqrt(1-0.3),
+			qubit: qubit.Plus(),
+			p:     0.3,
+			m:     qubit.Plus(),
+			want:  0.5 + 0.5*math.Sqrt(1-0.3),
 		},
 		{
-			s:    qubit.One(),
-			p:    0.0,
-			m:    qubit.One(),
-			want: 1.0,
+			qubit: qubit.One(),
+			p:     0.0,
+			m:     qubit.One(),
+			want:  1.0,
 		},
 		{
-			s:    qubit.One(),
-			p:    1.0,
-			m:    qubit.Zero(),
-			want: 1.0,
+			qubit: qubit.One(),
+			p:     1.0,
+			m:     qubit.Zero(),
+			want:  1.0,
 		},
 		{
-			s:    qubit.Plus(),
-			p:    1.0,
-			m:    qubit.Zero(),
-			want: 1.0,
+			qubit: qubit.Plus(),
+			p:     1.0,
+			m:     qubit.Zero(),
+			want:  1.0,
 		},
 	}
 
@@ -828,7 +870,7 @@ func TestAmplitudeDamping(t *testing.T) {
 		got := density.FromStates([]density.WeightedState{
 			{
 				Probability: 1,
-				Qubit:       c.s,
+				Qubit:       c.qubit,
 			},
 		}).AmplitudeDamping(c.p, 0)
 		if !epsilon.IsCloseF64(got.Probability(c.m), c.want) {
@@ -839,60 +881,60 @@ func TestAmplitudeDamping(t *testing.T) {
 
 func TestPhaseDamping(t *testing.T) {
 	type Case struct {
-		s    *qubit.Qubit
-		g    float64
-		m    *qubit.Qubit
-		want float64
+		qubit *qubit.Qubit
+		g     float64
+		m     *qubit.Qubit
+		want  float64
 	}
 
 	cases := []Case{
 		{
-			s:    qubit.Zero(),
-			g:    0.3,
-			m:    qubit.Zero(),
-			want: 1.0,
+			qubit: qubit.Zero(),
+			g:     0.3,
+			m:     qubit.Zero(),
+			want:  1.0,
 		},
 		{
-			s:    qubit.One(),
-			g:    0.3,
-			m:    qubit.One(),
-			want: 1.0,
+			qubit: qubit.One(),
+			g:     0.3,
+			m:     qubit.One(),
+			want:  1.0,
 		},
 		{
-			s:    qubit.Plus(),
-			g:    0.3,
-			m:    qubit.Zero(),
-			want: 0.5,
+			qubit: qubit.Plus(),
+			g:     0.3,
+			m:     qubit.Zero(),
+			want:  0.5,
 		},
 		{
-			s:    qubit.Plus(),
-			g:    0.3,
-			m:    qubit.One(),
-			want: 0.5,
+			qubit: qubit.Plus(),
+			g:     0.3,
+			m:     qubit.One(),
+			want:  0.5,
 		},
 		{
-			s:    qubit.Plus(),
-			g:    0.3,
-			m:    qubit.Plus(),
-			want: 0.5 + 0.5*math.Sqrt(1-0.3),
+			qubit: qubit.Plus(),
+			g:     0.3,
+			m:     qubit.Plus(),
+			want:  0.5 + 0.5*math.Sqrt(1-0.3),
 		},
 		{
-			s:    qubit.Plus(),
-			g:    0.3,
-			m:    qubit.Minus(),
-			want: 0.5 - 0.5*math.Sqrt(1-0.3),
+			qubit: qubit.Plus(),
+			g:     0.3,
+			m:     qubit.Minus(),
+			want:  0.5 - 0.5*math.Sqrt(1-0.3),
 		},
 		{
-			s:    qubit.Plus(),
-			g:    0.0,
-			m:    qubit.Plus(),
-			want: 1.0,
+			qubit: qubit.Plus(),
+			g:     0.0,
+			m:     qubit.Plus(),
+			want:  1.0,
 		},
 		{
-			s:    qubit.Plus(),
-			g:    1.0,
-			m:    qubit.Plus(),
-			want: 0.5,
+			qubit: qubit.Plus(),
+			g:     1.0,
+			m:     qubit.Plus(),
+			want:  0.5,
 		},
 	}
 
@@ -900,7 +942,7 @@ func TestPhaseDamping(t *testing.T) {
 		got := density.FromStates([]density.WeightedState{
 			{
 				Probability: 1,
-				Qubit:       c.s,
+				Qubit:       c.qubit,
 			},
 		}).PhaseDamping(c.g, 0)
 		if !epsilon.IsCloseF64(got.Probability(c.m), c.want) {
@@ -911,93 +953,96 @@ func TestPhaseDamping(t *testing.T) {
 
 func TestPauli(t *testing.T) {
 	type Case struct {
-		s    *qubit.Qubit
-		px   float64
-		py   float64
-		pz   float64
-		m    *qubit.Qubit
-		want float64
+		qubit *qubit.Qubit
+		px    float64
+		py    float64
+		pz    float64
+		m     *qubit.Qubit
+		want  float64
 	}
 
 	cases := []Case{
 		{
-			s:    qubit.Zero(),
-			px:   0,
-			py:   0,
-			pz:   0,
-			m:    qubit.Zero(),
-			want: 1.0,
+			qubit: qubit.Zero(),
+			px:    0,
+			py:    0,
+			pz:    0,
+			m:     qubit.Zero(),
+			want:  1.0,
 		},
 		{
-			s:    qubit.Zero(),
-			px:   1.0,
-			py:   0,
-			pz:   0,
-			m:    qubit.One(),
-			want: 1.0,
+			qubit: qubit.Zero(),
+			px:    1.0,
+			py:    0,
+			pz:    0,
+			m:     qubit.One(),
+			want:  1.0,
 		},
 		{
-			s:    qubit.Zero(),
-			px:   0.5,
-			py:   0,
-			pz:   0,
-			m:    qubit.Zero(),
-			want: 0.5,
+			qubit: qubit.Zero(),
+			px:    0.5,
+			py:    0,
+			pz:    0,
+			m:     qubit.Zero(),
+			want:  0.5,
 		},
 		{
-			s:    qubit.Zero(),
-			px:   0.5,
-			py:   0,
-			pz:   0,
-			m:    qubit.One(),
-			want: 0.5,
+			qubit: qubit.Zero(),
+			px:    0.5,
+			py:    0,
+			pz:    0,
+			m:     qubit.One(),
+			want:  0.5,
 		},
 		{
-			s:    qubit.Zero(),
-			px:   0,
-			py:   0,
-			pz:   1.0,
-			m:    qubit.Zero(),
-			want: 1.0,
+			qubit: qubit.Zero(),
+			px:    0,
+			py:    0,
+			pz:    1.0,
+			m:     qubit.Zero(),
+			want:  1.0,
 		},
 		{
-			s:    qubit.Plus(),
-			px:   0,
-			py:   0,
-			pz:   1.0,
-			m:    qubit.Minus(),
-			want: 1.0,
+			qubit: qubit.Plus(),
+			px:    0,
+			py:    0,
+			pz:    1.0,
+			m:     qubit.Minus(),
+			want:  1.0,
 		},
 		{
-			s:    qubit.Zero(),
-			px:   0,
-			py:   1.0,
-			pz:   0,
-			m:    qubit.One(),
-			want: 1.0,
+			qubit: qubit.Zero(),
+			px:    0,
+			py:    1.0,
+			pz:    0,
+			m:     qubit.One(),
+			want:  1.0,
 		},
 		{
-			s:    qubit.Zero(),
-			px:   1.0 / 3,
-			py:   1.0 / 3,
-			pz:   1.0 / 3,
-			m:    qubit.Zero(),
-			want: 1.0 / 3,
+			qubit: qubit.Zero(),
+			px:    1.0 / 3,
+			py:    1.0 / 3,
+			pz:    1.0 / 3,
+			m:     qubit.Zero(),
+			want:  1.0 / 3,
 		},
 		{
-			s:    qubit.Zero(),
-			px:   1.0 / 3,
-			py:   1.0 / 3,
-			pz:   1.0 / 3,
-			m:    qubit.One(),
-			want: 1.0/3 + 1.0/3,
+			qubit: qubit.Zero(),
+			px:    1.0 / 3,
+			py:    1.0 / 3,
+			pz:    1.0 / 3,
+			m:     qubit.One(),
+			want:  1.0/3 + 1.0/3,
 		},
 	}
 
 	for _, c := range cases {
-		got := density.From(c.s).
-			Pauli(c.px, c.py, c.pz, 0).
-			Probability(c.m)
+		got := density.FromStates([]density.WeightedState{
+			{
+				Probability: 1,
+				Qubit:       c.qubit,
+			},
+		}).Pauli(c.px, c.py, c.pz, 0).Probability(c.m)
 
 		if !epsilon.IsCloseF64(got, c.want) {
 			t.Errorf("got %v, want %v", got, c.want)
