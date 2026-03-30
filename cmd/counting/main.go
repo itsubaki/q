@@ -92,7 +92,6 @@ func main() {
 
 	// phase estimation
 	for i := range c {
-		// apply controlled-G**(2**i) where control is c[i]
 		for range 1 << i {
 			controlledG(qsim, r, s, c[i], a)
 		}
