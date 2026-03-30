@@ -25,6 +25,16 @@ func Example_channel() {
 	// 0.8840
 }
 
+func ExampleFromStates_empty() {
+	rho := density.FromStates([]density.WeightedState{})
+	fmt.Printf("%.4f\n", rho.Probability(qubit.Zero()))
+	fmt.Printf("%.4f\n", rho.Probability(qubit.One()))
+
+	// Output:
+	// 0.0000
+	// 0.0000
+}
+
 func ExampleDensityMatrix_Matrix() {
 	rho := density.FromStates([]density.WeightedState{
 		{
@@ -478,6 +488,72 @@ func TestProbability(t *testing.T) {
 	}
 }
 
+func TestApply(t *testing.T) {
+	cases := []struct {
+		s    []density.WeightedState
+		u    *matrix.Matrix
+		m    *qubit.Qubit
+		want float64
+	}{
+		{
+			s: []density.WeightedState{
+				{
+					Probability: 1,
+					Qubit:       qubit.Zero(),
+				},
+			},
+			u:    gate.X(),
+			m:    qubit.Zero(),
+			want: 0,
+		},
+		{
+			s: []density.WeightedState{
+				{
+					Probability: 1,
+					Qubit:       qubit.Zero(),
+				},
+			},
+			u:    gate.X(),
+			m:    qubit.One(),
+			want: 1,
+		},
+	}
+
+	for _, c := range cases {
+		got := density.FromStates(c.s).Apply(c.u).Probability(c.m)
+		if !epsilon.IsCloseF64(got, c.want) {
+			t.Fail()
+		}
+	}
+}
+
+func TestNewMixedState(t *testing.T) {
+	cases := []struct {
+		s    []density.WeightedState
+		want *matrix.Matrix
+	}{
+		{
+			s: []density.WeightedState{
+				{
+					Probability: 1,
+					Qubit:       qubit.Zero(),
+				},
+			},
+			want: matrix.New([][]complex128{
+				{1, 0},
+				{0, 0},
+			}...),
+		},
+	}
+
+	for _, c := range cases {
+		rho := density.FromStates(c.s)
+		if !rho.Matrix().Equal(c.want) {
+			t.Errorf("got=%v, want=%v", rho.Matrix(), c.want)
+		}
+	}
+}
+
 func TestTraceOut(t *testing.T) {
 	type Case struct {
 		qb   []int
@@ -773,83 +849,13 @@ func TestTraceOut(t *testing.T) {
 	}
 }
 
-func TestApply(t *testing.T) {
-	cases := []struct {
-		s    []density.WeightedState
-		u    *matrix.Matrix
-		m    *qubit.Qubit
-		want float64
-	}{
-		{
-			s: []density.WeightedState{
-				{
-					Probability: 1,
-					Qubit:       qubit.Zero(),
-				},
-			},
-			u:    gate.X(),
-			m:    qubit.Zero(),
-			want: 0,
-		},
-		{
-			s: []density.WeightedState{
-				{
-					Probability: 1,
-					Qubit:       qubit.Zero(),
-				},
-			},
-			u:    gate.X(),
-			m:    qubit.One(),
-			want: 1,
-		},
-	}
-
-	for _, c := range cases {
-		got := density.FromStates(c.s).Apply(c.u).Probability(c.m)
-		if !epsilon.IsCloseF64(got, c.want) {
-			t.Fail()
-		}
-	}
-}
-
-func TestNewMixedState(t *testing.T) {
-	type Case struct {
-		s    []density.WeightedState
-		want *matrix.Matrix
-	}
-
-	cases := []Case{
-		{
-			s: []density.WeightedState{
-				{
-					Probability: 1,
-					Qubit:       qubit.Zero(),
-				},
-			},
-			want: matrix.New([][]complex128{
-				{1, 0},
-				{0, 0},
-			}...),
-		},
-	}
-
-	for _, c := range cases {
-		rho := density.FromStates(c.s)
-		if !rho.Matrix().Equal(c.want) {
-			t.Errorf("got=%v, want=%v", rho.Matrix(), c.want)
-		}
-	}
-}
-
 func TestAmplitudeDamping(t *testing.T) {
-	type Case struct {
+	cases := []struct {
 		qubit *qubit.Qubit
 		p     float64
 		m     *qubit.Qubit
 		want  float64
-	}
-
-	cases := []Case{
+	}{
 		{
 			qubit: qubit.One(),
 			p:     0.3,
@@ -926,14 +932,12 @@ func TestAmplitudeDamping(t *testing.T) {
 }
 
 func TestPhaseDamping(t *testing.T) {
-	type Case struct {
+	cases := []struct {
 		qubit *qubit.Qubit
 		g     float64
 		m     *qubit.Qubit
 		want  float64
-	}
-
-	cases := []Case{
+	}{
 		{
 			qubit: qubit.Zero(),
 			g:     0.3,
@@ -998,16 +1002,14 @@ func TestPhaseDamping(t *testing.T) {
 }
 
 func TestPauli(t *testing.T) {
-	type Case struct {
+	cases := []struct {
 		qubit *qubit.Qubit
 		px    float64
 		py    float64
 		pz    float64
 		m     *qubit.Qubit
 		want  float64
-	}
-
-	cases := []Case{
+	}{
 		{
 			qubit: qubit.Zero(),
 			px:    0,

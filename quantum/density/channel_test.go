@@ -43,12 +43,10 @@ func FuzzPauli(f *testing.F) {
 }
 
 func TestChannel_IsValid(t *testing.T) {
-	type Case struct {
+	cases := []struct {
 		channel *density.Channel
 		want    bool
-	}
-
-	cases := []Case{
+	}{
 		{
 			channel: density.NewChannel(),
 			want:    false,

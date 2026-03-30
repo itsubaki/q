@@ -16,6 +16,12 @@ type DensityMatrix struct {
 
 // FromStates returns a density matrix constructed from a set of states.
 func FromStates(states []WeightedState) *DensityMatrix {
+	if len(states) == 0 {
+		return &DensityMatrix{
+			rho: matrix.New(),
+		}
+	}
+
 	n := states[0].Qubit.Dim()
 	rho := matrix.Zero(n, n)
 	for _, s := range states {
