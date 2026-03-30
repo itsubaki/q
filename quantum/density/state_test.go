@@ -26,12 +26,10 @@ func ExampleNormalize() {
 }
 
 func TestIsValid(t *testing.T) {
-	type Case struct {
+	cases := []struct {
 		s    []density.WeightedState
 		want bool
-	}
-
-	cases := []Case{
+	}{
 		{
 			s: []density.WeightedState{},
 		},
