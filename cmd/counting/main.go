@@ -36,7 +36,7 @@ func oracle(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
 func diffuser(qsim *q.Q, c q.Qubit, r []q.Qubit) {
 	qsim.H(r...)
 	qsim.X(r...)
-	qsim.ControlledZ(append([]q.Qubit{c}, r[:len(r)-1]...), []q.Qubit{r[len(r)-1]})
+	qsim.ControlledZ([]q.Qubit{r[0], r[1], r[2], r[3], c}, []q.Qubit{r[4]})
 	qsim.X(r...)
 	qsim.H(r...)
 }
@@ -107,6 +107,6 @@ func main() {
 		theta := 2 * math.Pi * phi              // theta = 2*pi*phi
 		M := N * math.Pow(math.Sin(theta/2), 2) // M = N*(sin(theta/2))**2
 
-		fmt.Printf("%v; phi=%.4f, theta=%.4f, M=%.4f, (N-M)=%.4f, eps=%.4f\n", state, phi, theta, M, N-M, math.Abs(min(M, N-M)-2))
+		fmt.Printf("%v; phi=%.4f, theta=%.4f; M=%.4f, (N-M)=%.4f, eps=%.4f\n", state, phi, theta, M, N-M, math.Abs(min(M, N-M)-2))
 	}
 }

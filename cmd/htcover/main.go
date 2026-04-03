@@ -170,7 +170,7 @@ func Simplify(bits uint64, length int) (uint64, int) {
 		}
 	}
 
-	var prev uint64 = None
+	prev := None
 	var count int
 	for i := range length {
 		b := (bits >> (length - 1 - i)) & 1
