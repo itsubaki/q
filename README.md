@@ -54,13 +54,13 @@ for _, s := range qsim.State() {
 ```go
 qsim := q.New()
 
-// generate qubits of |phi>|0>|0>
-phi := qsim.New(1, 2)
+// generate qubits of |psi>|0>|0>
+psi := qsim.New(1, 2)
 q0 := qsim.Zero()
 q1 := qsim.Zero()
 
-// |phi> is normalized. |phi> = a|0> + b|1>, |a|^2 = 0.2, |b|^2 = 0.8
-for _, s := range qsim.State(phi) {
+// |psi> is normalized. |psi> = a|0> + b|1>, |a|^2 = 0.2, |b|^2 = 0.8
+for _, s := range qsim.State(psi) {
   fmt.Println(s)
 }
 
@@ -69,18 +69,18 @@ for _, s := range qsim.State(phi) {
 
 qsim.H(q0)
 qsim.CNOT(q0, q1)
-qsim.CNOT(phi, q0)
-qsim.H(phi)
+qsim.CNOT(psi, q0)
+qsim.H(psi)
 
 // Alice sends mz, mx to Bob
-mz := qsim.Measure(phi)
+mz := qsim.Measure(psi)
 mx := qsim.Measure(q0)
 
 // Bob Applies X and Z
 qsim.CondX(mx.IsOne(), q1)
 qsim.CondZ(mz.IsOne(), q1)
 
-// Bob got |phi> state with q1
+// Bob got |psi> state with q1
 for _, s := range qsim.State(q1) {
   fmt.Println(s)
 }
