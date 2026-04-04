@@ -25,6 +25,21 @@ func Example_channel() {
 	// 0.8840
 }
 
+func Example_compose() {
+	channel := density.Compose(
+		density.Depolarizing(0.1, 0),
+		density.AmplitudeDamping(0.7, 0),
+		density.PhaseDamping(0.7, 0),
+		density.BitFlip(0.1, 0),
+	)
+
+	rho := density.From(qubit.Zero()).ApplyChannelFunc(channel)
+	fmt.Printf("%.4f\n", rho.Probability(qubit.Zero()))
+
+	// Output:
+	// 0.8840
+}
+
 func ExampleFromStates_empty() {
 	rho := density.FromStates([]density.WeightedState{})
 	fmt.Printf("%.4f\n", rho.Probability(qubit.Zero()))
