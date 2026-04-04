@@ -23,10 +23,10 @@ func Const(seed ...uint64) func() float64 {
 }
 
 // Coprime returns a random coprime number in [2, N).
+// It requires N to be greater than 2.
 func Coprime(N int) int {
-	min, max := 2, N-2
 	for {
-		a := rand.N(max-1) + min
+		a := rand.N(N-2) + 2
 		if number.GCD(N, a) == 1 {
 			return a
 		}

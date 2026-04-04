@@ -64,3 +64,29 @@ func TestConst(t *testing.T) {
 
 	t.Fail()
 }
+
+func TestCoprime(t *testing.T) {
+	cases := []struct {
+		N    int
+		want int
+	}{
+		{
+			N:    3,
+			want: 2,
+		},
+		{
+			N:    4,
+			want: 3,
+		},
+		{
+			N:    6,
+			want: 5,
+		},
+	}
+
+	for _, c := range cases {
+		if rand.Coprime(c.N) != c.want {
+			t.Fail()
+		}
+	}
+}
