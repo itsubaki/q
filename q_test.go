@@ -692,22 +692,22 @@ func Example_bell() {
 func Example_quantumTeleportation() {
 	qsim := q.New()
 
-	phi := qsim.New(1, 2)
+	psi := qsim.New(1, 2)
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 
-	fmt.Println("phi:")
-	for _, s := range qsim.State(phi) {
+	fmt.Println("psi:")
+	for _, s := range qsim.State(psi) {
 		fmt.Println(s)
 	}
 
 	qsim.H(q0).CNOT(q0, q1)
-	qsim.CNOT(phi, q0).H(phi)
+	qsim.CNOT(psi, q0).H(psi)
 
 	qsim.CNOT(q0, q1)
-	qsim.CZ(phi, q1)
+	qsim.CZ(psi, q1)
 
-	qsim.Measure(phi, q0)
+	qsim.Measure(psi, q0)
 
 	fmt.Println("q1:")
 	for _, s := range qsim.State(q1) {
@@ -715,7 +715,7 @@ func Example_quantumTeleportation() {
 	}
 
 	// Output:
-	// phi:
+	// psi:
 	// [0][  0]( 0.4472 0.0000i): 0.2000
 	// [1][  1]( 0.8944 0.0000i): 0.8000
 	// q1:
@@ -726,19 +726,19 @@ func Example_quantumTeleportation() {
 func Example_quantumTeleportationCond() {
 	qsim := q.New()
 
-	phi := qsim.New(1, 2)
+	psi := qsim.New(1, 2)
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 
-	fmt.Println("phi:")
-	for _, s := range qsim.State(phi) {
+	fmt.Println("psi:")
+	for _, s := range qsim.State(psi) {
 		fmt.Println(s)
 	}
 
 	qsim.H(q0).CNOT(q0, q1)
-	qsim.CNOT(phi, q0).H(phi)
+	qsim.CNOT(psi, q0).H(psi)
 
-	mz := qsim.Measure(phi)
+	mz := qsim.Measure(psi)
 	mx := qsim.Measure(q0)
 
 	qsim.CondX(mx.IsOne(), q1)
@@ -750,7 +750,7 @@ func Example_quantumTeleportationCond() {
 	}
 
 	// Output:
-	// phi:
+	// psi:
 	// [0][  0]( 0.4472 0.0000i): 0.2000
 	// [1][  1]( 0.8944 0.0000i): 0.8000
 	// q1:
@@ -1124,14 +1124,14 @@ func Example_ecc() {
 func Example_gateTeleportation() {
 	qsim := q.New()
 
-	phi := qsim.New(1, 2)
+	psi := qsim.New(1, 2)
 	a := qsim.Zero()
 	qsim.H(a)
 	qsim.T(a) // magic state
 
 	// teleportation of T gate
-	qsim.CNOT(a, phi)
-	m0 := qsim.Measure(phi)
+	qsim.CNOT(a, psi)
+	m0 := qsim.Measure(psi)
 	qsim.Cond(m0.IsOne(), gate.X(), a)
 	qsim.Cond(m0.IsOne(), gate.S(), a)
 

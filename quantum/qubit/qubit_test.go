@@ -615,57 +615,57 @@ func Example_grover3() {
 }
 
 func Example_eccBitFlip() {
-	phi := qubit.New(vector.New(1, 2))
+	psi := qubit.New(vector.New(1, 2))
 
 	// encoding
-	phi.TensorProduct(qubit.Zero(2))
-	phi.Apply(
+	psi.TensorProduct(qubit.Zero(2))
+	psi.Apply(
 		gate.CNOT(3, 0, 1),
 		gate.CNOT(3, 0, 2),
 	)
 
 	// error: first qubit is flipped
-	phi.Apply(matrix.TensorProduct(gate.X(), gate.I(2)))
+	psi.Apply(matrix.TensorProduct(gate.X(), gate.I(2)))
 
 	// add ancilla qubit
-	phi.TensorProduct(qubit.Zero(2))
+	psi.TensorProduct(qubit.Zero(2))
 
 	// z1z2
-	phi.Apply(
+	psi.Apply(
 		gate.CNOT(5, 0, 3),
 		gate.CNOT(5, 1, 3),
 	)
 
 	// z2z3
-	phi.Apply(
+	psi.Apply(
 		gate.CNOT(5, 1, 4),
 		gate.CNOT(5, 2, 4),
 	)
 
 	// measure
-	m3 := phi.Measure(3)
-	m4 := phi.Measure(4)
+	m3 := psi.Measure(3)
+	m4 := psi.Measure(4)
 
 	// recover
 	if m3.IsOne() && m4.IsZero() {
-		phi.Apply(matrix.TensorProduct(gate.X(), gate.I(4)))
+		psi.Apply(matrix.TensorProduct(gate.X(), gate.I(4)))
 	}
 
 	if m3.IsOne() && m4.IsOne() {
-		phi.Apply(matrix.TensorProduct(gate.I(), gate.X(), gate.I(3)))
+		psi.Apply(matrix.TensorProduct(gate.I(), gate.X(), gate.I(3)))
 	}
 
 	if m3.IsZero() && m4.IsOne() {
-		phi.Apply(matrix.TensorProduct(gate.I(2), gate.X(), gate.I(2)))
+		psi.Apply(matrix.TensorProduct(gate.I(2), gate.X(), gate.I(2)))
 	}
 
 	// decoding
-	phi.Apply(
+	psi.Apply(
 		gate.CNOT(5, 0, 2),
 		gate.CNOT(5, 0, 1),
 	)
 
-	for _, s := range phi.State() {
+	for _, s := range psi.State() {
 		fmt.Println(s)
 	}
 
@@ -675,65 +675,65 @@ func Example_eccBitFlip() {
 }
 
 func Example_eccPhaseFlip() {
-	phi := qubit.New(vector.New(1, 2))
+	psi := qubit.New(vector.New(1, 2))
 
 	// encoding
-	phi.TensorProduct(qubit.Zero(2))
-	phi.Apply(
+	psi.TensorProduct(qubit.Zero(2))
+	psi.Apply(
 		gate.CNOT(3, 0, 1),
 		gate.CNOT(3, 0, 2),
 		gate.H(3),
 	)
 
 	// error: first qubit is flipped
-	phi.Apply(matrix.TensorProduct(gate.Z(), gate.I(2)))
+	psi.Apply(matrix.TensorProduct(gate.Z(), gate.I(2)))
 
 	// H
-	phi.Apply(gate.H(3))
+	psi.Apply(gate.H(3))
 
 	// add ancilla qubit
-	phi.TensorProduct(qubit.Zero(2))
+	psi.TensorProduct(qubit.Zero(2))
 
 	// x1x2
-	phi.Apply(
+	psi.Apply(
 		gate.CNOT(5, 0, 3),
 		gate.CNOT(5, 1, 3),
 	)
 
 	// x2x3
-	phi.Apply(
+	psi.Apply(
 		gate.CNOT(5, 1, 4),
 		gate.CNOT(5, 2, 4),
 	)
 
 	// H
-	phi.Apply(matrix.TensorProduct(gate.H(3), gate.I(2)))
+	psi.Apply(matrix.TensorProduct(gate.H(3), gate.I(2)))
 
 	// measure
-	m3 := phi.Measure(3)
-	m4 := phi.Measure(4)
+	m3 := psi.Measure(3)
+	m4 := psi.Measure(4)
 
 	// recover
 	if m3.IsOne() && m4.IsZero() {
-		phi.Apply(matrix.TensorProduct(gate.Z(), gate.I(4)))
+		psi.Apply(matrix.TensorProduct(gate.Z(), gate.I(4)))
 	}
 
 	if m3.IsOne() && m4.IsOne() {
-		phi.Apply(matrix.TensorProduct(gate.I(), gate.Z(), gate.I(3)))
+		psi.Apply(matrix.TensorProduct(gate.I(), gate.Z(), gate.I(3)))
 	}
 
 	if m3.IsZero() && m4.IsOne() {
-		phi.Apply(matrix.TensorProduct(gate.I(2), gate.Z(), gate.I(2)))
+		psi.Apply(matrix.TensorProduct(gate.I(2), gate.Z(), gate.I(2)))
 	}
 
 	// decoding
-	phi.Apply(
+	psi.Apply(
 		matrix.TensorProduct(gate.H(3), gate.I(2)),
 		gate.CNOT(5, 0, 2),
 		gate.CNOT(5, 0, 1),
 	)
 
-	for _, s := range phi.State() {
+	for _, s := range psi.State() {
 		fmt.Println(s)
 	}
 
@@ -742,11 +742,11 @@ func Example_eccPhaseFlip() {
 	// [10010][ 18]( 0.8944 0.0000i): 0.8000
 }
 func Example_quantumTeleportation() {
-	phi := qubit.New(vector.New(1, 2))
-	phi.Rand = rand.Const()
+	psi := qubit.New(vector.New(1, 2))
+	psi.Rand = rand.Const()
 
 	fmt.Println("before:")
-	for _, s := range phi.State() {
+	for _, s := range psi.State() {
 		fmt.Println(s)
 	}
 
@@ -754,20 +754,20 @@ func Example_quantumTeleportation() {
 		matrix.TensorProduct(gate.H(), gate.I()),
 		gate.CNOT(2, 0, 1),
 	)
-	phi.TensorProduct(bell)
+	psi.TensorProduct(bell)
 
-	phi.Apply(
+	psi.Apply(
 		gate.CNOT(3, 0, 1),
 		matrix.TensorProduct(gate.H(), gate.I(2)),
 		gate.CNOT(3, 1, 2),
 		gate.CZ(3, 0, 2),
 	)
 
-	phi.Measure(0)
-	phi.Measure(1)
+	psi.Measure(0)
+	psi.Measure(1)
 
 	fmt.Println("after:")
-	for _, s := range phi.State() {
+	for _, s := range psi.State() {
 		fmt.Println(s)
 	}
 
@@ -781,11 +781,11 @@ func Example_quantumTeleportation() {
 }
 
 func Example_quantumTeleportationCond() {
-	phi := qubit.New(vector.New(1, 2))
-	phi.Rand = rand.Const()
+	psi := qubit.New(vector.New(1, 2))
+	psi.Rand = rand.Const()
 
 	fmt.Println("before:")
-	for _, s := range phi.State() {
+	for _, s := range psi.State() {
 		fmt.Println(s)
 	}
 
@@ -793,26 +793,26 @@ func Example_quantumTeleportationCond() {
 		matrix.TensorProduct(gate.H(), gate.I()),
 		gate.CNOT(2, 0, 1),
 	)
-	phi.TensorProduct(bell)
+	psi.TensorProduct(bell)
 
-	phi.Apply(
+	psi.Apply(
 		gate.CNOT(3, 0, 1),
 		matrix.TensorProduct(gate.H(), gate.I(2)),
 	)
 
-	mz := phi.Measure(0)
-	mx := phi.Measure(1)
+	mz := psi.Measure(0)
+	mx := psi.Measure(1)
 
 	if mx.IsOne() {
-		phi.Apply(matrix.TensorProduct(gate.I(2), gate.X()))
+		psi.Apply(matrix.TensorProduct(gate.I(2), gate.X()))
 	}
 
 	if mz.IsOne() {
-		phi.Apply(matrix.TensorProduct(gate.I(2), gate.Z()))
+		psi.Apply(matrix.TensorProduct(gate.I(2), gate.Z()))
 	}
 
 	fmt.Println("after:")
-	for _, s := range phi.State() {
+	for _, s := range psi.State() {
 		fmt.Println(s)
 	}
 
