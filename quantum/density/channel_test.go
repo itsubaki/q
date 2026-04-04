@@ -79,3 +79,37 @@ func TestChannel_IsValid(t *testing.T) {
 		}
 	}
 }
+
+func TestCompose(t *testing.T) {
+	cases := []struct {
+		channel []density.ChannelFunc
+		isValid bool
+	}{
+		{
+			channel: []density.ChannelFunc{
+				density.Pauli(0.3, 0.3, 0.3, 0),
+			},
+			isValid: true,
+		},
+		{
+			channel: []density.ChannelFunc{
+				density.Depolarizing(0.1, 0),
+				density.AmplitudeDamping(0.7, 0),
+				density.PhaseDamping(0.7, 0),
+				density.BitFlip(0.1, 0),
+			},
+			isValid: true,
+		},
+		{
+			channel: []density.ChannelFunc{},
+			isValid: false,
+		},
+	}
+
+	for _, c := range cases {
+		noise := density.Compose(c.channel...)(1)
+		if noise.IsValid() != c.isValid {
+			t.Errorf("channel=%v", c.channel)
+		}
+	}
+}
