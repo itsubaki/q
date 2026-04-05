@@ -12,7 +12,7 @@ import (
 // oracle constructs a Grover oracle for validating 2x2 mini-sudoku solutions.
 // It applies a phase flip (−1) only to states that represent valid solutions.
 //
-// The 2x2 sudoku grid is represented as follows:
+// The 2x2 grid is represented as follows:
 //
 //	| a | b |
 //	| c | d |
@@ -21,7 +21,7 @@ import (
 // in row-major order: [a, b, c, d].
 // The `s` slice must contain 4 ancilla qubits used for intermediate checks.
 // The `a` qubit is the oracle’s phase flag (target).
-// THe `a` is initialized to |−> = (|0> − |1>)/√2 to facilitate phase kickback.
+// The `a` is initialized to |−> = (|0> − |1>)/√2 to facilitate phase kickback.
 //
 // The oracle checks the following uniqueness constraints:
 //
