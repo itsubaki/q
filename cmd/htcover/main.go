@@ -18,9 +18,9 @@ const (
 	H       uint64 = 0
 	T       uint64 = 1
 	None    uint64 = 2
-	HCancel int    = 2 // H^2 = I
-	TCancel int    = 8 // T^8 = I
-	maxLen  int    = 6 // 2^6 = 64
+	HCancel int    = 2 // H**2 = I
+	TCancel int    = 8 // T**8 = I
+	maxLen  int    = 6 // 2**6 = 64
 )
 
 func main() {
@@ -106,6 +106,34 @@ func (s Seq) String() string {
 	return fmt.Sprint(str)
 }
 
+// Bloch returns the polar(theta) and azimuthal(phi) angles of the state on the Bloch sphere.
+func Bloch(alpha, beta complex128) (float64, float64) {
+	if epsilon.IsZeroF64(cmplx.Abs(alpha)) {
+		return math.Pi, 0
+	}
+
+	if epsilon.IsZeroF64(cmplx.Abs(beta)) {
+		return 0, 0
+	}
+
+	theta := 2 * math.Acos(min(1, cmplx.Abs(alpha)))
+	phi := cmplx.Phase(beta) - cmplx.Phase(alpha)
+	phi = math.Mod(phi+2*math.Pi, 2*math.Pi) // phi is in [0, 2π)
+	return theta, phi
+}
+
+func Sort(seqs []Seq) []Seq {
+	sort.Slice(seqs, func(i, j int) bool {
+		if seqs[i].length != seqs[j].length {
+			return seqs[i].length < seqs[j].length
+		}
+
+		return seqs[i].bits < seqs[j].bits
+	})
+
+	return seqs
+}
+
 func GenerateSequences(n int) []Seq {
 	var dfs func(bits uint64, length int, depth int)
 	var seqs []Seq
@@ -136,18 +164,6 @@ func GenerateSequences(n int) []Seq {
 
 	dfs(0, 0, 0)
 	return Sort(seqs)
-}
-
-func Sort(seqs []Seq) []Seq {
-	sort.Slice(seqs, func(i, j int) bool {
-		if seqs[i].length != seqs[j].length {
-			return seqs[i].length < seqs[j].length
-		}
-
-		return seqs[i].bits < seqs[j].bits
-	})
-
-	return seqs
 }
 
 // Simplify returns a simplified sequence by applying cancellation rules (H**2 = I and T**8 = I).
@@ -191,20 +207,4 @@ func Simplify(bits uint64, length int) (uint64, int) {
 	}
 
 	return out, outLen
-}
-
-// Bloch returns the polar(theta) and azimuthal(phi) angles of the state on the Bloch sphere.
-func Bloch(alpha, beta complex128) (float64, float64) {
-	if epsilon.IsZeroF64(cmplx.Abs(alpha)) {
-		return math.Pi, 0
-	}
-
-	if epsilon.IsZeroF64(cmplx.Abs(beta)) {
-		return 0, 0
-	}
-
-	theta := 2 * math.Acos(min(1, cmplx.Abs(alpha)))
-	phi := cmplx.Phase(beta) - cmplx.Phase(alpha)
-	phi = math.Mod(phi+2*math.Pi, 2*math.Pi) // phi is in [0, 2π)
-	return theta, phi
 }
