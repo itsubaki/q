@@ -137,20 +137,9 @@ func Sort(seqs []Seq) []Seq {
 func GenerateSequences(n int) []Seq {
 	var dfs func(bits uint64, length int, depth int)
 	var seqs []Seq
-	visited := make(map[uint64]struct{})
+	visited := map[uint64]struct{}{0: {}}
 
 	dfs = func(bits uint64, length int, depth int) {
-		if length > 0 {
-			key := (bits << maxLen) | uint64(length)
-			if _, ok := visited[key]; !ok {
-				visited[key] = struct{}{}
-				seqs = append(seqs, Seq{
-					bits,
-					length,
-				})
-			}
-		}
-
 		if depth == n {
 			return
 		}
@@ -158,6 +147,20 @@ func GenerateSequences(n int) []Seq {
 		for _, g := range []uint64{H, T} {
 			nbits, nlen := (bits<<1)|g, length+1
 			nbits, nlen = Simplify(nbits, nlen)
+
+			key := (nbits << maxLen) | uint64(nlen)
+			if _, ok := visited[key]; ok {
+				continue
+			}
+
+			visited[key] = struct{}{}
+			if nlen > 0 {
+				seqs = append(seqs, Seq{
+					bits:   nbits,
+					length: nlen,
+				})
+			}
+
 			dfs(nbits, nlen, depth+1)
 		}
 	}
