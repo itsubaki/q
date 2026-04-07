@@ -15,13 +15,16 @@ import (
 )
 
 const (
-	H       uint64 = 0
-	T       uint64 = 1
-	None    uint64 = 2
-	HCancel int    = 2 // H**2 = I
-	TCancel int    = 8 // T**8 = I
-	maxLen  int    = 6 // 2**6 = 64
+	H      uint64 = 0
+	T      uint64 = 1
+	None   uint64 = 2
+	maxLen int    = 6 // 2**6 = 64
 )
+
+var mod map[uint64]int = map[uint64]int{
+	H: 2, // H**2 = I
+	T: 8, // T**8 = I
+}
 
 func main() {
 	f, err := os.Create("cpu.prof")
@@ -45,7 +48,7 @@ func main() {
 	flag.BoolVar(&seq, "seq", false, "print sequences")
 	flag.Parse()
 
-	if n > 1<<maxLen-1 || n < 1 {
+	if n < 1 || n > 1<<maxLen-1 {
 		panic("n must be in [1, 63]")
 	}
 
@@ -145,8 +148,7 @@ func GenerateSequences(n int) []Seq {
 		}
 
 		for _, g := range []uint64{H, T} {
-			nbits, nlen := (bits<<1)|g, length+1
-			nbits, nlen = Simplify(nbits, nlen)
+			nbits, nlen := AppendSimplified(bits, length, g)
 
 			key := (nbits << maxLen) | uint64(nlen)
 			if _, ok := visited[key]; ok {
@@ -169,45 +171,30 @@ func GenerateSequences(n int) []Seq {
 	return Sort(seqs)
 }
 
-// Simplify returns a simplified sequence by applying cancellation rules (H**2 = I and T**8 = I).
-func Simplify(bits uint64, length int) (uint64, int) {
-	var out uint64
-	var outLen int
-	flush := func(bit uint64, cnt int) {
-		var mod int
-		switch bit {
-		case H:
-			mod = HCancel
-		case T:
-			mod = TCancel
-		}
-
-		k := cnt % mod
-		for range k {
-			out = (out << 1) | bit
-			outLen++
-		}
+func AppendSimplified(bits uint64, length int, gate uint64) (uint64, int) {
+	if length == 0 {
+		return gate, 1
 	}
 
-	prev := None
+	if bits&1 != gate {
+		// if the last gate is different, simply append the new gate
+		return (bits << 1) | gate, length + 1
+	}
+
 	var count int
 	for i := range length {
-		b := (bits >> (length - 1 - i)) & 1
-		if b == prev {
-			count++
-			continue
+		if (bits>>i)&1 != gate {
+			break
 		}
 
-		if count > 0 {
-			flush(prev, count)
-		}
-
-		prev, count = b, 1
+		count++
 	}
 
-	if count > 0 {
-		flush(prev, count)
+	if count+1 == mod[gate] {
+		// remove
+		return bits >> count, length - count
 	}
 
-	return out, outLen
+	// append
+	return (bits << 1) | gate, length + 1
 }
