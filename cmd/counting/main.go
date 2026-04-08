@@ -33,6 +33,9 @@ func oracle(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
 	xor(r[0], r[1], s[0])
 }
 
+// 2|s><s|-I = -(I-2|s><s|)
+// -exp{±i*theta} = exp{i*2pi(1/2±theta/2pi}
+// phi = 0.5±theta/2pi
 func diffuser(qsim *q.Q, c q.Qubit, r []q.Qubit) {
 	qsim.H(r...)
 	qsim.X(r...)
@@ -103,10 +106,10 @@ func main() {
 	// estimate
 	N := number.Ldexp(1, len(r)) // N = 2**len(r)
 	for _, state := range q.Top(qsim.State(c, r, s, a), top) {
-		phi := number.Ldexp(state.Int()[0], -t) // phi = k/(2**t)
-		theta := 2 * math.Pi * phi              // theta = 2*pi*phi
-		M := N * math.Pow(math.Sin(theta/2), 2) // M = N*(sin(theta/2))**2
+		phi := number.Ldexp(state.Int()[0], -t)  // phi = k/(2**t)
+		theta := 2 * math.Pi * math.Abs(phi-0.5) // theta = 2*pi*(phi-0.5)
+		M := N * math.Pow(math.Sin(theta/2), 2)  // M = N*(sin(theta/2))**2
 
-		fmt.Printf("%v; phi=%.4f, theta=%.4f; M=%.4f, (N-M)=%.4f, eps=%.4f\n", state, phi, theta, M, N-M, math.Abs(min(M, N-M)-2))
+		fmt.Printf("%v; phi=%.4f, theta=%.4f; M=%.4f, eps=%.4f\n", state, phi, theta, M, math.Abs(M-2))
 	}
 }
