@@ -23,8 +23,7 @@ func oracle(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
 	xor(r[1], r[3], s[3]) // b != d
 
 	// apply X if s and c are all 1
-	// r[4] is an extra qubit for search space expansion
-	qsim.ControlledX([]q.Qubit{s[0], s[1], s[2], s[3], c, r[4]}, []q.Qubit{a})
+	qsim.ControlledX([]q.Qubit{s[0], s[1], s[2], s[3], c}, []q.Qubit{a})
 
 	// uncompute
 	xor(r[1], r[3], s[3])
@@ -39,7 +38,7 @@ func oracle(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
 func diffuser(qsim *q.Q, c q.Qubit, r []q.Qubit) {
 	qsim.H(r...)
 	qsim.X(r...)
-	qsim.ControlledZ([]q.Qubit{r[0], r[1], r[2], r[3], c}, []q.Qubit{r[4]})
+	qsim.ControlledZ([]q.Qubit{r[0], r[1], r[2], c}, []q.Qubit{r[3]})
 	qsim.X(r...)
 	qsim.H(r...)
 }
@@ -78,10 +77,7 @@ func main() {
 
 	// initialize
 	c := qsim.Zeros(t) // for phase estimation
-
-	// data qubits for the Grover search space
-	// technique for expanding the search space from N to 2N
-	r := qsim.Zeros(5)
+	r := qsim.Zeros(4) // data qubits for the Grover search space
 	s := qsim.Zeros(4) // ancilla qubits for comparing Sudoku constraints
 	a := qsim.Zero()   // ancilla qubit for oracle
 
