@@ -21,7 +21,7 @@ func ExampleX() {
 	// [(1+0i) (0+0i)]
 }
 
-func ExampleX_xX() {
+func ExampleX_x2() {
 	g := gate.X(2)
 	for _, r := range g.Seq2() {
 		fmt.Println(r)
@@ -45,7 +45,7 @@ func ExampleH() {
 	// [(0.7071+0i) (-0.7071+0i)]
 }
 
-func ExampleH_hH() {
+func ExampleH_h2() {
 	g := gate.H(2)
 	for _, r := range g.Seq2() {
 		fmt.Printf("%.4v\n", r)
