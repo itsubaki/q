@@ -76,7 +76,7 @@ qsim.H(psi)
 mz := qsim.Measure(psi)
 mx := qsim.Measure(q0)
 
-// Bob Applies X and Z
+// Bob applies X and Z
 qsim.CondX(mx.IsOne(), q1)
 qsim.CondZ(mz.IsOne(), q1)
 
