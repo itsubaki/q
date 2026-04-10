@@ -6,9 +6,10 @@ import (
 	"github.com/itsubaki/q/math/number"
 )
 
+// Float64 returns, as a float64, a pseudo-random number in [0.0, 1.0).
 var Float64 = rand.Float64
 
-// Const returns a sequence of numbers fixed by seeds.
+// Const returns a pseudo-random number generator initialized with the given seeds.
 func Const(seed ...uint64) func() float64 {
 	var s0, s1 uint64
 	if len(seed) > 0 {
@@ -22,7 +23,7 @@ func Const(seed ...uint64) func() float64 {
 	return rand.New(rand.NewPCG(s0, s1)).Float64
 }
 
-// Coprime returns a random coprime number in [2, N).
+// Coprime returns a random integer in [2, N) that is coprime to N.
 // It requires N to be greater than 2.
 func Coprime(N int) int {
 	for {

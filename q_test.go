@@ -651,13 +651,13 @@ func ExampleTop() {
 	q0 := qsim.Zeros(3)
 	qsim.H(q0...)
 
-	// top 2 states
+	// Top 2 states.
 	for _, s := range q.Top(qsim.State(), 2) {
 		fmt.Println(s)
 	}
 	fmt.Println()
 
-	// all states
+	// All states.
 	for _, s := range q.Top(qsim.State(), -1) {
 		fmt.Println(s)
 	}
@@ -802,20 +802,20 @@ func Example_deutschJozsa() {
 }
 
 func Example_grover3() {
-	// NOTE: C. Figgatt, D. Maslov, K. A. Landsman, N. M. Linke, S. Debnath, and C. Monroe. Complete 3-Qubit Grover Search on a Programmable Quantum Computer.
+	// Reference: C. Figgatt, D. Maslov, K. A. Landsman, N. M. Linke, S. Debnath, and C. Monroe. Complete 3-Qubit Grover Search on a Programmable Quantum Computer.
 	qsim := q.New()
 
-	// initial state
+	// Initial state.
 	r := qsim.Zeros(3)
 	a := qsim.One()
 
-	// superposition
+	// Superposition.
 	qsim.H(r...).H(a)
 
-	// oracle for |011>|1>
+	// Oracle for |011>|1>.
 	qsim.X(r[0]).CCCNOT(r[0], r[1], r[2], a).X(r[0])
 
-	// diffuser
+	// Diffuser.
 	qsim.H(r...).H(a)
 	qsim.X(r...).CCZ(r[0], r[1], r[2]).X(r...)
 	qsim.H(r...)
@@ -836,28 +836,28 @@ func Example_grover3() {
 }
 
 func Example_grover4() {
-	// NOTE: Eric R. Johnson, Nic Harrigan, and Merecedes Gimeno-Segovia. Programming Quantum Computers. O'Reilly.
+	// Reference: Eric R. Johnson, Nic Harrigan, and Merecedes Gimeno-Segovia. Programming Quantum Computers. O'Reilly.
 	qsim := q.New()
 
-	// initial state
+	// Initial state.
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 	q2 := qsim.Zero()
 	q3 := qsim.Zero()
 
-	// superposition
+	// Superposition.
 	qsim.H(q0, q1, q2, q3)
 
 	// iteration
 	N := number.Pow(2, qsim.NumQubits())
 	r := math.Floor(math.Pi / 4 * math.Sqrt(float64(N)))
 	for range int(r) {
-		// oracle for |110>|x>
+		// Oracle for |110>|x>.
 		qsim.X(q2, q3)
 		qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)
 		qsim.X(q2, q3)
 
-		// diffuser
+		// Diffuser.
 		qsim.H(q0, q1, q2, q3)
 		qsim.X(q0, q1, q2, q3)
 		qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)
@@ -954,14 +954,14 @@ func Example_qft010() {
 }
 
 func Example_shor15() {
-	// NOTE: Zhengjun Cao, Zhenfu Cao, Lihua Liu. Remarks on Quantum Modular Exponentiation and Some Experimental Demonstrations of Shor’s Algorithm.
+	// Reference: Zhengjun Cao, Zhenfu Cao, Lihua Liu. Remarks on Quantum Modular Exponentiation and Some Experimental Demonstrations of Shor's Algorithm.
 	N := 15
 	a := 7
 
 	qsim := q.New()
 	qsim.Rand = rand.Const()
 
-	// initial state
+	// Initial state.
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 	q2 := qsim.Zero()
@@ -971,7 +971,7 @@ func Example_shor15() {
 	q5 := qsim.Zero()
 	q6 := qsim.One()
 
-	// superposition
+	// Superposition.
 	qsim.H(q0, q1, q2)
 
 	// Controlled-U^(2^0)
@@ -1030,7 +1030,7 @@ func Example_superDenseCoding() {
 	sdc := func(g *matrix.Matrix) string {
 		qsim := q.New()
 
-		// initial state
+		// Initial state.
 		q0 := qsim.Zero()
 		q1 := qsim.Zero()
 

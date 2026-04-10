@@ -7,7 +7,7 @@ func Ldexp(a, b int) float64 {
 	return math.Ldexp(float64(a), b)
 }
 
-// Pow returns a**r, the base-a exponential of r.
+// Pow returns a**r.
 func Pow(a, r int) int {
 	if a == 0 {
 		return 0
@@ -31,7 +31,7 @@ func Pow(a, r int) int {
 	return p
 }
 
-// BaseExp returns a and b such that a**b == N. If N is not a power of a, return false.
+// BaseExp returns a and b such that a**b == N. If N is not a perfect power, it returns false.
 func BaseExp(N int) (int, int, bool) {
 	if N < 2 {
 		// 0**1 == 0, 1**1 == 1

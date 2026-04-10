@@ -109,7 +109,7 @@ func (s Seq) String() string {
 	return fmt.Sprint(str)
 }
 
-// Bloch returns the polar(theta) and azimuthal(phi) angles of the state on the Bloch sphere.
+// Bloch returns the polar (theta) and azimuthal (phi) angles of the state on the Bloch sphere.
 func Bloch(alpha, beta complex128) (float64, float64) {
 	if epsilon.IsZeroF64(cmplx.Abs(alpha)) {
 		return math.Pi, 0

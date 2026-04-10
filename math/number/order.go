@@ -1,6 +1,6 @@
 package number
 
-// FindOrder returns convergent s/r and its real number such that a**r mod N = 1.
+// FindOrder returns a convergent s/r and its decimal value such that a**r mod N = 1.
 func FindOrder(a, N int, m float64, tol ...float64) (int, int, float64, bool) {
 	c := ContinuedFraction(m, tol...)
 

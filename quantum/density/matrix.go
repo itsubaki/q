@@ -44,7 +44,7 @@ func From(qb *qubit.Qubit) *DensityMatrix {
 	})
 }
 
-// At returns a value of matrix at (i,j).
+// At returns the value at (i, j).
 func (m *DensityMatrix) At(i, j int) complex128 {
 	return m.rho.At(i, j)
 }
@@ -112,7 +112,7 @@ func (m *DensityMatrix) TensorProduct(n *DensityMatrix) *DensityMatrix {
 	}
 }
 
-// Clone returns a clone of a density matrix.
+// Clone returns a copy of m.
 func (m *DensityMatrix) Clone() *DensityMatrix {
 	return &DensityMatrix{
 		rho: m.rho.Clone(),
@@ -135,8 +135,8 @@ func (m *DensityMatrix) Project(q *qubit.Qubit, tol ...float64) (float64, *Densi
 	}
 }
 
-// PartialTrace returns the density matrix obtained by tracing out the specified qubits from the original density matrix.
-// The length of index must be less than or equal to n - 1, where n is the number of qubits in the matrix.
+// PartialTrace returns the density matrix obtained by tracing out the specified qubits.
+// The number of qubits to trace out must be less than or equal to n - 1, where n is the number of qubits in the matrix.
 func (m *DensityMatrix) PartialTrace(qb ...int) *DensityMatrix {
 	n := m.NumQubits()
 

@@ -116,12 +116,12 @@ func (q *Qubit) Dim() int {
 	return len(q.state.Data)
 }
 
-// IsZero returns true if q is zero qubit.
+// IsZero returns true if q is in the zero state.
 func (q *Qubit) IsZero(tol ...float64) bool {
 	return q.Equal(Zero(), tol...)
 }
 
-// IsOne returns true if q is one qubit.
+// IsOne returns true if q is in the one state.
 func (q *Qubit) IsOne(tol ...float64) bool {
 	return q.Equal(One(), tol...)
 }
@@ -158,7 +158,7 @@ func (q *Qubit) TensorProduct(qb *Qubit) *Qubit {
 	return q
 }
 
-// Apply applies a list of gates to the qubit.
+// Apply applies a list of gates to q.
 func (q *Qubit) Apply(g ...*matrix.Matrix) *Qubit {
 	for _, v := range g {
 		q.state = q.state.Apply(v)
@@ -287,7 +287,7 @@ func (q *Qubit) T(idx int) *Qubit {
 	return q.R(math.Pi/4, idx)
 }
 
-// RX applies the rotation around X-axis.
+// RX applies the rotation around the X axis.
 func (q *Qubit) RX(theta float64, idx int) *Qubit {
 	sin := cmplx.Sin(complex(theta/2, 0))
 	cos := cmplx.Cos(complex(theta/2, 0))
@@ -304,7 +304,7 @@ func (q *Qubit) RX(theta float64, idx int) *Qubit {
 	return q
 }
 
-// RY applies the rotation around Y-axis.
+// RY applies the rotation around the Y axis.
 func (q *Qubit) RY(theta float64, idx int) *Qubit {
 	sin := cmplx.Sin(complex(theta/2, 0))
 	cos := cmplx.Cos(complex(theta/2, 0))
@@ -321,7 +321,7 @@ func (q *Qubit) RY(theta float64, idx int) *Qubit {
 	return q
 }
 
-// RZ applies the rotation around Z-axis.
+// RZ applies the rotation around the Z axis.
 func (q *Qubit) RZ(theta float64, idx int) *Qubit {
 	e0 := cmplx.Exp(complex(0, -theta/2))
 	e1 := cmplx.Exp(complex(0, theta/2))
@@ -615,14 +615,14 @@ func (q *Qubit) InvQFT(idx ...int) *Qubit {
 	return q
 }
 
-// Set sets the state vector of the qubit and normalized it.
+// Set sets the state vector of q and normalizes it.
 func (q *Qubit) Set(state *vector.Vector) {
 	q.n = number.Log2(len(state.Data))
 	q.state = state
 	q.Normalize()
 }
 
-// Measure returns a measured qubit.
+// Measure returns the measured qubit.
 func (q *Qubit) Measure(idx int) *Qubit {
 	n := q.NumQubits()
 	mask := 1 << (n - 1 - idx)
@@ -655,7 +655,7 @@ func (q *Qubit) Measure(idx int) *Qubit {
 	return One()
 }
 
-// Normalize returns a normalized qubit.
+// Normalize normalizes q.
 func (q *Qubit) Normalize() *Qubit {
 	sum := number.Sum(q.Probability())
 	norm := complex(1/math.Sqrt(sum), 0)
@@ -663,7 +663,7 @@ func (q *Qubit) Normalize() *Qubit {
 	return q
 }
 
-// Clone returns a clone of q.
+// Clone returns a copy of q.
 func (q *Qubit) Clone() *Qubit {
 	return &Qubit{
 		n:     q.n,
@@ -693,7 +693,7 @@ func (q *Qubit) BinaryString() string {
 	return sb.String()
 }
 
-// Int measures the quantum state and returns its int representation.
+// Int measures the quantum state and returns its integer representation.
 func (q *Qubit) Int() int {
 	return number.MustParseInt(q.BinaryString())
 }

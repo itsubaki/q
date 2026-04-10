@@ -8,12 +8,12 @@ import (
 	"github.com/itsubaki/q/math/matrix"
 )
 
-// Vector is a vector of complex128.
+// Vector represents a vector of complex128 values.
 type Vector struct {
 	Data []complex128
 }
 
-// New returns a new vector of complex128.
+// New returns a new vector of complex128 values.
 func New(z ...complex128) *Vector {
 	return &Vector{
 		Data: z,
@@ -27,7 +27,7 @@ func Zero(n int) *Vector {
 	}
 }
 
-// Clone returns a clone of vector.
+// Clone returns a copy of v.
 func (v *Vector) Clone() *Vector {
 	data := make([]complex128, len(v.Data))
 	copy(data, v.Data)
@@ -36,7 +36,7 @@ func (v *Vector) Clone() *Vector {
 	}
 }
 
-// Dual returns a dual vector.
+// Dual returns the dual vector of v.
 func (v *Vector) Dual() *Vector {
 	data := make([]complex128, len(v.Data))
 	for i := range v.Data {
@@ -48,7 +48,7 @@ func (v *Vector) Dual() *Vector {
 	}
 }
 
-// Mul returns a vector of z*v.
+// Mul returns z * v.
 func (v *Vector) Mul(z complex128) *Vector {
 	data := make([]complex128, len(v.Data))
 	for i := range v.Data {

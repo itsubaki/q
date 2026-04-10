@@ -20,8 +20,8 @@ import (
 // The input `r` is a slice of 4 qubits representing the cells a, b, c, and d
 // in row-major order: [a, b, c, d].
 // The `s` slice must contain 4 ancilla qubits used for intermediate checks.
-// The `a` qubit is the oracle’s phase flag (target).
-// The `a` is initialized to |−> = (|0> − |1>)/√2 to facilitate phase kickback.
+// The `a` qubit is the oracle's phase flag (target).
+// It is initialized to |-> = (|0> - |1>)/sqrt(2) to facilitate phase kickback.
 //
 // The oracle checks the following uniqueness constraints:
 //
@@ -31,8 +31,8 @@ import (
 //   - b != d
 //
 // If **all** constraints are satisfied (i.e., the input represents a valid mini-sudoku solution),
-// the oracle applies a X gate to qubit `a`, flipping the sign of the amplitude (−1 phase).
-// This marks the valid state for Grover’s amplitude amplification.
+// the oracle applies an X gate to qubit `a`, flipping the sign of the amplitude (-1 phase).
+// This marks the valid state for Grover's amplitude amplification.
 //
 // Finally, the ancilla qubits `s` are uncomputed (returned to |0>) to clean up
 // any entanglement and avoid side effects in the rest of the algorithm.

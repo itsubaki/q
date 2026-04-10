@@ -73,7 +73,7 @@ func (s State) Equal(v State, tol ...float64) bool {
 	return epsilon.IsClose(s.amp, v.amp, tol...)
 }
 
-// Equal returns true if s equals v.
+// Equal returns true if s and v are equal.
 func Equal(s, v []State, tol ...float64) bool {
 	if len(s) != len(v) {
 		return false
