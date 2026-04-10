@@ -33,7 +33,7 @@ func oracle(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
 }
 
 // I-2|s><s| = -(2|s><s|-I)
-// -exp{±i*theta} = exp{i*2pi(1/2±theta/2pi}
+// -exp{±i*theta} = exp{i*pi} * exp{±i*theta} = exp{i*2pi(1/2±theta/2pi)}
 // phi = 0.5±theta/2pi
 func diffuser(qsim *q.Q, c q.Qubit, r []q.Qubit) {
 	qsim.H(r...)
