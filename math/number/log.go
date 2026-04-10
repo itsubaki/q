@@ -11,6 +11,7 @@ func Log2(N int) int {
 	return count
 }
 
+// IsPowOf2 returns true if N is a power of 2.
 func IsPowOf2(N int) bool {
 	return N > 0 && N&(N-1) == 0
 }

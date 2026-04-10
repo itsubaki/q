@@ -127,12 +127,12 @@ func print(desc string, qsim *q.Q, reg ...any) {
 	fmt.Println()
 }
 
-// CModExp2 applies controlled modular exponentiation operation.
+// CModExp2 applies a controlled modular exponentiation operation.
 func CModExp2(qsim *q.Q, a, j, N int, control q.Qubit, target []q.Qubit) {
 	ControlledModExp2(qsim.Qubit(), a, j, N, control.Index(), q.Index(target...))
 }
 
-// ControlledModExp2 applies the controlled modular exponentiation operation.
+// ControlledModExp2 applies a controlled modular exponentiation operation.
 // |j>|k> -> |j>|a**(2**j) * k mod N>.
 func ControlledModExp2(qb *qubit.Qubit, a, j, N, control int, target []int) {
 	n := qb.NumQubits()

@@ -24,28 +24,28 @@ func Tol(tol ...float64) (float64, float64) {
 	return tol[0], tol[1]
 }
 
-// IsZero returns true if a complex128 number is close to zero within the given tolerances.
+// IsZero returns true if a is close to zero within the given tolerances.
 func IsZero(a complex128, tol ...float64) bool {
 	return IsClose(a, 0.0, tol...)
 }
 
-// IsClose returns true if two complex128 numbers are close within the given tolerances.
+// IsClose returns true if a and b are close within the given tolerances.
 func IsClose(a, b complex128, tol ...float64) bool {
 	atol, rtol := Tol(tol...)
 	return cmplx.Abs(a-b) <= atol+rtol*math.Max(cmplx.Abs(a), cmplx.Abs(b))
 }
 
-// IsZeroF64 returns true if a float64 number is close to zero within the given tolerances.
+// IsZeroF64 returns true if a is close to zero within the given tolerances.
 func IsZeroF64(a float64, tol ...float64) bool {
 	return IsCloseF64(a, 0.0, tol...)
 }
 
-// IsOneF64 returns true if a float64 number is close to one within the given tolerances.
+// IsOneF64 returns true if a is close to one within the given tolerances.
 func IsOneF64(a float64, tol ...float64) bool {
 	return IsCloseF64(a, 1.0, tol...)
 }
 
-// IsCloseF64 returns true if two float64 numbers are close within the given tolerances.
+// IsCloseF64 returns true if a and b are close within the given tolerances.
 func IsCloseF64(a, b float64, tol ...float64) bool {
 	atol, rtol := Tol(tol...)
 	return math.Abs(a-b) <= atol+rtol*math.Max(math.Abs(a), math.Abs(b))

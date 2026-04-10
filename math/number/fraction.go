@@ -6,14 +6,14 @@ import (
 	"github.com/itsubaki/q/math/epsilon"
 )
 
-// ContinuedFraction returns a continued fraction of real.
-func ContinuedFraction(real float64, tol ...float64) []int {
-	if epsilon.IsZeroF64(real, tol...) {
+// ContinuedFraction returns the continued fraction of x.
+func ContinuedFraction(x float64, tol ...float64) []int {
+	if epsilon.IsZeroF64(x, tol...) {
 		return []int{0}
 	}
 
 	var cf []int
-	r := real
+	r := x
 	for {
 		a, frac := math.Modf(r)
 		cf = append(cf, int(a))
@@ -27,7 +27,7 @@ func ContinuedFraction(real float64, tol ...float64) []int {
 	return cf
 }
 
-// Convergent returns a convergent of continued fraction.
+// Convergent returns the convergent of a continued fraction.
 func Convergent(cfx []int) (int, int, float64) {
 	n := len(cfx)
 	if n == 0 {

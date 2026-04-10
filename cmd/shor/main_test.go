@@ -196,7 +196,7 @@ func TestControlledModExp2g(t *testing.T) {
 	}
 }
 
-// ControlledModExp2g returns gate of controlled modular exponentiation operation.
+// ControlledModExp2g returns the gate for a controlled modular exponentiation operation.
 // |j>|k> -> |j>|a**(2**j) * k mod N>.
 func ControlledModExp2g(n, a, j, N, c int, t []int) *matrix.Matrix {
 	m := gate.I(n)

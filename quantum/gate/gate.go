@@ -7,7 +7,7 @@ import (
 	"github.com/itsubaki/q/math/matrix"
 )
 
-// Theta returns 2 * pi / 2**k
+// Theta returns 2 * pi / 2**k.
 func Theta(k int) float64 {
 	return 2 * math.Pi / math.Pow(2, float64(k))
 }
@@ -137,38 +137,38 @@ func RZ(theta float64) *matrix.Matrix {
 	)
 }
 
-// C returns a controlled-u gate.
+// C returns a controlled-U gate.
 func C(u *matrix.Matrix, n int, c int, t int) *matrix.Matrix {
 	return Controlled(u, n, []int{c}, t)
 }
 
-// CNOT returns a controlled-not gate.
+// CNOT returns a controlled-NOT gate.
 func CNOT(n, c, t int) *matrix.Matrix {
 	return ControlledNot(n, []int{c}, t)
 }
 
-// CCNOT returns a controlled-controlled-not gate.
+// CCNOT returns a controlled-controlled-NOT gate.
 func CCNOT(n, c0, c1, t int) *matrix.Matrix {
 	return ControlledNot(n, []int{c0, c1}, t)
 }
 
-// CZ returns a controlled-z gate.
+// CZ returns a controlled-Z gate.
 func CZ(n, c, t int) *matrix.Matrix {
 	return ControlledZ(n, []int{c}, t)
 }
 
-// CS returns a controlled-s gate.
+// CS returns a controlled-S gate.
 func CS(n, c, t int) *matrix.Matrix {
 	return ControlledS(n, []int{c}, t)
 }
 
-// CR returns a controlled-r gate.
+// CR returns a controlled-R gate.
 func CR(theta float64, n, c, t int) *matrix.Matrix {
 	return ControlledR(theta, n, []int{c}, t)
 }
 
-// Controlled returns a controlled-u gate.
-// u is a (2x2) unitary matrix and returns a (2**n x 2**n) matrix.
+// Controlled returns a controlled-U gate.
+// u must be a 2x2 unitary matrix, and Controlled returns a 2**n x 2**n matrix.
 func Controlled(u *matrix.Matrix, n int, c []int, t int) *matrix.Matrix {
 	var mask int
 	for _, b := range c {
@@ -201,7 +201,7 @@ func Controlled(u *matrix.Matrix, n int, c []int, t int) *matrix.Matrix {
 	return g
 }
 
-// ControlledNot returns a controlled-not gate.
+// ControlledNot returns a controlled-NOT gate.
 func ControlledNot(n int, c []int, t int) *matrix.Matrix {
 	var mask int
 	for _, b := range c {
@@ -225,7 +225,7 @@ func ControlledNot(n int, c []int, t int) *matrix.Matrix {
 	return matrix.New(data...)
 }
 
-// ControlledZ returns a controlled-z gate.
+// ControlledZ returns a controlled-Z gate.
 func ControlledZ(n int, c []int, t int) *matrix.Matrix {
 	var mask int
 	for _, b := range c {
@@ -242,7 +242,7 @@ func ControlledZ(n int, c []int, t int) *matrix.Matrix {
 	return g
 }
 
-// ControlledS returns a controlled-s gate.
+// ControlledS returns a controlled-S gate.
 func ControlledS(n int, c []int, t int) *matrix.Matrix {
 	var mask int
 	for _, b := range c {
@@ -259,7 +259,7 @@ func ControlledS(n int, c []int, t int) *matrix.Matrix {
 	return g
 }
 
-// ControlledR returns a controlled-r gate.
+// ControlledR returns a controlled-R gate.
 func ControlledR(theta float64, n int, c []int, t int) *matrix.Matrix {
 	// exp(i * theta)
 	e := cmplx.Exp(complex(0, theta))
@@ -288,7 +288,7 @@ func Swap(n, c, t int) *matrix.Matrix {
 	)
 }
 
-// QFT returns a gate of Quantum Fourier Transform operation.
+// QFT returns the gate for the quantum Fourier transform.
 func QFT(n int) *matrix.Matrix {
 	g := I(n)
 
@@ -315,7 +315,7 @@ func QFT(n int) *matrix.Matrix {
 	return g
 }
 
-// TensorProduct returns the tensor product of 'u' at specified indices over 'n' qubits.
+// TensorProduct returns the tensor product of u at the specified indices over n qubits.
 func TensorProduct(u *matrix.Matrix, n int, idx []int) *matrix.Matrix {
 	target := make(map[int]bool)
 	for _, i := range idx {
