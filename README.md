@@ -21,11 +21,11 @@ go get github.com/itsubaki/q
 ```go
 qsim := q.New()
 
-// generate qubits of |0>|0>
+// generate qubits in the state |0>|0>
 q0 := qsim.Zero()
 q1 := qsim.Zero()
 
-// apply quantum circuit
+// apply the quantum circuit
 qsim.H(q0)
 qsim.CNOT(q0, q1)
 
@@ -54,12 +54,12 @@ for _, s := range qsim.State() {
 ```go
 qsim := q.New()
 
-// generate qubits of |psi>|0>|0>
+// generate qubits in the state |psi>|0>|0>
 psi := qsim.New(1, 2)
 q0 := qsim.Zero()
 q1 := qsim.Zero()
 
-// |psi> is normalized. |psi> = a|0> + b|1>, |a|^2 = 0.2, |b|^2 = 0.8
+// |psi> is normalized. |psi> = a|0> + b|1>, where |a|^2 = 0.2 and |b|^2 = 0.8
 for _, s := range qsim.State(psi) {
   fmt.Println(s)
 }
@@ -72,7 +72,7 @@ qsim.CNOT(q0, q1)
 qsim.CNOT(psi, q0)
 qsim.H(psi)
 
-// Alice sends mz, mx to Bob
+// Alice sends mz and mx to Bob
 mz := qsim.Measure(psi)
 mx := qsim.Measure(q0)
 
@@ -80,7 +80,7 @@ mx := qsim.Measure(q0)
 qsim.CondX(mx.IsOne(), q1)
 qsim.CondZ(mz.IsOne(), q1)
 
-// Bob got |psi> state with q1
+// Bob obtains the |psi> state in q1
 for _, s := range qsim.State(q1) {
   fmt.Println(s)
 }
@@ -103,10 +103,10 @@ q3 := qsim.Zero()
 // superposition
 qsim.H(q0, q1, q2, q3)
 
-// iteration
+// iterations
 N := number.Pow(2, qsim.NumQubits())
-r := math.Floor(math.Pi / 4 * math.Sqrt(float64(N)))
-for range int(r) {
+R := math.Floor(math.Pi / 4 * math.Sqrt(float64(N)))
+for range int(R) {
   // oracle for |110>|x>
   qsim.X(q2, q3)
   qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)
@@ -146,7 +146,7 @@ for _, s := range qsim.State([]q.Qubit{q0, q1, q2}, q3) {
 
 ```go
 N := 15
-a := 7 // co-prime
+a := 7 // co-prime with N
 
 for i := range 10 {
   qsim := q.New()
@@ -198,7 +198,7 @@ for i := range 10 {
     continue
   }
 
-  // result
+  // output result
   fmt.Printf("i=%d: N=%d, a=%d. p=%v, q=%v. s/r=%d/%d ([0.%v]~%.3f)\n", i, N, a, p0, p1, s, r, m, d)
 }
 
@@ -218,10 +218,10 @@ q2 := qsim.Zero()
 qsim.CNOT(q0, q1)
 qsim.CNOT(q0, q2)
 
-// error: first qubit is flipped
+// error: the first qubit is flipped
 qsim.X(q0)
 
-// add ancilla qubit
+// add ancilla qubits
 q3 := qsim.Zero()
 q4 := qsim.Zero()
 
