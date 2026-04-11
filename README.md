@@ -109,13 +109,17 @@ R := math.Floor(math.Pi / 4 * math.Sqrt(float64(N)))
 for range int(R) {
   // oracle for |110>|x>
   qsim.X(q2, q3)
-  qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)
+  qsim.H(q3)
+  qsim.CCCNOT(q0, q1, q2, q3)
+  qsim.H(q3)
   qsim.X(q2, q3)
 
   // diffuser
   qsim.H(q0, q1, q2, q3)
   qsim.X(q0, q1, q2, q3)
-  qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)
+  qsim.H(q3)
+  qsim.CCCNOT(q0, q1, q2, q3)
+  qsim.H(q3)
   qsim.X(q0, q1, q2, q3)
   qsim.H(q0, q1, q2, q3)
 }

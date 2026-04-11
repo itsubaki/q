@@ -651,21 +651,25 @@ func ExampleTop() {
 	q0 := qsim.Zeros(3)
 	qsim.H(q0...)
 
-	// Top 2 states.
 	for _, s := range q.Top(qsim.State(), 2) {
-		fmt.Println(s)
-	}
-	fmt.Println()
-
-	// All states.
-	for _, s := range q.Top(qsim.State(), -1) {
 		fmt.Println(s)
 	}
 
 	// Output:
 	// [000][  0]( 0.3536 0.0000i): 0.1250
 	// [001][  1]( 0.3536 0.0000i): 0.1250
-	//
+}
+
+func ExampleTop_all() {
+	qsim := q.New()
+	q0 := qsim.Zeros(3)
+	qsim.H(q0...)
+
+	for _, s := range q.Top(qsim.State(), -1) {
+		fmt.Println(s)
+	}
+
+	// Output:
 	// [000][  0]( 0.3536 0.0000i): 0.1250
 	// [001][  1]( 0.3536 0.0000i): 0.1250
 	// [010][  2]( 0.3536 0.0000i): 0.1250
@@ -805,19 +809,22 @@ func Example_grover3() {
 	// Reference: C. Figgatt, D. Maslov, K. A. Landsman, N. M. Linke, S. Debnath, and C. Monroe. Complete 3-Qubit Grover Search on a Programmable Quantum Computer.
 	qsim := q.New()
 
-	// Initial state.
 	r := qsim.Zeros(3)
 	a := qsim.One()
 
-	// Superposition.
-	qsim.H(r...).H(a)
+	qsim.H(r...)
+	qsim.H(a)
 
-	// Oracle for |011>|1>.
-	qsim.X(r[0]).CCCNOT(r[0], r[1], r[2], a).X(r[0])
+	// oracle
+	qsim.X(r[0])
+	qsim.CCCNOT(r[0], r[1], r[2], a)
+	qsim.X(r[0])
 
-	// Diffuser.
+	// diffuser
 	qsim.H(r...).H(a)
-	qsim.X(r...).CCZ(r[0], r[1], r[2]).X(r...)
+	qsim.X(r...)
+	qsim.CCZ(r[0], r[1], r[2])
+	qsim.X(r...)
 	qsim.H(r...)
 
 	for _, s := range qsim.State(r, a) {
@@ -839,28 +846,29 @@ func Example_grover4() {
 	// Reference: Eric R. Johnson, Nic Harrigan, and Merecedes Gimeno-Segovia. Programming Quantum Computers. O'Reilly.
 	qsim := q.New()
 
-	// Initial state.
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 	q2 := qsim.Zero()
 	q3 := qsim.Zero()
 
-	// Superposition.
 	qsim.H(q0, q1, q2, q3)
 
-	// iteration
 	N := number.Pow(2, qsim.NumQubits())
-	r := math.Floor(math.Pi / 4 * math.Sqrt(float64(N)))
-	for range int(r) {
-		// Oracle for |110>|x>.
+	R := math.Floor(math.Pi / 4 * math.Sqrt(float64(N)))
+	for range int(R) {
+		// oracle
 		qsim.X(q2, q3)
-		qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)
+		qsim.H(q3)
+		qsim.CCCNOT(q0, q1, q2, q3)
+		qsim.H(q3)
 		qsim.X(q2, q3)
 
-		// Diffuser.
+		// diffuser
 		qsim.H(q0, q1, q2, q3)
 		qsim.X(q0, q1, q2, q3)
-		qsim.H(q3).CCCNOT(q0, q1, q2, q3).H(q3)
+		qsim.H(q3)
+		qsim.CCCNOT(q0, q1, q2, q3)
+		qsim.H(q3)
 		qsim.X(q0, q1, q2, q3)
 		qsim.H(q0, q1, q2, q3)
 	}
@@ -961,7 +969,6 @@ func Example_shor15() {
 	qsim := q.New()
 	qsim.Rand = rand.Const()
 
-	// Initial state.
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 	q2 := qsim.Zero()
@@ -971,7 +978,6 @@ func Example_shor15() {
 	q5 := qsim.Zero()
 	q6 := qsim.One()
 
-	// Superposition.
 	qsim.H(q0, q1, q2)
 
 	// Controlled-U^(2^0)
@@ -991,7 +997,6 @@ func Example_shor15() {
 	qsim.Swap(q0, q2)
 	qsim.InvQFT(q0, q1, q2)
 
-	// debug
 	qsim.Measure(q3, q4, q5, q6)
 	for _, s := range qsim.State([]q.Qubit{q0, q1, q2}) {
 		fmt.Println(s)
@@ -1010,8 +1015,6 @@ func Example_shor15() {
 	// gcd(a^(r/2)-1, N), gcd(a^(r/2)+1, N)
 	p0 := number.GCD(number.Pow(a, r/2)-1, N)
 	p1 := number.GCD(number.Pow(a, r/2)+1, N)
-
-	// check non-trivial factor
 	if number.IsTrivial(N, p0, p1) {
 		return
 	}
@@ -1030,7 +1033,6 @@ func Example_superDenseCoding() {
 	sdc := func(g *matrix.Matrix) string {
 		qsim := q.New()
 
-		// Initial state.
 		q0 := qsim.Zero()
 		q1 := qsim.Zero()
 
@@ -1070,7 +1072,6 @@ func Example_ecc() {
 		fmt.Println(s)
 	}
 
-	// encode
 	q1 := qsim.Zero()
 	q2 := qsim.Zero()
 	qsim.CNOT(q0, q1)
@@ -1081,7 +1082,7 @@ func Example_ecc() {
 		fmt.Println(s)
 	}
 
-	// error: first qubit is flipped
+	// error: the first qubit is flipped
 	qsim.X(q0)
 
 	fmt.Println("q0(flipped):")
@@ -1089,7 +1090,6 @@ func Example_ecc() {
 		fmt.Println(s)
 	}
 
-	// add ancilla qubit
 	q3 := qsim.Zero()
 	q4 := qsim.Zero()
 
@@ -1138,14 +1138,12 @@ func Example_gateTeleportation() {
 	qsim.H(a)
 	qsim.T(a) // magic state
 
-	// teleportation of T gate
 	qsim.CNOT(a, psi)
 	m0 := qsim.Measure(psi)
 	qsim.Cond(m0.IsOne(), gate.X(), a)
 	qsim.Cond(m0.IsOne(), gate.S(), a)
 
 	{
-		// check
 		qs := q.New()
 		qb := qs.New(1, 2)
 		qs.T(qb)
@@ -1180,15 +1178,14 @@ func Example_any() {
 func Example_densityMatrix() {
 	qsim := q.New()
 	{
-		// bell state
 		qb := qsim.Zeros(2)
 		qsim.H(qb[0])
 		qsim.CNOT(qb[0], qb[1])
 	}
 
 	rho := density.From(qsim.Qubit())
-	s0 := rho.TraceOut(1) // trace out qubit 1
-	s1 := rho.TraceOut(0) // trace out qubit 0
+	s0 := rho.TraceOut(1)
+	s1 := rho.TraceOut(0)
 
 	fmt.Printf("trace: %.2v, purity: %.2v\n", rho.Trace(), rho.Purity())
 	fmt.Printf("trace: %.2v, purity: %.2v\n", s0.Trace(), s0.Purity())
