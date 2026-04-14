@@ -148,7 +148,7 @@ func GenerateSequences(n int) []Seq {
 		}
 
 		for _, g := range []uint64{H, T} {
-			nbits, nlen := AppendSimplified(bits, length, g)
+			nbits, nlen := Append(bits, length, g)
 
 			key := (nbits << maxLen) | uint64(nlen)
 			if _, ok := visited[key]; ok {
@@ -171,7 +171,7 @@ func GenerateSequences(n int) []Seq {
 	return Sort(seqs)
 }
 
-func AppendSimplified(bits uint64, length int, gate uint64) (uint64, int) {
+func Append(bits uint64, length int, gate uint64) (uint64, int) {
 	if length == 0 {
 		return gate, 1
 	}
