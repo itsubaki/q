@@ -32,9 +32,18 @@ func oracle(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
 	xor(r[0], r[1], s[0])
 }
 
-// I-2|s><s| = -(2|s><s|-I)
-// -exp{±i*theta} = exp{i*pi} * exp{±i*theta} = exp{i*2pi(1/2±theta/2pi)}
-// phi = 0.5±theta/2pi
+// This diffuser implements I - 2|s><s| instead of 2|s><s| - I, i.e. it is -D.
+// As a result, the overall Grover operator becomes -G rather than G.
+//
+// The eigenvalues of G are exp(+/- i*theta), but for -G they become
+// -exp(+/- i*theta) = exp(i*pi) * exp(+/- i*theta).
+//
+// In the phase estimation form exp(2*pi*i*phi), this is:
+//   -exp(+/- i*theta) = exp(2*pi*i*(1/2 +/- theta/(2*pi)))
+//
+// Therefore, the estimated phase is
+//   phi = 1/2 +/- theta/(2*pi)
+// and we need to subtract 0.5 from phi to recover theta.
 func diffuser(qsim *q.Q, c q.Qubit, r []q.Qubit) {
 	qsim.H(r...)
 	qsim.X(r...)
