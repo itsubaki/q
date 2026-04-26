@@ -85,11 +85,6 @@ func (m *DensityMatrix) NumQubits() int {
 	return number.Log2(p)
 }
 
-// Probability returns the probability of the qubit in the given state.
-func (m *DensityMatrix) Probability(q *qubit.Qubit) float64 {
-	return real(matrix.MatMul(m.rho, q.OuterProduct(q)).Trace())
-}
-
 // ExpectedValue returns the expectation value of the given operator.
 func (m *DensityMatrix) ExpectedValue(u *matrix.Matrix) float64 {
 	return real(matrix.MatMul(m.rho, u).Trace())
@@ -119,9 +114,9 @@ func (m *DensityMatrix) Clone() *DensityMatrix {
 	}
 }
 
-// Project returns the probability and post-measurement density matrix.
-func (m *DensityMatrix) Project(q *qubit.Qubit, tol ...float64) (float64, *DensityMatrix) {
-	p := m.Probability(q)
+// Measure returns the probability and post-measurement density matrix.
+func (m *DensityMatrix) Measure(q *qubit.Qubit, tol ...float64) (float64, *DensityMatrix) {
+	p := real(matrix.MatMul(m.rho, q.OuterProduct(q)).Trace())
 	if epsilon.IsZeroF64(p, tol...) {
 		return 0, &DensityMatrix{
 			rho: matrix.ZeroLike(m.rho),

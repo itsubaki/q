@@ -19,7 +19,8 @@ func Example_channel() {
 		PhaseDamping(0.7, 0).
 		BitFlip(0.1, 0)
 
-	fmt.Printf("%.4f\n", rho.Probability(qubit.Zero()))
+	p, _ := rho.Measure(qubit.Zero())
+	fmt.Printf("%.4f\n", p)
 
 	// Output:
 	// 0.8840
@@ -33,8 +34,9 @@ func Example_compose() {
 		density.BitFlip(0.1, 0),
 	)
 
-	rho := density.From(qubit.Zero()).ApplyChannelFunc(channel)
-	fmt.Printf("%.4f\n", rho.Probability(qubit.Zero()))
+	rho := density.From(qubit.Zero())
+	p, _ := rho.ApplyChannelFunc(channel).Measure(qubit.Zero())
+	fmt.Printf("%.4f\n", p)
 
 	// Output:
 	// 0.8840
@@ -83,24 +85,47 @@ func ExampleDensityMatrix_ExpectedValue() {
 	// Z: 0.1
 }
 
-func ExampleDensityMatrix_Probability() {
-	rho := density.FromStates([]density.WeightedState{
-		{
-			Probability: 0.1,
-			Qubit:       qubit.Zero(),
-		},
-		{
-			Probability: 0.9,
-			Qubit:       qubit.One(),
-		},
-	})
+func ExampleDensityMatrix_Measure() {
+	rho := density.From(qubit.Zero(2).Apply(
+		gate.H().TensorProduct(gate.I()),
+		gate.CNOT(2, 0, 1),
+	))
 
-	fmt.Printf("0: %.2v\n", rho.Probability(qubit.Zero()))
-	fmt.Printf("1: %.2v\n", rho.Probability(qubit.One()))
+	for _, basis := range []*qubit.Qubit{
+		qubit.From("00"),
+		qubit.From("01"),
+		qubit.From("10"),
+		qubit.From("11"),
+	} {
+		p, sigma := rho.Measure(basis)
+		fmt.Printf("%v: %.2f\n", basis.BinaryString(), p)
+
+		for _, r := range sigma.Seq2() {
+			fmt.Println(r)
+		}
+	}
 
 	// Output:
-	// 0: 0.1
-	// 1: 0.9
+	// 00: 0.50
+	// [(1+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// 01: 0.00
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// 10: 0.00
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// 11: 0.50
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (0+0i)]
+	// [(0+0i) (0+0i) (0+0i) (1+0i)]
 }
 
 func ExampleDensityMatrix_IsHermitian() {
@@ -182,51 +207,6 @@ func ExampleDensityMatrix_TensorProduct() {
 	// [(0+0i) (0+0i) (0+0i) (0+0i)]
 }
 
-func ExampleDensityMatrix_Project() {
-	rho := density.From(qubit.Zero(2).Apply(
-		gate.H().TensorProduct(gate.I()),
-		gate.CNOT(2, 0, 1),
-	))
-
-	computationalBasis := []*qubit.Qubit{
-		qubit.From("00"),
-		qubit.From("01"),
-		qubit.From("10"),
-		qubit.From("11"),
-	}
-
-	for _, basis := range computationalBasis {
-		p, sigma := rho.Project(basis)
-
-		fmt.Printf("%v: %.2f\n", basis.BinaryString(), p)
-		for _, r := range sigma.Seq2() {
-			fmt.Println(r)
-		}
-	}
-
-	// Output:
-	// 00: 0.50
-	// [(1+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// 01: 0.00
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// 10: 0.00
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// 11: 0.50
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (0+0i)]
-	// [(0+0i) (0+0i) (0+0i) (1+0i)]
-}
-
 func ExampleDensityMatrix_TraceOut() {
 	rho := density.FromStates([]density.WeightedState{
 		{
@@ -276,15 +256,19 @@ func ExampleDensityMatrix_TraceOut_x8() {
 
 func ExampleDensityMatrix_Depolarizing() {
 	rho := density.From(qubit.Zero())
-	fmt.Printf("0: %.2f\n", rho.Probability(qubit.Zero()))
-	fmt.Printf("1: %.2f\n", rho.Probability(qubit.One()))
+	p0, _ := rho.Measure(qubit.Zero())
+	p1, _ := rho.Measure(qubit.One())
+	fmt.Printf("0: %.2f\n", p0)
+	fmt.Printf("1: %.2f\n", p1)
 	fmt.Println()
 
 	// XrhoX = |1><1|, YrhoY = |1><1|, ZrhoZ = |0><0|
 	// E(rho) = 0.7|0><0| + 0.1|1><1| + 0.1|1><1| + 0.1|0><0| = 0.8|0><0| + 0.2|1><1|
 	s0 := rho.Depolarizing(0.3, 0)
-	fmt.Printf("0: %.2f\n", s0.Probability(qubit.Zero()))
-	fmt.Printf("1: %.2f\n", s0.Probability(qubit.One()))
+	p0, _ = s0.Measure(qubit.Zero())
+	p1, _ = s0.Measure(qubit.One())
+	fmt.Printf("0: %.2f\n", p0)
+	fmt.Printf("1: %.2f\n", p1)
 
 	// Output:
 	// 0: 1.00
@@ -297,7 +281,8 @@ func ExampleDensityMatrix_Depolarizing() {
 func ExampleDensityMatrix_AmplitudeDamping() {
 	rho := density.From(qubit.Plus())
 	for _, p := range []float64{0.3, 0.6, 0.9, 1.0} {
-		fmt.Printf("%.4f\n", rho.AmplitudeDamping(p, 0).Probability(qubit.Zero()))
+		p0, _ := rho.AmplitudeDamping(p, 0).Measure(qubit.Zero())
+		fmt.Printf("%.4f\n", p0)
 	}
 
 	// Output:
@@ -311,8 +296,10 @@ func ExampleDensityMatrix_Flip() {
 	rho := density.From(qubit.Zero(2))
 	s1 := rho.Flip(0.3, gate.X(), 0)
 
-	fmt.Printf("%.2f\n", s1.Probability(qubit.From("00")))
-	fmt.Printf("%.2f\n", s1.Probability(qubit.From("10")))
+	p0, _ := s1.Measure(qubit.From("00"))
+	p1, _ := s1.Measure(qubit.From("10"))
+	fmt.Printf("%.2f\n", p0)
+	fmt.Printf("%.2f\n", p1)
 
 	// Output:
 	// 0.70
@@ -323,8 +310,10 @@ func ExampleDensityMatrix_Flip_qb1() {
 	rho := density.From(qubit.Zero(2))
 	s1 := rho.Flip(0.3, gate.X(), 1)
 
-	fmt.Printf("%.2f\n", s1.Probability(qubit.From("00")))
-	fmt.Printf("%.2f\n", s1.Probability(qubit.From("01")))
+	p0, _ := s1.Measure(qubit.From("00"))
+	p1, _ := s1.Measure(qubit.From("01"))
+	fmt.Printf("%.2f\n", p0)
+	fmt.Printf("%.2f\n", p1)
 
 	// Output:
 	// 0.70
@@ -335,8 +324,10 @@ func ExampleDensityMatrix_BitFlip() {
 	rho := density.From(qubit.Zero())
 	x := rho.BitFlip(0.3, 0)
 
-	fmt.Printf("%.2f\n", x.Probability(qubit.Zero()))
-	fmt.Printf("%.2f\n", x.Probability(qubit.One()))
+	p0, _ := x.Measure(qubit.Zero())
+	p1, _ := x.Measure(qubit.One())
+	fmt.Printf("%.2f\n", p0)
+	fmt.Printf("%.2f\n", p1)
 
 	// Output:
 	// 0.70
@@ -347,8 +338,10 @@ func ExampleDensityMatrix_BitPhaseFlip() {
 	rho := density.From(qubit.Plus())
 	y := rho.BitPhaseFlip(0.3, 0)
 
-	fmt.Printf("%.2f\n", y.Probability(qubit.Plus()))
-	fmt.Printf("%.2f\n", y.Probability(qubit.Minus()))
+	p0, _ := y.Measure(qubit.Plus())
+	p1, _ := y.Measure(qubit.Minus())
+	fmt.Printf("%.2f\n", p0)
+	fmt.Printf("%.2f\n", p1)
 
 	// Output:
 	// 0.70
@@ -359,8 +352,10 @@ func ExampleDensityMatrix_PhaseFlip() {
 	rho := density.From(qubit.Plus())
 	z := rho.PhaseFlip(0.3, 0)
 
-	fmt.Printf("%.2f\n", z.Probability(qubit.Plus()))
-	fmt.Printf("%.2f\n", z.Probability(qubit.Minus()))
+	p0, _ := z.Measure(qubit.Plus())
+	p1, _ := z.Measure(qubit.Minus())
+	fmt.Printf("%.2f\n", p0)
+	fmt.Printf("%.2f\n", p1)
 
 	// Output:
 	// 0.70
@@ -380,7 +375,8 @@ func TestFromStates(t *testing.T) {
 
 	for _, c := range cases {
 		rho := density.FromStates(c.s)
-		prop := rho.Probability(qubit.Zero())
+		prop, _ := rho.Measure(qubit.Zero())
+
 		if !epsilon.IsCloseF64(prop, c.want) {
 			t.Errorf("got=%v, want=%v", prop, c.want)
 		}
@@ -474,7 +470,7 @@ func TestProbability(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := density.FromStates(c.s).Probability(c.m)
+		got, _ := density.FromStates(c.s).Measure(c.m)
 		if !epsilon.IsCloseF64(got, c.want) {
 			t.Fail()
 		}
@@ -513,7 +509,7 @@ func TestApply(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := density.FromStates(c.s).Apply(c.u).Probability(c.m)
+		got, _ := density.FromStates(c.s).Apply(c.u).Measure(c.m)
 		if !epsilon.IsCloseF64(got, c.want) {
 			t.Fail()
 		}
@@ -817,7 +813,9 @@ func TestTraceOut(t *testing.T) {
 
 	for _, c := range cases {
 		for _, s := range c.cs {
-			got := density.FromStates(c.s).TraceOut(s.qb...)
+			rho := density.FromStates(c.s)
+
+			got := rho.TraceOut(s.qb...)
 			p, q := got.Dim()
 			if p != len(s.want) || q != len(s.want) {
 				t.Errorf("got=%v, %v want=%v", p, q, s.want)
@@ -912,13 +910,15 @@ func TestAmplitudeDamping(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := density.FromStates([]density.WeightedState{
+		rho := density.FromStates([]density.WeightedState{
 			{
 				Probability: 1,
 				Qubit:       c.qubit,
 			},
-		}).AmplitudeDamping(c.p, 0)
-		if !epsilon.IsCloseF64(got.Probability(c.m), c.want) {
+		})
+
+		got, _ := rho.AmplitudeDamping(c.p, 0).Measure(c.m)
+		if !epsilon.IsCloseF64(got, c.want) {
 			t.Fail()
 		}
 	}
@@ -982,14 +982,16 @@ func TestPhaseDamping(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := density.FromStates([]density.WeightedState{
+		rho := density.FromStates([]density.WeightedState{
 			{
 				Probability: 1,
 				Qubit:       c.qubit,
 			},
-		}).PhaseDamping(c.g, 0)
-		if !epsilon.IsCloseF64(got.Probability(c.m), c.want) {
-			t.Errorf("got %v, want %v", got.Probability(c.m), c.want)
+		})
+
+		got, _ := rho.PhaseDamping(c.g, 0).Measure(c.m)
+		if !epsilon.IsCloseF64(got, c.want) {
+			t.Errorf("got %v, want %v", got, c.want)
 		}
 	}
 }
@@ -1078,13 +1080,14 @@ func TestPauli(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := density.FromStates([]density.WeightedState{
+		rho := density.FromStates([]density.WeightedState{
 			{
 				Probability: 1,
 				Qubit:       c.qubit,
 			},
-		}).Pauli(c.px, c.py, c.pz, 0).Probability(c.m)
+		})
 
+		got, _ := rho.Pauli(c.px, c.py, c.pz, 0).Measure(c.m)
 		if !epsilon.IsCloseF64(got, c.want) {
 			t.Errorf("got %v, want %v", got, c.want)
 		}
@@ -1114,9 +1117,10 @@ func TestDensityMatrix_ApplyChannelFunc(t *testing.T) {
 	for _, c := range cases {
 		rho := density.From(qubit.Zero())
 		s0 := rho.ApplyChannelFunc(c.channelFunc...)
-		prop := s0.Probability(qubit.Zero())
-		if !epsilon.IsCloseF64(prop, c.want) {
-			t.Errorf("got=%v, want=%v", prop, c.want)
+
+		got, _ := s0.Measure(qubit.Zero())
+		if !epsilon.IsCloseF64(got, c.want) {
+			t.Errorf("got=%v, want=%v", got, c.want)
 		}
 	}
 }
@@ -1139,9 +1143,10 @@ func TestDensityMatrix_ApplyKraus(t *testing.T) {
 	for _, c := range cases {
 		rho := density.From(qubit.Zero())
 		s0 := rho.ApplyKraus(c.kraus...)
-		prop := s0.Probability(qubit.Zero())
-		if !epsilon.IsCloseF64(prop, c.want) {
-			t.Errorf("got=%v, want=%v", prop, c.want)
+
+		got, _ := s0.Measure(qubit.Zero())
+		if !epsilon.IsCloseF64(got, c.want) {
+			t.Errorf("got=%v, want=%v", got, c.want)
 		}
 	}
 }
