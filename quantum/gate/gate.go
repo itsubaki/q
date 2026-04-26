@@ -7,7 +7,7 @@ import (
 	"github.com/itsubaki/q/math/matrix"
 )
 
-// Theta returns 2 * pi / 2**k.
+// Theta returns 2 * pi / 2^k.
 func Theta(k int) float64 {
 	return 2 * math.Pi / math.Pow(2, float64(k))
 }
@@ -100,7 +100,7 @@ func T(n ...int) *matrix.Matrix {
 }
 
 // R returns a rotation gate.
-// R(Theta(k)) = [[1, 0], [0, exp(2 * pi * i / 2**k)]].
+// R(Theta(k)) = [[1, 0], [0, exp(2 * pi * i / 2^k)]].
 func R(theta float64) *matrix.Matrix {
 	return matrix.New(
 		[]complex128{1, 0},
@@ -168,7 +168,7 @@ func CR(theta float64, n, c, t int) *matrix.Matrix {
 }
 
 // Controlled returns a controlled-U gate.
-// u must be a 2x2 unitary matrix, and Controlled returns a 2**n x 2**n matrix.
+// u must be a 2x2 unitary matrix, and Controlled returns a 2^n x 2^n matrix.
 func Controlled(u *matrix.Matrix, n int, c []int, t int) *matrix.Matrix {
 	var mask int
 	for _, b := range c {

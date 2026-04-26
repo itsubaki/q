@@ -133,7 +133,7 @@ func CModExp2(qsim *q.Q, a, j, N int, control q.Qubit, target []q.Qubit) {
 }
 
 // ControlledModExp2 applies a controlled modular exponentiation operation.
-// |j>|k> -> |j>|a**(2**j) * k mod N>.
+// |j>|k> -> |j>|a^(2^j) * k mod N>.
 func ControlledModExp2(qb *qubit.Qubit, a, j, N, control int, target []int) {
 	n := qb.NumQubits()
 	state := qb.Amplitude()
@@ -153,7 +153,7 @@ func ControlledModExp2(qb *qubit.Qubit, a, j, N, control int, target []int) {
 			k |= ((i >> (n - 1 - t)) & 1) << (len(target) - 1 - j)
 		}
 
-		// (a**(2**j) * k) mod N
+		// (a^(2^j) * k) mod N
 		a2jkModN := (a2jModN * k) % N
 
 		// integer to binary

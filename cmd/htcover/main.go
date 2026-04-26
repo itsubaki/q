@@ -18,12 +18,12 @@ const (
 	H      uint64 = 0
 	T      uint64 = 1
 	None   uint64 = 2
-	maxLen int    = 6 // 2**6 = 64
+	maxLen int    = 6 // 2^6 = 64
 )
 
 var mod map[uint64]int = map[uint64]int{
-	H: 2, // H**2 = I
-	T: 8, // T**8 = I
+	H: 2, // H^2 = I
+	T: 8, // T^8 = I
 }
 
 func main() {

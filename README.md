@@ -208,51 +208,6 @@ for i := range 10 {
 // i=2: N=15, a=7. p=3, q=5. s/r=1/4 ([0.010]~0.250)
 ```
 
-### Error Correction
-
-```go
-qsim := q.New()
-
-q0 := qsim.New(1, 2) // (0.2, 0.8)
-
-// encode
-q1 := qsim.Zero()
-q2 := qsim.Zero()
-qsim.CNOT(q0, q1)
-qsim.CNOT(q0, q2)
-
-// error: the first qubit is flipped
-qsim.X(q0)
-
-// add ancilla qubits
-q3 := qsim.Zero()
-q4 := qsim.Zero()
-
-// error correction
-qsim.CNOT(q0, q3)
-qsim.CNOT(q1, q3)
-qsim.CNOT(q1, q4)
-qsim.CNOT(q2, q4)
-
-m3 := qsim.Measure(q3)
-m4 := qsim.Measure(q4)
-
-qsim.CondX(m3.IsOne() && m4.IsZero(), q0)
-qsim.CondX(m3.IsOne() && m4.IsOne(), q1)
-qsim.CondX(m3.IsZero() && m4.IsOne(), q2)
-
-// decode
-qsim.CNOT(q0, q2)
-qsim.CNOT(q0, q1)
-
-for _, s := range qsim.State(q0) {
-	fmt.Println(s)
-}
-
-// [0][  0]( 0.4472 0.0000i): 0.2000
-// [1][  1]( 0.8944 0.0000i): 0.8000
-```
-
 ### Any 1-qubit Quantum Gate and Its Controlled Gate
 
 ```go

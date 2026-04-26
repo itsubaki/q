@@ -39,10 +39,13 @@ func oracle(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
 // -exp(+/- i*theta) = exp(i*pi) * exp(+/- i*theta).
 //
 // In the phase estimation form exp(2*pi*i*phi), this is:
-//   -exp(+/- i*theta) = exp(2*pi*i*(1/2 +/- theta/(2*pi)))
+//
+//	-exp(+/- i*theta) = exp(2*pi*i*(1/2 +/- theta/(2*pi)))
 //
 // Therefore, the estimated phase is
-//   phi = 1/2 +/- theta/(2*pi)
+//
+//	phi = 1/2 +/- theta/(2*pi)
+//
 // and we need to subtract 0.5 from phi to recover theta.
 func diffuser(qsim *q.Q, c q.Qubit, r []q.Qubit) {
 	qsim.H(r...)
@@ -109,11 +112,11 @@ func main() {
 	qsim.InvQFT(c...)
 
 	// estimate
-	N := number.Ldexp(1, len(r)) // N = 2**len(r)
+	N := number.Ldexp(1, len(r)) // N = 2^len(r)
 	for _, state := range q.Top(qsim.State(c, r, s, a), top) {
-		phi := number.Ldexp(state.Int()[0], -t)  // phi = k/(2**t)
+		phi := number.Ldexp(state.Int()[0], -t)  // phi = k/(2^t)
 		theta := 2 * math.Pi * math.Abs(phi-0.5) // theta = 2*pi*(phi-0.5)
-		M := N * math.Pow(math.Sin(theta/2), 2)  // M = N*(sin(theta/2))**2
+		M := N * math.Pow(math.Sin(theta/2), 2)  // M = N*(sin(theta/2))^2
 
 		fmt.Printf("%v; phi=%.4f, theta=%.4f; M=%.4f, eps=%.4f\n", state, phi, theta, M, math.Abs(M-2))
 	}
