@@ -208,7 +208,7 @@ for i := range 10 {
 // i=2: N=15, a=7. p=3, q=5. s/r=1/4 ([0.010]~0.250)
 ```
 
-### Any 1-qubit Quantum Gate and Its Controlled Gate
+### Building Arbitrary 1-qubit and Controlled Gates
 
 ```go
 h := gate.U(math.Pi/2, 0, math.Pi)
