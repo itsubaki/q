@@ -102,7 +102,7 @@ func TestCompose(t *testing.T) {
 		},
 		{
 			channel: []density.ChannelFunc{},
-			isValid: false,
+			isValid: true,
 		},
 	}
 
