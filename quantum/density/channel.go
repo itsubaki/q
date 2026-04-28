@@ -53,7 +53,7 @@ func (c *Channel) Compose(another *Channel) *Channel {
 func Compose(channelFuncs ...ChannelFunc) ChannelFunc {
 	if len(channelFuncs) == 0 {
 		return func(n int) *Channel {
-			return NewChannel()
+			return NewChannel(gate.I(n))
 		}
 	}
 
