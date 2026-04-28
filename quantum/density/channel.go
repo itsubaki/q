@@ -38,11 +38,11 @@ func (c *Channel) IsValid(tol ...float64) bool {
 }
 
 // Compose returns a new quantum channel that is the composition of the current channel and another channel.
-func (c *Channel) Compose(other *Channel) *Channel {
+func (c *Channel) Compose(another *Channel) *Channel {
 	var kraus []*matrix.Matrix
 	for _, k1 := range c.Kraus {
-		for _, k2 := range other.Kraus {
-			kraus = append(kraus, matrix.MatMul(k1, k2))
+		for _, k2 := range another.Kraus {
+			kraus = append(kraus, matrix.MatMul(k2, k1))
 		}
 	}
 
@@ -65,7 +65,7 @@ func Compose(channelFuncs ...ChannelFunc) ChannelFunc {
 
 		result := channels[0]
 		for _, c := range channels[1:] {
-			result = c.Compose(result)
+			result = result.Compose(c)
 		}
 
 		return result
