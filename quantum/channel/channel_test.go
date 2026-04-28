@@ -17,31 +17,6 @@ func ExampleChannel_IsValid() {
 	// true
 }
 
-func FuzzPauli(f *testing.F) {
-	f.Add(0.0, 0.0, 0.0)
-	f.Add(0.1, 0.2, 0.3)
-	f.Add(0.3, 0.3, 0.3)
-
-	f.Fuzz(func(t *testing.T, pX, pY, pZ float64) {
-		if math.IsNaN(pX) || math.IsNaN(pY) || math.IsNaN(pZ) {
-			return
-		}
-
-		if math.IsInf(pX, 0) || math.IsInf(pY, 0) || math.IsInf(pZ, 0) {
-			return
-		}
-
-		if pX < 0 || pY < 0 || pZ < 0 || pX+pY+pZ > 1 {
-			return
-		}
-
-		pauli := channel.Pauli(pX, pY, pZ, 0)(1)
-		if !pauli.IsValid() {
-			t.Errorf("pX=%v pY=%v pZ=%v", pX, pY, pZ)
-		}
-	})
-}
-
 func TestChannel_IsValid(t *testing.T) {
 	cases := []struct {
 		channel *channel.Channel
@@ -69,6 +44,18 @@ func TestChannel_IsValid(t *testing.T) {
 		},
 		{
 			channel: channel.Flip(0.5, gate.Z(), 0)(1),
+			want:    true,
+		},
+		{
+			channel: channel.BitFlip(0.5, 0)(1),
+			want:    true,
+		},
+		{
+			channel: channel.PhaseFlip(0.5, 0)(1),
+			want:    true,
+		},
+		{
+			channel: channel.BitPhaseFlip(0.5, 0)(1),
 			want:    true,
 		},
 	}
@@ -112,4 +99,29 @@ func TestCompose(t *testing.T) {
 			t.Errorf("channel=%v", c.channel)
 		}
 	}
+}
+
+func FuzzPauli(f *testing.F) {
+	f.Add(0.0, 0.0, 0.0)
+	f.Add(0.1, 0.2, 0.3)
+	f.Add(0.3, 0.3, 0.3)
+
+	f.Fuzz(func(t *testing.T, pX, pY, pZ float64) {
+		if math.IsNaN(pX) || math.IsNaN(pY) || math.IsNaN(pZ) {
+			return
+		}
+
+		if math.IsInf(pX, 0) || math.IsInf(pY, 0) || math.IsInf(pZ, 0) {
+			return
+		}
+
+		if pX < 0 || pY < 0 || pZ < 0 || pX+pY+pZ > 1 {
+			return
+		}
+
+		pauli := channel.Pauli(pX, pY, pZ, 0)(1)
+		if !pauli.IsValid() {
+			t.Errorf("pX=%v pY=%v pZ=%v", pX, pY, pZ)
+		}
+	})
 }
