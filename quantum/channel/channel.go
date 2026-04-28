@@ -1,4 +1,4 @@
-package density
+package channel
 
 import (
 	"math"
@@ -15,8 +15,8 @@ type Channel struct {
 	Kraus []*matrix.Matrix
 }
 
-// NewChannel returns a new quantum channel with the given Kraus operators.
-func NewChannel(kraus ...*matrix.Matrix) *Channel {
+// New returns a new quantum channel with the given Kraus operators.
+func New(kraus ...*matrix.Matrix) *Channel {
 	return &Channel{
 		Kraus: kraus,
 	}
@@ -38,6 +38,7 @@ func (c *Channel) IsValid(tol ...float64) bool {
 }
 
 // Compose returns a new quantum channel that is the composition of the current channel and another channel.
+// another is applied after the current channel.
 func (c *Channel) Compose(another *Channel) *Channel {
 	var kraus []*matrix.Matrix
 	for _, k1 := range c.Kraus {
@@ -46,14 +47,14 @@ func (c *Channel) Compose(another *Channel) *Channel {
 		}
 	}
 
-	return NewChannel(kraus...)
+	return New(kraus...)
 }
 
 // Compose returns a new quantum channel function that is the composition of multiple quantum channel functions.
 func Compose(channelFuncs ...ChannelFunc) ChannelFunc {
 	if len(channelFuncs) == 0 {
 		return func(n int) *Channel {
-			return NewChannel(gate.I(n))
+			return New(gate.I(n))
 		}
 	}
 
@@ -84,7 +85,7 @@ func Pauli(pX, pY, pZ float64, qb int) ChannelFunc {
 		k1 := gate.TensorProduct(e1, n, []int{qb})
 		k2 := gate.TensorProduct(e2, n, []int{qb})
 		k3 := gate.TensorProduct(e3, n, []int{qb})
-		return NewChannel(k0, k1, k2, k3)
+		return New(k0, k1, k2, k3)
 	}
 }
 
@@ -101,7 +102,7 @@ func Flip(p float64, u *matrix.Matrix, qb int) ChannelFunc {
 
 		k0 := gate.TensorProduct(e0, n, []int{qb})
 		k1 := gate.TensorProduct(e1, n, []int{qb})
-		return NewChannel(k0, k1)
+		return New(k0, k1)
 	}
 }
 
@@ -135,7 +136,7 @@ func AmplitudeDamping(gamma float64, qb int) ChannelFunc {
 
 		k0 := gate.TensorProduct(e0, n, []int{qb})
 		k1 := gate.TensorProduct(e1, n, []int{qb})
-		return NewChannel(k0, k1)
+		return New(k0, k1)
 	}
 }
 
@@ -154,6 +155,6 @@ func PhaseDamping(gamma float64, qb int) ChannelFunc {
 
 		k0 := gate.TensorProduct(e0, n, []int{qb})
 		k1 := gate.TensorProduct(e1, n, []int{qb})
-		return NewChannel(k0, k1)
+		return New(k0, k1)
 	}
 }

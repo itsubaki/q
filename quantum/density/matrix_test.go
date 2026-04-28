@@ -7,6 +7,7 @@ import (
 
 	"github.com/itsubaki/q/math/epsilon"
 	"github.com/itsubaki/q/math/matrix"
+	"github.com/itsubaki/q/quantum/channel"
 	"github.com/itsubaki/q/quantum/density"
 	"github.com/itsubaki/q/quantum/gate"
 	"github.com/itsubaki/q/quantum/qubit"
@@ -25,13 +26,12 @@ func Example_channel() {
 }
 
 func Example_compose() {
-	channel := density.Compose(
-		density.AmplitudeDamping(0.9, 0),
-		density.BitFlip(0.5, 0),
-	)
+	rho := density.From(qubit.One()).ApplyChannelFunc(channel.Compose(
+		channel.AmplitudeDamping(0.9, 0),
+		channel.BitFlip(0.5, 0),
+	))
 
-	rho := density.From(qubit.One())
-	p, _ := rho.ApplyChannelFunc(channel).Measure(qubit.Zero())
+	p, _ := rho.Measure(qubit.Zero())
 	fmt.Printf("%.4f\n", p)
 
 	// Output:
@@ -1092,19 +1092,19 @@ func TestPauli(t *testing.T) {
 
 func TestDensityMatrix_ApplyChannelFunc(t *testing.T) {
 	cases := []struct {
-		channelFunc []density.ChannelFunc
+		channelFunc []channel.ChannelFunc
 		want        float64
 	}{
 		{
-			channelFunc: []density.ChannelFunc{},
+			channelFunc: []channel.ChannelFunc{},
 			want:        1.0,
 		},
 		{
-			channelFunc: []density.ChannelFunc{
-				density.Depolarizing(0.1, 0),
-				density.AmplitudeDamping(0.7, 0),
-				density.PhaseDamping(0.7, 0),
-				density.BitFlip(0.1, 0),
+			channelFunc: []channel.ChannelFunc{
+				channel.Depolarizing(0.1, 0),
+				channel.AmplitudeDamping(0.7, 0),
+				channel.PhaseDamping(0.7, 0),
+				channel.BitFlip(0.1, 0),
 			},
 			want: 0.884,
 		},
@@ -1131,7 +1131,7 @@ func TestDensityMatrix_ApplyKraus(t *testing.T) {
 			want:  1.0,
 		},
 		{
-			kraus: density.Depolarizing(0.1, 0)(1).Kraus,
+			kraus: channel.Depolarizing(0.1, 0)(1).Kraus,
 			want:  0.9333333333333332,
 		},
 	}

@@ -1,16 +1,16 @@
-package density_test
+package channel_test
 
 import (
 	"fmt"
 	"math"
 	"testing"
 
-	"github.com/itsubaki/q/quantum/density"
+	"github.com/itsubaki/q/quantum/channel"
 	"github.com/itsubaki/q/quantum/gate"
 )
 
 func ExampleChannel_IsValid() {
-	pauli := density.Pauli(0.3, 0.3, 0.3, 0)(1)
+	pauli := channel.Pauli(0.3, 0.3, 0.3, 0)(1)
 	fmt.Println(pauli.IsValid())
 
 	// Output:
@@ -35,7 +35,7 @@ func FuzzPauli(f *testing.F) {
 			return
 		}
 
-		pauli := density.Pauli(pX, pY, pZ, 0)(1)
+		pauli := channel.Pauli(pX, pY, pZ, 0)(1)
 		if !pauli.IsValid() {
 			t.Errorf("pX=%v pY=%v pZ=%v", pX, pY, pZ)
 		}
@@ -44,31 +44,31 @@ func FuzzPauli(f *testing.F) {
 
 func TestChannel_IsValid(t *testing.T) {
 	cases := []struct {
-		channel *density.Channel
+		channel *channel.Channel
 		want    bool
 	}{
 		{
-			channel: density.NewChannel(),
+			channel: channel.New(),
 			want:    false,
 		},
 		{
-			channel: density.Pauli(0.3, 0.3, 0.3, 0)(1),
+			channel: channel.Pauli(0.3, 0.3, 0.3, 0)(1),
 			want:    true,
 		},
 		{
-			channel: density.Depolarizing(0.5, 0)(1),
+			channel: channel.Depolarizing(0.5, 0)(1),
 			want:    true,
 		},
 		{
-			channel: density.PhaseDamping(0.5, 0)(1),
+			channel: channel.PhaseDamping(0.5, 0)(1),
 			want:    true,
 		},
 		{
-			channel: density.AmplitudeDamping(0.5, 0)(1),
+			channel: channel.AmplitudeDamping(0.5, 0)(1),
 			want:    true,
 		},
 		{
-			channel: density.Flip(0.5, gate.Z(), 0)(1),
+			channel: channel.Flip(0.5, gate.Z(), 0)(1),
 			want:    true,
 		},
 	}
@@ -82,33 +82,33 @@ func TestChannel_IsValid(t *testing.T) {
 
 func TestCompose(t *testing.T) {
 	cases := []struct {
-		channel []density.ChannelFunc
+		channel []channel.ChannelFunc
 		isValid bool
 	}{
 		{
-			channel: []density.ChannelFunc{
-				density.Pauli(0.3, 0.3, 0.3, 0),
+			channel: []channel.ChannelFunc{
+				channel.Pauli(0.3, 0.3, 0.3, 0),
 			},
 			isValid: true,
 		},
 		{
-			channel: []density.ChannelFunc{
-				density.Depolarizing(0.1, 0),
-				density.AmplitudeDamping(0.7, 0),
-				density.PhaseDamping(0.7, 0),
-				density.BitFlip(0.1, 0),
+			channel: []channel.ChannelFunc{
+				channel.Depolarizing(0.1, 0),
+				channel.AmplitudeDamping(0.7, 0),
+				channel.PhaseDamping(0.7, 0),
+				channel.BitFlip(0.1, 0),
 			},
 			isValid: true,
 		},
 		{
-			channel: []density.ChannelFunc{},
+			channel: []channel.ChannelFunc{},
 			isValid: true,
 		},
 	}
 
 	for _, c := range cases {
-		noise := density.Compose(c.channel...)(1)
-		if noise.IsValid() != c.isValid {
+		ch := channel.Compose(c.channel...)(1)
+		if ch.IsValid() != c.isValid {
 			t.Errorf("channel=%v", c.channel)
 		}
 	}

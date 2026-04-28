@@ -6,6 +6,7 @@ import (
 	"github.com/itsubaki/q/math/epsilon"
 	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/math/number"
+	"github.com/itsubaki/q/quantum/channel"
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
@@ -170,48 +171,48 @@ func (m *DensityMatrix) TraceOut(qb ...int) *DensityMatrix {
 
 // Pauli returns the density matrix after applying a Pauli channel to the specified qubit.
 func (m *DensityMatrix) Pauli(px, py, pz float64, qb int) *DensityMatrix {
-	return m.ApplyChannelFunc(Pauli(px, py, pz, qb))
+	return m.ApplyChannelFunc(channel.Pauli(px, py, pz, qb))
 }
 
 // Depolarizing returns the density matrix after applying a depolarizing channel to the specified qubit.
 func (m *DensityMatrix) Depolarizing(p float64, qb int) *DensityMatrix {
-	return m.ApplyChannelFunc(Depolarizing(p, qb))
+	return m.ApplyChannelFunc(channel.Depolarizing(p, qb))
 }
 
 // AmplitudeDamping returns the density matrix after applying an amplitude damping channel to the specified qubit.
 func (m *DensityMatrix) AmplitudeDamping(gamma float64, qb int) *DensityMatrix {
-	return m.ApplyChannelFunc(AmplitudeDamping(gamma, qb))
+	return m.ApplyChannelFunc(channel.AmplitudeDamping(gamma, qb))
 }
 
 // PhaseDamping returns the density matrix after applying a phase damping channel to the specified qubit.
 func (m *DensityMatrix) PhaseDamping(gamma float64, qb int) *DensityMatrix {
-	return m.ApplyChannelFunc(PhaseDamping(gamma, qb))
+	return m.ApplyChannelFunc(channel.PhaseDamping(gamma, qb))
 }
 
 // Flip returns the density matrix after applying a flip channel to the specified qubit.
 func (m *DensityMatrix) Flip(p float64, u *matrix.Matrix, qb int) *DensityMatrix {
-	return m.ApplyChannelFunc(Flip(p, u, qb))
+	return m.ApplyChannelFunc(channel.Flip(p, u, qb))
 }
 
 // BitFlip returns the density matrix after applying a bit flip channel to the specified qubit.
 func (m *DensityMatrix) BitFlip(p float64, qb int) *DensityMatrix {
-	return m.ApplyChannelFunc(BitFlip(p, qb))
+	return m.ApplyChannelFunc(channel.BitFlip(p, qb))
 }
 
 // PhaseFlip returns the density matrix after applying a phase flip channel to the specified qubit.
 func (m *DensityMatrix) PhaseFlip(p float64, qb int) *DensityMatrix {
-	return m.ApplyChannelFunc(PhaseFlip(p, qb))
+	return m.ApplyChannelFunc(channel.PhaseFlip(p, qb))
 }
 
 // BitPhaseFlip returns the density matrix after applying a bit-phase flip channel to the specified qubit.
 func (m *DensityMatrix) BitPhaseFlip(p float64, qb int) *DensityMatrix {
-	return m.ApplyChannelFunc(BitPhaseFlip(p, qb))
+	return m.ApplyChannelFunc(channel.BitPhaseFlip(p, qb))
 }
 
 // ApplyChannelFunc returns the density matrix after applying a quantum channel.
-func (m *DensityMatrix) ApplyChannelFunc(channel ...ChannelFunc) *DensityMatrix {
-	ch := make([]*Channel, len(channel))
-	for i, f := range channel {
+func (m *DensityMatrix) ApplyChannelFunc(fn ...channel.ChannelFunc) *DensityMatrix {
+	ch := make([]*channel.Channel, len(fn))
+	for i, f := range fn {
 		ch[i] = f(m.NumQubits())
 	}
 
@@ -219,17 +220,22 @@ func (m *DensityMatrix) ApplyChannelFunc(channel ...ChannelFunc) *DensityMatrix 
 }
 
 // ApplyChannel returns the density matrix after applying a quantum channel.
-func (m *DensityMatrix) ApplyChannel(channel ...*Channel) *DensityMatrix {
-	if len(channel) == 0 {
+func (m *DensityMatrix) ApplyChannel(ch ...*channel.Channel) *DensityMatrix {
+	if len(ch) == 0 {
 		return m.Clone()
 	}
 
-	out := m.ApplyKraus(channel[0].Kraus...)
-	for _, ch := range channel[1:] {
+	out := m.ApplyKraus(ch[0].Kraus...)
+	for _, ch := range ch[1:] {
 		out = out.ApplyKraus(ch.Kraus...)
 	}
 
 	return out
+}
+
+// Apply returns the density matrix after applying a unitary operator.
+func (m *DensityMatrix) Apply(u *matrix.Matrix) *DensityMatrix {
+	return m.ApplyKraus(u)
 }
 
 // ApplyKraus returns the density matrix after applying a set of Kraus operators.
@@ -245,13 +251,6 @@ func (m *DensityMatrix) ApplyKraus(ops ...*matrix.Matrix) *DensityMatrix {
 
 	return &DensityMatrix{
 		rho: rho,
-	}
-}
-
-// Apply returns the density matrix after applying a unitary operator.
-func (m *DensityMatrix) Apply(u *matrix.Matrix) *DensityMatrix {
-	return &DensityMatrix{
-		rho: matrix.MatMul(u, m.rho, u.Dagger()),
 	}
 }
 
