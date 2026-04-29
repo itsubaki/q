@@ -714,42 +714,10 @@ func Example_quantumTeleportation() {
 		fmt.Println(s)
 	}
 
-	qsim.H(q0).CNOT(q0, q1)
-	qsim.CNOT(psi, q0).H(psi)
-
+	qsim.H(q0)
 	qsim.CNOT(q0, q1)
-	qsim.CZ(psi, q1)
-
-	qsim.Measure(psi, q0)
-
-	fmt.Println("q1:")
-	for _, s := range qsim.State(q1) {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// psi:
-	// [0][  0]( 0.4472 0.0000i): 0.2000
-	// [1][  1]( 0.8944 0.0000i): 0.8000
-	// q1:
-	// [0][  0]( 0.4472 0.0000i): 0.2000
-	// [1][  1]( 0.8944 0.0000i): 0.8000
-}
-
-func Example_quantumTeleportationCond() {
-	qsim := q.New()
-
-	psi := qsim.New(1, 2)
-	q0 := qsim.Zero()
-	q1 := qsim.Zero()
-
-	fmt.Println("psi:")
-	for _, s := range qsim.State(psi) {
-		fmt.Println(s)
-	}
-
-	qsim.H(q0).CNOT(q0, q1)
-	qsim.CNOT(psi, q0).H(psi)
+	qsim.CNOT(psi, q0)
+	qsim.H(psi)
 
 	mz := qsim.Measure(psi)
 	mx := qsim.Measure(q0)
