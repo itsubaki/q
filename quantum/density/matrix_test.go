@@ -14,7 +14,7 @@ import (
 )
 
 func Example_channel() {
-	rho := density.From(qubit.One()).
+	rho := density.New(qubit.One()).
 		AmplitudeDamping(0.9, 0).
 		BitFlip(0.5, 0)
 
@@ -26,7 +26,7 @@ func Example_channel() {
 }
 
 func Example_compose() {
-	rho := density.From(qubit.One()).ApplyChannelFunc(channel.Compose(
+	rho := density.New(qubit.One()).ApplyChannelFunc(channel.Compose(
 		channel.AmplitudeDamping(0.9, 0),
 		channel.BitFlip(0.5, 0),
 	))
@@ -38,8 +38,8 @@ func Example_compose() {
 	// 0.5000
 }
 
-func ExampleDensityMatrix_Matrix() {
-	rho := density.FromStates([]density.WeightedState{
+func ExampleDensityMatrix_Seq2() {
+	rho := density.NewMixed([]density.WeightedState{
 		{
 			Probability: 0.1,
 			Qubit:       qubit.Zero(),
@@ -50,7 +50,7 @@ func ExampleDensityMatrix_Matrix() {
 		},
 	})
 
-	for _, r := range rho.Matrix().Seq2() {
+	for _, r := range rho.Seq2() {
 		fmt.Println(r)
 	}
 
@@ -60,7 +60,7 @@ func ExampleDensityMatrix_Matrix() {
 }
 
 func ExampleDensityMatrix_ExpectedValue() {
-	rho := density.FromStates([]density.WeightedState{
+	rho := density.NewMixed([]density.WeightedState{
 		{
 			Probability: 0.1,
 			Qubit:       qubit.Zero(),
@@ -82,7 +82,7 @@ func ExampleDensityMatrix_ExpectedValue() {
 }
 
 func ExampleDensityMatrix_Measure() {
-	rho := density.From(qubit.Zero(2).Apply(
+	rho := density.New(qubit.Zero(2).Apply(
 		gate.H().TensorProduct(gate.I()),
 		gate.CNOT(2, 0, 1),
 	))
@@ -125,8 +125,8 @@ func ExampleDensityMatrix_Measure() {
 }
 
 func ExampleDensityMatrix_TensorProduct() {
-	s0 := density.From(qubit.Zero())
-	s1 := density.From(qubit.One())
+	s0 := density.New(qubit.Zero())
+	s1 := density.New(qubit.One())
 
 	s01 := s0.TensorProduct(s1)
 	for _, r := range s01.Seq2() {
@@ -141,7 +141,7 @@ func ExampleDensityMatrix_TensorProduct() {
 }
 
 func ExampleDensityMatrix_TraceOut() {
-	rho := density.FromStates([]density.WeightedState{
+	rho := density.NewMixed([]density.WeightedState{
 		{
 			Probability: 0.5,
 			Qubit:       qubit.From("00"),
@@ -166,7 +166,7 @@ func ExampleDensityMatrix_TraceOut() {
 }
 
 func ExampleDensityMatrix_TraceOut_x8() {
-	rho := density.From(qubit.Zero(3).Apply(
+	rho := density.New(qubit.Zero(3).Apply(
 		matrix.TensorProduct(gate.H(), gate.I(), gate.I()),
 		gate.CNOT(3, 0, 1),
 	))
@@ -190,7 +190,7 @@ func ExampleDensityMatrix_TraceOut_x8() {
 func ExampleDensityMatrix_Depolarizing() {
 	// XrhoX = |1><1|, YrhoY = |1><1|, ZrhoZ = |0><0|
 	// E(rho) = 0.7|0><0| + 0.1|1><1| + 0.1|1><1| + 0.1|0><0| = 0.8|0><0| + 0.2|1><1|
-	rho := density.From(qubit.Zero())
+	rho := density.New(qubit.Zero())
 	s0 := rho.Depolarizing(0.3, 0)
 	p0, _ := s0.Measure(qubit.Zero())
 	p1, _ := s0.Measure(qubit.One())
@@ -203,7 +203,7 @@ func ExampleDensityMatrix_Depolarizing() {
 }
 
 func ExampleDensityMatrix_BitFlip() {
-	rho := density.From(qubit.Zero())
+	rho := density.New(qubit.Zero())
 	x := rho.BitFlip(0.3, 0)
 
 	p0, _ := x.Measure(qubit.Zero())
@@ -217,7 +217,7 @@ func ExampleDensityMatrix_BitFlip() {
 }
 
 func ExampleDensityMatrix_BitPhaseFlip() {
-	rho := density.From(qubit.Plus())
+	rho := density.New(qubit.Plus())
 	y := rho.BitPhaseFlip(0.3, 0)
 
 	p0, _ := y.Measure(qubit.Plus())
@@ -231,7 +231,7 @@ func ExampleDensityMatrix_BitPhaseFlip() {
 }
 
 func ExampleDensityMatrix_PhaseFlip() {
-	rho := density.From(qubit.Plus())
+	rho := density.New(qubit.Plus())
 	z := rho.PhaseFlip(0.3, 0)
 
 	p0, _ := z.Measure(qubit.Plus())
@@ -244,14 +244,15 @@ func ExampleDensityMatrix_PhaseFlip() {
 	// 0.30
 }
 
-func TestFromStates(t *testing.T) {
+func TestNewMixed(t *testing.T) {
 	cases := []struct {
-		s    []density.WeightedState
-		want float64
+		s     []density.WeightedState
+		isNil bool
+		want  float64
 	}{
 		{
-			s:    []density.WeightedState{},
-			want: 0,
+			s:     []density.WeightedState{},
+			isNil: true,
 		},
 		{
 			s: []density.WeightedState{
@@ -260,14 +261,18 @@ func TestFromStates(t *testing.T) {
 					Qubit:       qubit.Zero(),
 				},
 			},
-			want: 1,
+			isNil: false,
+			want:  1,
 		},
 	}
 
 	for _, c := range cases {
-		rho := density.FromStates(c.s)
-		prop, _ := rho.Measure(qubit.Zero())
+		rho := density.NewMixed(c.s)
+		if rho == nil && c.isNil {
+			continue
+		}
 
+		prop, _ := rho.Measure(qubit.Zero())
 		if !epsilon.IsCloseF64(prop, c.want) {
 			t.Errorf("got=%v, want=%v", prop, c.want)
 		}
@@ -305,7 +310,7 @@ func TestDensityMatrix_IsHermitian(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho := density.FromStates(c.s)
+		rho := density.NewMixed(c.s)
 		if rho.IsHermitian() != c.want {
 			t.Errorf("got=%v, want=%v", rho.IsHermitian(), c.want)
 		}
@@ -342,7 +347,7 @@ func TestDensityMatrix_Trace(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho := density.FromStates(c.s)
+		rho := density.NewMixed(c.s)
 		if !epsilon.IsCloseF64(rho.Trace(), c.want) {
 			t.Errorf("got=%v, want=%v", rho.Trace(), c.want)
 		}
@@ -385,7 +390,7 @@ func TestDensityMatrix_Purity(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho := density.FromStates(c.s)
+		rho := density.NewMixed(c.s)
 		if !epsilon.IsCloseF64(rho.Purity(), c.purity) {
 			t.Errorf("got=%v, want=%v", rho.Purity(), c.purity)
 		}
@@ -442,7 +447,7 @@ func TestExpectedValue(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho := density.FromStates(c.s)
+		rho := density.NewMixed(c.s)
 		if !epsilon.IsCloseF64(rho.Trace(), c.tr) {
 			t.Errorf("trace=%v", rho.Trace())
 		}
@@ -486,7 +491,7 @@ func TestProbability(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got, _ := density.FromStates(c.s).Measure(c.m)
+		got, _ := density.NewMixed(c.s).Measure(c.m)
 		if !epsilon.IsCloseF64(got, c.want) {
 			t.Fail()
 		}
@@ -525,7 +530,7 @@ func TestApply(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got, _ := density.FromStates(c.s).Apply(c.u).Measure(c.m)
+		got, _ := density.NewMixed(c.s).Apply(c.u).Measure(c.m)
 		if !epsilon.IsCloseF64(got, c.want) {
 			t.Fail()
 		}
@@ -801,7 +806,7 @@ func TestTraceOut(t *testing.T) {
 
 	for _, c := range cases {
 		for _, s := range c.cs {
-			rho := density.FromStates(c.s)
+			rho := density.NewMixed(c.s)
 
 			got := rho.TraceOut(s.qb...)
 			p, q := got.Dim()
@@ -898,7 +903,7 @@ func TestAmplitudeDamping(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho := density.FromStates([]density.WeightedState{
+		rho := density.NewMixed([]density.WeightedState{
 			{
 				Probability: 1,
 				Qubit:       c.qubit,
@@ -970,7 +975,7 @@ func TestPhaseDamping(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho := density.FromStates([]density.WeightedState{
+		rho := density.NewMixed([]density.WeightedState{
 			{
 				Probability: 1,
 				Qubit:       c.qubit,
@@ -1068,7 +1073,7 @@ func TestPauli(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho := density.FromStates([]density.WeightedState{
+		rho := density.NewMixed([]density.WeightedState{
 			{
 				Probability: 1,
 				Qubit:       c.qubit,
@@ -1103,7 +1108,7 @@ func TestDensityMatrix_ApplyChannelFunc(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho := density.From(qubit.Zero())
+		rho := density.New(qubit.Zero())
 		s0 := rho.ApplyChannelFunc(c.channelFunc...)
 
 		got, _ := s0.Measure(qubit.Zero())
@@ -1129,7 +1134,7 @@ func TestDensityMatrix_ApplyKraus(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho := density.From(qubit.Zero())
+		rho := density.New(qubit.Zero())
 		s0 := rho.ApplyKraus(c.kraus...)
 
 		got, _ := s0.Measure(qubit.Zero())
@@ -1191,7 +1196,7 @@ func TestDensityMatrix_Flip(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho := density.From(c.s)
+		rho := density.New(c.s)
 		s := rho.Flip(c.p, c.g, c.qb)
 
 		for _, m := range c.m {
@@ -1242,7 +1247,7 @@ func TestDensityMatrix_AmplitudeDamping(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho := density.From(c.q).AmplitudeDamping(c.gamma, c.qb)
+		rho := density.New(c.q).AmplitudeDamping(c.gamma, c.qb)
 		p, _ := rho.Measure(c.m)
 		if !epsilon.IsCloseF64(p, c.p) {
 			t.Errorf("got=%v, want=%v", p, c.p)

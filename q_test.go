@@ -1183,7 +1183,7 @@ func Example_densityMatrix() {
 		qsim.CNOT(qb[0], qb[1])
 	}
 
-	rho := density.From(qsim.Qubit())
+	rho := density.New(qsim.Qubit())
 	s0 := rho.TraceOut(1)
 	s1 := rho.TraceOut(0)
 

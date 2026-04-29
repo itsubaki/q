@@ -15,17 +15,25 @@ type DensityMatrix struct {
 	rho *matrix.Matrix
 }
 
-// FromStates returns a density matrix constructed from a set of states.
-func FromStates(states []WeightedState) *DensityMatrix {
+// New returns a density matrix constructed from a pure state represented by a qubit.
+func New(qb *qubit.Qubit) *DensityMatrix {
+	return NewMixed([]WeightedState{
+		{
+			Probability: 1.0,
+			Qubit:       qb,
+		},
+	})
+}
+
+// NewMixed returns a density matrix constructed from a set of states.
+func NewMixed(states []WeightedState) *DensityMatrix {
 	if len(states) == 0 {
-		return &DensityMatrix{
-			rho: matrix.New(),
-		}
+		return nil
 	}
 
 	n := states[0].Qubit.Dim()
 	rho := matrix.Zero(n, n)
-	for _, s := range states {
+	for _, s := range Normalize(states) {
 		op := s.Qubit.OuterProduct(s.Qubit)
 		rho = rho.Add(op.Mul(complex(s.Probability, 0)))
 	}
@@ -35,24 +43,9 @@ func FromStates(states []WeightedState) *DensityMatrix {
 	}
 }
 
-// From returns a density matrix constructed from a pure state represented by a qubit.
-func From(qb *qubit.Qubit) *DensityMatrix {
-	return FromStates([]WeightedState{
-		{
-			Probability: 1.0,
-			Qubit:       qb,
-		},
-	})
-}
-
 // At returns the value at (i, j).
 func (m *DensityMatrix) At(i, j int) complex128 {
 	return m.rho.At(i, j)
-}
-
-// Matrix returns the internal matrix.
-func (m *DensityMatrix) Matrix() *matrix.Matrix {
-	return m.rho
 }
 
 // Seq2 returns a sequence of rows.
