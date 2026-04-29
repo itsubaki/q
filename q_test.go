@@ -447,6 +447,26 @@ func ExampleQ_CX() {
 	// [11][  3]( 0.7071 0.0000i): 0.5000
 }
 
+func ExampleQ_CZ() {
+	qsim := q.New()
+	qb0 := qsim.Zero()
+	qb1 := qsim.Zero()
+
+	qsim.H(qb0)
+	qsim.H(qb1)
+	qsim.CZ(qb0, qb1)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00][  0]( 0.5000 0.0000i): 0.2500
+	// [01][  1]( 0.5000 0.0000i): 0.2500
+	// [10][  2]( 0.5000 0.0000i): 0.2500
+	// [11][  3](-0.5000 0.0000i): 0.2500
+}
+
 func ExampleQ_ControlledH() {
 	qsim := q.New()
 	qb0 := qsim.Zero()
