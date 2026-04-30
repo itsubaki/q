@@ -22,9 +22,8 @@ func New(kraus ...*matrix.Matrix) *Channel {
 	}
 }
 
-// IsValid returns true if the quantum channel is valid.
-// A quantum channel is valid if the sum of the products of the Kraus operators and their conjugate transposes equals the identity matrix.
-func (c *Channel) IsValid(tol ...float64) bool {
+// IsTracePreserving returns true if the quantum channel is trace-preserving.
+func (c *Channel) IsTracePreserving(tol ...float64) bool {
 	if len(c.Kraus) == 0 {
 		return false
 	}

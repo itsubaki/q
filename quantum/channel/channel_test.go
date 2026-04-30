@@ -8,7 +8,7 @@ import (
 	"github.com/itsubaki/q/quantum/gate"
 )
 
-func TestChannel_IsValid(t *testing.T) {
+func TestChannel_IsTracePreserving(t *testing.T) {
 	cases := []struct {
 		channel *channel.Channel
 		want    bool
@@ -52,7 +52,7 @@ func TestChannel_IsValid(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if c.channel.IsValid() != c.want {
+		if c.channel.IsTracePreserving() != c.want {
 			t.Errorf("channel=%v want=%v", c.channel, c.want)
 		}
 	}
@@ -60,14 +60,14 @@ func TestChannel_IsValid(t *testing.T) {
 
 func TestCompose(t *testing.T) {
 	cases := []struct {
-		channel []channel.ChannelFunc
-		isValid bool
+		channel           []channel.ChannelFunc
+		isTracePreserving bool
 	}{
 		{
 			channel: []channel.ChannelFunc{
 				channel.Pauli(0.3, 0.3, 0.3, 0),
 			},
-			isValid: true,
+			isTracePreserving: true,
 		},
 		{
 			channel: []channel.ChannelFunc{
@@ -76,17 +76,17 @@ func TestCompose(t *testing.T) {
 				channel.PhaseDamping(0.7, 0),
 				channel.BitFlip(0.1, 0),
 			},
-			isValid: true,
+			isTracePreserving: true,
 		},
 		{
-			channel: []channel.ChannelFunc{},
-			isValid: true,
+			channel:           []channel.ChannelFunc{},
+			isTracePreserving: true,
 		},
 	}
 
 	for _, c := range cases {
 		ch := channel.Compose(c.channel...)(1)
-		if ch.IsValid() != c.isValid {
+		if ch.IsTracePreserving() != c.isTracePreserving {
 			t.Errorf("channel=%v", c.channel)
 		}
 	}
@@ -111,7 +111,7 @@ func FuzzPauli(f *testing.F) {
 		}
 
 		pauli := channel.Pauli(pX, pY, pZ, 0)(1)
-		if !pauli.IsValid() {
+		if !pauli.IsTracePreserving() {
 			t.Errorf("pX=%v pY=%v pZ=%v", pX, pY, pZ)
 		}
 	})
