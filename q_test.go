@@ -1163,7 +1163,7 @@ func Example_any() {
 	// [11][  3]( 0.7071 0.0000i): 0.5000
 }
 
-func Example_densityMatrix() {
+func Example_traceout() {
 	qsim := q.New()
 	{
 		qb := qsim.Zeros(2)
@@ -1183,4 +1183,26 @@ func Example_densityMatrix() {
 	// trace: 1, purity: 1
 	// trace: 1, purity: 0.5
 	// trace: 1, purity: 0.5
+}
+
+func Example_channel() {
+	qsim := q.New()
+	{
+		qb := qsim.Zeros(2)
+		qsim.H(qb[0])
+		qsim.CNOT(qb[0], qb[1])
+	}
+
+	rho := density.New(qsim.Qubit()).
+		AmplitudeDamping(0.9).
+		BitFlip(0.5)
+
+	p0, _ := rho.Measure(qubit.Zero(2))
+	p1, _ := rho.Measure(qubit.Plus(2))
+	fmt.Printf("%.4f\n", p0)
+	fmt.Printf("%.4f\n", p1)
+
+	// Output:
+	// 0.2500
+	// 0.3291
 }
