@@ -194,7 +194,8 @@ func ExampleDensityMatrix_Depolarizing() {
 	// XrhoX = |1><1|, YrhoY = |1><1|, ZrhoZ = |0><0|
 	// E(rho) = 0.7|0><0| + 0.1|1><1| + 0.1|1><1| + 0.1|0><0| = 0.8|0><0| + 0.2|1><1|
 	rho := density.New(qubit.Zero())
-	s0 := rho.Depolarizing(0.3, 0)
+	s0 := rho.Depolarizing(0.3)
+
 	p0, _ := s0.Measure(qubit.Zero())
 	p1, _ := s0.Measure(qubit.One())
 	fmt.Printf("0: %.2f\n", p0)
@@ -207,7 +208,7 @@ func ExampleDensityMatrix_Depolarizing() {
 
 func ExampleDensityMatrix_BitFlip() {
 	rho := density.New(qubit.Zero())
-	x := rho.BitFlip(0.3, 0)
+	x := rho.BitFlip(0.3)
 
 	p0, _ := x.Measure(qubit.Zero())
 	p1, _ := x.Measure(qubit.One())
@@ -221,7 +222,7 @@ func ExampleDensityMatrix_BitFlip() {
 
 func ExampleDensityMatrix_BitPhaseFlip() {
 	rho := density.New(qubit.Plus())
-	y := rho.BitPhaseFlip(0.3, 0)
+	y := rho.BitPhaseFlip(0.3)
 
 	p0, _ := y.Measure(qubit.Plus())
 	p1, _ := y.Measure(qubit.Minus())
@@ -235,7 +236,7 @@ func ExampleDensityMatrix_BitPhaseFlip() {
 
 func ExampleDensityMatrix_PhaseFlip() {
 	rho := density.New(qubit.Plus())
-	z := rho.PhaseFlip(0.3, 0)
+	z := rho.PhaseFlip(0.3)
 
 	p0, _ := z.Measure(qubit.Plus())
 	p1, _ := z.Measure(qubit.Minus())
