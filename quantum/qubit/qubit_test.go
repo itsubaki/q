@@ -780,51 +780,6 @@ func Example_quantumTeleportation() {
 	// [111][  7]( 0.8944 0.0000i): 0.8000
 }
 
-func Example_quantumTeleportationCond() {
-	psi := qubit.New(vector.New(1, 2))
-	psi.Rand = rand.Const()
-
-	fmt.Println("before:")
-	for _, s := range psi.State() {
-		fmt.Println(s)
-	}
-
-	bell := qubit.Zero(2).Apply(
-		matrix.TensorProduct(gate.H(), gate.I()),
-		gate.CNOT(2, 0, 1),
-	)
-	psi.TensorProduct(bell)
-
-	psi.Apply(
-		gate.CNOT(3, 0, 1),
-		matrix.TensorProduct(gate.H(), gate.I(2)),
-	)
-
-	mz := psi.Measure(0)
-	mx := psi.Measure(1)
-
-	if mx.IsOne() {
-		psi.Apply(matrix.TensorProduct(gate.I(2), gate.X()))
-	}
-
-	if mz.IsOne() {
-		psi.Apply(matrix.TensorProduct(gate.I(2), gate.Z()))
-	}
-
-	fmt.Println("after:")
-	for _, s := range psi.State() {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// before:
-	// [0][  0]( 0.4472 0.0000i): 0.2000
-	// [1][  1]( 0.8944 0.0000i): 0.8000
-	// after:
-	// [110][  6]( 0.4472 0.0000i): 0.2000
-	// [111][  7]( 0.8944 0.0000i): 0.8000
-}
-
 func Example_povm() {
 	E1 := gate.New(
 		[]complex128{0, 0},

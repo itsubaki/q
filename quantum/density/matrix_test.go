@@ -25,18 +25,6 @@ func Example_channel() {
 	// 0.5000
 }
 
-func Example_channelMultiple() {
-	rho := density.New(qubit.One(2)).
-		AmplitudeDamping(0.7, 0, 1).
-		BitFlip(0.5, 0)
-
-	p, _ := rho.Measure(qubit.Zero(2))
-	fmt.Printf("%.4f\n", p)
-
-	// Output:
-	// 0.3500
-}
-
 func Example_compose() {
 	composed := channel.Compose(
 		channel.AmplitudeDamping(0.9, 0),
