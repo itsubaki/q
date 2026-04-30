@@ -1204,5 +1204,5 @@ func Example_channel() {
 
 	// Output:
 	// 0.2500
-	// 0.3291
+	// 0.2750
 }

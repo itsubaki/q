@@ -163,7 +163,6 @@ func (m *DensityMatrix) TraceOut(qb ...int) *DensityMatrix {
 }
 
 // Pauli returns the density matrix after applying a Pauli channel to the specified qubits.
-// If no qubits are specified, the channel is applied to the first qubit.
 func (m *DensityMatrix) Pauli(px, py, pz float64, qb ...int) *DensityMatrix {
 	return m.applyChannel(func(q int) channel.ChannelFunc {
 		return channel.Pauli(px, py, pz, q)
@@ -171,7 +170,6 @@ func (m *DensityMatrix) Pauli(px, py, pz float64, qb ...int) *DensityMatrix {
 }
 
 // Depolarizing returns the density matrix after applying a depolarizing channel to the specified qubits.
-// If no qubits are specified, the channel is applied to the first qubit.
 func (m *DensityMatrix) Depolarizing(p float64, qb ...int) *DensityMatrix {
 	return m.applyChannel(func(q int) channel.ChannelFunc {
 		return channel.Depolarizing(p, q)
@@ -179,7 +177,6 @@ func (m *DensityMatrix) Depolarizing(p float64, qb ...int) *DensityMatrix {
 }
 
 // AmplitudeDamping returns the density matrix after applying an amplitude damping channel to the specified qubits.
-// If no qubits are specified, the channel is applied to the first qubit.
 func (m *DensityMatrix) AmplitudeDamping(gamma float64, qb ...int) *DensityMatrix {
 	return m.applyChannel(func(q int) channel.ChannelFunc {
 		return channel.AmplitudeDamping(gamma, q)
@@ -187,7 +184,6 @@ func (m *DensityMatrix) AmplitudeDamping(gamma float64, qb ...int) *DensityMatri
 }
 
 // PhaseDamping returns the density matrix after applying a phase damping channel to the specified qubits.
-// If no qubits are specified, the channel is applied to the first qubit.
 func (m *DensityMatrix) PhaseDamping(gamma float64, qb ...int) *DensityMatrix {
 	return m.applyChannel(func(q int) channel.ChannelFunc {
 		return channel.PhaseDamping(gamma, q)
@@ -195,7 +191,6 @@ func (m *DensityMatrix) PhaseDamping(gamma float64, qb ...int) *DensityMatrix {
 }
 
 // Flip returns the density matrix after applying a flip channel to the specified qubits.
-// If no qubits are specified, the channel is applied to the first qubit.
 func (m *DensityMatrix) Flip(p float64, u *matrix.Matrix, qb ...int) *DensityMatrix {
 	return m.applyChannel(func(q int) channel.ChannelFunc {
 		return channel.Flip(p, u, q)
@@ -203,7 +198,6 @@ func (m *DensityMatrix) Flip(p float64, u *matrix.Matrix, qb ...int) *DensityMat
 }
 
 // BitFlip returns the density matrix after applying a bit flip channel to the specified qubits.
-// If no qubits are specified, the channel is applied to the first qubit.
 func (m *DensityMatrix) BitFlip(p float64, qb ...int) *DensityMatrix {
 	return m.applyChannel(func(q int) channel.ChannelFunc {
 		return channel.BitFlip(p, q)
@@ -211,7 +205,6 @@ func (m *DensityMatrix) BitFlip(p float64, qb ...int) *DensityMatrix {
 }
 
 // PhaseFlip returns the density matrix after applying a phase flip channel to the specified qubits.
-// If no qubits are specified, the channel is applied to the first qubit.
 func (m *DensityMatrix) PhaseFlip(p float64, qb ...int) *DensityMatrix {
 	return m.applyChannel(func(q int) channel.ChannelFunc {
 		return channel.PhaseFlip(p, q)
@@ -219,7 +212,6 @@ func (m *DensityMatrix) PhaseFlip(p float64, qb ...int) *DensityMatrix {
 }
 
 // BitPhaseFlip returns the density matrix after applying a bit-phase flip channel to the specified qubits.
-// If no qubits are specified, the channel is applied to the first qubit.
 func (m *DensityMatrix) BitPhaseFlip(p float64, qb ...int) *DensityMatrix {
 	return m.applyChannel(func(q int) channel.ChannelFunc {
 		return channel.BitPhaseFlip(p, q)
@@ -227,10 +219,13 @@ func (m *DensityMatrix) BitPhaseFlip(p float64, qb ...int) *DensityMatrix {
 }
 
 // applyChannel is a helper function that applies a quantum channel to the specified qubits.
-// If no qubits are specified, the channel is applied to the first qubit.
+// If no qubits are specified, the channel is applied to all qubits in the density matrix.
 func (m *DensityMatrix) applyChannel(f func(int) channel.ChannelFunc, qb ...int) *DensityMatrix {
 	if len(qb) == 0 {
-		qb = []int{0}
+		qb = make([]int, m.NumQubits())
+		for i := range qb {
+			qb[i] = i
+		}
 	}
 
 	fn := make([]channel.ChannelFunc, len(qb))
