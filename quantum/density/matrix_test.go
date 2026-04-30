@@ -15,8 +15,8 @@ import (
 
 func Example_channel() {
 	rho := density.New(qubit.One()).
-		AmplitudeDamping(0.9, 0).
-		BitFlip(0.5, 0)
+		AmplitudeDamping(0.9).
+		BitFlip(0.5)
 
 	p, _ := rho.Measure(qubit.Zero())
 	fmt.Printf("%.4f\n", p)
@@ -25,17 +25,32 @@ func Example_channel() {
 	// 0.5000
 }
 
-func Example_compose() {
-	rho := density.New(qubit.One()).ApplyChannelFunc(channel.Compose(
-		channel.AmplitudeDamping(0.9, 0),
-		channel.BitFlip(0.5, 0),
-	))
+func Example_channelMultiple() {
+	rho := density.New(qubit.One(2)).
+		AmplitudeDamping(0.7, 0, 1).
+		BitFlip(0.5, 0)
 
-	p, _ := rho.Measure(qubit.Zero())
+	p, _ := rho.Measure(qubit.Zero(2))
 	fmt.Printf("%.4f\n", p)
 
 	// Output:
-	// 0.5000
+	// 0.3500
+}
+
+func Example_compose() {
+	composed := channel.Compose(
+		channel.AmplitudeDamping(0.9, 0),
+		channel.BitFlip(0.5, 1),
+	)
+
+	rho := density.New(qubit.One(2)).
+		ApplyChannelFunc(composed)
+
+	p, _ := rho.Measure(qubit.Zero(2))
+	fmt.Printf("%.4f\n", p)
+
+	// Output:
+	// 0.4500
 }
 
 func ExampleDensityMatrix_Seq2() {

@@ -1,21 +1,12 @@
 package channel_test
 
 import (
-	"fmt"
 	"math"
 	"testing"
 
 	"github.com/itsubaki/q/quantum/channel"
 	"github.com/itsubaki/q/quantum/gate"
 )
-
-func ExampleChannel_IsValid() {
-	pauli := channel.Pauli(0.3, 0.3, 0.3, 0)(1)
-	fmt.Println(pauli.IsValid())
-
-	// Output:
-	// true
-}
 
 func TestChannel_IsValid(t *testing.T) {
 	cases := []struct {

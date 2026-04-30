@@ -162,44 +162,83 @@ func (m *DensityMatrix) TraceOut(qb ...int) *DensityMatrix {
 	return m.PartialTrace(qb...)
 }
 
-// Pauli returns the density matrix after applying a Pauli channel to the specified qubit.
-func (m *DensityMatrix) Pauli(px, py, pz float64, qb int) *DensityMatrix {
-	return m.ApplyChannelFunc(channel.Pauli(px, py, pz, qb))
+// Pauli returns the density matrix after applying a Pauli channel to the specified qubits.
+// If no qubits are specified, the channel is applied to the first qubit.
+func (m *DensityMatrix) Pauli(px, py, pz float64, qb ...int) *DensityMatrix {
+	return m.applyChannel(func(q int) channel.ChannelFunc {
+		return channel.Pauli(px, py, pz, q)
+	}, qb...)
 }
 
-// Depolarizing returns the density matrix after applying a depolarizing channel to the specified qubit.
-func (m *DensityMatrix) Depolarizing(p float64, qb int) *DensityMatrix {
-	return m.ApplyChannelFunc(channel.Depolarizing(p, qb))
+// Depolarizing returns the density matrix after applying a depolarizing channel to the specified qubits.
+// If no qubits are specified, the channel is applied to the first qubit.
+func (m *DensityMatrix) Depolarizing(p float64, qb ...int) *DensityMatrix {
+	return m.applyChannel(func(q int) channel.ChannelFunc {
+		return channel.Depolarizing(p, q)
+	}, qb...)
 }
 
-// AmplitudeDamping returns the density matrix after applying an amplitude damping channel to the specified qubit.
-func (m *DensityMatrix) AmplitudeDamping(gamma float64, qb int) *DensityMatrix {
-	return m.ApplyChannelFunc(channel.AmplitudeDamping(gamma, qb))
+// AmplitudeDamping returns the density matrix after applying an amplitude damping channel to the specified qubits.
+// If no qubits are specified, the channel is applied to the first qubit.
+func (m *DensityMatrix) AmplitudeDamping(gamma float64, qb ...int) *DensityMatrix {
+	return m.applyChannel(func(q int) channel.ChannelFunc {
+		return channel.AmplitudeDamping(gamma, q)
+	}, qb...)
 }
 
-// PhaseDamping returns the density matrix after applying a phase damping channel to the specified qubit.
-func (m *DensityMatrix) PhaseDamping(gamma float64, qb int) *DensityMatrix {
-	return m.ApplyChannelFunc(channel.PhaseDamping(gamma, qb))
+// PhaseDamping returns the density matrix after applying a phase damping channel to the specified qubits.
+// If no qubits are specified, the channel is applied to the first qubit.
+func (m *DensityMatrix) PhaseDamping(gamma float64, qb ...int) *DensityMatrix {
+	return m.applyChannel(func(q int) channel.ChannelFunc {
+		return channel.PhaseDamping(gamma, q)
+	}, qb...)
 }
 
-// Flip returns the density matrix after applying a flip channel to the specified qubit.
-func (m *DensityMatrix) Flip(p float64, u *matrix.Matrix, qb int) *DensityMatrix {
-	return m.ApplyChannelFunc(channel.Flip(p, u, qb))
+// Flip returns the density matrix after applying a flip channel to the specified qubits.
+// If no qubits are specified, the channel is applied to the first qubit.
+func (m *DensityMatrix) Flip(p float64, u *matrix.Matrix, qb ...int) *DensityMatrix {
+	return m.applyChannel(func(q int) channel.ChannelFunc {
+		return channel.Flip(p, u, q)
+	}, qb...)
 }
 
-// BitFlip returns the density matrix after applying a bit flip channel to the specified qubit.
-func (m *DensityMatrix) BitFlip(p float64, qb int) *DensityMatrix {
-	return m.ApplyChannelFunc(channel.BitFlip(p, qb))
+// BitFlip returns the density matrix after applying a bit flip channel to the specified qubits.
+// If no qubits are specified, the channel is applied to the first qubit.
+func (m *DensityMatrix) BitFlip(p float64, qb ...int) *DensityMatrix {
+	return m.applyChannel(func(q int) channel.ChannelFunc {
+		return channel.BitFlip(p, q)
+	}, qb...)
 }
 
-// PhaseFlip returns the density matrix after applying a phase flip channel to the specified qubit.
-func (m *DensityMatrix) PhaseFlip(p float64, qb int) *DensityMatrix {
-	return m.ApplyChannelFunc(channel.PhaseFlip(p, qb))
+// PhaseFlip returns the density matrix after applying a phase flip channel to the specified qubits.
+// If no qubits are specified, the channel is applied to the first qubit.
+func (m *DensityMatrix) PhaseFlip(p float64, qb ...int) *DensityMatrix {
+	return m.applyChannel(func(q int) channel.ChannelFunc {
+		return channel.PhaseFlip(p, q)
+	}, qb...)
 }
 
-// BitPhaseFlip returns the density matrix after applying a bit-phase flip channel to the specified qubit.
-func (m *DensityMatrix) BitPhaseFlip(p float64, qb int) *DensityMatrix {
-	return m.ApplyChannelFunc(channel.BitPhaseFlip(p, qb))
+// BitPhaseFlip returns the density matrix after applying a bit-phase flip channel to the specified qubits.
+// If no qubits are specified, the channel is applied to the first qubit.
+func (m *DensityMatrix) BitPhaseFlip(p float64, qb ...int) *DensityMatrix {
+	return m.applyChannel(func(q int) channel.ChannelFunc {
+		return channel.BitPhaseFlip(p, q)
+	}, qb...)
+}
+
+// applyChannel is a helper function that applies a quantum channel to the specified qubits.
+// If no qubits are specified, the channel is applied to the first qubit.
+func (m *DensityMatrix) applyChannel(f func(int) channel.ChannelFunc, qb ...int) *DensityMatrix {
+	if len(qb) == 0 {
+		qb = []int{0}
+	}
+
+	fn := make([]channel.ChannelFunc, len(qb))
+	for i, q := range qb {
+		fn[i] = f(q)
+	}
+
+	return m.ApplyChannelFunc(fn...)
 }
 
 // ApplyChannelFunc returns the density matrix after applying a quantum channel.

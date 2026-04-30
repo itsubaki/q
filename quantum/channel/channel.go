@@ -51,21 +51,21 @@ func (c *Channel) Compose(another *Channel) *Channel {
 }
 
 // Compose returns a new quantum channel function that is the composition of multiple quantum channel functions.
-func Compose(channelFuncs ...ChannelFunc) ChannelFunc {
-	if len(channelFuncs) == 0 {
+func Compose(fn ...ChannelFunc) ChannelFunc {
+	if len(fn) == 0 {
 		return func(n int) *Channel {
 			return New(gate.I(n))
 		}
 	}
 
 	return func(n int) *Channel {
-		channels := make([]*Channel, len(channelFuncs))
-		for i, f := range channelFuncs {
-			channels[i] = f(n)
+		ch := make([]*Channel, len(fn))
+		for i, f := range fn {
+			ch[i] = f(n)
 		}
 
-		result := channels[0]
-		for _, c := range channels[1:] {
+		result := ch[0]
+		for _, c := range ch[1:] {
 			result = result.Compose(c)
 		}
 
