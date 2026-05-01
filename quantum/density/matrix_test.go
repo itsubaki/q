@@ -14,15 +14,20 @@ import (
 )
 
 func Example_channel() {
-	rho := density.New(qubit.One()).
+	p, post := density.New(qubit.One()).
 		AmplitudeDamping(0.9).
-		BitFlip(0.5)
+		BitFlip(0.5).
+		Measure(qubit.Zero())
 
-	p, _ := rho.Measure(qubit.Zero())
 	fmt.Printf("%.4f\n", p)
+	for _, r := range post.Seq2() {
+		fmt.Println(r)
+	}
 
 	// Output:
 	// 0.5000
+	// [(1+0i) (0+0i)]
+	// [(0+0i) (0+0i)]
 }
 
 func Example_compose() {
@@ -96,10 +101,10 @@ func ExampleDensityMatrix_Measure() {
 		qubit.From("10"),
 		qubit.From("11"),
 	} {
-		p, sigma := rho.Measure(basis)
-		fmt.Printf("%v: %.2f\n", basis.BinaryString(), p)
+		p, post := rho.Measure(basis)
 
-		for _, r := range sigma.Seq2() {
+		fmt.Printf("%v: %.2f\n", basis.BinaryString(), p)
+		for _, r := range post.Seq2() {
 			fmt.Println(r)
 		}
 	}
@@ -191,19 +196,17 @@ func ExampleDensityMatrix_TraceOut_x8() {
 }
 
 func ExampleDensityMatrix_Depolarizing() {
-	// XrhoX = |1><1|, YrhoY = |1><1|, ZrhoZ = |0><0|
-	// E(rho) = 0.7|0><0| + 0.1|1><1| + 0.1|1><1| + 0.1|0><0| = 0.8|0><0| + 0.2|1><1|
 	rho := density.New(qubit.Zero())
 	s0 := rho.Depolarizing(0.3)
 
 	p0, _ := s0.Measure(qubit.Zero())
 	p1, _ := s0.Measure(qubit.One())
-	fmt.Printf("0: %.2f\n", p0)
-	fmt.Printf("1: %.2f\n", p1)
+	fmt.Printf("%.2f\n", p0)
+	fmt.Printf("%.2f\n", p1)
 
 	// Output:
-	// 0: 0.80
-	// 1: 0.20
+	// 0.80
+	// 0.20
 }
 
 func ExampleDensityMatrix_BitFlip() {
