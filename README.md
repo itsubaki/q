@@ -234,13 +234,13 @@ for _, s := range qsim.State() {
 
 ```go
 p, post := density.New(qubit.One()).
-		AmplitudeDamping(0.9).
-		BitFlip(0.5).
-		Measure(qubit.Zero())
+	AmplitudeDamping(0.9).
+	BitFlip(0.5).
+	Measure(qubit.Zero())
 
 fmt.Printf("%.4f\n", p)
 for _, r := range post.Seq2() {
-		fmt.Println(r)
+	fmt.Println(r)
 }
 
 // 0.5000
