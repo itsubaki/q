@@ -206,7 +206,11 @@ func (m *Matrix) IsUnitary(tol ...float64) bool {
 func (m *Matrix) IsDiagonal(tol ...float64) bool {
 	for i := range m.Rows {
 		for j := range m.Cols {
-			if i != j && !epsilon.IsZero(m.At(i, j), tol...) {
+			if i == j {
+				continue
+			}
+
+			if !epsilon.IsZero(m.At(i, j), tol...) {
 				return false
 			}
 		}
