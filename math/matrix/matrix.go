@@ -105,6 +105,13 @@ func (m *Matrix) DivAt(i, j int, z complex128) {
 	m.Data[i*m.Cols+j] /= z
 }
 
+// Fdiag applies f to the diagonal elements of m.
+func (m *Matrix) Fdiag(f func(v complex128) complex128) {
+	for i := range min(m.Rows, m.Cols) {
+		m.Set(i, i, f(m.At(i, i)))
+	}
+}
+
 // Seq2 returns a sequence of rows.
 func (m *Matrix) Seq2() iter.Seq2[int, []complex128] {
 	return func(yield func(int, []complex128) bool) {
@@ -193,6 +200,19 @@ func (m *Matrix) IsHermitian(tol ...float64) bool {
 // IsUnitary returns true if m is a unitary matrix.
 func (m *Matrix) IsUnitary(tol ...float64) bool {
 	return m.IsSquare() && m.MatMul(m.Dagger()).Equal(Identity(m.Rows), tol...)
+}
+
+// IsDiagonal returns true if m is a diagonal matrix.
+func (m *Matrix) IsDiagonal(tol ...float64) bool {
+	for i := range m.Rows {
+		for j := range m.Cols {
+			if i != j && !epsilon.IsZero(m.At(i, j), tol...) {
+				return false
+			}
+		}
+	}
+
+	return true
 }
 
 // Apply returns a matrix product of m and n.
