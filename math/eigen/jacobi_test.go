@@ -33,7 +33,7 @@ func Example_sqrt() {
 	// true
 }
 
-func TestEigenJacobi(t *testing.T) {
+func TestJacobi(t *testing.T) {
 	cases := []struct {
 		in *matrix.Matrix
 	}{
