@@ -233,10 +233,11 @@ for _, s := range qsim.State() {
 ### Density Matrix and Channels
 
 ```go
-p, post := density.New(qubit.One()).
+rho := density.New(qubit.One()).
 	AmplitudeDamping(0.9).
-	BitFlip(0.5).
-	Measure(qubit.Zero())
+	BitFlip(0.5)
+
+p, post := rho.Measure(qubit.Zero())
 
 fmt.Printf("%.4f\n", p)
 for _, r := range post.Seq2() {
