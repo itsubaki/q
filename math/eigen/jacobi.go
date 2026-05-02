@@ -33,14 +33,14 @@ func Jacobi(a *matrix.Matrix, iter int, tol ...float64) (vectors *matrix.Matrix,
 		}
 
 		a, b, c := ak.At(p, p), ak.At(q, q), ak.At(p, q)
-		diff, phi := b-a, complex(math.Pi/4, 0)
-		if !epsilon.IsZero(diff, tol...) {
-			phi = 0.5 * cmplx.Atan(2*c/diff)
+		theta := math.Pi / 4
+		if !epsilon.IsZero(b-a, tol...) {
+			theta = 0.5 * math.Atan2(2*cmplx.Abs(c), real(b-a))
 		}
 
 		phase := cmplx.Rect(1, cmplx.Phase(c))
-		sin := cmplx.Sin(phi) * phase
-		cos := cmplx.Cos(phi)
+		sin := complex(math.Sin(theta), 0) * phase
+		cos := complex(math.Cos(theta), 0)
 
 		// Construct the Givens rotation matrix.
 		for i := range n {

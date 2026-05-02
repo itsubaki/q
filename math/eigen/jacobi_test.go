@@ -63,6 +63,19 @@ func TestJacobi(t *testing.T) {
 		},
 		{
 			matrix.New(
+				[]complex128{0, -1i},
+				[]complex128{1i, 0},
+			),
+		},
+		{
+			matrix.New(
+				[]complex128{2, 1 + 2i, -1i},
+				[]complex128{1 - 2i, 3, 4 + 1i},
+				[]complex128{1i, 4 - 1i, -1},
+			),
+		},
+		{
+			matrix.New(
 				[]complex128{0, 0, 0, 1},
 				[]complex128{0, 0, 1, 0},
 				[]complex128{0, 1, 0, 0},
