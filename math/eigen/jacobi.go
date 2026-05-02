@@ -18,7 +18,7 @@ func Jacobi(a *matrix.Matrix, iter int, tol ...float64) (vectors *matrix.Matrix,
 		var max float64
 		var p, q int
 
-		// Find the largest off-diagonal element in ak.
+		// find the largest off-diagonal element in ak.
 		for i := range n - 1 {
 			for j := i + 1; j < n; j++ {
 				val := cmplx.Abs(ak.At(i, j))
@@ -32,6 +32,7 @@ func Jacobi(a *matrix.Matrix, iter int, tol ...float64) (vectors *matrix.Matrix,
 			break
 		}
 
+		// compute the rotation angle.
 		a, b, c := ak.At(p, p), ak.At(q, q), ak.At(p, q)
 		theta := math.Pi / 4
 		if !epsilon.IsZero(b-a, tol...) {
@@ -42,7 +43,7 @@ func Jacobi(a *matrix.Matrix, iter int, tol ...float64) (vectors *matrix.Matrix,
 		sin := complex(math.Sin(theta), 0) * phase
 		cos := complex(math.Cos(theta), 0)
 
-		// Construct the Givens rotation matrix.
+		// construct the Givens rotation matrix.
 		for i := range n {
 			if i == p || i == q {
 				continue
@@ -55,14 +56,14 @@ func Jacobi(a *matrix.Matrix, iter int, tol ...float64) (vectors *matrix.Matrix,
 			ak.Set(q, i, cmplx.Conj(ak.At(i, q)))
 		}
 
-		// Update the diagonal elements.
+		// update the diagonal elements.
 		absSin2 := real(sin * cmplx.Conj(sin))
 		ak.Set(p, p, cos*cos*a+complex(absSin2, 0)*b-2*cos*cmplx.Conj(sin)*c)
 		ak.Set(q, q, complex(absSin2, 0)*a+cos*cos*b+2*cos*cmplx.Conj(sin)*c)
 		ak.Set(p, q, 0)
 		ak.Set(q, p, 0)
 
-		// Update the eigenvector matrix.
+		// update the eigenvector matrix.
 		for i := range n {
 			vip, viq := v.At(i, p), v.At(i, q)
 			v.Set(i, p, cos*vip-cmplx.Conj(sin)*viq)
@@ -70,6 +71,7 @@ func Jacobi(a *matrix.Matrix, iter int, tol ...float64) (vectors *matrix.Matrix,
 		}
 	}
 
+	// construct the diagonal matrix of eigenvalues.
 	d := matrix.ZeroLike(ak)
 	for i := range n {
 		val := ak.At(i, i)
