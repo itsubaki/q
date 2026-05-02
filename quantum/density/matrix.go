@@ -121,7 +121,7 @@ func (m *DensityMatrix) TensorProduct(n *DensityMatrix) *DensityMatrix {
 
 // Sqrt returns the square root of the density matrix.
 func (m *DensityMatrix) Sqrt(tol ...float64) *DensityMatrix {
-	v, d := eigen.Jacobi(m.rho, 100, tol...)
+	v, d := eigen.Jacobi(m.rho, 10, tol...)
 	d.Fdiag(func(v complex128) complex128 { return cmplx.Pow(v, 0.5) })
 	return &DensityMatrix{
 		rho: matrix.MatMul(v, d, v.Dagger()),
