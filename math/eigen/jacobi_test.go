@@ -90,6 +90,12 @@ func TestJacobi(t *testing.T) {
 				[]complex128{0, 0, 1, 0},
 			),
 		},
+		{
+			matrix.New(
+				[]complex128{1e-9, 0},
+				[]complex128{0, 1},
+			),
+		},
 	}
 
 	for _, c := range cases {
