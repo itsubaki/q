@@ -16,20 +16,18 @@ import (
 
 func ExampleZero() {
 	z := qubit.Zero()
-	fmt.Print("z : ")
 	for _, s := range z.State() {
 		fmt.Println(s)
 	}
 
 	z2 := qubit.Zero(2)
-	fmt.Print("z2:")
 	for _, s := range z2.State() {
 		fmt.Println(s)
 	}
 
 	// Output:
-	// z : [0][  0]( 1.0000 0.0000i): 1.0000
-	// z2:[00][  0]( 1.0000 0.0000i): 1.0000
+	//  [0][  0]( 1.0000 0.0000i): 1.0000
+	// [00][  0]( 1.0000 0.0000i): 1.0000
 }
 
 func ExampleFrom() {
