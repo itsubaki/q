@@ -96,14 +96,6 @@ func (m *DensityMatrix) Purity() float64 {
 	return real(matrix.MatMul(m.rho, m.rho).Trace())
 }
 
-// Fidelity returns the fidelity between two density matrices.
-func (m *DensityMatrix) Fidelity(sigma *DensityMatrix, tol ...float64) float64 {
-	sqrt := m.Sqrt(tol...)
-	return (&DensityMatrix{
-		rho: matrix.MatMul(sqrt.rho, sigma.rho, sqrt.rho),
-	}).Sqrt(tol...).Trace()
-}
-
 // TraceDistance returns the trace distance between two density matrices.
 func (m *DensityMatrix) TraceDistance(sigma *DensityMatrix, tol ...float64) float64 {
 	a := m.rho.Sub(sigma.rho)
@@ -112,11 +104,12 @@ func (m *DensityMatrix) TraceDistance(sigma *DensityMatrix, tol ...float64) floa
 	}).Sqrt(tol...).Trace() / 2.0
 }
 
-// TensorProduct returns the tensor product of two density matrices.
-func (m *DensityMatrix) TensorProduct(n *DensityMatrix) *DensityMatrix {
-	return &DensityMatrix{
-		rho: m.rho.TensorProduct(n.rho),
-	}
+// Fidelity returns the fidelity between two density matrices.
+func (m *DensityMatrix) Fidelity(sigma *DensityMatrix, tol ...float64) float64 {
+	sqrt := m.Sqrt(tol...)
+	return (&DensityMatrix{
+		rho: matrix.MatMul(sqrt.rho, sigma.rho, sqrt.rho),
+	}).Sqrt(tol...).Trace()
 }
 
 // Sqrt returns the square root of the density matrix.
@@ -125,6 +118,13 @@ func (m *DensityMatrix) Sqrt(tol ...float64) *DensityMatrix {
 	d.Fdiag(func(v complex128) complex128 { return cmplx.Pow(v, 0.5) })
 	return &DensityMatrix{
 		rho: matrix.MatMul(v, d, v.Dagger()),
+	}
+}
+
+// TensorProduct returns the tensor product of two density matrices.
+func (m *DensityMatrix) TensorProduct(n *DensityMatrix) *DensityMatrix {
+	return &DensityMatrix{
+		rho: m.rho.TensorProduct(n.rho),
 	}
 }
 
