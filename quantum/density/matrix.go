@@ -114,7 +114,7 @@ func (m *DensityMatrix) Fidelity(sigma *DensityMatrix, tol ...float64) float64 {
 
 // Sqrt returns the square root of the density matrix.
 func (m *DensityMatrix) Sqrt(tol ...float64) *DensityMatrix {
-	v, d := eigen.Jacobi(m.rho, 10, tol...)
+	v, d := eigen.Jacobi(m.rho, 100, tol...)
 	d.Fdiag(func(v complex128) complex128 { return cmplx.Pow(v, 0.5) })
 	return &DensityMatrix{
 		rho: matrix.MatMul(v, d, v.Dagger()),
@@ -310,7 +310,7 @@ func (m *DensityMatrix) ApplyKraus(ops ...*matrix.Matrix) *DensityMatrix {
 
 // Equal returns true if two density matrices are equal within a specified tolerance.
 func Equal(m, n *DensityMatrix, tol ...float64) bool {
-	return m.rho.Equal(n.rho)
+	return m.rho.Equal(n.rho, tol...)
 }
 
 // split separates the bits of x into two integers according to mask.
