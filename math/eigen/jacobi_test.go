@@ -99,7 +99,7 @@ func TestJacobi(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if !c.in.Equal(c.in.Dagger()) {
+		if !c.in.IsHermitian() {
 			t.Errorf("input is not Hermitian")
 		}
 
@@ -115,9 +115,6 @@ func TestJacobi(t *testing.T) {
 
 		if !matrix.MatMul(V, D, V.Dagger()).Equal(c.in) {
 			t.Errorf("V * D * V^dagger does not equal a")
-			for _, row := range V.Seq2() {
-				t.Log(row)
-			}
 		}
 	}
 }
