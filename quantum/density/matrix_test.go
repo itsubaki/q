@@ -1063,33 +1063,83 @@ func TestDensityMatrix_Pauli(t *testing.T) {
 	}
 }
 
-func TestDensityMatrix_Sqrt(t *testing.T) {
+func TestDensityMatrix_Fidelity(t *testing.T) {
 	cases := []struct {
-		s []density.WeightedState
+		s1   []density.WeightedState
+		s2   []density.WeightedState
+		want float64
 	}{
 		{
-			s: []density.WeightedState{
+			s1: []density.WeightedState{
 				{Probability: 1, Qubit: qubit.Zero()},
 			},
+			s2: []density.WeightedState{
+				{Probability: 1, Qubit: qubit.Zero()},
+			},
+			want: 1,
 		},
 		{
-			s: []density.WeightedState{
+			s1: []density.WeightedState{
+				{Probability: 1, Qubit: qubit.Zero()},
+			},
+			s2: []density.WeightedState{
+				{Probability: 1, Qubit: qubit.One()},
+			},
+			want: 0,
+		},
+		{
+			s1: []density.WeightedState{
+				{Probability: 1, Qubit: qubit.Zero()},
+			},
+			s2: []density.WeightedState{
 				{Probability: 1, Qubit: qubit.Plus()},
 			},
+			want: math.Sqrt(0.5),
 		},
 		{
-			s: []density.WeightedState{
+			s1: []density.WeightedState{
 				{Probability: 0.5, Qubit: qubit.Zero()},
 				{Probability: 0.5, Qubit: qubit.One()},
 			},
+			s2: []density.WeightedState{
+				{Probability: 1, Qubit: qubit.Zero()},
+			},
+			want: math.Sqrt(0.5),
+		},
+		{
+			s1: []density.WeightedState{
+				{Probability: 1, Qubit: qubit.Plus()},
+			},
+			s2: []density.WeightedState{
+				{Probability: 0.5, Qubit: qubit.Zero()},
+				{Probability: 0.5, Qubit: qubit.One()},
+			},
+			want: math.Sqrt(0.5),
 		},
 	}
 
 	for _, c := range cases {
-		rho := density.NewMixed(c.s)
-		sqrt := rho.Sqrt()
-		if !density.Equal(rho, density.MatMul(sqrt, sqrt)) {
-			t.Fail()
+		rho1 := density.NewMixed(c.s1)
+		rho2 := density.NewMixed(c.s2)
+
+		self := rho1.Fidelity(rho1)
+		got12 := rho1.Fidelity(rho2)
+		got21 := rho2.Fidelity(rho1)
+
+		if !epsilon.IsOneF64(self) {
+			t.Errorf("got=%v, want=%v", self, 1)
+		}
+
+		if !epsilon.IsCloseF64(got12, c.want) {
+			t.Errorf("got=%v, want=%v", got12, c.want)
+		}
+
+		if !epsilon.IsCloseF64(got21, c.want) {
+			t.Errorf("got=%v, want=%v", got21, c.want)
+		}
+
+		if !epsilon.IsCloseF64(got12, got21) {
+			t.Errorf("got12=%v, got21=%v", got12, got21)
 		}
 	}
 }
@@ -1125,7 +1175,7 @@ func TestDensityMatrix_TraceDistance(t *testing.T) {
 			s2: []density.WeightedState{
 				{Probability: 1, Qubit: qubit.Plus()},
 			},
-			want: math.Sqrt(1 - 0.5),
+			want: math.Sqrt(0.5),
 		},
 		{
 			s1: []density.WeightedState{

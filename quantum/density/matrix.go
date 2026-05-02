@@ -96,18 +96,20 @@ func (m *DensityMatrix) Purity() float64 {
 	return real(matrix.MatMul(m.rho, m.rho).Trace())
 }
 
-// Dagger returns the conjugate transpose of the density matrix.
-func (m *DensityMatrix) Dagger() *DensityMatrix {
-	return &DensityMatrix{
-		rho: m.rho.Dagger(),
-	}
+// Fidelity returns the fidelity between two density matrices.
+func (m *DensityMatrix) Fidelity(sigma *DensityMatrix, tol ...float64) float64 {
+	sqrt := m.Sqrt(tol...)
+	return (&DensityMatrix{
+		rho: matrix.MatMul(sqrt.rho, sigma.rho, sqrt.rho),
+	}).Sqrt(tol...).Trace()
 }
 
 // TraceDistance returns the trace distance between two density matrices.
-func (m *DensityMatrix) TraceDistance(n *DensityMatrix) float64 {
-	a := Sub(m, n)
-	abs := MatMul(a.Dagger(), a).Sqrt()
-	return abs.Trace() / 2.0
+func (m *DensityMatrix) TraceDistance(sigma *DensityMatrix, tol ...float64) float64 {
+	a := m.rho.Sub(sigma.rho)
+	return (&DensityMatrix{
+		rho: matrix.MatMul(a.Dagger(), a),
+	}).Sqrt(tol...).Trace() / 2.0
 }
 
 // TensorProduct returns the tensor product of two density matrices.
@@ -303,20 +305,6 @@ func (m *DensityMatrix) ApplyKraus(ops ...*matrix.Matrix) *DensityMatrix {
 
 	return &DensityMatrix{
 		rho: rho,
-	}
-}
-
-// Sub returns the difference of two density matrices.
-func Sub(m, n *DensityMatrix) *DensityMatrix {
-	return &DensityMatrix{
-		rho: m.rho.Sub(n.rho),
-	}
-}
-
-// MatMul returns the matrix product of two density matrices.
-func MatMul(m, n *DensityMatrix) *DensityMatrix {
-	return &DensityMatrix{
-		rho: matrix.MatMul(m.rho, n.rho),
 	}
 }
 
