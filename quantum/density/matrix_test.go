@@ -1365,6 +1365,18 @@ func TestDensityMatrix_RelativeEntropy(t *testing.T) {
 			want: 0.5*math.Log2(0.5/0.75) + 0.5*math.Log2(0.5/0.25),
 		},
 		{
+
+			s1: []density.WeightedState{
+				{Probability: 0.75, Qubit: qubit.Zero()},
+				{Probability: 0.25, Qubit: qubit.One()},
+			},
+			s2: []density.WeightedState{
+				{Probability: 0.5, Qubit: qubit.Zero()},
+				{Probability: 0.5, Qubit: qubit.One()},
+			},
+			want: 0.75*math.Log2(0.75/0.5) + 0.25*math.Log2(0.25/0.5),
+		},
+		{
 			s1: []density.WeightedState{
 				{Probability: 1, Qubit: qubit.Zero()},
 			},
@@ -1409,11 +1421,7 @@ func TestDensityMatrix_RelativeEntropy(t *testing.T) {
 		sigma := density.NewMixed(c.s2)
 		got := rho.RelativeEntropy(sigma)
 
-		if math.IsInf(c.want, 1) {
-			if !math.IsInf(got, 1) {
-				t.Errorf("got=%v, want=%v", got, c.want)
-			}
-
+		if math.IsInf(got, 1) && math.IsInf(c.want, 1) {
 			continue
 		}
 
