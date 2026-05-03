@@ -153,6 +153,23 @@ func ExampleMatrix_DivAt() {
 	// [(1+0i) (4+0i)]
 }
 
+func ExampleMatrix_Fdiag() {
+	m := matrix.New(
+		[]complex128{1, 2},
+		[]complex128{3, 4},
+	)
+
+	m.Fdiag(func(v complex128) complex128 { return v * 2 })
+
+	for _, r := range m.Seq2() {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [(2+0i) (2+0i)]
+	// [(3+0i) (8+0i)]
+}
+
 func ExampleMatrix_Apply() {
 	x := matrix.New(
 		[]complex128{0, 1},
@@ -646,6 +663,41 @@ func TestMatrix_IsUnitary(t *testing.T) {
 	for i, c := range cases {
 		if c.in.IsUnitary() != c.want {
 			t.Errorf("case[%v] is failed", i)
+		}
+	}
+}
+
+func TestMatrix_IsDiagonal(t *testing.T) {
+	cases := []struct {
+		in   *matrix.Matrix
+		want bool
+	}{
+		{
+			matrix.New(
+				[]complex128{1, 0},
+				[]complex128{0, 1},
+			),
+			true,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 0, 0},
+				[]complex128{0, 1, 0},
+			),
+			true,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 2},
+				[]complex128{3, 4},
+			),
+			false,
+		},
+	}
+
+	for _, c := range cases {
+		if c.in.IsDiagonal() != c.want {
+			t.Fail()
 		}
 	}
 }

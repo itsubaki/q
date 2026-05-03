@@ -2,7 +2,9 @@ package density
 
 import (
 	"iter"
+	"math/cmplx"
 
+	"github.com/itsubaki/q/math/eigen"
 	"github.com/itsubaki/q/math/epsilon"
 	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/math/number"
@@ -92,6 +94,31 @@ func (m *DensityMatrix) Trace() float64 {
 // Purity returns the purity of the density matrix, defined as Tr(rho^2).
 func (m *DensityMatrix) Purity() float64 {
 	return real(matrix.MatMul(m.rho, m.rho).Trace())
+}
+
+// TraceDistance returns the trace distance between two density matrices.
+func (m *DensityMatrix) TraceDistance(sigma *DensityMatrix, tol ...float64) float64 {
+	a := m.rho.Sub(sigma.rho)
+	return (&DensityMatrix{
+		rho: matrix.MatMul(a.Dagger(), a),
+	}).Sqrt(tol...).Trace() / 2.0
+}
+
+// Fidelity returns the fidelity between two density matrices.
+func (m *DensityMatrix) Fidelity(sigma *DensityMatrix, tol ...float64) float64 {
+	sqrt := m.Sqrt(tol...)
+	return (&DensityMatrix{
+		rho: matrix.MatMul(sqrt.rho, sigma.rho, sqrt.rho),
+	}).Sqrt(tol...).Trace()
+}
+
+// Sqrt returns the square root of the density matrix.
+func (m *DensityMatrix) Sqrt(tol ...float64) *DensityMatrix {
+	v, d := eigen.Jacobi(m.rho, 100, tol...)
+	d.Fdiag(func(v complex128) complex128 { return cmplx.Pow(v, 0.5) })
+	return &DensityMatrix{
+		rho: matrix.MatMul(v, d, v.Dagger()),
+	}
 }
 
 // TensorProduct returns the tensor product of two density matrices.
@@ -279,6 +306,11 @@ func (m *DensityMatrix) ApplyKraus(ops ...*matrix.Matrix) *DensityMatrix {
 	return &DensityMatrix{
 		rho: rho,
 	}
+}
+
+// Equal returns true if two density matrices are equal within a specified tolerance.
+func Equal(m, n *DensityMatrix, tol ...float64) bool {
+	return m.rho.Equal(n.rho, tol...)
 }
 
 // split separates the bits of x into two integers according to mask.
