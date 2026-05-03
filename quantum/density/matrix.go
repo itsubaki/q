@@ -118,6 +118,43 @@ func (m *DensityMatrix) VonNeumannEntropy(tol ...float64) float64 {
 	return real(matrix.MatMul(m.rho, m.Log2(tol...).rho).Trace()) * -1
 }
 
+// RelativeEntropy returns the quantum relative entropy.
+// If supp(m) is not contained in supp(sigma), it returns +Inf.
+func (m *DensityMatrix) RelativeEntropy(sigma *DensityMatrix, tol ...float64) float64 {
+	weight := func(rho *matrix.Matrix, vectors *matrix.Matrix, col int) float64 {
+		rows, _ := rho.Dim()
+
+		var weight complex128
+		for i := range rows {
+			vi := cmplx.Conj(vectors.At(i, col))
+			for j := range rows {
+				weight += vi * rho.At(i, j) * vectors.At(j, col)
+			}
+		}
+
+		return real(weight)
+	}
+
+	v, d := eigen.Jacobi(sigma.rho, 100, tol...)
+	for i := range d.Rows {
+		lambda := real(d.At(i, i))
+		if epsilon.IsZeroF64(lambda, tol...) {
+			if !epsilon.IsZeroF64(weight(m.rho, v, i), tol...) {
+				return math.Inf(1)
+			}
+
+			d.Set(i, i, 0)
+			continue
+		}
+
+		d.Set(i, i, complex(math.Log2(lambda), 0))
+	}
+
+	a := -1 * m.VonNeumannEntropy(tol...)
+	b := matrix.MatMul(m.rho, matrix.MatMul(v, d, v.Dagger()))
+	return a - real(b.Trace())
+}
+
 // Sqrt returns the square root of the density matrix.
 func (m *DensityMatrix) Sqrt(tol ...float64) *DensityMatrix {
 	v, d := eigen.Jacobi(m.rho, 100, tol...)
