@@ -135,16 +135,16 @@ func (m *DensityMatrix) RelativeEntropy(sigma *DensityMatrix, tol ...float64) fl
 	weight := func(rho *matrix.Matrix, vectors *matrix.Matrix, idx int) float64 {
 		rows, _ := rho.Dim()
 
-		// compute weight = v^dagger * rho * v, where v is the idx-th eigenvector of sigma.
-		var weight complex128
+		// compute v^dagger * rho * v, where v is the idx-th eigenvector of sigma.
+		var w complex128
 		for i := range rows {
 			vi := cmplx.Conj(vectors.At(i, idx))
 			for j := range rows {
-				weight += vi * rho.At(i, j) * vectors.At(j, idx)
+				w += vi * rho.At(i, j) * vectors.At(j, idx)
 			}
 		}
 
-		return real(weight)
+		return real(w)
 	}
 
 	// compute log(sigma) using the eigen decomposition of sigma.
