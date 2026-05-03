@@ -1267,6 +1267,15 @@ func TestDensityMatrix_VonNeumannEntropy(t *testing.T) {
 			},
 			want: -((0.5+1/(2*math.Sqrt2))*math.Log2(0.5+1/(2*math.Sqrt2)) + (0.5-1/(2*math.Sqrt2))*math.Log2(0.5-1/(2*math.Sqrt2))),
 		},
+		{
+			s: []density.WeightedState{
+				{Probability: 0.25, Qubit: qubit.From("00")},
+				{Probability: 0.25, Qubit: qubit.From("01")},
+				{Probability: 0.25, Qubit: qubit.From("10")},
+				{Probability: 0.25, Qubit: qubit.From("11")},
+			},
+			want: 2,
+		},
 	}
 
 	for _, c := range cases {
