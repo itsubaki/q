@@ -16,10 +16,10 @@ func Example_sqrt() {
 		[]complex128{1, 0},
 	)
 
-	V, D := eigen.Jacobi(x, 10)
-	D.Fdiag(func(v complex128) complex128 { return cmplx.Pow(v, 0.5) })
+	v, d := eigen.Jacobi(x, 10)
+	d.Fdiag(func(v complex128) complex128 { return cmplx.Pow(v, 0.5) })
 
-	sqrtx := matrix.MatMul(V, D, V.Dagger())
+	sqrtx := matrix.MatMul(v, d, v.Dagger())
 	for _, row := range sqrtx.Seq2() {
 		fmt.Printf("%.3f\n", row)
 	}
@@ -103,18 +103,17 @@ func TestJacobi(t *testing.T) {
 			t.Errorf("input is not Hermitian")
 		}
 
-		V, D := eigen.Jacobi(c.in, 10)
-
-		if !V.IsUnitary() {
-			t.Errorf("V * V^dagger does not equal I")
+		v, d := eigen.Jacobi(c.in, 10)
+		if !v.IsUnitary() {
+			t.Errorf("v * v^dagger does not equal I")
 		}
 
-		if !D.IsDiagonal() {
-			t.Errorf("D is not diagonal")
+		if !d.IsDiagonal() {
+			t.Errorf("d is not diagonal")
 		}
 
-		if !matrix.MatMul(V, D, V.Dagger()).Equal(c.in) {
-			t.Errorf("V * D * V^dagger does not equal a")
+		if !matrix.MatMul(v, d, v.Dagger()).Equal(c.in) {
+			t.Errorf("v * d * v^dagger does not equal a")
 		}
 	}
 }

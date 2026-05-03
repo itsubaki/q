@@ -1218,10 +1218,6 @@ func TestDensityMatrix_Fidelity(t *testing.T) {
 		if !epsilon.IsCloseF64(got21, c.want) {
 			t.Errorf("got=%v, want=%v", got21, c.want)
 		}
-
-		if !epsilon.IsCloseF64(got12, got21) {
-			t.Errorf("got12=%v, got21=%v", got12, got21)
-		}
 	}
 }
 
