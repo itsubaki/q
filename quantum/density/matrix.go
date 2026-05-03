@@ -139,12 +139,12 @@ func (m *DensityMatrix) RelativeEntropy(sigma *DensityMatrix, tol ...float64) fl
 	for i := range d.Rows {
 		lambda := real(d.At(i, i))
 		if epsilon.IsZeroF64(lambda, tol...) {
-			if !epsilon.IsZeroF64(weight(m.rho, v, i), tol...) {
-				return math.Inf(1)
+			if epsilon.IsZeroF64(weight(m.rho, v, i), tol...) {
+				d.Set(i, i, 0)
+				continue
 			}
 
-			d.Set(i, i, 0)
-			continue
+			return math.Inf(1)
 		}
 
 		d.Set(i, i, complex(math.Log2(lambda), 0))
