@@ -132,7 +132,7 @@ func (m *DensityMatrix) VonNeumannEntropy(tol ...float64) float64 {
 // RelativeEntropy returns the quantum relative entropy.
 // If supp(m) is not contained in supp(sigma), it returns +Inf.
 func (m *DensityMatrix) RelativeEntropy(sigma *DensityMatrix, tol ...float64) float64 {
-	weight := func(rho *matrix.Matrix, vectors *matrix.Matrix, idx int) float64 {
+	overlap := func(rho *matrix.Matrix, vectors *matrix.Matrix, idx int) float64 {
 		rows, _ := rho.Dim()
 
 		// compute v^dagger * rho * v, where v is the idx-th eigenvector of sigma.
@@ -156,7 +156,7 @@ func (m *DensityMatrix) RelativeEntropy(sigma *DensityMatrix, tol ...float64) fl
 			continue
 		}
 
-		if epsilon.IsZeroF64(weight(m.rho, v, i), tol...) {
+		if epsilon.IsZeroF64(overlap(m.rho, v, i), tol...) {
 			d.Set(i, i, 0)
 			continue
 		}
