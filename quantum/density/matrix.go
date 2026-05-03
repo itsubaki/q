@@ -370,11 +370,6 @@ func (m *DensityMatrix) ApplyKraus(ops ...*matrix.Matrix) *DensityMatrix {
 	}
 }
 
-// Equal returns true if two density matrices are equal within a specified tolerance.
-func Equal(m, n *DensityMatrix, tol ...float64) bool {
-	return m.rho.Equal(n.rho, tol...)
-}
-
 // split separates the bits of x into two integers according to mask.
 //
 // Bits where mask has value 1 are extracted into the returned trace value,
