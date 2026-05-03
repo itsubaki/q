@@ -233,6 +233,25 @@ func ExampleDensityMatrix_PhaseFlip() {
 	// 0.30
 }
 
+func ExampleDensityMatrix_VonNeumannEntropy() {
+	rho := density.New(qubit.Zero(2).Apply(
+		gate.H().TensorProduct(gate.I()),
+		gate.CNOT(2, 0, 1),
+	))
+
+	s0 := rho.TraceOut(1)
+	s1 := rho.TraceOut(0)
+
+	fmt.Println(epsilon.IsZeroF64(rho.VonNeumannEntropy()))
+	fmt.Println(epsilon.IsOneF64(s0.VonNeumannEntropy()))
+	fmt.Println(epsilon.IsOneF64(s1.VonNeumannEntropy()))
+
+	// Output:
+	// true
+	// true
+	// true
+}
+
 func TestNewMixed(t *testing.T) {
 	cases := []struct {
 		s     []density.WeightedState
