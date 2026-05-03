@@ -115,7 +115,18 @@ func (m *DensityMatrix) Fidelity(sigma *DensityMatrix, tol ...float64) float64 {
 
 // VonNeumannEntropy returns the von Neumann entropy of the density matrix.
 func (m *DensityMatrix) VonNeumannEntropy(tol ...float64) float64 {
-	return real(matrix.MatMul(m.rho, m.Log2(tol...).rho).Trace()) * -1
+	_, d := eigen.Jacobi(m.rho, 100, tol...)
+	var sum float64
+	for i := range d.Rows {
+		lambda := real(d.At(i, i))
+		if epsilon.IsZeroF64(lambda, tol...) {
+			continue
+		}
+
+		sum += lambda * math.Log2(lambda)
+	}
+
+	return -1 * sum
 }
 
 // RelativeEntropy returns the quantum relative entropy.
@@ -123,7 +134,6 @@ func (m *DensityMatrix) VonNeumannEntropy(tol ...float64) float64 {
 func (m *DensityMatrix) RelativeEntropy(sigma *DensityMatrix, tol ...float64) float64 {
 	weight := func(rho *matrix.Matrix, vectors *matrix.Matrix, col int) float64 {
 		rows, _ := rho.Dim()
-
 		var weight complex128
 		for i := range rows {
 			vi := cmplx.Conj(vectors.At(i, col))
@@ -135,23 +145,27 @@ func (m *DensityMatrix) RelativeEntropy(sigma *DensityMatrix, tol ...float64) fl
 		return real(weight)
 	}
 
+	// compute log(sigma) using the eigen decomposition of sigma.
 	v, d := eigen.Jacobi(sigma.rho, 100, tol...)
 	for i := range d.Rows {
 		lambda := real(d.At(i, i))
-		if epsilon.IsZeroF64(lambda, tol...) {
-			if epsilon.IsZeroF64(weight(m.rho, v, i), tol...) {
-				d.Set(i, i, 0)
-				continue
-			}
-
-			return math.Inf(1)
+		if !epsilon.IsZeroF64(lambda, tol...) {
+			d.Set(i, i, complex(math.Log2(lambda), 0))
+			continue
 		}
 
-		d.Set(i, i, complex(math.Log2(lambda), 0))
-	}
+		if epsilon.IsZeroF64(weight(m.rho, v, i), tol...) {
+			d.Set(i, i, 0)
+			continue
+		}
 
+		return math.Inf(1)
+	}
+	logsig := matrix.MatMul(v, d, v.Dagger())
+
+	// compute entropy.
 	a := -1 * m.VonNeumannEntropy(tol...)
-	b := matrix.MatMul(m.rho, matrix.MatMul(v, d, v.Dagger()))
+	b := matrix.MatMul(m.rho, logsig)
 	return a - real(b.Trace())
 }
 
@@ -160,22 +174,6 @@ func (m *DensityMatrix) Sqrt(tol ...float64) *DensityMatrix {
 	v, d := eigen.Jacobi(m.rho, 100, tol...)
 	d.Fdiag(func(lambda complex128) complex128 {
 		return cmplx.Pow(lambda, 0.5)
-	})
-
-	return &DensityMatrix{
-		rho: matrix.MatMul(v, d, v.Dagger()),
-	}
-}
-
-// Log2 returns the logarithm base 2 of the density matrix.
-func (m *DensityMatrix) Log2(tol ...float64) *DensityMatrix {
-	v, d := eigen.Jacobi(m.rho, 100, tol...)
-	d.Fdiag(func(lambda complex128) complex128 {
-		if epsilon.IsZeroF64(real(lambda), tol...) {
-			return 0
-		}
-
-		return complex(math.Log2(real(lambda)), 0)
 	})
 
 	return &DensityMatrix{
