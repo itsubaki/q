@@ -40,8 +40,8 @@ func Jacobi(a *matrix.Matrix, iter int, tol ...float64) (vectors *matrix.Matrix,
 		}
 
 		phase := cmplx.Rect(1, cmplx.Phase(c))
-		sin := complex(math.Sin(theta), 0) * phase
 		cos := complex(math.Cos(theta), 0)
+		sin := complex(math.Sin(theta), 0) * phase
 
 		// construct the Givens rotation matrix.
 		for i := range n {
