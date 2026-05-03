@@ -2,6 +2,7 @@ package density
 
 import (
 	"iter"
+	"math"
 	"math/cmplx"
 
 	"github.com/itsubaki/q/math/eigen"
@@ -112,10 +113,34 @@ func (m *DensityMatrix) Fidelity(sigma *DensityMatrix, tol ...float64) float64 {
 	}).Sqrt(tol...).Trace()
 }
 
+// VonNeumannEntropy returns the von Neumann entropy of the density matrix.
+func (m *DensityMatrix) VonNeumannEntropy(tol ...float64) float64 {
+	return real(matrix.MatMul(m.rho, m.Log2(tol...).rho).Trace()) * -1
+}
+
 // Sqrt returns the square root of the density matrix.
 func (m *DensityMatrix) Sqrt(tol ...float64) *DensityMatrix {
 	v, d := eigen.Jacobi(m.rho, 100, tol...)
-	d.Fdiag(func(v complex128) complex128 { return cmplx.Pow(v, 0.5) })
+	d.Fdiag(func(lambda complex128) complex128 {
+		return cmplx.Pow(lambda, 0.5)
+	})
+
+	return &DensityMatrix{
+		rho: matrix.MatMul(v, d, v.Dagger()),
+	}
+}
+
+// Log2 returns the logarithm base 2 of the density matrix.
+func (m *DensityMatrix) Log2(tol ...float64) *DensityMatrix {
+	v, d := eigen.Jacobi(m.rho, 100, tol...)
+	d.Fdiag(func(lambda complex128) complex128 {
+		if epsilon.IsZeroF64(real(lambda), tol...) {
+			return 0
+		}
+
+		return complex(math.Log2(real(lambda)), 0)
+	})
+
 	return &DensityMatrix{
 		rho: matrix.MatMul(v, d, v.Dagger()),
 	}

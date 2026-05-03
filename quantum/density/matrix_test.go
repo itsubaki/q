@@ -1221,6 +1221,57 @@ func TestDensityMatrix_Fidelity(t *testing.T) {
 	}
 }
 
+func TestDensityMatrix_VonNeumannEntropy(t *testing.T) {
+	cases := []struct {
+		s    []density.WeightedState
+		want float64
+	}{
+		{
+			s: []density.WeightedState{
+				{Probability: 1, Qubit: qubit.Zero()},
+			},
+			want: 0,
+		},
+		{
+			s: []density.WeightedState{
+				{Probability: 1, Qubit: qubit.Zero()},
+				{Probability: 0, Qubit: qubit.One()},
+			},
+			want: 0,
+		},
+		{
+			s: []density.WeightedState{
+				{Probability: 0.5, Qubit: qubit.Zero()},
+				{Probability: 0.5, Qubit: qubit.One()},
+			},
+			want: 1,
+		},
+		{
+			s: []density.WeightedState{
+				{Probability: 0.9, Qubit: qubit.Zero()},
+				{Probability: 0.1, Qubit: qubit.One()},
+			},
+			want: -(0.9*math.Log2(0.9) + 0.1*math.Log2(0.1)),
+		},
+		{
+			s: []density.WeightedState{
+				{Probability: 0.5, Qubit: qubit.Zero()},
+				{Probability: 0.5, Qubit: qubit.Zero()},
+			},
+			want: 0,
+		},
+	}
+
+	for _, c := range cases {
+		rho := density.NewMixed(c.s)
+		got := rho.VonNeumannEntropy()
+
+		if !epsilon.IsCloseF64(got, c.want) {
+			t.Errorf("got=%v, want=%v", got, c.want)
+		}
+	}
+}
+
 func TestDensityMatrix_Equal(t *testing.T) {
 	cases := []struct {
 		s1   []density.WeightedState
