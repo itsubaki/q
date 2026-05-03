@@ -132,13 +132,15 @@ func (m *DensityMatrix) VonNeumannEntropy(tol ...float64) float64 {
 // RelativeEntropy returns the quantum relative entropy.
 // If supp(m) is not contained in supp(sigma), it returns +Inf.
 func (m *DensityMatrix) RelativeEntropy(sigma *DensityMatrix, tol ...float64) float64 {
-	weight := func(rho *matrix.Matrix, vectors *matrix.Matrix, col int) float64 {
+	weight := func(rho *matrix.Matrix, vectors *matrix.Matrix, idx int) float64 {
 		rows, _ := rho.Dim()
+
+		// compute weight = v^dagger * rho * v, where v is the idx-th eigenvector of sigma.
 		var weight complex128
 		for i := range rows {
-			vi := cmplx.Conj(vectors.At(i, col))
+			vi := cmplx.Conj(vectors.At(i, idx))
 			for j := range rows {
-				weight += vi * rho.At(i, j) * vectors.At(j, col)
+				weight += vi * rho.At(i, j) * vectors.At(j, idx)
 			}
 		}
 
