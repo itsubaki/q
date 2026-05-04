@@ -451,7 +451,7 @@ func TensorProduct(m ...*Matrix) *Matrix {
 	return out
 }
 
-// TensorProductN returns the result of taking the tensor product of m n times.
+// TensorProductN returns the n-fold tensor product of m with itself.
 func TensorProductN(m *Matrix, n ...int) *Matrix {
 	if len(n) < 1 {
 		return m

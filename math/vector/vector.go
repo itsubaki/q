@@ -165,6 +165,7 @@ func (v *Vector) String() string {
 	return fmt.Sprintf("%v", v.Data)
 }
 
+// TensorProductN returns the n-fold tensor product of v with itself.
 func TensorProductN(v *Vector, n ...int) *Vector {
 	if len(n) < 1 {
 		return v
