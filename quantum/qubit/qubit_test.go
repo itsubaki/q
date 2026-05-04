@@ -548,7 +548,7 @@ func Example_bell() {
 
 func Example_grover2() {
 	oracle := gate.CZ(2, 0, 1)
-	amp := matrix.Apply(
+	diffuser := matrix.Apply(
 		gate.H(2),
 		gate.X(2),
 		gate.CZ(2, 0, 1),
@@ -559,7 +559,7 @@ func Example_grover2() {
 	q := qubit.Zero(2).Apply(
 		gate.H(2),
 		oracle,
-		amp,
+		diffuser,
 	)
 
 	q.Measure(0)
@@ -580,7 +580,7 @@ func Example_grover3() {
 		matrix.TensorProduct(gate.X(), gate.I(3)),
 	)
 
-	amp := matrix.Apply(
+	diffuser := matrix.Apply(
 		matrix.TensorProduct(gate.H(3), gate.H()),
 		matrix.TensorProduct(gate.X(3), gate.I()),
 		matrix.TensorProduct(gate.ControlledZ(3, []int{0, 1}, 2), gate.I()),
@@ -594,7 +594,7 @@ func Example_grover3() {
 	).Apply(
 		gate.H(4),
 		oracle,
-		amp,
+		diffuser,
 	)
 
 	for _, s := range q.State() {
