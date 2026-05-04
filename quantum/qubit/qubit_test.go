@@ -26,7 +26,7 @@ func ExampleZero() {
 	}
 
 	// Output:
-	//  [0][  0]( 1.0000 0.0000i): 1.0000
+	// [0][  0]( 1.0000 0.0000i): 1.0000
 	// [00][  0]( 1.0000 0.0000i): 1.0000
 }
 
@@ -51,6 +51,19 @@ func ExampleFrom_plus() {
 	// [01][  1](-0.5000 0.0000i): 0.2500
 	// [10][  2]( 0.5000 0.0000i): 0.2500
 	// [11][  3](-0.5000 0.0000i): 0.2500
+}
+
+func ExampleMinuses() {
+	qb := qubit.Minuses(2)
+	for _, s := range qb.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00][  0]( 0.5000 0.0000i): 0.2500
+	// [01][  1](-0.5000 0.0000i): 0.2500
+	// [10][  2](-0.5000 0.0000i): 0.2500
+	// [11][  3]( 0.5000 0.0000i): 0.2500
 }
 
 func ExampleQubit_OuterProduct() {
@@ -84,10 +97,10 @@ func ExampleQubit_G() {
 	qb := qubit.Zeros(2)
 
 	h := gate.H()
-	cnot := gate.CNOT(2, 0, 1)
+	cx := gate.CNOT(2, 0, 1)
 
 	qb.G(h, 0)
-	qb.Apply(cnot)
+	qb.Apply(cx)
 
 	for _, s := range qb.State() {
 		fmt.Println(s)
@@ -460,8 +473,7 @@ func ExampleQubit_Set() {
 }
 
 func ExampleQubit_State() {
-	v := qubit.Zeros(4).Apply(gate.H(4))
-
+	v := qubit.Pluses(4)
 	for _, s := range v.State([]int{0, 1, 2, 3}) {
 		fmt.Println(s)
 	}
@@ -486,8 +498,7 @@ func ExampleQubit_State() {
 }
 
 func ExampleQubit_State_order() {
-	v := qubit.Zeros(4).Apply(gate.H(4))
-
+	v := qubit.Pluses(4)
 	for _, s := range v.State([]int{0}, []int{1, 2, 3}) {
 		fmt.Println(s)
 	}
@@ -739,11 +750,11 @@ func Example_eccPhaseFlip() {
 	// [00010][  2]( 0.4472 0.0000i): 0.2000
 	// [10010][ 18]( 0.8944 0.0000i): 0.8000
 }
+
 func Example_quantumTeleportation() {
 	psi := qubit.New(vector.New(1, 2))
 	psi.Rand = rand.Const()
 
-	fmt.Println("before:")
 	for _, s := range psi.State() {
 		fmt.Println(s)
 	}
@@ -764,16 +775,13 @@ func Example_quantumTeleportation() {
 	psi.Measure(0)
 	psi.Measure(1)
 
-	fmt.Println("after:")
 	for _, s := range psi.State() {
 		fmt.Println(s)
 	}
 
 	// Output:
-	// before:
 	// [0][  0]( 0.4472 0.0000i): 0.2000
 	// [1][  1]( 0.8944 0.0000i): 0.8000
-	// after:
 	// [110][  6]( 0.4472 0.0000i): 0.2000
 	// [111][  7]( 0.8944 0.0000i): 0.8000
 }
@@ -791,15 +799,16 @@ func Example_povm() {
 
 	E3 := gate.I().Sub(E1).Sub(E2)
 
-	add := E1.Add(E2).Add(E3)
-	fmt.Println("equal:", add.Equal(gate.I()))
+	{
+		add := E1.Add(E2).Add(E3)
+		fmt.Println(add.Equal(gate.I()))
+	}
 
 	{
 		q0 := qubit.Zero().Apply(E1) // E1|0>
 		q1 := qubit.Zero().Apply(E2) // E2|0>
 		q2 := qubit.Zero().Apply(E3) // E3|0>
 
-		fmt.Println("zero:")
 		fmt.Printf("%.4v\n", q0.InnerProduct(qubit.Zero())) // <0|E1|0>
 		fmt.Printf("%.4v\n", q1.InnerProduct(qubit.Zero())) // <0|E2|0>
 		fmt.Printf("%.4v\n", q2.InnerProduct(qubit.Zero())) // <0|E3|0>
@@ -810,19 +819,16 @@ func Example_povm() {
 		q1 := qubit.Plus().Apply(E2) // E2|+>
 		q2 := qubit.Plus().Apply(E3) // E3|+>
 
-		fmt.Println("H(zero):")
 		fmt.Printf("%.4v\n", q0.InnerProduct(qubit.Plus())) // <+|E1|+>
 		fmt.Printf("%.4v\n", q1.InnerProduct(qubit.Plus())) // <+|E2|+>
 		fmt.Printf("%.4v\n", q2.InnerProduct(qubit.Plus())) // <+|E3|+>
 	}
 
 	// Output:
-	// equal: true
-	// zero:
+	// true
 	// (0+0i)
 	// (0.2929+0i)
 	// (0.7071+0i)
-	// H(zero):
 	// (0.2929+0i)
 	// (0+0i)
 	// (0.7071+0i)
@@ -942,7 +948,7 @@ func TestNormalize(t *testing.T) {
 }
 
 func TestMeasure(t *testing.T) {
-	q := qubit.Zeros(3).Apply(gate.H(3))
+	q := qubit.Pluses(3)
 	for _, p := range q.Probability() {
 		if p != 0 && !epsilon.IsCloseF64(p, 0.125) {
 			t.Errorf("probability=%v", q.Probability())
@@ -972,7 +978,7 @@ func TestMeasure(t *testing.T) {
 }
 
 func TestClone(t *testing.T) {
-	in := qubit.Zeros(2).Apply(gate.H(2))
+	in := qubit.Pluses(2)
 	got := in.Clone()
 
 	if !in.Equal(got) {

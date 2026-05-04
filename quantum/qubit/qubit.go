@@ -54,25 +54,6 @@ func Minus() *Qubit {
 	return One().H(0)
 }
 
-// From returns a new qubit from a binary string.
-func From(binary string) *Qubit {
-	list := make([]*Qubit, len(binary))
-	for i, c := range binary {
-		switch c {
-		case '0':
-			list[i] = Zero()
-		case '1':
-			list[i] = One()
-		case '+':
-			list[i] = Plus()
-		case '-':
-			list[i] = Minus()
-		}
-	}
-
-	return TensorProduct(list...)
-}
-
 // Bloch returns a qubit from the given angles on the Bloch sphere.
 func Bloch(theta, phi float64) *Qubit {
 	c := cmplx.Cos(complex(theta/2, 0))
@@ -92,6 +73,45 @@ func Ones(n int) *Qubit {
 	s := make([]complex128, 1<<n)
 	s[(1<<n)-1] = 1
 	return New(vector.New(s...))
+}
+
+// Pluses returns n qubits in the plus state.
+func Pluses(n int) *Qubit {
+	qb := Zeros(n)
+	for i := range n {
+		qb.H(i)
+	}
+
+	return qb
+}
+
+// Minuses returns n qubits in the minus state.
+func Minuses(n int) *Qubit {
+	qb := Ones(n)
+	for i := range n {
+		qb.H(i)
+	}
+
+	return qb
+}
+
+// From returns a new qubit from a binary string.
+func From(binary string) *Qubit {
+	list := make([]*Qubit, len(binary))
+	for i, c := range binary {
+		switch c {
+		case '0':
+			list[i] = Zero()
+		case '1':
+			list[i] = One()
+		case '+':
+			list[i] = Plus()
+		case '-':
+			list[i] = Minus()
+		}
+	}
+
+	return TensorProduct(list...)
 }
 
 // NumQubits returns the number of qubits.

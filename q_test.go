@@ -1198,7 +1198,7 @@ func Example_channel() {
 		BitFlip(0.5)
 
 	p0, _ := rho.Measure(qubit.Zeros(2))
-	p1, _ := rho.Measure(qubit.Zeros(2).Apply(gate.H(2)))
+	p1, _ := rho.Measure(qubit.Pluses(2))
 	fmt.Printf("%.4f\n", p0)
 	fmt.Printf("%.4f\n", p1)
 
