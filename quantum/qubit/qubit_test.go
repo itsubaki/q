@@ -20,7 +20,7 @@ func ExampleZero() {
 		fmt.Println(s)
 	}
 
-	z2 := qubit.Zero(2)
+	z2 := qubit.Zeros(2)
 	for _, s := range z2.State() {
 		fmt.Println(s)
 	}
@@ -81,7 +81,7 @@ func ExampleQubit_OuterProduct_operatorSum() {
 }
 
 func ExampleQubit_G() {
-	qb := qubit.Zero(2)
+	qb := qubit.Zeros(2)
 
 	h := gate.H()
 	cnot := gate.CNOT(2, 0, 1)
@@ -99,7 +99,7 @@ func ExampleQubit_G() {
 }
 
 func ExampleQubit_U() {
-	qb := qubit.Zero(2)
+	qb := qubit.Zeros(2)
 	qb.U(math.Pi/2, 0, 0, 0)
 	qb.U(math.Pi/2, 0, 0, 1)
 
@@ -266,7 +266,7 @@ func ExampleQubit_RZ() {
 }
 
 func ExampleQubit_C() {
-	qb := qubit.Zero(2)
+	qb := qubit.Zeros(2)
 	qb.H(0)
 	qb.C(gate.X(), 0, 1)
 
@@ -280,7 +280,7 @@ func ExampleQubit_C() {
 }
 
 func ExampleQubit_CU() {
-	qb := qubit.Zero(2)
+	qb := qubit.Zeros(2)
 	qb.H(0)
 	qb.CU(math.Pi, 0, math.Pi, 0, 1)
 
@@ -294,7 +294,7 @@ func ExampleQubit_CU() {
 }
 
 func ExampleQubit_CH() {
-	qb := qubit.Zero(2)
+	qb := qubit.Zeros(2)
 	qb.H(0)
 	qb.CH(0, 1)
 
@@ -309,7 +309,7 @@ func ExampleQubit_CH() {
 }
 
 func ExampleQubit_CX() {
-	qb := qubit.Zero(2)
+	qb := qubit.Zeros(2)
 	qb.H(0)
 	qb.CX(0, 1)
 
@@ -323,7 +323,7 @@ func ExampleQubit_CX() {
 }
 
 func ExampleQubit_CZ() {
-	qb := qubit.Zero(2)
+	qb := qubit.Zeros(2)
 	qb.H(0)
 	qb.H(1)
 	qb.CZ(0, 1)
@@ -340,7 +340,7 @@ func ExampleQubit_CZ() {
 }
 
 func ExampleQubit_ControlledH() {
-	qb := qubit.Zero(2)
+	qb := qubit.Zeros(2)
 	qb.H(0)
 	qb.ControlledH([]int{0}, 1)
 
@@ -355,7 +355,7 @@ func ExampleQubit_ControlledH() {
 }
 
 func ExampleQubit_ControlledX() {
-	qb := qubit.Zero(3)
+	qb := qubit.Zeros(3)
 	qb.X(0)
 	qb.X(1)
 	qb.ControlledX([]int{0, 1}, 2)
@@ -369,7 +369,7 @@ func ExampleQubit_ControlledX() {
 }
 
 func ExampleQubit_ControlledZ() {
-	qb := qubit.Zero(2)
+	qb := qubit.Zeros(2)
 	qb.H(0)
 	qb.H(1)
 	qb.ControlledZ([]int{0}, 1)
@@ -386,7 +386,7 @@ func ExampleQubit_ControlledZ() {
 }
 
 func ExampleQubit_Swap() {
-	qb := qubit.Zero(2)
+	qb := qubit.Zeros(2)
 	qb.X(0)
 
 	qb.Swap(0, 1)
@@ -399,7 +399,7 @@ func ExampleQubit_Swap() {
 }
 
 func ExampleQubit_Swap_eq() {
-	qb := qubit.Zero(2)
+	qb := qubit.Zeros(2)
 	qb.X(0)
 
 	qb.Swap(0, 0)
@@ -412,7 +412,7 @@ func ExampleQubit_Swap_eq() {
 }
 
 func ExampleQubit_QFT() {
-	qb := qubit.Zero(3)
+	qb := qubit.Zeros(3)
 	qb.X(2)
 	qb.QFT()
 	qb.Swap(0, 2)
@@ -433,7 +433,7 @@ func ExampleQubit_QFT() {
 }
 
 func ExampleQubit_InvQFT() {
-	qb := qubit.Zero(3)
+	qb := qubit.Zeros(3)
 	qb.X(2)
 	qb.QFT()
 	qb.InvQFT()
@@ -447,7 +447,7 @@ func ExampleQubit_InvQFT() {
 }
 
 func ExampleQubit_Set() {
-	qb := qubit.Zero(2)
+	qb := qubit.Zeros(2)
 	qb.Set(vector.New(1, 0, 0, 1))
 
 	for _, s := range qb.State() {
@@ -460,7 +460,7 @@ func ExampleQubit_Set() {
 }
 
 func ExampleQubit_State() {
-	v := qubit.Zero(4).Apply(gate.H(4))
+	v := qubit.Zeros(4).Apply(gate.H(4))
 
 	for _, s := range v.State([]int{0, 1, 2, 3}) {
 		fmt.Println(s)
@@ -486,7 +486,7 @@ func ExampleQubit_State() {
 }
 
 func ExampleQubit_State_order() {
-	v := qubit.Zero(4).Apply(gate.H(4))
+	v := qubit.Zeros(4).Apply(gate.H(4))
 
 	for _, s := range v.State([]int{0}, []int{1, 2, 3}) {
 		fmt.Println(s)
@@ -532,7 +532,7 @@ func ExampleQubit_State_order() {
 }
 
 func Example_bell() {
-	q := qubit.Zero(2).Apply(
+	q := qubit.Zeros(2).Apply(
 		gate.H().TensorProduct(gate.I()),
 		gate.CNOT(2, 0, 1),
 	)
@@ -556,7 +556,7 @@ func Example_grover2() {
 		gate.H(2),
 	)
 
-	q := qubit.Zero(2).Apply(
+	q := qubit.Zeros(2).Apply(
 		gate.H(2),
 		oracle,
 		diffuser,
@@ -589,7 +589,7 @@ func Example_grover3() {
 	)
 
 	q := qubit.TensorProduct(
-		qubit.Zero(3),
+		qubit.Zeros(3),
 		qubit.One(),
 	).Apply(
 		gate.H(4),
@@ -616,7 +616,7 @@ func Example_eccBitFlip() {
 	psi := qubit.New(vector.New(1, 2))
 
 	// encoding
-	psi.TensorProduct(qubit.Zero(2))
+	psi.TensorProduct(qubit.Zeros(2))
 	psi.Apply(
 		gate.CNOT(3, 0, 1),
 		gate.CNOT(3, 0, 2),
@@ -626,7 +626,7 @@ func Example_eccBitFlip() {
 	psi.Apply(matrix.TensorProduct(gate.X(), gate.I(2)))
 
 	// add ancilla qubit
-	psi.TensorProduct(qubit.Zero(2))
+	psi.TensorProduct(qubit.Zeros(2))
 
 	// z1z2
 	psi.Apply(
@@ -676,7 +676,7 @@ func Example_eccPhaseFlip() {
 	psi := qubit.New(vector.New(1, 2))
 
 	// encoding
-	psi.TensorProduct(qubit.Zero(2))
+	psi.TensorProduct(qubit.Zeros(2))
 	psi.Apply(
 		gate.CNOT(3, 0, 1),
 		gate.CNOT(3, 0, 2),
@@ -690,7 +690,7 @@ func Example_eccPhaseFlip() {
 	psi.Apply(gate.H(3))
 
 	// add ancilla qubit
-	psi.TensorProduct(qubit.Zero(2))
+	psi.TensorProduct(qubit.Zeros(2))
 
 	// x1x2
 	psi.Apply(
@@ -748,7 +748,7 @@ func Example_quantumTeleportation() {
 		fmt.Println(s)
 	}
 
-	bell := qubit.Zero(2).Apply(
+	bell := qubit.Zeros(2).Apply(
 		matrix.TensorProduct(gate.H(), gate.I()),
 		gate.CNOT(2, 0, 1),
 	)
@@ -884,7 +884,7 @@ func TestBloch(t *testing.T) {
 
 func TestNumQubits(t *testing.T) {
 	for i := 1; i < 10; i++ {
-		if qubit.Zero(i).NumQubits() != i {
+		if qubit.Zeros(i).NumQubits() != i {
 			t.Fail()
 		}
 	}
@@ -942,7 +942,7 @@ func TestNormalize(t *testing.T) {
 }
 
 func TestMeasure(t *testing.T) {
-	q := qubit.Zero(3).Apply(gate.H(3))
+	q := qubit.Zeros(3).Apply(gate.H(3))
 	for _, p := range q.Probability() {
 		if p != 0 && !epsilon.IsCloseF64(p, 0.125) {
 			t.Errorf("probability=%v", q.Probability())
@@ -972,7 +972,7 @@ func TestMeasure(t *testing.T) {
 }
 
 func TestClone(t *testing.T) {
-	in := qubit.Zero(2).Apply(gate.H(2))
+	in := qubit.Zeros(2).Apply(gate.H(2))
 	got := in.Clone()
 
 	if !in.Equal(got) {
@@ -1000,8 +1000,8 @@ func TestBinaryString(t *testing.T) {
 		in   *qubit.Qubit
 		want string
 	}{
-		{qubit.Zero(3), "000"},
-		{qubit.One(3), "111"},
+		{qubit.Zeros(3), "000"},
+		{qubit.Ones(3), "111"},
 	}
 
 	for _, c := range cases {
@@ -1016,8 +1016,8 @@ func TestString(t *testing.T) {
 		in   *qubit.Qubit
 		want string
 	}{
-		{qubit.Zero(2), "[(1+0i) (0+0i) (0+0i) (0+0i)]"},
-		{qubit.One(2), "[(0+0i) (0+0i) (0+0i) (1+0i)]"},
+		{qubit.Zeros(2), "[(1+0i) (0+0i) (0+0i) (0+0i)]"},
+		{qubit.Ones(2), "[(0+0i) (0+0i) (0+0i) (1+0i)]"},
 	}
 
 	for _, c := range cases {

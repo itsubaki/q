@@ -33,47 +33,25 @@ func New(v *vector.Vector) *Qubit {
 }
 
 // Zero returns a qubit in the zero state.
-func Zero(n ...int) *Qubit {
-	if len(n) == 0 {
-		n = []int{1}
-	}
-
-	s := make([]complex128, 1<<n[0])
-	s[0] = 1
-	return New(vector.New(s...))
+func Zero() *Qubit {
+	return New(vector.New(1, 0))
 }
 
 // One returns a qubit in the one state.
-func One(n ...int) *Qubit {
-	if len(n) == 0 {
-		n = []int{1}
-	}
-
-	s := make([]complex128, 1<<n[0])
-	s[(1<<n[0])-1] = 1
-	return New(vector.New(s...))
+func One() *Qubit {
+	return New(vector.New(0, 1))
 }
 
 // Plus returns a qubit in the plus state.
 // The plus state is defined as (|0> + |1>) / sqrt(2).
-func Plus(n ...int) *Qubit {
-	qb := Zero(n...)
-	for i := range qb.NumQubits() {
-		qb.H(i)
-	}
-
-	return qb
+func Plus() *Qubit {
+	return Zero().H(0)
 }
 
 // Minus returns a qubit in the minus state.
 // The minus state is defined as (|0> - |1>) / sqrt(2).
-func Minus(n ...int) *Qubit {
-	qb := One(n...)
-	for i := range qb.NumQubits() {
-		qb.H(i)
-	}
-
-	return qb
+func Minus() *Qubit {
+	return One().H(0)
 }
 
 // From returns a new qubit from a binary string.
@@ -100,6 +78,20 @@ func Bloch(theta, phi float64) *Qubit {
 	c := cmplx.Cos(complex(theta/2, 0))
 	s := cmplx.Sin(complex(theta/2, 0))
 	return New(vector.New(c, cmplx.Exp(complex(0, phi))*s))
+}
+
+// Zeros returns n qubits in the zero state.
+func Zeros(n int) *Qubit {
+	s := make([]complex128, 1<<n)
+	s[0] = 1
+	return New(vector.New(s...))
+}
+
+// Ones returns n qubits in the one state.
+func Ones(n int) *Qubit {
+	s := make([]complex128, 1<<n)
+	s[(1<<n)-1] = 1
+	return New(vector.New(s...))
 }
 
 // NumQubits returns the number of qubits.

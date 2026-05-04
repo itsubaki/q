@@ -36,10 +36,10 @@ func Example_compose() {
 		channel.BitFlip(0.5, 1),
 	)
 
-	rho := density.New(qubit.One(2)).
+	rho := density.New(qubit.Ones(2)).
 		ApplyChannelFunc(composed)
 
-	p, _ := rho.Measure(qubit.Zero(2))
+	p, _ := rho.Measure(qubit.Zeros(2))
 	fmt.Printf("%.4f\n", p)
 
 	// Output:
@@ -78,7 +78,7 @@ func ExampleDensityMatrix_ExpectedValue() {
 }
 
 func ExampleDensityMatrix_Measure() {
-	rho := density.New(qubit.Zero(2).Apply(
+	rho := density.New(qubit.Zeros(2).Apply(
 		gate.H().TensorProduct(gate.I()),
 		gate.CNOT(2, 0, 1),
 	))
@@ -156,7 +156,7 @@ func ExampleDensityMatrix_TraceOut() {
 }
 
 func ExampleDensityMatrix_TraceOut_x8() {
-	rho := density.New(qubit.Zero(3).Apply(
+	rho := density.New(qubit.Zeros(3).Apply(
 		matrix.TensorProduct(gate.H(), gate.I(), gate.I()),
 		gate.CNOT(3, 0, 1),
 	))
@@ -234,7 +234,7 @@ func ExampleDensityMatrix_PhaseFlip() {
 }
 
 func ExampleDensityMatrix_VonNeumannEntropy() {
-	rho := density.New(qubit.Zero(2).Apply(
+	rho := density.New(qubit.Zeros(2).Apply(
 		gate.H().TensorProduct(gate.I()),
 		gate.CNOT(2, 0, 1),
 	))
@@ -504,7 +504,7 @@ func TestDensityMatrix_TraceOut(t *testing.T) {
 	}{
 		{
 			s: []density.WeightedState{
-				{Probability: 1.0, Qubit: qubit.Zero(2)},
+				{Probability: 1.0, Qubit: qubit.Zeros(2)},
 			},
 			cs: []Case{
 				{
@@ -525,7 +525,7 @@ func TestDensityMatrix_TraceOut(t *testing.T) {
 		},
 		{
 			s: []density.WeightedState{
-				{Probability: 1.0, Qubit: qubit.One(2)},
+				{Probability: 1.0, Qubit: qubit.Ones(2)},
 			},
 			cs: []Case{
 				{
@@ -546,7 +546,7 @@ func TestDensityMatrix_TraceOut(t *testing.T) {
 		},
 		{
 			s: []density.WeightedState{
-				{Probability: 1.0, Qubit: qubit.Zero(2).Apply(gate.H(2))},
+				{Probability: 1.0, Qubit: qubit.Zeros(2).Apply(gate.H(2))},
 			},
 			cs: []Case{
 				{
@@ -567,8 +567,8 @@ func TestDensityMatrix_TraceOut(t *testing.T) {
 		},
 		{
 			s: []density.WeightedState{
-				{Probability: 0.5, Qubit: qubit.Zero(2)},
-				{Probability: 0.5, Qubit: qubit.One(2)},
+				{Probability: 0.5, Qubit: qubit.Zeros(2)},
+				{Probability: 0.5, Qubit: qubit.Ones(2)},
 			},
 			cs: []Case{
 				{
@@ -589,8 +589,8 @@ func TestDensityMatrix_TraceOut(t *testing.T) {
 		},
 		{
 			s: []density.WeightedState{
-				{Probability: 0.5, Qubit: qubit.Zero(2).Apply(gate.H(2))},
-				{Probability: 0.5, Qubit: qubit.One(2)},
+				{Probability: 0.5, Qubit: qubit.Zeros(2).Apply(gate.H(2))},
+				{Probability: 0.5, Qubit: qubit.Ones(2)},
 			},
 			cs: []Case{
 				{
@@ -611,8 +611,8 @@ func TestDensityMatrix_TraceOut(t *testing.T) {
 		},
 		{
 			s: []density.WeightedState{
-				{Probability: 0.75, Qubit: qubit.Zero(2).Apply(gate.H(2))},
-				{Probability: 0.25, Qubit: qubit.One(2).Apply(gate.H(2))},
+				{Probability: 0.75, Qubit: qubit.Zeros(2).Apply(gate.H(2))},
+				{Probability: 0.25, Qubit: qubit.Ones(2).Apply(gate.H(2))},
 			},
 			cs: []Case{
 				{
@@ -633,8 +633,8 @@ func TestDensityMatrix_TraceOut(t *testing.T) {
 		},
 		{
 			s: []density.WeightedState{
-				{Probability: 0.25, Qubit: qubit.Zero(2).Apply(gate.H(2))},
-				{Probability: 0.75, Qubit: qubit.One(2).Apply(gate.H(2))},
+				{Probability: 0.25, Qubit: qubit.Zeros(2).Apply(gate.H(2))},
+				{Probability: 0.75, Qubit: qubit.Ones(2).Apply(gate.H(2))},
 			},
 			cs: []Case{
 				{
@@ -655,7 +655,7 @@ func TestDensityMatrix_TraceOut(t *testing.T) {
 		},
 		{
 			s: []density.WeightedState{
-				{Probability: 1.0, Qubit: qubit.Zero(3)},
+				{Probability: 1.0, Qubit: qubit.Zeros(3)},
 			},
 			cs: []Case{
 				{
@@ -676,7 +676,7 @@ func TestDensityMatrix_TraceOut(t *testing.T) {
 		},
 		{
 			s: []density.WeightedState{
-				{Probability: 1.0, Qubit: qubit.One(3)},
+				{Probability: 1.0, Qubit: qubit.Ones(3)},
 			},
 			cs: []Case{
 				{
@@ -697,7 +697,7 @@ func TestDensityMatrix_TraceOut(t *testing.T) {
 		},
 		{
 			s: []density.WeightedState{
-				{Probability: 1.0, Qubit: qubit.Zero(3).Apply(gate.H(3))},
+				{Probability: 1.0, Qubit: qubit.Zeros(3).Apply(gate.H(3))},
 			},
 			cs: []Case{
 				{

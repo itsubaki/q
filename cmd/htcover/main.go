@@ -78,8 +78,7 @@ func main() {
 		}
 
 		amp := qsim.Amplitude()
-		alpha, beta := amp[0], amp[1]
-		theta, phi := Bloch(alpha, beta)
+		theta, phi := Angles(amp[0], amp[1])
 
 		if err := w.Write([]string{
 			fmt.Sprintf("%.6f", theta),
@@ -109,8 +108,8 @@ func (s Seq) String() string {
 	return fmt.Sprint(str)
 }
 
-// Bloch returns the polar (theta) and azimuthal (phi) angles of the state on the Bloch sphere.
-func Bloch(alpha, beta complex128) (float64, float64) {
+// Angles returns the polar (theta) and azimuthal (phi) angles of the state on the Bloch sphere.
+func Angles(alpha, beta complex128) (float64, float64) {
 	if epsilon.IsZeroF64(cmplx.Abs(alpha)) {
 		return math.Pi, 0
 	}

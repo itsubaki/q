@@ -1197,8 +1197,8 @@ func Example_channel() {
 		AmplitudeDamping(0.9).
 		BitFlip(0.5)
 
-	p0, _ := rho.Measure(qubit.Zero(2))
-	p1, _ := rho.Measure(qubit.Zero(2).Apply(gate.H(2)))
+	p0, _ := rho.Measure(qubit.Zeros(2))
+	p1, _ := rho.Measure(qubit.Zeros(2).Apply(gate.H(2)))
 	fmt.Printf("%.4f\n", p0)
 	fmt.Printf("%.4f\n", p1)
 
