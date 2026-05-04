@@ -107,23 +107,23 @@ func ExampleTensorProduct() {
 }
 
 func ExampleSU() {
-	u := gate.U(math.Pi/4, math.Pi/2, math.Pi/8)
-	su := gate.SU(math.Pi/4, math.Pi/2, math.Pi/8)
-
-	usud := matrix.MatMul(u, su.Dagger())
-	fmt.Println(usud.Mul(1 / usud.Data[0]).Equal(gate.I()))
-
 	det := func(m *matrix.Matrix) complex128 {
 		return m.Data[0]*m.Data[3] - m.Data[1]*m.Data[2]
 	}
 
+	u := gate.U(math.Pi/4, math.Pi/2, math.Pi/8)
+	su := gate.SU(math.Pi/4, math.Pi/2, math.Pi/8)
+
 	fmt.Printf("%.4f\n", det(u))
-	fmt.Printf("%.4f\n", det(su))
+	fmt.Printf("%.4f\n", det(su)) // det(su) should be 1
+
+	usud := matrix.MatMul(u, su.Dagger())
+	fmt.Println(usud.Mul(1 / usud.Data[0]).Equal(gate.I()))
 
 	// Output:
-	// true
 	// (-0.3827+0.9239i)
 	// (1.0000+0.0000i)
+	// true
 }
 
 func ExampleABC() {
