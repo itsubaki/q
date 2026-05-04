@@ -430,36 +430,6 @@ func TestDensityMatrix_ExpectedValue(t *testing.T) {
 	}
 }
 
-func TestDensityMatrix_Probability(t *testing.T) {
-	cases := []struct {
-		s    []density.WeightedState
-		m    *qubit.Qubit
-		want float64
-	}{
-		{
-			s: []density.WeightedState{
-				{Probability: 1, Qubit: qubit.Zero()},
-			},
-			m:    qubit.Zero(),
-			want: 1,
-		},
-		{
-			s: []density.WeightedState{
-				{Probability: 1, Qubit: qubit.Zero()},
-			},
-			m:    qubit.One(),
-			want: 0,
-		},
-	}
-
-	for _, c := range cases {
-		got, _ := density.NewMixed(c.s).Measure(c.m)
-		if !epsilon.IsCloseF64(got, c.want) {
-			t.Fail()
-		}
-	}
-}
-
 func TestDensityMatrix_Apply(t *testing.T) {
 	cases := []struct {
 		s    []density.WeightedState

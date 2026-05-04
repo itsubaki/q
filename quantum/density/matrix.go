@@ -99,18 +99,16 @@ func (m *DensityMatrix) Purity() float64 {
 
 // TraceDistance returns the trace distance between two density matrices.
 func (m *DensityMatrix) TraceDistance(sigma *DensityMatrix, tol ...float64) float64 {
-	a := m.rho.Sub(sigma.rho)
-	return (&DensityMatrix{
-		rho: matrix.MatMul(a.Dagger(), a),
-	}).Sqrt(tol...).Trace() / 2.0
+	a := m.rho.Sub(sigma.rho)                                  // a = rho - sigma
+	b := matrix.MatMul(a.Dagger(), a)                          // b = a^dagger * a
+	return 0.5 * (&DensityMatrix{rho: b}).Sqrt(tol...).Trace() // 1/2 * tr(sqrt(b))
 }
 
 // Fidelity returns the fidelity between two density matrices.
 func (m *DensityMatrix) Fidelity(sigma *DensityMatrix, tol ...float64) float64 {
-	sqrt := m.Sqrt(tol...)
-	return (&DensityMatrix{
-		rho: matrix.MatMul(sqrt.rho, sigma.rho, sqrt.rho),
-	}).Sqrt(tol...).Trace()
+	a := m.Sqrt(tol...)                                  // a = sqrt(rho)
+	b := matrix.MatMul(a.rho, sigma.rho, a.rho)          // b = a * sigma * a
+	return (&DensityMatrix{rho: b}).Sqrt(tol...).Trace() // tr(sqrt(b))
 }
 
 // VonNeumannEntropy returns the von Neumann entropy of the density matrix.
