@@ -32,21 +32,15 @@ func New(v *vector.Vector) *Qubit {
 	return q
 }
 
-// NewWithIndex returns a new qubit with the given index.
-func NewWithIndex(n, idx int) *Qubit {
-	s := make([]complex128, 1<<n)
-	s[idx] = 1
-
-	return New(vector.New(s...))
-}
-
 // Zero returns a qubit in the zero state.
 func Zero(n ...int) *Qubit {
 	if len(n) == 0 {
 		n = []int{1}
 	}
 
-	return NewWithIndex(n[0], 0)
+	s := make([]complex128, 1<<n[0])
+	s[0] = 1
+	return New(vector.New(s...))
 }
 
 // One returns a qubit in the one state.
@@ -55,7 +49,9 @@ func One(n ...int) *Qubit {
 		n = []int{1}
 	}
 
-	return NewWithIndex(n[0], (1<<n[0])-1)
+	s := make([]complex128, 1<<n[0])
+	s[(1<<n[0])-1] = 1
+	return New(vector.New(s...))
 }
 
 // Plus returns a qubit in the plus state.

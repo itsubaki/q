@@ -2,6 +2,7 @@ package density
 
 import (
 	"iter"
+	"math"
 	"math/cmplx"
 
 	"github.com/itsubaki/q/math/eigen"
@@ -112,10 +113,71 @@ func (m *DensityMatrix) Fidelity(sigma *DensityMatrix, tol ...float64) float64 {
 	}).Sqrt(tol...).Trace()
 }
 
+// VonNeumannEntropy returns the von Neumann entropy of the density matrix.
+func (m *DensityMatrix) VonNeumannEntropy(tol ...float64) float64 {
+	_, d := eigen.Jacobi(m.rho, 100, tol...)
+	var sum float64
+	for i := range d.Rows {
+		lambda := real(d.At(i, i))
+		if epsilon.IsZeroF64(lambda, tol...) {
+			continue
+		}
+
+		sum += lambda * math.Log2(lambda)
+	}
+
+	return -1 * sum
+}
+
+// RelativeEntropy returns the quantum relative entropy.
+// If supp(m) is not contained in supp(sigma), it returns +Inf.
+func (m *DensityMatrix) RelativeEntropy(sigma *DensityMatrix, tol ...float64) float64 {
+	overlap := func(rho *matrix.Matrix, vectors *matrix.Matrix, idx int) float64 {
+		rows, _ := rho.Dim()
+
+		// compute v^dagger * rho * v, where v is the idx-th eigenvector of sigma.
+		var w complex128
+		for i := range rows {
+			vi := cmplx.Conj(vectors.At(i, idx))
+			for j := range rows {
+				w += vi * rho.At(i, j) * vectors.At(j, idx)
+			}
+		}
+
+		return real(w)
+	}
+
+	// compute log(sigma) using the eigen decomposition of sigma.
+	v, d := eigen.Jacobi(sigma.rho, 100, tol...)
+	for i := range d.Rows {
+		lambda := real(d.At(i, i))
+		if !epsilon.IsZeroF64(lambda, tol...) {
+			d.Set(i, i, complex(math.Log2(lambda), 0))
+			continue
+		}
+
+		if epsilon.IsZeroF64(overlap(m.rho, v, i), tol...) {
+			d.Set(i, i, 0)
+			continue
+		}
+
+		return math.Inf(1)
+	}
+	logsig := matrix.MatMul(v, d, v.Dagger())
+
+	// compute entropy.
+	a := -1 * m.VonNeumannEntropy(tol...)
+	b := matrix.MatMul(m.rho, logsig)
+	return a - real(b.Trace())
+}
+
 // Sqrt returns the square root of the density matrix.
 func (m *DensityMatrix) Sqrt(tol ...float64) *DensityMatrix {
 	v, d := eigen.Jacobi(m.rho, 100, tol...)
-	d.Fdiag(func(v complex128) complex128 { return cmplx.Pow(v, 0.5) })
+	d.Fdiag(func(lambda complex128) complex128 {
+		return cmplx.Pow(lambda, 0.5)
+	})
+
 	return &DensityMatrix{
 		rho: matrix.MatMul(v, d, v.Dagger()),
 	}
@@ -306,11 +368,6 @@ func (m *DensityMatrix) ApplyKraus(ops ...*matrix.Matrix) *DensityMatrix {
 	return &DensityMatrix{
 		rho: rho,
 	}
-}
-
-// Equal returns true if two density matrices are equal within a specified tolerance.
-func Equal(m, n *DensityMatrix, tol ...float64) bool {
-	return m.rho.Equal(n.rho, tol...)
 }
 
 // split separates the bits of x into two integers according to mask.

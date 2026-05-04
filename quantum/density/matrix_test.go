@@ -233,6 +233,25 @@ func ExampleDensityMatrix_PhaseFlip() {
 	// 0.30
 }
 
+func ExampleDensityMatrix_VonNeumannEntropy() {
+	rho := density.New(qubit.Zero(2).Apply(
+		gate.H().TensorProduct(gate.I()),
+		gate.CNOT(2, 0, 1),
+	))
+
+	s0 := rho.TraceOut(1)
+	s1 := rho.TraceOut(0)
+
+	fmt.Println(epsilon.IsZeroF64(rho.VonNeumannEntropy()))
+	fmt.Println(epsilon.IsOneF64(s0.VonNeumannEntropy()))
+	fmt.Println(epsilon.IsOneF64(s1.VonNeumannEntropy()))
+
+	// Output:
+	// true
+	// true
+	// true
+}
+
 func TestNewMixed(t *testing.T) {
 	cases := []struct {
 		s     []density.WeightedState
@@ -1221,11 +1240,78 @@ func TestDensityMatrix_Fidelity(t *testing.T) {
 	}
 }
 
-func TestDensityMatrix_Equal(t *testing.T) {
+func TestDensityMatrix_VonNeumannEntropy(t *testing.T) {
+	cases := []struct {
+		s    []density.WeightedState
+		want float64
+	}{
+		{
+			s: []density.WeightedState{
+				{Probability: 1, Qubit: qubit.Zero()},
+			},
+			want: 0,
+		},
+		{
+			s: []density.WeightedState{
+				{Probability: 1, Qubit: qubit.Zero()},
+				{Probability: 0, Qubit: qubit.One()},
+			},
+			want: 0,
+		},
+		{
+			s: []density.WeightedState{
+				{Probability: 0.5, Qubit: qubit.Zero()},
+				{Probability: 0.5, Qubit: qubit.One()},
+			},
+			want: 1,
+		},
+		{
+			s: []density.WeightedState{
+				{Probability: 0.9, Qubit: qubit.Zero()},
+				{Probability: 0.1, Qubit: qubit.One()},
+			},
+			want: -(0.9*math.Log2(0.9) + 0.1*math.Log2(0.1)),
+		},
+		{
+			s: []density.WeightedState{
+				{Probability: 0.5, Qubit: qubit.Zero()},
+				{Probability: 0.5, Qubit: qubit.Zero()},
+			},
+			want: 0,
+		},
+		{
+			s: []density.WeightedState{
+				{Probability: 0.5, Qubit: qubit.Zero()},
+				{Probability: 0.5, Qubit: qubit.Plus()},
+			},
+			want: -((0.5+1/(2*math.Sqrt2))*math.Log2(0.5+1/(2*math.Sqrt2)) + (0.5-1/(2*math.Sqrt2))*math.Log2(0.5-1/(2*math.Sqrt2))),
+		},
+		{
+			s: []density.WeightedState{
+				{Probability: 0.25, Qubit: qubit.From("00")},
+				{Probability: 0.25, Qubit: qubit.From("01")},
+				{Probability: 0.25, Qubit: qubit.From("10")},
+				{Probability: 0.25, Qubit: qubit.From("11")},
+			},
+			want: 2,
+		},
+	}
+
+	for _, c := range cases {
+		rho := density.NewMixed(c.s)
+		got := rho.VonNeumannEntropy()
+
+		if !epsilon.IsCloseF64(got, c.want) {
+			t.Errorf("got=%v, want=%v", got, c.want)
+		}
+	}
+}
+
+func TestDensityMatrix_RelativeEntropy(t *testing.T) {
 	cases := []struct {
 		s1   []density.WeightedState
 		s2   []density.WeightedState
-		want bool
+		want float64
 	}{
 		{
 			s1: []density.WeightedState{
@@ -1234,16 +1320,28 @@ func TestDensityMatrix_Equal(t *testing.T) {
 			s2: []density.WeightedState{
 				{Probability: 1, Qubit: qubit.Zero()},
 			},
-			want: true,
+			want: 0,
+		},
+		{
+			s1: []density.WeightedState{
+				{Probability: 0.3, Qubit: qubit.Zero()},
+				{Probability: 0.7, Qubit: qubit.One()},
+			},
+			s2: []density.WeightedState{
+				{Probability: 0.3, Qubit: qubit.Zero()},
+				{Probability: 0.7, Qubit: qubit.One()},
+			},
+			want: 0,
 		},
 		{
 			s1: []density.WeightedState{
 				{Probability: 1, Qubit: qubit.Zero()},
 			},
 			s2: []density.WeightedState{
-				{Probability: 1, Qubit: qubit.One()},
+				{Probability: 0.5, Qubit: qubit.Zero()},
+				{Probability: 0.5, Qubit: qubit.One()},
 			},
-			want: false,
+			want: 1,
 		},
 		{
 			s1: []density.WeightedState{
@@ -1253,7 +1351,7 @@ func TestDensityMatrix_Equal(t *testing.T) {
 				{Probability: 0.5, Qubit: qubit.Zero()},
 				{Probability: 0.5, Qubit: qubit.One()},
 			},
-			want: false,
+			want: 1,
 		},
 		{
 			s1: []density.WeightedState{
@@ -1261,19 +1359,73 @@ func TestDensityMatrix_Equal(t *testing.T) {
 				{Probability: 0.5, Qubit: qubit.One()},
 			},
 			s2: []density.WeightedState{
-				{Probability: 0.5, Qubit: qubit.Plus()},
-				{Probability: 0.5, Qubit: qubit.Minus()},
+				{Probability: 0.75, Qubit: qubit.Zero()},
+				{Probability: 0.25, Qubit: qubit.One()},
 			},
-			want: true,
+			want: 0.5*math.Log2(0.5/0.75) + 0.5*math.Log2(0.5/0.25),
+		},
+		{
+
+			s1: []density.WeightedState{
+				{Probability: 0.75, Qubit: qubit.Zero()},
+				{Probability: 0.25, Qubit: qubit.One()},
+			},
+			s2: []density.WeightedState{
+				{Probability: 0.5, Qubit: qubit.Zero()},
+				{Probability: 0.5, Qubit: qubit.One()},
+			},
+			want: 0.75*math.Log2(0.75/0.5) + 0.25*math.Log2(0.25/0.5),
+		},
+		{
+			s1: []density.WeightedState{
+				{Probability: 1, Qubit: qubit.Zero()},
+			},
+			s2: []density.WeightedState{
+				{Probability: 1, Qubit: qubit.One()},
+			},
+			want: math.Inf(1),
+		},
+		{
+			s1: []density.WeightedState{
+				{Probability: 0.5, Qubit: qubit.Zero()},
+				{Probability: 0.5, Qubit: qubit.One()},
+			},
+			s2: []density.WeightedState{
+				{Probability: 1, Qubit: qubit.Zero()},
+			},
+			want: math.Inf(1),
+		},
+		{
+			s1: []density.WeightedState{
+				{Probability: 1, Qubit: qubit.Plus()},
+			},
+			s2: []density.WeightedState{
+				{Probability: 1, Qubit: qubit.Zero()},
+			},
+			want: math.Inf(1),
+		},
+		{
+			s1: []density.WeightedState{
+				{Probability: 1, Qubit: qubit.Zero()},
+			},
+			s2: []density.WeightedState{
+				{Probability: 1 - 1e-12, Qubit: qubit.Zero()},
+				{Probability: 1e-12, Qubit: qubit.One()},
+			},
+			want: -math.Log2(1 - 1e-12),
 		},
 	}
 
 	for _, c := range cases {
-		rho1 := density.NewMixed(c.s1)
-		rho2 := density.NewMixed(c.s2)
-		got := density.Equal(rho1, rho2)
+		rho := density.NewMixed(c.s1)
+		sigma := density.NewMixed(c.s2)
+		got := rho.RelativeEntropy(sigma)
 
-		if got != c.want {
+		if math.IsInf(got, 1) && math.IsInf(c.want, 1) {
+			continue
+		}
+
+		if !epsilon.IsCloseF64(got, c.want) {
 			t.Errorf("got=%v, want=%v", got, c.want)
 		}
 	}
