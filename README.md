@@ -186,7 +186,8 @@ for i := range 10 {
 
 	// measure q0, q1, q2
 	m := qsim.Measure(q0, q1, q2)
-	phi := number.Ldexp(m.Int(), -m.NumQubits())
+	k := number.MustParseInt(m.BinaryString())
+	phi := number.Ldexp(k, -m.NumQubits())
 
 	// find s/r. 0.010 -> 0.25 -> 1/4, 0.110 -> 0.75 -> 3/4, ...
 	s, r, d, ok := number.FindOrder(a, N, phi)

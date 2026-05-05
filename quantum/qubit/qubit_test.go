@@ -986,21 +986,6 @@ func TestClone(t *testing.T) {
 	}
 }
 
-func TestInt(t *testing.T) {
-	cases := []struct {
-		in   *qubit.Qubit
-		want int
-	}{
-		{qubit.Zero(), 0},
-		{qubit.One(), 1},
-	}
-
-	for _, c := range cases {
-		if c.in.Int() != c.want {
-			t.Fail()
-		}
-	}
-}
 func TestBinaryString(t *testing.T) {
 	cases := []struct {
 		in   *qubit.Qubit

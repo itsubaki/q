@@ -701,11 +701,6 @@ func (q *Qubit) BinaryString() string {
 	return sb.String()
 }
 
-// Int measures the quantum state and returns its integer representation.
-func (q *Qubit) Int() int {
-	return number.MustParseInt(q.BinaryString())
-}
-
 // String returns the string representation of q.
 func (q *Qubit) String() string {
 	return q.state.String()
