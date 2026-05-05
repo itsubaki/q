@@ -1,8 +1,6 @@
 package density
 
-import (
-	"github.com/itsubaki/q/quantum/qubit"
-)
+import "github.com/itsubaki/q/quantum/qubit"
 
 // WeightedState is a quantum state with an associated probability.
 type WeightedState struct {
