@@ -14,9 +14,15 @@ import (
 
 func ExampleCModExp2_mod15() {
 	print := func(s qubit.State) {
+		binary := s.BinaryString()
+		intv := make([]int, len(binary))
+		for i, b := range binary {
+			intv[i] = number.MustParseInt(b)
+		}
+
 		fmt.Printf("%v%3d(% .4f% .4fi): %.4f\n",
-			s.BinaryString(),
-			s.Int(),
+			binary,
+			intv,
 			real(s.Amplitude()),
 			imag(s.Amplitude()),
 			s.Probability(),
@@ -50,9 +56,15 @@ func ExampleCModExp2_mod15() {
 
 func ExampleCModExp2_mod21() {
 	print := func(s qubit.State) {
+		binary := s.BinaryString()
+		intv := make([]int, len(binary))
+		for i, b := range binary {
+			intv[i] = number.MustParseInt(b)
+		}
+
 		fmt.Printf("%v%3d(% .4f% .4fi): %.4f\n",
-			s.BinaryString(),
-			s.Int(),
+			binary,
+			intv,
 			real(s.Amplitude()),
 			imag(s.Amplitude()),
 			s.Probability(),

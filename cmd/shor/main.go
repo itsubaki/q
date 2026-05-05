@@ -94,21 +94,22 @@ func main() {
 	// classical post-processing
 	var prop float64
 	for _, state := range qsim.State(r0) {
-		i, m := state.Int()[0], state.BinaryString()[0]
-		s, r, d, ok := number.FindOrder(a, N, number.Ldexp(i, -t))
+		m := state.BinaryString()[0]                               // m is the binary string representation of r0
+		k := number.MustParseInt(m)                                // k is the integer representation of m
+		s, r, d, ok := number.FindOrder(a, N, number.Ldexp(k, -t)) //
 		if !ok || number.IsOdd(r) {
-			fmt.Printf("  i=%4d: N=%d, a=%d, t=%d; s/r=%4d/%4d ([0.%v]~%.4f);\n", i, N, a, t, s, r, m, d)
+			fmt.Printf("  k=%4d: N=%d, a=%d, t=%d; s/r=%4d/%4d ([0.%v]~%.4f);\n", k, N, a, t, s, r, m, d)
 			continue
 		}
 
 		p0 := number.GCD(number.Pow(a, r/2)-1, N)
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
 		if number.IsTrivial(N, p0, p1) {
-			fmt.Printf("  i=%4d: N=%d, a=%d, t=%d; s/r=%4d/%4d ([0.%v]~%.4f); p=%v, q=%v.\n", i, N, a, t, s, r, m, d, p0, p1)
+			fmt.Printf("  k=%4d: N=%d, a=%d, t=%d; s/r=%4d/%4d ([0.%v]~%.4f); p=%v, q=%v.\n", k, N, a, t, s, r, m, d, p0, p1)
 			continue
 		}
 
-		fmt.Printf("* i=%4d: N=%d, a=%d, t=%d; s/r=%4d/%4d ([0.%v]~%.4f); p=%v, q=%v.\n", i, N, a, t, s, r, m, d, p0, p1)
+		fmt.Printf("* k=%4d: N=%d, a=%d, t=%d; s/r=%4d/%4d ([0.%v]~%.4f); p=%v, q=%v.\n", k, N, a, t, s, r, m, d, p0, p1)
 		prop += state.Probability()
 	}
 

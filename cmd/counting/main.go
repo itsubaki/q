@@ -114,9 +114,10 @@ func main() {
 	// estimate
 	N := number.Ldexp(1, len(r)) // N = 2^len(r)
 	for _, state := range q.Top(qsim.State(c, r, s, a), top) {
-		phi := number.Ldexp(state.Int()[0], -t)  // phi = k/(2^t)
-		theta := 2 * math.Pi * math.Abs(phi-0.5) // theta = 2*pi*(phi-0.5)
-		M := N * math.Pow(math.Sin(theta/2), 2)  // M = N*(sin(theta/2))^2
+		k := number.MustParseInt(state.BinaryString()[0]) // k is the integer representation of the binary string c
+		phi := number.Ldexp(k, -t)                        // phi = k/(2^t)
+		theta := 2 * math.Pi * math.Abs(phi-0.5)          // theta = 2*pi*|phi-0.5|
+		M := N * math.Pow(math.Sin(theta/2), 2)           // M = N*(sin(theta/2))^2
 
 		fmt.Printf("%v; phi=%.4f, theta=%.4f; M=%.4f, eps=%.4f\n", state, phi, theta, M, math.Abs(M-2))
 	}

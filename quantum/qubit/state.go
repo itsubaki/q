@@ -6,7 +6,6 @@ import (
 	"math/cmplx"
 
 	"github.com/itsubaki/q/math/epsilon"
-	"github.com/itsubaki/q/math/number"
 )
 
 // State is a quantum state.
@@ -14,21 +13,14 @@ type State struct {
 	prob         float64
 	amp          complex128
 	binaryString []string
-	intValue     []int
 }
 
 // NewState returns a new State.
 func NewState(amp complex128, binary ...string) State {
-	intv := make([]int, len(binary))
-	for i, b := range binary {
-		intv[i] = number.MustParseInt(b)
-	}
-
 	return State{
 		prob:         math.Pow(cmplx.Abs(amp), 2),
 		amp:          amp,
 		binaryString: binary,
-		intValue:     intv,
 	}
 }
 
@@ -45,11 +37,6 @@ func (s State) Amplitude() complex128 {
 // BinaryString returns the binary string representation of the state.
 func (s State) BinaryString() []string {
 	return s.binaryString
-}
-
-// Int returns the integer representation of the state.
-func (s State) Int() []int {
-	return s.intValue
 }
 
 // String returns the string representation of the state.

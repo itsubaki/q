@@ -11,11 +11,11 @@ import (
 func ExampleState() {
 	s := qubit.NewState(complex(1, 0), []string{"0100", "1010", "1000"}...)
 
-	fmt.Println(s.BinaryString(), s.Int(), s.Amplitude(), s.Probability())
+	fmt.Println(s.BinaryString(), s.Amplitude(), s.Probability())
 	fmt.Println(s.String())
 
 	// Output:
-	// [0100 1010 1000] [4 10 8] (1+0i) 1
+	// [0100 1010 1000] (1+0i) 1
 	// [0100 1010 1000] ( 1.0000 0.0000i): 1.0000
 }
 
