@@ -254,29 +254,23 @@ func ExampleDensityMatrix_VonNeumannEntropy() {
 
 func TestNewMixed(t *testing.T) {
 	cases := []struct {
-		s     []density.WeightedState
-		isNil bool
-		want  float64
+		s    []density.WeightedState
+		want float64
 	}{
 		{
-			s:     []density.WeightedState{},
-			isNil: true,
+			s:    []density.WeightedState{},
+			want: 0,
 		},
 		{
 			s: []density.WeightedState{
 				{Probability: 1, Qubit: qubit.Zero()},
 			},
-			isNil: false,
-			want:  1,
+			want: 1,
 		},
 	}
 
 	for _, c := range cases {
 		rho := density.NewMixed(c.s)
-		if rho == nil && c.isNil {
-			continue
-		}
-
 		prop, _ := rho.Measure(qubit.Zero())
 		if !epsilon.IsCloseF64(prop, c.want) {
 			t.Errorf("got=%v, want=%v", prop, c.want)

@@ -31,7 +31,9 @@ func New(qb *qubit.Qubit) *DensityMatrix {
 // NewMixed returns a density matrix constructed from a set of states.
 func NewMixed(states []WeightedState) *DensityMatrix {
 	if len(states) == 0 {
-		return nil
+		return &DensityMatrix{
+			rho: matrix.New(),
+		}
 	}
 
 	n := states[0].Qubit.Dim()
