@@ -124,6 +124,10 @@ func (m *DensityMatrix) VonNeumannEntropy(tol ...float64) float64 {
 		sum += lambda * math.Log2(lambda)
 	}
 
+	if epsilon.IsZeroF64(sum, tol...) {
+		return 0
+	}
+
 	return -1 * sum
 }
 
