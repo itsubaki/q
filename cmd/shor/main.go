@@ -94,9 +94,11 @@ func main() {
 	// classical post-processing
 	var prop float64
 	for _, state := range qsim.State(r0) {
-		m := state.BinaryString()[0]                               // m is the binary string representation of r0
-		k := number.MustParseInt(m)                                // k is the integer representation of m
-		s, r, d, ok := number.FindOrder(a, N, number.Ldexp(k, -t)) //
+		m := state.BinaryString()[0] // m is the binary string representation of r0
+		k := number.MustParseInt(m)  // k is the integer representation of m
+		phi := number.Ldexp(k, -t)   // phi is the estimated phase, which is k / 2^t
+
+		s, r, d, ok := number.FindOrder(a, N, phi)
 		if !ok || number.IsOdd(r) {
 			fmt.Printf("  k=%4d: N=%d, a=%d, t=%d; s/r=%4d/%4d ([0.%v]~%.4f);\n", k, N, a, t, s, r, m, d)
 			continue
