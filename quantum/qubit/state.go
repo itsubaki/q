@@ -11,8 +11,8 @@ import (
 
 // State is a quantum state.
 type State struct {
-	amp          complex128
 	prob         float64
+	amp          complex128
 	binaryString []string
 	intValue     []int
 }
@@ -25,29 +25,34 @@ func NewState(amp complex128, binary ...string) State {
 	}
 
 	return State{
-		amp:          amp,
 		prob:         math.Pow(cmplx.Abs(amp), 2),
+		amp:          amp,
 		binaryString: binary,
 		intValue:     intv,
 	}
 }
 
+// Probability returns the probability of the state.
 func (s State) Probability() float64 {
 	return s.prob
 }
 
+// Amplitude returns the amplitude of the state.
 func (s State) Amplitude() complex128 {
 	return s.amp
 }
 
+// BinaryString returns the binary string representation of the state.
 func (s State) BinaryString() []string {
 	return s.binaryString
 }
 
+// Int returns the integer representation of the state.
 func (s State) Int() []int {
 	return s.intValue
 }
 
+// String returns the string representation of the state.
 func (s State) String() string {
 	return fmt.Sprintf("%v (% .4f% .4fi): %.4f",
 		s.binaryString,
