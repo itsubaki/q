@@ -9,9 +9,20 @@ import (
 	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/math/number"
 	"github.com/itsubaki/q/quantum/gate"
+	"github.com/itsubaki/q/quantum/qubit"
 )
 
 func ExampleCModExp2_mod15() {
+	print := func(s qubit.State) {
+		fmt.Printf("%v%3d(% .4f% .4fi): %.4f\n",
+			s.BinaryString(),
+			s.Int(),
+			real(s.Amplitude()),
+			imag(s.Amplitude()),
+			s.Probability(),
+		)
+	}
+
 	qsim := q.New()
 	c := qsim.Zero()
 	t := qsim.ZeroLog2(15)
@@ -19,14 +30,14 @@ func ExampleCModExp2_mod15() {
 	qsim.X(c)
 	qsim.X(t[len(t)-1])
 	for _, s := range qsim.State(c, t) {
-		fmt.Println(s)
+		print(s)
 	}
 
 	a, N := 7, 15
 	for j := range 3 {
 		CModExp2(qsim, a, j, N, c, t)
 		for _, s := range qsim.State(c, t) {
-			fmt.Println(s)
+			print(s)
 		}
 	}
 
@@ -38,6 +49,16 @@ func ExampleCModExp2_mod15() {
 }
 
 func ExampleCModExp2_mod21() {
+	print := func(s qubit.State) {
+		fmt.Printf("%v%3d(% .4f% .4fi): %.4f\n",
+			s.BinaryString(),
+			s.Int(),
+			real(s.Amplitude()),
+			imag(s.Amplitude()),
+			s.Probability(),
+		)
+	}
+
 	qsim := q.New()
 	c := qsim.Zero()
 	t := qsim.ZeroLog2(21)
@@ -46,14 +67,14 @@ func ExampleCModExp2_mod21() {
 	qsim.X(t[len(t)-1])
 
 	for _, s := range qsim.State(c, t) {
-		fmt.Println(s)
+		print(s)
 	}
 
 	a, N := 2, 21
 	for j := range 4 {
 		CModExp2(qsim, a, j, N, c, t)
 		for _, s := range qsim.State(c, t) {
-			fmt.Println(s)
+			print(s)
 		}
 	}
 
