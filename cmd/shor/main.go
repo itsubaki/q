@@ -121,7 +121,7 @@ func print(desc string, qsim *q.Q, reg ...any) {
 	max := slices.Max(qsim.Probability())
 	for _, state := range qsim.State(reg...) {
 		p := strings.Repeat("*", int(state.Probability()/max*32))
-		fmt.Printf("%s: %s\n", state, p)
+		fmt.Printf("%s; %s\n", state, p)
 	}
 
 	fmt.Println()

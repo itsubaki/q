@@ -49,9 +49,8 @@ func (s State) Int() []int {
 }
 
 func (s State) String() string {
-	return fmt.Sprintf("%v%3v(% .4f% .4fi): %.4f",
+	return fmt.Sprintf("%v (% .4f% .4fi): %.4f",
 		s.binaryString,
-		s.intValue,
 		real(s.amp),
 		imag(s.amp),
 		s.prob,
