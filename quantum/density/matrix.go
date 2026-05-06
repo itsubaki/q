@@ -94,7 +94,7 @@ func (m *DensityMatrix) Trace() float64 {
 	return real(m.rho.Trace())
 }
 
-// Purity returns the purity of the density matrix, defined as Tr(rho^2).
+// Purity returns the purity of the density matrix, defined as tr(rho^2).
 func (m *DensityMatrix) Purity() float64 {
 	return real(matrix.MatMul(m.rho, m.rho).Trace())
 }
@@ -112,6 +112,7 @@ func (m *DensityMatrix) TraceDistance(sigma *DensityMatrix, tol ...float64) floa
 }
 
 // Fidelity returns the fidelity between two density matrices.
+// The fidelity is defined as F(rho, sigma) = tr(sqrt(sqrt(rho) * sigma * sqrt(rho))).
 func (m *DensityMatrix) Fidelity(sigma *DensityMatrix, tol ...float64) float64 {
 	a := m.Sqrt(tol...)                                       // a = sqrt(rho)
 	b := matrix.MatMul(a.rho, sigma.rho, a.rho)               // b = a * sigma * a

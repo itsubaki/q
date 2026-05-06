@@ -1203,3 +1203,35 @@ func Example_channel() {
 	// 0.2500
 	// 0.2750
 }
+
+func Example_distance() {
+	rho0 := density.New(qubit.Zero())
+	rho1 := density.New(qubit.Plus())
+
+	fmt.Printf("%.4f\n", rho0.Fidelity(rho0))
+	fmt.Printf("%.4f\n", rho0.Fidelity(rho1))
+	fmt.Printf("%.4f\n", rho0.TraceDistance(rho0))
+	fmt.Printf("%.4f\n", rho0.TraceDistance(rho1))
+
+	// Output:
+	// 1.0000
+	// 0.7071
+	// 0.0000
+	// 0.7071
+}
+
+func Example_entropy() {
+	rho0 := density.New(qubit.Zero()).BitFlip(0.89)
+	rho1 := density.New(qubit.Plus())
+
+	fmt.Printf("%.4f\n", rho0.VonNeumannEntropy())
+	fmt.Printf("%.4f\n", rho1.VonNeumannEntropy())
+	fmt.Printf("%.4f\n", rho0.RelativeEntropy(rho0))
+	fmt.Printf("%.4f\n", rho0.RelativeEntropy(rho1))
+
+	// Output:
+	// 0.4999
+	// 0.0000
+	// 0.0000
+	// +Inf
+}
