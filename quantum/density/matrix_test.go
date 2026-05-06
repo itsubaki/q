@@ -46,6 +46,25 @@ func Example_compose() {
 	// 0.4500
 }
 
+func Test_composeOrder(t *testing.T) {
+	ch1 := channel.AmplitudeDamping(0.9, 0)
+	ch2 := channel.BitFlip(0.5, 1)
+	composed := channel.Compose(ch1, ch2)
+
+	rho1 := density.New(qubit.Ones(2)).
+		ApplyChannelFunc(composed)
+
+	rho2 := density.New(qubit.Ones(2)).
+		ApplyChannelFunc(ch1).
+		ApplyChannelFunc(ch2)
+
+	if !rho1.Equal(rho2) {
+		panic("composed channel should be applied in order")
+	}
+
+	// Output:
+}
+
 func ExampleDensityMatrix_Seq2() {
 	rho := density.NewMixed([]density.WeightedState{
 		{Probability: 0.1, Qubit: qubit.Zero()},
