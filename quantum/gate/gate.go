@@ -7,7 +7,7 @@ import (
 	"github.com/itsubaki/q/math/matrix"
 )
 
-// Theta returns 2 * pi / 2^k.
+// Theta returns 2*pi/2^k.
 func Theta(k int) float64 {
 	return 2 * math.Pi / math.Pow(2, float64(k))
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
-// Theta returns 2 * pi / 2**k.
+// Theta returns 2*pi/2^k.
 func Theta(k int) float64 {
 	return gate.Theta(k)
 }

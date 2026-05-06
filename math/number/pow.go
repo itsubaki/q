@@ -2,7 +2,7 @@ package number
 
 import "math"
 
-// Ldexp returns a * 2^b.
+// Ldexp returns a*2^b.
 func Ldexp(a, b int) float64 {
 	return math.Ldexp(float64(a), b)
 }
