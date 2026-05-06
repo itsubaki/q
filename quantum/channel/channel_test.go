@@ -58,7 +58,7 @@ func TestChannel_IsTracePreserving(t *testing.T) {
 	}
 }
 
-func TestCompose(t *testing.T) {
+func TestComposeFunc(t *testing.T) {
 	cases := []struct {
 		channel           []channel.ChannelFunc
 		isTracePreserving bool
@@ -85,7 +85,7 @@ func TestCompose(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		ch := channel.Compose(c.channel...)(1)
+		ch := channel.ComposeFunc(c.channel...)(1)
 		if ch.IsTracePreserving() != c.isTracePreserving {
 			t.Errorf("channel=%v", c.channel)
 		}

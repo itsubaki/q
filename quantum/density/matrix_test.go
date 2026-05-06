@@ -30,8 +30,8 @@ func Example_channel() {
 	// [(0+0i) (0+0i)]
 }
 
-func Example_compose() {
-	composed := channel.Compose(
+func Example_composeFunc() {
+	composed := channel.ComposeFunc(
 		channel.AmplitudeDamping(0.9, 0),
 		channel.BitFlip(0.5, 1),
 	)
@@ -46,20 +46,20 @@ func Example_compose() {
 	// 0.4500
 }
 
-func Test_composeOrder(t *testing.T) {
+func Test_nonCommutative(t *testing.T) {
 	ch1 := channel.AmplitudeDamping(0.9, 0)
-	ch2 := channel.BitFlip(0.5, 1)
-	composed := channel.Compose(ch1, ch2)
+	ch2 := channel.BitFlip(0.5, 0)
 
-	rho1 := density.New(qubit.Ones(2)).
-		ApplyChannelFunc(composed)
-
-	rho2 := density.New(qubit.Ones(2)).
+	rho1 := density.New(qubit.One()).
 		ApplyChannelFunc(ch1).
 		ApplyChannelFunc(ch2)
 
-	if !rho1.Equal(rho2) {
-		panic("composed channel should be applied in order")
+	rho2 := density.New(qubit.One()).
+		ApplyChannelFunc(ch2).
+		ApplyChannelFunc(ch1)
+
+	if rho1.Equal(rho2) {
+		t.Errorf("channels should be non-commutative")
 	}
 
 	// Output:

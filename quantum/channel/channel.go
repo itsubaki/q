@@ -49,27 +49,35 @@ func (c *Channel) Compose(another *Channel) *Channel {
 	return New(kraus...)
 }
 
-// Compose returns a new quantum channel function that is the composition of multiple quantum channel functions.
-func Compose(fn ...ChannelFunc) ChannelFunc {
-	if len(fn) == 0 {
-		return func(n int) *Channel {
-			return New(gate.I(n))
-		}
-	}
-
+// ComposeFunc returns a new quantum channel function that is the composition of multiple quantum channel functions.
+func ComposeFunc(fn ...ChannelFunc) ChannelFunc {
 	return func(n int) *Channel {
 		ch := make([]*Channel, len(fn))
 		for i, f := range fn {
 			ch[i] = f(n)
 		}
 
-		result := ch[0]
-		for _, c := range ch[1:] {
-			result = result.Compose(c)
-		}
-
-		return result
+		return Compose(ch...)
 	}
+}
+
+// Compose returns a new quantum channel that is the composition of multiple quantum channels.
+func Compose(channels ...*Channel) *Channel {
+	if len(channels) == 0 {
+		return New(gate.I(1))
+	}
+
+	result := channels[0]
+	for _, c := range channels[1:] {
+		result = result.Compose(c)
+	}
+
+	return result
+}
+
+// Depolarizing returns a new quantum channel that applies a depolarizing channel to the specified qubit.
+func Depolarizing(p float64, qb int) ChannelFunc {
+	return Pauli(p/3, p/3, p/3, qb)
 }
 
 // Pauli returns a new quantum channel that applies a Pauli channel to the specified qubit.
@@ -88,23 +96,6 @@ func Pauli(pX, pY, pZ float64, qb int) ChannelFunc {
 	}
 }
 
-// Depolarizing returns a new quantum channel that applies a depolarizing channel to the specified qubit.
-func Depolarizing(p float64, qb int) ChannelFunc {
-	return Pauli(p/3, p/3, p/3, qb)
-}
-
-// Flip returns a new quantum channel that applies a flip channel to the specified qubit.
-func Flip(p float64, u *matrix.Matrix, qb int) ChannelFunc {
-	return func(n int) *Channel {
-		e0 := gate.I().Mul(complex(math.Sqrt(1-p), 0))
-		e1 := u.Mul(complex(math.Sqrt(p), 0))
-
-		k0 := gate.TensorProduct(e0, n, []int{qb})
-		k1 := gate.TensorProduct(e1, n, []int{qb})
-		return New(k0, k1)
-	}
-}
-
 // BitFlip returns a new quantum channel that applies a bit flip channel to the specified qubit.
 func BitFlip(p float64, qb int) ChannelFunc {
 	return Flip(p, gate.X(), qb)
@@ -118,6 +109,18 @@ func PhaseFlip(p float64, qb int) ChannelFunc {
 // BitPhaseFlip returns a new quantum channel that applies a bit-phase flip channel to the specified qubit.
 func BitPhaseFlip(p float64, qb int) ChannelFunc {
 	return Flip(p, gate.Y(), qb)
+}
+
+// Flip returns a new quantum channel that applies a flip channel to the specified qubit.
+func Flip(p float64, u *matrix.Matrix, qb int) ChannelFunc {
+	return func(n int) *Channel {
+		e0 := gate.I().Mul(complex(math.Sqrt(1-p), 0))
+		e1 := u.Mul(complex(math.Sqrt(p), 0))
+
+		k0 := gate.TensorProduct(e0, n, []int{qb})
+		k1 := gate.TensorProduct(e1, n, []int{qb})
+		return New(k0, k1)
+	}
 }
 
 // AmplitudeDamping returns a new quantum channel that applies an amplitude damping channel to the specified qubit.
