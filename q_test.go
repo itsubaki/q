@@ -1221,7 +1221,7 @@ func Example_distance() {
 }
 
 func Example_entropy() {
-	rho0 := density.New(qubit.Zero()).BitFlip(0.89)
+	rho0 := density.New(qubit.Zero()).BitFlip(0.5)
 	rho1 := density.New(qubit.Plus())
 
 	fmt.Printf("%.4f\n", rho0.VonNeumannEntropy())
@@ -1230,7 +1230,7 @@ func Example_entropy() {
 	fmt.Printf("%.4f\n", rho0.RelativeEntropy(rho1))
 
 	// Output:
-	// 0.4999
+	// 1.0000
 	// 0.0000
 	// 0.0000
 	// +Inf
