@@ -241,7 +241,6 @@ qsim.CNOT(qb[0], qb[1])
 
 // basic properties
 rho := density.New(qsim.Qubit())
-fmt.Println(rho.Trace())
 fmt.Println(rho.Purity())
 fmt.Println(rho.VonNeumannEntropy())
 
