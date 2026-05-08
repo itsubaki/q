@@ -46,7 +46,7 @@ func Example_composeFunc() {
 	// 0.4500
 }
 
-func Test_nonCommutative(t *testing.T) {
+func Example_nonCommutative() {
 	ch1 := channel.AmplitudeDamping(0.9, 0)
 	ch2 := channel.BitFlip(0.5, 0)
 
@@ -58,11 +58,10 @@ func Test_nonCommutative(t *testing.T) {
 		ApplyChannelFunc(ch2).
 		ApplyChannelFunc(ch1)
 
-	if rho1.Equal(rho2) {
-		t.Errorf("channels should be non-commutative")
-	}
+	fmt.Println(rho1.Equal(rho2))
 
 	// Output:
+	// false
 }
 
 func ExampleDensityMatrix_Seq2() {

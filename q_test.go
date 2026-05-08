@@ -1160,6 +1160,54 @@ func Example_any() {
 	// [11] ( 0.7071 0.0000i): 0.5000
 }
 
+func Example_densityMatrix() {
+	qsim := q.New()
+	qb := qsim.Zeros(2)
+	qsim.H(qb[0])
+	qsim.CNOT(qb[0], qb[1])
+
+	// basic properties
+	rho := density.New(qsim.Qubit())
+	fmt.Printf("%.4f\n", rho.Trace())
+	fmt.Printf("%.4f\n", rho.Purity())
+	fmt.Printf("%.4f\n", rho.VonNeumannEntropy())
+
+	// partial trace
+	s0 := rho.TraceOut(1)
+	fmt.Printf("%.4f\n", s0.Purity())
+	fmt.Printf("%.4f\n", s0.VonNeumannEntropy())
+
+	// quantum channels
+	noisy := rho.AmplitudeDamping(0.9).BitFlip(0.5)
+	pz, _ := noisy.Measure(qubit.Zeros(2))
+	px, _ := noisy.Measure(qubit.Pluses(2))
+	fmt.Printf("%.4f\n", pz)
+	fmt.Printf("%.4f\n", px)
+
+	// distance measures
+	rho0 := density.New(qubit.Zero())
+	rho1 := density.New(qubit.Plus())
+	fmt.Printf("%.4f\n", rho0.Fidelity(rho1))
+	fmt.Printf("%.4f\n", rho0.TraceDistance(rho1))
+
+	rho2 := density.New(qubit.Zero()).BitFlip(0.5)
+	fmt.Printf("%.4f\n", rho2.RelativeEntropy(rho2))
+	fmt.Printf("%.4f\n", rho2.RelativeEntropy(rho1))
+
+	// Output:
+	// 1.0000
+	// 1.0000
+	// 0.0000
+	// 0.5000
+	// 1.0000
+	// 0.2500
+	// 0.2750
+	// 0.7071
+	// 0.7071
+	// 0.0000
+	// +Inf
+}
+
 func Example_traceout() {
 	qsim := q.New()
 	{
@@ -1194,14 +1242,30 @@ func Example_channel() {
 		AmplitudeDamping(0.9).
 		BitFlip(0.5)
 
-	p0, _ := rho.Measure(qubit.Zeros(2))
-	p1, _ := rho.Measure(qubit.Pluses(2))
-	fmt.Printf("%.4f\n", p0)
-	fmt.Printf("%.4f\n", p1)
+	pz, postZ := rho.Measure(qubit.Zeros(2))
+	px, postX := rho.Measure(qubit.Pluses(2))
+	fmt.Printf("%.4f\n", pz)
+	fmt.Printf("%.4f\n", px)
+
+	for _, s := range postZ.Seq2() {
+		fmt.Printf("%.2f\n", s)
+	}
+
+	for _, s := range postX.Seq2() {
+		fmt.Printf("%.2f\n", s)
+	}
 
 	// Output:
 	// 0.2500
 	// 0.2750
+	// [(1.00+0.00i) (0.00+0.00i) (0.00+0.00i) (0.00+0.00i)]
+	// [(0.00+0.00i) (0.00+0.00i) (0.00+0.00i) (0.00+0.00i)]
+	// [(0.00+0.00i) (0.00+0.00i) (0.00+0.00i) (0.00+0.00i)]
+	// [(0.00+0.00i) (0.00+0.00i) (0.00+0.00i) (0.00+0.00i)]
+	// [(0.25+0.00i) (0.25+0.00i) (0.25+0.00i) (0.25+0.00i)]
+	// [(0.25+0.00i) (0.25+0.00i) (0.25+0.00i) (0.25+0.00i)]
+	// [(0.25+0.00i) (0.25+0.00i) (0.25+0.00i) (0.25+0.00i)]
+	// [(0.25+0.00i) (0.25+0.00i) (0.25+0.00i) (0.25+0.00i)]
 }
 
 func Example_distance() {

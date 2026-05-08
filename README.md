@@ -230,22 +230,38 @@ for _, s := range qsim.State() {
 // [11] ( 0.7071 0.0000i): 0.5000
 ```
 
+### Density Matrix
 
-### Density Matrix and Channels
 
 ```go
-rho := density.New(qubit.One()).
-	AmplitudeDamping(0.9).
-	BitFlip(0.5)
+qsim := q.New()
+qb := qsim.Zeros(2)
+qsim.H(qb[0])
+qsim.CNOT(qb[0], qb[1])
 
-p, post := rho.Measure(qubit.Zero())
+// basic properties
+rho := density.New(qsim.Qubit())
+fmt.Println(rho.Trace())
+fmt.Println(rho.Purity())
+fmt.Println(rho.VonNeumannEntropy())
 
-fmt.Printf("%.4f\n", p)
-for _, r := range post.Seq2() {
-	fmt.Println(r)
-}
+// partial trace
+s0 := rho.TraceOut(1)
+fmt.Println(s0.Purity())
+fmt.Println(s0.VonNeumannEntropy())
 
-// 0.5000
-// [(1+0i) (0+0i)]
-// [(0+0i) (0+0i)]
+// quantum channels
+noisy := rho.AmplitudeDamping(0.9).BitFlip(0.5)
+fmt.Println(noisy.Measure(qubit.Zeros(2)))
+fmt.Println(noisy.Measure(qubit.Pluses(2)))
+
+// distance measures
+rho0 := density.New(qubit.Zero())
+rho1 := density.New(qubit.Plus())
+fmt.Println(rho0.Fidelity(rho1))
+fmt.Println(rho0.TraceDistance(rho1))
+
+rho2 := density.New(qubit.Zero()).BitFlip(0.5)
+fmt.Println(rho2.RelativeEntropy(rho2))
+fmt.Println(rho2.RelativeEntropy(rho1))
 ```
