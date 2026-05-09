@@ -276,3 +276,20 @@ for _, r := range sigmaX.Seq2() {
 	fmt.Println(r)
 }
 ```
+
+```go
+rho := density.NewMixed([]density.WeightedState{
+	{Probability: 0.5, Qubit: qubit.Zeros(3)},
+	{Probability: 0.5, Qubit: qubit.Ones(3)},
+})
+
+zzi := matrix.TensorProduct(gate.Z(), gate.Z(), gate.I())
+ziz := matrix.TensorProduct(gate.Z(), gate.I(), gate.Z())
+izz := matrix.TensorProduct(gate.I(), gate.Z(), gate.Z())
+
+fmt.Println(rho.ExpectedValue(gate.X(3))) // 0
+fmt.Println(rho.ExpectedValue(gate.Z(3))) // 0
+fmt.Println(rho.ExpectedValue(zzi))       // 1
+fmt.Println(rho.ExpectedValue(ziz))       // 1
+fmt.Println(rho.ExpectedValue(izz))       // 1
+```

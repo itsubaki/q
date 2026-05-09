@@ -64,19 +64,28 @@ func Example_nonCommutative() {
 	// false
 }
 
-func ExampleDensityMatrix_Seq2() {
+func Example_classical() {
 	rho := density.NewMixed([]density.WeightedState{
-		{Probability: 0.1, Qubit: qubit.Zero()},
-		{Probability: 0.9, Qubit: qubit.One()},
+		{Probability: 0.5, Qubit: qubit.Zeros(3)},
+		{Probability: 0.5, Qubit: qubit.Ones(3)},
 	})
 
-	for _, r := range rho.Seq2() {
-		fmt.Println(r)
-	}
+	zzi := matrix.TensorProduct(gate.Z(), gate.Z(), gate.I())
+	ziz := matrix.TensorProduct(gate.Z(), gate.I(), gate.Z())
+	izz := matrix.TensorProduct(gate.I(), gate.Z(), gate.Z())
+
+	fmt.Println(rho.ExpectedValue(gate.X(3))) // 0
+	fmt.Println(rho.ExpectedValue(gate.Z(3))) // 0
+	fmt.Println(rho.ExpectedValue(zzi))       // 1
+	fmt.Println(rho.ExpectedValue(ziz))       // 1
+	fmt.Println(rho.ExpectedValue(izz))       // 1
 
 	// Output:
-	// [(0.1+0i) (0+0i)]
-	// [(0+0i) (0.9+0i)]
+	// 0
+	// 0
+	// 1
+	// 1
+	// 1
 }
 
 func ExampleDensityMatrix_ExpectedValue() {
