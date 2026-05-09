@@ -42,6 +42,27 @@ func ABC(theta, phi, lambda float64) (float64, *matrix.Matrix, *matrix.Matrix, *
 	return alpha, A, B, C
 }
 
+// From returns a gate from the string representation.
+func From(g string) *matrix.Matrix {
+	list := make([]*matrix.Matrix, len(g))
+	for i, c := range g {
+		switch c {
+		case 'I', 'i':
+			list[i] = I()
+		case 'X', 'x':
+			list[i] = X()
+		case 'Y', 'y':
+			list[i] = Y()
+		case 'Z', 'z':
+			list[i] = Z()
+		case 'H', 'h':
+			list[i] = H()
+		}
+	}
+
+	return matrix.TensorProduct(list...)
+}
+
 // I returns an identity gate.
 func I(n ...int) *matrix.Matrix {
 	return matrix.TensorProductN(matrix.New(

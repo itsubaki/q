@@ -70,15 +70,11 @@ func Example_classical() {
 		{Probability: 0.5, Qubit: qubit.Ones(3)},
 	})
 
-	zzi := matrix.TensorProduct(gate.Z(), gate.Z(), gate.I())
-	ziz := matrix.TensorProduct(gate.Z(), gate.I(), gate.Z())
-	izz := matrix.TensorProduct(gate.I(), gate.Z(), gate.Z())
-
-	fmt.Println(rho.ExpectedValue(gate.X(3))) // 0
-	fmt.Println(rho.ExpectedValue(gate.Z(3))) // 0
-	fmt.Println(rho.ExpectedValue(zzi))       // 1
-	fmt.Println(rho.ExpectedValue(ziz))       // 1
-	fmt.Println(rho.ExpectedValue(izz))       // 1
+	fmt.Println(rho.ExpectedValue(gate.From("XXX"))) // 0
+	fmt.Println(rho.ExpectedValue(gate.From("ZZZ"))) // 0
+	fmt.Println(rho.ExpectedValue(gate.From("ZZI"))) // 1
+	fmt.Println(rho.ExpectedValue(gate.From("ZIZ"))) // 1
+	fmt.Println(rho.ExpectedValue(gate.From("IZZ"))) // 1
 
 	// Output:
 	// 0

@@ -390,3 +390,44 @@ func TestMultiQubitGate(t *testing.T) {
 		}
 	}
 }
+
+func TestFrom(t *testing.T) {
+	cases := []struct {
+		g    string
+		want *matrix.Matrix
+	}{
+		{
+			g: "IX",
+			want: gate.New(
+				[]complex128{0, 1, 0, 0},
+				[]complex128{1, 0, 0, 0},
+				[]complex128{0, 0, 0, 1},
+				[]complex128{0, 0, 1, 0},
+			),
+		},
+		{
+			g: "YZ",
+			want: gate.New(
+				[]complex128{0, 0, -1i, 0},
+				[]complex128{0, 0, 0, 1i},
+				[]complex128{1i, 0, 0, 0},
+				[]complex128{0, -1i, 0, 0},
+			),
+		},
+		{
+			g: "HH",
+			want: gate.New(
+				[]complex128{0.5, 0.5, 0.5, 0.5},
+				[]complex128{0.5, -0.5, 0.5, -0.5},
+				[]complex128{0.5, 0.5, -0.5, -0.5},
+				[]complex128{0.5, -0.5, -0.5, 0.5},
+			),
+		},
+	}
+
+	for _, c := range cases {
+		if !gate.From(c.g).Equal(c.want) {
+			t.Errorf("got=%v, want=%v", gate.From(c.g), c.want)
+		}
+	}
+}
