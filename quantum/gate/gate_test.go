@@ -226,22 +226,6 @@ func TestControlled(t *testing.T) {
 	}
 }
 
-func TestInverse(t *testing.T) {
-	cases := []struct {
-		in, want *matrix.Matrix
-	}{
-		{gate.U(1, 2, 3), gate.I()},
-		{gate.X(2), gate.I(2)},
-		{gate.CNOT(2, 0, 1), gate.I(2)},
-	}
-
-	for _, c := range cases {
-		if !c.in.Apply(c.in.Inverse()).Equal(c.want) {
-			t.Fail()
-		}
-	}
-}
-
 func TestIsHermitian(t *testing.T) {
 	cases := []struct {
 		in   *matrix.Matrix

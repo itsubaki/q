@@ -106,6 +106,18 @@ func ExampleMatrix_Imag() {
 	// [5 7]
 }
 
+func ExampleMatrix_Clone() {
+	m := matrix.New(
+		[]complex128{1, 2},
+		[]complex128{3, 4},
+	)
+
+	fmt.Println(m.Equal(m.Clone()))
+
+	// Output:
+	// true
+}
+
 func ExampleMatrix_Mul() {
 	m := matrix.New(
 		[]complex128{0, 1 + 1i},
@@ -121,13 +133,29 @@ func ExampleMatrix_Mul() {
 	// [(-3+3i) (0+0i)]
 }
 
+func ExampleMatrix_AddAt() {
+	m := matrix.New(
+		[]complex128{1, 2},
+		[]complex128{3, 4},
+	)
+
+	m.AddAt(1, 0, 3)
+	for _, r := range m.Seq2() {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [(1+0i) (2+0i)]
+	// [(6+0i) (4+0i)]
+}
+
 func ExampleMatrix_SubAt() {
 	m := matrix.New(
 		[]complex128{1, 2},
 		[]complex128{3, 4},
 	)
-	m.SubAt(1, 0, 3)
 
+	m.SubAt(1, 0, 3)
 	for _, r := range m.Seq2() {
 		fmt.Println(r)
 	}
@@ -137,13 +165,29 @@ func ExampleMatrix_SubAt() {
 	// [(0+0i) (4+0i)]
 }
 
+func ExampleMatrix_MulAt() {
+	m := matrix.New(
+		[]complex128{1, 2},
+		[]complex128{3, 4},
+	)
+
+	m.MulAt(1, 0, 3)
+	for _, r := range m.Seq2() {
+		fmt.Println(r)
+	}
+
+	// Output:
+	// [(1+0i) (2+0i)]
+	// [(9+0i) (4+0i)]
+}
+
 func ExampleMatrix_DivAt() {
 	m := matrix.New(
 		[]complex128{1, 2},
 		[]complex128{3, 4},
 	)
-	m.DivAt(1, 0, 3)
 
+	m.DivAt(1, 0, 3)
 	for _, r := range m.Seq2() {
 		fmt.Println(r)
 	}
@@ -160,7 +204,6 @@ func ExampleMatrix_Fdiag() {
 	)
 
 	m.Fdiag(func(v complex128) complex128 { return v * 2 })
-
 	for _, r := range m.Seq2() {
 		fmt.Println(r)
 	}
@@ -327,47 +370,6 @@ func ExampleMatrix_TensorProduct() {
 	// [(0+0i) (0+0i) (1+0i) (0+0i)]
 	// [(0+0i) (1+0i) (0+0i) (0+0i)]
 	// [(1+0i) (0+0i) (0+0i) (0+0i)]
-}
-
-func TestMatrix_Inverse(t *testing.T) {
-	cases := []struct {
-		in   *matrix.Matrix
-		want *matrix.Matrix
-	}{
-		{
-			matrix.New(
-				[]complex128{1, 2, 0, -1},
-				[]complex128{-1, 1, 2, 0},
-				[]complex128{2, 0, 1, 1},
-				[]complex128{1, -2, -1, 1},
-			),
-			matrix.New(
-				[]complex128{1, 0, 0, 0},
-				[]complex128{0, 1, 0, 0},
-				[]complex128{0, 0, 1, 0},
-				[]complex128{0, 0, 0, 1},
-			),
-		},
-		{
-			matrix.New(
-				[]complex128{0, 1, 0},
-				[]complex128{0, 0, 1},
-				[]complex128{1, 0, 0},
-			),
-			matrix.New(
-				[]complex128{1, 0, 0},
-				[]complex128{0, 1, 0},
-				[]complex128{0, 0, 1},
-			),
-		},
-	}
-
-	for _, c := range cases {
-		got := c.in.Apply(c.in.Inverse())
-		if !got.Equal(c.want) {
-			t.Fail()
-		}
-	}
 }
 
 func TestMatrix_Swap(t *testing.T) {

@@ -315,49 +315,6 @@ func (m *Matrix) Imag() [][]float64 {
 	return out
 }
 
-// Inverse returns the inverse of m.
-// It supports only square, non-singular matrices.
-func (m *Matrix) Inverse(tol ...float64) *Matrix {
-	p, q := m.Dim()
-	mm := m.Clone()
-
-	out := Identity(p)
-	for i := range p {
-		if epsilon.IsZero(mm.At(i, i), tol...) {
-			// swap rows
-			for r := i + 1; r < p; r++ {
-				if epsilon.IsZero(mm.At(r, i), tol...) {
-					continue
-				}
-
-				mm = mm.Swap(i, r)
-				out = out.Swap(i, r)
-				break
-			}
-		}
-
-		c := 1 / mm.At(i, i)
-		for j := range q {
-			mm.MulAt(i, j, c)
-			out.MulAt(i, j, c)
-		}
-
-		for j := range q {
-			if i == j {
-				continue
-			}
-
-			c := mm.At(j, i)
-			for k := range q {
-				mm.AddAt(j, k, -c*mm.At(i, k))
-				out.AddAt(j, k, -c*out.At(i, k))
-			}
-		}
-	}
-
-	return out
-}
-
 // Swap returns a copy of m with the i-th and j-th rows swapped.
 func (m *Matrix) Swap(i, j int) *Matrix {
 	data := make([]complex128, len(m.Data))
