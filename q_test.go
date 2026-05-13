@@ -527,31 +527,6 @@ func ExampleQ_QFT() {
 	// [111] ( 0.2500-0.2500i): 0.1250
 }
 
-func ExampleQ_QFT_ket4() {
-	qsim := q.New()
-
-	q0 := qsim.One()
-	q1 := qsim.Zero()
-	q2 := qsim.Zero()
-
-	qsim.QFT(q0, q1, q2)
-	qsim.Swap(q0, q2)
-
-	for _, s := range qsim.State() {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [000] ( 0.3536 0.0000i): 0.1250
-	// [001] (-0.3536 0.0000i): 0.1250
-	// [010] ( 0.3536 0.0000i): 0.1250
-	// [011] (-0.3536 0.0000i): 0.1250
-	// [100] ( 0.3536 0.0000i): 0.1250
-	// [101] (-0.3536 0.0000i): 0.1250
-	// [110] ( 0.3536 0.0000i): 0.1250
-	// [111] (-0.3536 0.0000i): 0.1250
-}
-
 func ExampleQ_InvQFT() {
 	qsim := q.New()
 
@@ -880,7 +855,7 @@ func Example_grover4() {
 	// [111 1] ( 0.0508 0.0000i): 0.0026
 }
 
-func Example_qft001() {
+func Example_qft() {
 	qsim := q.New()
 
 	q0 := qsim.Zero()
@@ -888,11 +863,11 @@ func Example_qft001() {
 	q2 := qsim.One()
 
 	qsim.H(q0)
-	qsim.CR(math.Pi/2, q0, q1)
-	qsim.CR(math.Pi/4, q0, q2)
+	qsim.CR(q.Theta(2), q0, q1)
+	qsim.CR(q.Theta(3), q0, q2)
 
 	qsim.H(q1)
-	qsim.CR(math.Pi/2, q1, q2)
+	qsim.CR(q.Theta(2), q1, q2)
 
 	qsim.H(q2)
 
@@ -913,36 +888,6 @@ func Example_qft001() {
 	// [101] (-0.2500-0.2500i): 0.1250
 	// [110] ( 0.0000-0.3536i): 0.1250
 	// [111] ( 0.2500-0.2500i): 0.1250
-}
-
-func Example_qft010() {
-	qsim := q.New()
-
-	q0 := qsim.Zero()
-	q1 := qsim.One()
-	q2 := qsim.Zero()
-
-	qsim.H(q0)
-	qsim.CR(q.Theta(2), q1, q0)
-	qsim.CR(q.Theta(3), q2, q0)
-	qsim.H(q1)
-	qsim.CR(q.Theta(2), q2, q1)
-	qsim.H(q2)
-	qsim.Swap(q0, q2)
-
-	for _, s := range qsim.State() {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [000] ( 0.3536 0.0000i): 0.1250
-	// [001] ( 0.0000 0.3536i): 0.1250
-	// [010] (-0.3536 0.0000i): 0.1250
-	// [011] ( 0.0000-0.3536i): 0.1250
-	// [100] ( 0.3536 0.0000i): 0.1250
-	// [101] ( 0.0000 0.3536i): 0.1250
-	// [110] (-0.3536 0.0000i): 0.1250
-	// [111] ( 0.0000-0.3536i): 0.1250
 }
 
 func Example_shor15() {
@@ -1047,7 +992,7 @@ func Example_superDenseCoding() {
 	// ZX: 11
 }
 
-func Example_ecc() {
+func Example_errorCorrection() {
 	qsim := q.New()
 
 	q0 := qsim.New(1, 2)

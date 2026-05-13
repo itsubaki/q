@@ -79,20 +79,6 @@ func ExampleQubit_OuterProduct() {
 	// [(0+0i) (0+0i)]
 }
 
-func ExampleQubit_OuterProduct_operatorSum() {
-	v := qubit.Zero()
-	q := v.OuterProduct(v)
-	e := gate.X().Dagger().Apply(q.Apply(gate.X()))
-
-	for _, r := range e.Seq2() {
-		fmt.Println(r)
-	}
-
-	// Output:
-	// [(0+0i) (0+0i)]
-	// [(0+0i) (1+0i)]
-}
-
 func ExampleQubit_G() {
 	qb := qubit.Zeros(2)
 
@@ -497,7 +483,7 @@ func ExampleQubit_State() {
 	// [1111] ( 0.2500 0.0000i): 0.0625
 }
 
-func ExampleQubit_State_order() {
+func ExampleQubit_State_grouping() {
 	v := qubit.Pluses(4)
 	for _, s := range v.State([]int{0}, []int{1, 2, 3}) {
 		fmt.Println(s)
@@ -544,7 +530,7 @@ func ExampleQubit_State_order() {
 
 func Example_bell() {
 	q := qubit.Zeros(2).Apply(
-		gate.H().TensorProduct(gate.I()),
+		gate.From("HI"),
 		gate.CNOT(2, 0, 1),
 	)
 
@@ -586,17 +572,17 @@ func Example_grover2() {
 
 func Example_grover3() {
 	oracle := matrix.Apply(
-		matrix.TensorProduct(gate.X(), gate.I(3)),
+		gate.From("XIII"),
 		gate.ControlledNot(4, []int{0, 1, 2}, 3),
-		matrix.TensorProduct(gate.X(), gate.I(3)),
+		gate.From("XIII"),
 	)
 
 	diffuser := matrix.Apply(
-		matrix.TensorProduct(gate.H(3), gate.H()),
-		matrix.TensorProduct(gate.X(3), gate.I()),
+		gate.From("HHHH"),
+		gate.From("XXXI"),
 		matrix.TensorProduct(gate.ControlledZ(3, []int{0, 1}, 2), gate.I()),
-		matrix.TensorProduct(gate.X(3), gate.I()),
-		matrix.TensorProduct(gate.H(3), gate.I()),
+		gate.From("XXXI"),
+		gate.From("HHHI"),
 	)
 
 	q := qubit.TensorProduct(
@@ -623,7 +609,7 @@ func Example_grover3() {
 	// [1111] (-0.1768 0.0000i): 0.0313
 }
 
-func Example_eccBitFlip() {
+func Example_bitFlip() {
 	psi := qubit.New(vector.New(1, 2))
 
 	// encoding
@@ -634,7 +620,7 @@ func Example_eccBitFlip() {
 	)
 
 	// error: first qubit is flipped
-	psi.Apply(matrix.TensorProduct(gate.X(), gate.I(2)))
+	psi.Apply(gate.From("XII"))
 
 	// add ancilla qubit
 	psi.TensorProduct(qubit.Zeros(2))
@@ -657,15 +643,15 @@ func Example_eccBitFlip() {
 
 	// recover
 	if m3.IsOne() && m4.IsZero() {
-		psi.Apply(matrix.TensorProduct(gate.X(), gate.I(4)))
+		psi.Apply(gate.From("XIIII"))
 	}
 
 	if m3.IsOne() && m4.IsOne() {
-		psi.Apply(matrix.TensorProduct(gate.I(), gate.X(), gate.I(3)))
+		psi.Apply(gate.From("IXIII"))
 	}
 
 	if m3.IsZero() && m4.IsOne() {
-		psi.Apply(matrix.TensorProduct(gate.I(2), gate.X(), gate.I(2)))
+		psi.Apply(gate.From("IIXII"))
 	}
 
 	// decoding
@@ -683,7 +669,7 @@ func Example_eccBitFlip() {
 	// [10010] ( 0.8944 0.0000i): 0.8000
 }
 
-func Example_eccPhaseFlip() {
+func Example_phaseFlip() {
 	psi := qubit.New(vector.New(1, 2))
 
 	// encoding
@@ -695,7 +681,7 @@ func Example_eccPhaseFlip() {
 	)
 
 	// error: first qubit is flipped
-	psi.Apply(matrix.TensorProduct(gate.Z(), gate.I(2)))
+	psi.Apply(gate.From("ZII"))
 
 	// H
 	psi.Apply(gate.H(3))
@@ -716,7 +702,7 @@ func Example_eccPhaseFlip() {
 	)
 
 	// H
-	psi.Apply(matrix.TensorProduct(gate.H(3), gate.I(2)))
+	psi.Apply(gate.From("HHHII"))
 
 	// measure
 	m3 := psi.Measure(3)
@@ -724,20 +710,20 @@ func Example_eccPhaseFlip() {
 
 	// recover
 	if m3.IsOne() && m4.IsZero() {
-		psi.Apply(matrix.TensorProduct(gate.Z(), gate.I(4)))
+		psi.Apply(gate.From("ZIIII"))
 	}
 
 	if m3.IsOne() && m4.IsOne() {
-		psi.Apply(matrix.TensorProduct(gate.I(), gate.Z(), gate.I(3)))
+		psi.Apply(gate.From("IZIII"))
 	}
 
 	if m3.IsZero() && m4.IsOne() {
-		psi.Apply(matrix.TensorProduct(gate.I(2), gate.Z(), gate.I(2)))
+		psi.Apply(gate.From("IIZII"))
 	}
 
 	// decoding
 	psi.Apply(
-		matrix.TensorProduct(gate.H(3), gate.I(2)),
+		gate.From("HHHII"),
 		gate.CNOT(5, 0, 2),
 		gate.CNOT(5, 0, 1),
 	)
@@ -760,14 +746,14 @@ func Example_quantumTeleportation() {
 	}
 
 	bell := qubit.Zeros(2).Apply(
-		matrix.TensorProduct(gate.H(), gate.I()),
+		gate.From("HI"),
 		gate.CNOT(2, 0, 1),
 	)
 	psi.TensorProduct(bell)
 
 	psi.Apply(
 		gate.CNOT(3, 0, 1),
-		matrix.TensorProduct(gate.H(), gate.I(2)),
+		gate.From("HII"),
 		gate.CNOT(3, 1, 2),
 		gate.CZ(3, 0, 2),
 	)

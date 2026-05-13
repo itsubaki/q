@@ -102,7 +102,7 @@ func ExampleDensityMatrix_ExpectedValue() {
 
 func ExampleDensityMatrix_Measure() {
 	rho := density.New(qubit.Zeros(2).Apply(
-		gate.H().TensorProduct(gate.I()),
+		gate.From("HI"),
 		gate.CNOT(2, 0, 1),
 	))
 
@@ -180,7 +180,7 @@ func ExampleDensityMatrix_TraceOut() {
 
 func ExampleDensityMatrix_TraceOut_x8() {
 	rho := density.New(qubit.Zeros(3).Apply(
-		matrix.TensorProduct(gate.H(), gate.I(), gate.I()),
+		gate.From("HII"),
 		gate.CNOT(3, 0, 1),
 	))
 
@@ -258,7 +258,7 @@ func ExampleDensityMatrix_PhaseFlip() {
 
 func ExampleDensityMatrix_VonNeumannEntropy() {
 	rho := density.New(qubit.Zeros(2).Apply(
-		gate.H().TensorProduct(gate.I()),
+		gate.From("HI"),
 		gate.CNOT(2, 0, 1),
 	))
 
