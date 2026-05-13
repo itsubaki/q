@@ -167,7 +167,7 @@ func ExampleQ_Probability() {
 
 func ExampleQ_Measure() {
 	qsim := q.New()
-	qsim.Rand = rand.Const()
+	qsim.SetRand(rand.Const())
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
@@ -186,7 +186,7 @@ func ExampleQ_Measure() {
 
 func ExampleQ_M() {
 	qsim := q.New()
-	qsim.Rand = rand.Const()
+	qsim.SetRand(rand.Const())
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
@@ -896,7 +896,7 @@ func Example_shor15() {
 	a := 7
 
 	qsim := q.New()
-	qsim.Rand = rand.Const()
+	qsim.SetRand(rand.Const())
 
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()

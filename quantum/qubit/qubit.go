@@ -17,7 +17,7 @@ import (
 type Qubit struct {
 	n     int
 	state *vector.Vector
-	Rand  func() float64 // Random number generator
+	rand  func() float64 // Random number generator
 }
 
 // New returns a new qubit.
@@ -25,7 +25,7 @@ func New(v *vector.Vector) *Qubit {
 	q := &Qubit{
 		n:     number.Log2(len(v.Data)),
 		state: v,
-		Rand:  rand.Float64,
+		rand:  rand.Float64,
 	}
 
 	q.Normalize()
@@ -112,6 +112,16 @@ func From(binary string) *Qubit {
 	}
 
 	return TensorProduct(list...)
+}
+
+// Rand returns the random number generator.
+func (q *Qubit) Rand() func() float64 {
+	return q.rand
+}
+
+// SetRand sets the random number generator.
+func (q *Qubit) SetRand(rand func() float64) {
+	q.rand = rand
 }
 
 // NumQubits returns the number of qubits.
@@ -654,7 +664,7 @@ func (q *Qubit) Measure(idx int) *Qubit {
 		q.Normalize()
 	}
 
-	if q.Rand() < prob0 {
+	if q.rand() < prob0 {
 		collapse(q, 0)
 		return Zero()
 	}
@@ -676,7 +686,7 @@ func (q *Qubit) Clone() *Qubit {
 	return &Qubit{
 		n:     q.n,
 		state: q.state.Clone(),
-		Rand:  q.Rand,
+		rand:  q.rand,
 	}
 }
 

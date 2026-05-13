@@ -739,7 +739,7 @@ func Example_phaseFlip() {
 
 func Example_quantumTeleportation() {
 	psi := qubit.New(vector.New(1, 2))
-	psi.Rand = rand.Const()
+	psi.SetRand(rand.Const())
 
 	for _, s := range psi.State() {
 		fmt.Println(s)
@@ -832,6 +832,27 @@ func Example_round() {
 	// Output:
 	// [0] ( 0.0000 0.7071i): 0.5000
 	// [1] ( 0.7071 0.0000i): 0.5000
+}
+
+func ExampleQubit_Rand() {
+	qb := qubit.New(vector.New())
+	qb.SetRand(rand.Const())
+
+	for range 10 {
+		fmt.Println(qb.Rand()())
+	}
+
+	// Output:
+	// 0.9999275824802834
+	// 0.8856419373528862
+	// 0.38147752771154886
+	// 0.4812673234167829
+	// 0.44417259544314847
+	// 0.5210016660132573
+	// 0.8861088591612437
+	// 0.6769530468231688
+	// 0.9850412088603281
+	// 0.98505615011337
 }
 
 func TestBloch(t *testing.T) {

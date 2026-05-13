@@ -5,7 +5,6 @@ import (
 
 	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/math/number"
-	"github.com/itsubaki/q/math/rand"
 	"github.com/itsubaki/q/math/vector"
 	"github.com/itsubaki/q/quantum/gate"
 	"github.com/itsubaki/q/quantum/qubit"
@@ -36,28 +35,32 @@ func Index(qb ...Qubit) []int {
 
 // Q is a quantum computing simulator.
 type Q struct {
-	qb   *qubit.Qubit
-	Rand func() float64
+	qb *qubit.Qubit
 }
 
 // New returns a new quantum computing simulator.
 func New() *Q {
 	return &Q{
-		qb:   nil,
-		Rand: rand.Float64,
+		qb: qubit.New(vector.New()),
 	}
 }
 
 // New appends a new qubit and returns its index.
 func (q *Q) New(v ...complex128) Qubit {
-	if q.qb == nil {
-		q.qb = qubit.New(vector.New(v...))
-		q.qb.Rand = q.Rand
+	if q.NumQubits() == 0 {
+		qb := qubit.New(vector.New(v...))
+		qb.SetRand(q.qb.Rand())
+		q.qb = qb
 		return Qubit(0)
 	}
 
 	q.qb.TensorProduct(qubit.New(vector.New(v...)))
 	return Qubit(q.NumQubits() - 1)
+}
+
+// SetRand sets the random number generator.
+func (q *Q) SetRand(rand func() float64) {
+	q.qb.SetRand(rand)
 }
 
 // Zero returns a qubit in the zero state.
@@ -97,10 +100,6 @@ func (q *Q) ZeroLog2(N int) []Qubit {
 
 // NumQubits returns the number of qubits.
 func (q *Q) NumQubits() int {
-	if q.qb == nil {
-		return 0
-	}
-
 	return q.qb.NumQubits()
 }
 
@@ -424,16 +423,8 @@ func (q *Q) Measure(qb ...Qubit) *qubit.Qubit {
 
 // Clone returns a copy of q.
 func (q *Q) Clone() *Q {
-	if q.qb == nil {
-		return &Q{
-			qb:   nil,
-			Rand: q.Rand,
-		}
-	}
-
 	return &Q{
-		qb:   q.qb.Clone(),
-		Rand: q.Rand,
+		qb: q.qb.Clone(),
 	}
 }
 

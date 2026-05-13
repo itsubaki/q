@@ -64,7 +64,7 @@ func main() {
 	// quantum simulator
 	qsim := q.New()
 	if seed > 0 {
-		qsim.Rand = rand.Const(seed)
+		qsim.SetRand(rand.Const(seed))
 	}
 
 	// initialize
