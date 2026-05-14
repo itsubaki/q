@@ -56,9 +56,13 @@ func Minus() *Qubit {
 
 // Bloch returns a qubit from the given angles on the Bloch sphere.
 func Bloch(theta, phi float64) *Qubit {
-	c := cmplx.Cos(complex(theta/2, 0))
-	s := cmplx.Sin(complex(theta/2, 0))
-	return New(vector.New(c, cmplx.Exp(complex(0, phi))*s))
+	cos := math.Cos(theta / 2)
+	sin := math.Sin(theta / 2)
+	phase := cmplx.Exp(complex(0, phi))
+
+	alpha := complex(cos, 0)
+	beta := phase * complex(sin, 0)
+	return New(vector.New(alpha, beta))
 }
 
 // Zeros returns n qubits in the zero state.
@@ -201,8 +205,8 @@ func (q *Qubit) G(g *matrix.Matrix, idx int) {
 
 // U applies a unitary gate.
 func (q *Qubit) U(theta, phi, lambda float64, idx int) *Qubit {
-	sin := cmplx.Sin(complex(theta/2, 0))
 	cos := cmplx.Cos(complex(theta/2, 0))
+	sin := cmplx.Sin(complex(theta/2, 0))
 
 	e0 := cmplx.Exp(complex(0, phi))
 	e1 := cmplx.Exp(complex(0, lambda))
@@ -307,8 +311,8 @@ func (q *Qubit) T(idx int) *Qubit {
 
 // RX applies the rotation around the X axis.
 func (q *Qubit) RX(theta float64, idx int) *Qubit {
-	sin := cmplx.Sin(complex(theta/2, 0))
 	cos := cmplx.Cos(complex(theta/2, 0))
+	sin := cmplx.Sin(complex(theta/2, 0))
 
 	stride := 1 << (q.NumQubits() - 1 - idx)
 	for i := 0; i < q.Dim(); i += 2 * stride {
@@ -324,8 +328,8 @@ func (q *Qubit) RX(theta float64, idx int) *Qubit {
 
 // RY applies the rotation around the Y axis.
 func (q *Qubit) RY(theta float64, idx int) *Qubit {
-	sin := cmplx.Sin(complex(theta/2, 0))
 	cos := cmplx.Cos(complex(theta/2, 0))
+	sin := cmplx.Sin(complex(theta/2, 0))
 
 	stride := 1 << (q.NumQubits() - 1 - idx)
 	for i := 0; i < q.Dim(); i += 2 * stride {
@@ -424,8 +428,8 @@ func (q *Qubit) ControlledU(theta, phi, lambda float64, control []int, target in
 	}
 	tmask := 1 << (n - 1 - target)
 
-	sin := cmplx.Sin(complex(theta/2, 0))
 	cos := cmplx.Cos(complex(theta/2, 0))
+	sin := cmplx.Sin(complex(theta/2, 0))
 
 	e0 := cmplx.Exp(complex(0, phi))
 	e1 := cmplx.Exp(complex(0, lambda))

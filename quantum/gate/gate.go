@@ -20,7 +20,7 @@ func New(v ...[]complex128) *matrix.Matrix {
 // U returns a unitary gate.
 func U(theta, phi, lambda float64) *matrix.Matrix {
 	v := complex(theta/2, 0)
-	sin, cos := cmplx.Sin(v), cmplx.Cos(v)
+	cos, sin := cmplx.Cos(v), cmplx.Sin(v)
 	return matrix.New(
 		[]complex128{cos, -1 * sin * cmplx.Exp(complex(0, lambda))},
 		[]complex128{sin * cmplx.Exp(complex(0, phi)), cos * cmplx.Exp(complex(0, (phi+lambda)))},
@@ -132,7 +132,7 @@ func R(theta float64) *matrix.Matrix {
 // RX returns a rotation gate around the X axis.
 func RX(theta float64) *matrix.Matrix {
 	v := complex(theta/2, 0)
-	sin, cos := cmplx.Sin(v), cmplx.Cos(v)
+	cos, sin := cmplx.Cos(v), cmplx.Sin(v)
 	return matrix.New(
 		[]complex128{cos, -1i * sin},
 		[]complex128{-1i * sin, cos},
@@ -142,7 +142,7 @@ func RX(theta float64) *matrix.Matrix {
 // RY returns a rotation gate around the Y axis.
 func RY(theta float64) *matrix.Matrix {
 	v := complex(theta/2, 0)
-	sin, cos := cmplx.Sin(v), cmplx.Cos(v)
+	cos, sin := cmplx.Cos(v), cmplx.Sin(v)
 	return matrix.New(
 		[]complex128{cos, -1 * sin},
 		[]complex128{sin, cos},
