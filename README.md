@@ -10,7 +10,7 @@ A quantum computing simulator in Go using only the standard library.
 ## Installation
 
 ```shell
-go get github.com/itsubaki/q@latest
+go get github.com/itsubaki/q
 ```
 
 ## Examples
