@@ -84,8 +84,8 @@ func (m *DensityMatrix) NumQubits() int {
 	return number.Log2(p)
 }
 
-// ExpectedValue returns the expectation value of the given observable.
-func (m *DensityMatrix) ExpectedValue(observable *matrix.Matrix) float64 {
+// Expect returns the expectation value of the given observable.
+func (m *DensityMatrix) Expect(observable *matrix.Matrix) float64 {
 	return real(matrix.MatMul(m.rho, observable).Trace())
 }
 

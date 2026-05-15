@@ -70,11 +70,11 @@ func Example_classical() {
 		{Probability: 0.5, Qubit: qubit.Ones(3)},
 	})
 
-	fmt.Println(rho.ExpectedValue(gate.From("XXX"))) // 0
-	fmt.Println(rho.ExpectedValue(gate.From("ZZZ"))) // 0
-	fmt.Println(rho.ExpectedValue(gate.From("ZZI"))) // 1
-	fmt.Println(rho.ExpectedValue(gate.From("ZIZ"))) // 1
-	fmt.Println(rho.ExpectedValue(gate.From("IZZ"))) // 1
+	fmt.Println(rho.Expect(gate.From("XXX"))) // 0
+	fmt.Println(rho.Expect(gate.From("ZZZ"))) // 0
+	fmt.Println(rho.Expect(gate.From("ZZI"))) // 1
+	fmt.Println(rho.Expect(gate.From("ZIZ"))) // 1
+	fmt.Println(rho.Expect(gate.From("IZZ"))) // 1
 
 	// Output:
 	// 0
@@ -84,15 +84,15 @@ func Example_classical() {
 	// 1
 }
 
-func ExampleDensityMatrix_ExpectedValue() {
+func ExampleDensityMatrix_Expect() {
 	rho := density.NewMixed([]density.WeightedState{
 		{Probability: 0.1, Qubit: qubit.Zero()},
 		{Probability: 0.9, Qubit: qubit.Plus()},
 	})
 
-	fmt.Printf("X: %.2v\n", rho.ExpectedValue(gate.X()))
-	fmt.Printf("Y: %.2v\n", rho.ExpectedValue(gate.Y()))
-	fmt.Printf("Z: %.2v\n", rho.ExpectedValue(gate.Z()))
+	fmt.Printf("X: %.2v\n", rho.Expect(gate.X()))
+	fmt.Printf("Y: %.2v\n", rho.Expect(gate.Y()))
+	fmt.Printf("Z: %.2v\n", rho.Expect(gate.Z()))
 
 	// Output:
 	// X: 0.9
@@ -402,7 +402,7 @@ func TestDensityMatrix_Purity(t *testing.T) {
 	}
 }
 
-func TestDensityMatrix_ExpectedValue(t *testing.T) {
+func TestDensityMatrix_Expect(t *testing.T) {
 	cases := []struct {
 		s        []density.WeightedState
 		tr, sqtr float64
@@ -441,8 +441,8 @@ func TestDensityMatrix_ExpectedValue(t *testing.T) {
 			t.Errorf("purity=%v", rho.Purity())
 		}
 
-		if !epsilon.IsCloseF64(rho.ExpectedValue(c.m), c.v) {
-			t.Errorf("expected_value=%v", rho.ExpectedValue(c.m))
+		if !epsilon.IsCloseF64(rho.Expect(c.m), c.v) {
+			t.Errorf("expected_value=%v", rho.Expect(c.m))
 		}
 	}
 }
