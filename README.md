@@ -104,8 +104,8 @@ qsim.H(q0, q1, q2, q3)
 
 // iterations
 N := number.Pow(2, qsim.NumQubits())
-R := math.Floor(math.Pi / 4 * math.Sqrt(float64(N)))
-for range int(R) {
+R := int(math.Pi / 4 * math.Sqrt(float64(N)))
+for range R {
 	// oracle for |110>|x>
 	qsim.X(q2, q3)
 	qsim.H(q3)

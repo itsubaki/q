@@ -813,8 +813,8 @@ func Example_grover4() {
 	qsim.H(q0, q1, q2, q3)
 
 	N := number.Pow(2, qsim.NumQubits())
-	R := math.Floor(math.Pi / 4 * math.Sqrt(float64(N)))
-	for range int(R) {
+	R := int(math.Pi / 4 * math.Sqrt(float64(N)))
+	for range R {
 		// oracle
 		qsim.X(q2, q3)
 		qsim.H(q3)
