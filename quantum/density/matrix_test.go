@@ -10,6 +10,7 @@ import (
 	"github.com/itsubaki/q/quantum/channel"
 	"github.com/itsubaki/q/quantum/density"
 	"github.com/itsubaki/q/quantum/gate"
+	"github.com/itsubaki/q/quantum/observable"
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
@@ -70,11 +71,11 @@ func Example_classical() {
 		{Probability: 0.5, Qubit: qubit.Ones(3)},
 	})
 
-	fmt.Println(rho.Expect(gate.From("XXX"))) // 0
-	fmt.Println(rho.Expect(gate.From("ZZZ"))) // 0
-	fmt.Println(rho.Expect(gate.From("ZZI"))) // 1
-	fmt.Println(rho.Expect(gate.From("ZIZ"))) // 1
-	fmt.Println(rho.Expect(gate.From("IZZ"))) // 1
+	fmt.Println(rho.Expect(observable.Pauli("XXX"))) // 0
+	fmt.Println(rho.Expect(observable.Pauli("ZZZ"))) // 0
+	fmt.Println(rho.Expect(observable.Pauli("ZZI"))) // 1
+	fmt.Println(rho.Expect(observable.Pauli("ZIZ"))) // 1
+	fmt.Println(rho.Expect(observable.Pauli("IZZ"))) // 1
 
 	// Output:
 	// 0
@@ -90,9 +91,9 @@ func ExampleDensityMatrix_Expect() {
 		{Probability: 0.9, Qubit: qubit.Plus()},
 	})
 
-	fmt.Printf("X: %.2v\n", rho.Expect(gate.X()))
-	fmt.Printf("Y: %.2v\n", rho.Expect(gate.Y()))
-	fmt.Printf("Z: %.2v\n", rho.Expect(gate.Z()))
+	fmt.Printf("X: %.2v\n", rho.Expect(observable.X()))
+	fmt.Printf("Y: %.2v\n", rho.Expect(observable.Y()))
+	fmt.Printf("Z: %.2v\n", rho.Expect(observable.Z()))
 
 	// Output:
 	// X: 0.9
@@ -102,7 +103,7 @@ func ExampleDensityMatrix_Expect() {
 
 func ExampleDensityMatrix_Measure() {
 	rho := density.New(qubit.Zeros(2).Apply(
-		gate.From("HI"),
+		matrix.TensorProduct(gate.H(), gate.I()),
 		gate.CNOT(2, 0, 1),
 	))
 
@@ -180,7 +181,7 @@ func ExampleDensityMatrix_TraceOut() {
 
 func ExampleDensityMatrix_TraceOut_x8() {
 	rho := density.New(qubit.Zeros(3).Apply(
-		gate.From("HII"),
+		matrix.TensorProduct(gate.H(), gate.I(), gate.I()),
 		gate.CNOT(3, 0, 1),
 	))
 
@@ -258,7 +259,7 @@ func ExampleDensityMatrix_PhaseFlip() {
 
 func ExampleDensityMatrix_VonNeumannEntropy() {
 	rho := density.New(qubit.Zeros(2).Apply(
-		gate.From("HI"),
+		matrix.TensorProduct(gate.H(), gate.I()),
 		gate.CNOT(2, 0, 1),
 	))
 

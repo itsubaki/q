@@ -434,6 +434,26 @@ func AntiCommutator(m, n *Matrix) *Matrix {
 	return mn.Add(nm)
 }
 
+// Commutes returns true if a and b commute, false otherwise.
+func Commutes(a, b *Matrix, tol ...float64) bool {
+	return isZero(Commutator(a, b), tol...)
+}
+
+// AntiCommutes returns true if a and b anti-commute, false otherwise.
+func AntiCommutes(a, b *Matrix, tol ...float64) bool {
+	return isZero(AntiCommutator(a, b), tol...)
+}
+
 func row[T any](arr []T, cols, i int) []T {
 	return arr[i*cols : (i+1)*cols]
+}
+
+func isZero(m *Matrix, tol ...float64) bool {
+	for _, v := range m.Data {
+		if !epsilon.IsZero(v, tol...) {
+			return false
+		}
+	}
+
+	return true
 }

@@ -336,19 +336,19 @@ func TestMultiQubitGate(t *testing.T) {
 			in: gate.CCNOT(3, 0, 1, 2),
 			want: func() *matrix.Matrix {
 				g := make([]*matrix.Matrix, 13)
-				g[0] = gate.I(2).TensorProduct(gate.H())
-				g[1] = gate.I(1).TensorProduct(gate.CNOT(2, 0, 1))
-				g[2] = gate.I(2).TensorProduct(gate.T().Dagger())
+				g[0] = matrix.TensorProduct(gate.I(2), gate.H(1))
+				g[1] = matrix.TensorProduct(gate.I(1), gate.CNOT(2, 0, 1))
+				g[2] = matrix.TensorProduct(gate.I(2), gate.T(1).Dagger())
 				g[3] = gate.CNOT(3, 0, 2)
-				g[4] = gate.I(2).TensorProduct(gate.T())
-				g[5] = gate.I(1).TensorProduct(gate.CNOT(2, 0, 1))
-				g[6] = gate.I(2).TensorProduct(gate.T().Dagger())
+				g[4] = matrix.TensorProduct(gate.I(2), gate.T(1))
+				g[5] = matrix.TensorProduct(gate.I(1), gate.CNOT(2, 0, 1))
+				g[6] = matrix.TensorProduct(gate.I(2), gate.T(1).Dagger())
 				g[7] = gate.CNOT(3, 0, 2)
-				g[8] = gate.I(1).TensorProduct(gate.T().Dagger()).TensorProduct(gate.T())
-				g[9] = gate.CNOT(2, 0, 1).TensorProduct(gate.H())
-				g[10] = gate.I(1).TensorProduct(gate.T().Dagger()).TensorProduct(gate.I())
-				g[11] = gate.CNOT(2, 0, 1).TensorProduct(gate.I())
-				g[12] = gate.T().TensorProduct(gate.S()).TensorProduct(gate.I())
+				g[8] = matrix.TensorProduct(gate.I(1), gate.T(1).Dagger(), gate.T(1))
+				g[9] = matrix.TensorProduct(gate.CNOT(2, 0, 1), gate.H(1))
+				g[10] = matrix.TensorProduct(gate.I(1), gate.T(1).Dagger(), gate.I(1))
+				g[11] = matrix.TensorProduct(gate.CNOT(2, 0, 1), gate.I(1))
+				g[12] = matrix.TensorProduct(gate.T(1), gate.S(1), gate.I(1))
 
 				w := gate.I(3)
 				for _, v := range g {
@@ -361,8 +361,8 @@ func TestMultiQubitGate(t *testing.T) {
 		{
 			in: gate.ControlledNot(2, []int{0}, 1),
 			want: func() *matrix.Matrix {
-				g0 := gate.I().Add(gate.Z()).TensorProduct(gate.I())
-				g1 := gate.I().Sub(gate.Z()).TensorProduct(gate.X())
+				g0 := matrix.TensorProduct(gate.I().Add(gate.Z()), gate.I())
+				g1 := matrix.TensorProduct(gate.I().Sub(gate.Z()), gate.X())
 				return g0.Add(g1).Mul(0.5)
 			}(),
 		},
@@ -371,47 +371,6 @@ func TestMultiQubitGate(t *testing.T) {
 	for _, c := range cases {
 		if !c.in.Equal(c.want) {
 			t.Errorf("got=%v, want=%v", c.in, c.want)
-		}
-	}
-}
-
-func TestFrom(t *testing.T) {
-	cases := []struct {
-		g    string
-		want *matrix.Matrix
-	}{
-		{
-			g: "IX",
-			want: gate.New(
-				[]complex128{0, 1, 0, 0},
-				[]complex128{1, 0, 0, 0},
-				[]complex128{0, 0, 0, 1},
-				[]complex128{0, 0, 1, 0},
-			),
-		},
-		{
-			g: "YZ",
-			want: gate.New(
-				[]complex128{0, 0, -1i, 0},
-				[]complex128{0, 0, 0, 1i},
-				[]complex128{1i, 0, 0, 0},
-				[]complex128{0, -1i, 0, 0},
-			),
-		},
-		{
-			g: "HH",
-			want: gate.New(
-				[]complex128{0.5, 0.5, 0.5, 0.5},
-				[]complex128{0.5, -0.5, 0.5, -0.5},
-				[]complex128{0.5, 0.5, -0.5, -0.5},
-				[]complex128{0.5, -0.5, -0.5, 0.5},
-			),
-		},
-	}
-
-	for _, c := range cases {
-		if !gate.From(c.g).Equal(c.want) {
-			t.Errorf("got=%v, want=%v", gate.From(c.g), c.want)
 		}
 	}
 }
