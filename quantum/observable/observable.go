@@ -7,17 +7,17 @@ import (
 
 // Pauli returns a Pauli observable from the string representation.
 func Pauli(s string) *matrix.Matrix {
-	list := make([]*matrix.Matrix, len(s))
-	for i, c := range s {
+	list := make([]*matrix.Matrix, 0)
+	for _, c := range s {
 		switch c {
 		case 'I':
-			list[i] = I()
+			list = append(list, I())
 		case 'X':
-			list[i] = X()
+			list = append(list, X())
 		case 'Y':
-			list[i] = Y()
+			list = append(list, Y())
 		case 'Z':
-			list[i] = Z()
+			list = append(list, Z())
 		}
 	}
 

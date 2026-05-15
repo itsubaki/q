@@ -101,17 +101,17 @@ func Minuses(n int) *Qubit {
 
 // From returns a new qubit from a binary string.
 func From(binary string) *Qubit {
-	list := make([]*Qubit, len(binary))
-	for i, c := range binary {
+	list := make([]*Qubit, 0)
+	for _, c := range binary {
 		switch c {
 		case '0':
-			list[i] = Zero()
+			list = append(list, Zero())
 		case '1':
-			list[i] = One()
+			list = append(list, One())
 		case '+':
-			list[i] = Plus()
+			list = append(list, Plus())
 		case '-':
-			list[i] = Minus()
+			list = append(list, Minus())
 		}
 	}
 
