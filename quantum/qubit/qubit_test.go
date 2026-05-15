@@ -530,7 +530,7 @@ func ExampleQubit_State_grouping() {
 
 func Example_bell() {
 	q := qubit.Zeros(2).Apply(
-		gate.From("HI"),
+		matrix.TensorProduct(gate.H(), gate.I()),
 		gate.CNOT(2, 0, 1),
 	)
 
@@ -572,17 +572,17 @@ func Example_grover2() {
 
 func Example_grover3() {
 	oracle := matrix.Apply(
-		gate.From("XIII"),
+		matrix.TensorProduct(gate.X(), gate.I(3)),
 		gate.ControlledNot(4, []int{0, 1, 2}, 3),
-		gate.From("XIII"),
+		matrix.TensorProduct(gate.X(), gate.I(3)),
 	)
 
 	diffuser := matrix.Apply(
-		gate.From("HHHH"),
-		gate.From("XXXI"),
+		matrix.TensorProduct(gate.H(4)),
+		matrix.TensorProduct(gate.X(3), gate.I()),
 		matrix.TensorProduct(gate.ControlledZ(3, []int{0, 1}, 2), gate.I()),
-		gate.From("XXXI"),
-		gate.From("HHHI"),
+		matrix.TensorProduct(gate.X(3), gate.I()),
+		matrix.TensorProduct(gate.H(3), gate.I()),
 	)
 
 	q := qubit.TensorProduct(
@@ -620,7 +620,7 @@ func Example_bitFlip() {
 	)
 
 	// error: first qubit is flipped
-	psi.Apply(gate.From("XII"))
+	psi.Apply(matrix.TensorProduct(gate.X(), gate.I(2)))
 
 	// add ancilla qubit
 	psi.TensorProduct(qubit.Zeros(2))
@@ -643,15 +643,15 @@ func Example_bitFlip() {
 
 	// recover
 	if m3.IsOne() && m4.IsZero() {
-		psi.Apply(gate.From("XIIII"))
+		psi.Apply(matrix.TensorProduct(gate.X(), gate.I(4)))
 	}
 
 	if m3.IsOne() && m4.IsOne() {
-		psi.Apply(gate.From("IXIII"))
+		psi.Apply(matrix.TensorProduct(gate.I(), gate.X(), gate.I(3)))
 	}
 
 	if m3.IsZero() && m4.IsOne() {
-		psi.Apply(gate.From("IIXII"))
+		psi.Apply(matrix.TensorProduct(gate.I(2), gate.X(), gate.I(2)))
 	}
 
 	// decoding
@@ -681,7 +681,7 @@ func Example_phaseFlip() {
 	)
 
 	// error: first qubit is flipped
-	psi.Apply(gate.From("ZII"))
+	psi.Apply(matrix.TensorProduct(gate.Z(), gate.I(2)))
 
 	// H
 	psi.Apply(gate.H(3))
@@ -702,7 +702,7 @@ func Example_phaseFlip() {
 	)
 
 	// H
-	psi.Apply(gate.From("HHHII"))
+	psi.Apply(matrix.TensorProduct(gate.H(3), gate.I(2)))
 
 	// measure
 	m3 := psi.Measure(3)
@@ -710,20 +710,20 @@ func Example_phaseFlip() {
 
 	// recover
 	if m3.IsOne() && m4.IsZero() {
-		psi.Apply(gate.From("ZIIII"))
+		psi.Apply(matrix.TensorProduct(gate.Z(), gate.I(4)))
 	}
 
 	if m3.IsOne() && m4.IsOne() {
-		psi.Apply(gate.From("IZIII"))
+		psi.Apply(matrix.TensorProduct(gate.I(), gate.Z(), gate.I(3)))
 	}
 
 	if m3.IsZero() && m4.IsOne() {
-		psi.Apply(gate.From("IIZII"))
+		psi.Apply(matrix.TensorProduct(gate.I(2), gate.Z(), gate.I(2)))
 	}
 
 	// decoding
 	psi.Apply(
-		gate.From("HHHII"),
+		matrix.TensorProduct(gate.H(3), gate.I(2)),
 		gate.CNOT(5, 0, 2),
 		gate.CNOT(5, 0, 1),
 	)
@@ -746,14 +746,14 @@ func Example_quantumTeleportation() {
 	}
 
 	bell := qubit.Zeros(2).Apply(
-		gate.From("HI"),
+		matrix.TensorProduct(gate.H(), gate.I()),
 		gate.CNOT(2, 0, 1),
 	)
 	psi.TensorProduct(bell)
 
 	psi.Apply(
 		gate.CNOT(3, 0, 1),
-		gate.From("HII"),
+		matrix.TensorProduct(gate.H(), gate.I(2)),
 		gate.CNOT(3, 1, 2),
 		gate.CZ(3, 0, 2),
 	)

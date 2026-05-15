@@ -775,3 +775,97 @@ func TestAntiCommutator(t *testing.T) {
 		}
 	}
 }
+
+func TestCommutes(t *testing.T) {
+	cases := []struct {
+		a, b *matrix.Matrix
+		want bool
+	}{
+		{
+			matrix.New(
+				[]complex128{0, 1},
+				[]complex128{1, 0},
+			),
+			matrix.New(
+				[]complex128{0, -1i},
+				[]complex128{1i, 0},
+			),
+			false,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 0},
+				[]complex128{0, 1},
+			),
+			matrix.New(
+				[]complex128{0, -1i},
+				[]complex128{1i, 0},
+			),
+			true,
+		},
+		{
+			matrix.New(
+				[]complex128{0, 1},
+				[]complex128{1, 0},
+			),
+			matrix.New(
+				[]complex128{0, 1},
+				[]complex128{1, 0},
+			),
+			true,
+		},
+	}
+
+	for _, c := range cases {
+		if matrix.Commutes(c.a, c.b) != c.want {
+			t.Fail()
+		}
+	}
+}
+
+func TestAntiCommutes(t *testing.T) {
+	cases := []struct {
+		a, b *matrix.Matrix
+		want bool
+	}{
+		{
+			matrix.New(
+				[]complex128{0, 1},
+				[]complex128{1, 0},
+			),
+			matrix.New(
+				[]complex128{0, -1i},
+				[]complex128{1i, 0},
+			),
+			true,
+		},
+		{
+			matrix.New(
+				[]complex128{1, 0},
+				[]complex128{0, 1},
+			),
+			matrix.New(
+				[]complex128{0, -1i},
+				[]complex128{1i, 0},
+			),
+			false,
+		},
+		{
+			matrix.New(
+				[]complex128{0, 1},
+				[]complex128{1, 0},
+			),
+			matrix.New(
+				[]complex128{0, 1},
+				[]complex128{1, 0},
+			),
+			false,
+		},
+	}
+
+	for _, c := range cases {
+		if matrix.AntiCommutes(c.a, c.b) != c.want {
+			t.Fail()
+		}
+	}
+}
