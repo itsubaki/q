@@ -265,7 +265,9 @@ qsim.CNOT(qb[0], qb[1])
 pX, sigmaX := density.New(qsim.Qubit()).
 	AmplitudeDamping(0.9).
 	BitFlip(0.5).
-	Measure(qubit.Pluses(2))
+	Measure(observable.Projector(
+		qubit.Pluses(2),
+	))
 
 fmt.Println(pX) // 0.2750
 for _, r := range sigmaX.Seq2() {

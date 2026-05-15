@@ -218,16 +218,15 @@ func (m *DensityMatrix) Clone() *DensityMatrix {
 }
 
 // Measure returns the probability and post-measurement density matrix.
-func (m *DensityMatrix) Measure(q *qubit.Qubit, tol ...float64) (float64, *DensityMatrix) {
-	p := real(matrix.MatMul(m.rho, q.OuterProduct(q)).Trace())
+func (m *DensityMatrix) Measure(observable *matrix.Matrix, tol ...float64) (float64, *DensityMatrix) {
+	p := real(matrix.MatMul(m.rho, observable).Trace())
 	if epsilon.IsZeroF64(p, tol...) {
 		return 0, &DensityMatrix{
 			rho: matrix.ZeroLike(m.rho),
 		}
 	}
 
-	op := q.OuterProduct(q)
-	rho := matrix.MatMul(op, m.rho, op)
+	rho := matrix.MatMul(observable, m.rho, observable)
 	return p, &DensityMatrix{
 		rho: rho.Mul(1.0 / complex(p, 0)),
 	}

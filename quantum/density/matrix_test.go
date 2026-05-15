@@ -18,7 +18,7 @@ func Example_channel() {
 	p, post := density.New(qubit.One()).
 		AmplitudeDamping(0.9).
 		BitFlip(0.5).
-		Measure(qubit.Zero())
+		Measure(observable.Projector(qubit.Zero()))
 
 	fmt.Printf("%.4f\n", p)
 	for _, r := range post.Seq2() {
@@ -40,7 +40,9 @@ func Example_composeFunc() {
 	rho := density.New(qubit.Ones(2)).
 		ApplyChannelFunc(composed)
 
-	p, _ := rho.Measure(qubit.Zeros(2))
+	p, _ := rho.Measure(observable.Projector(
+		qubit.Zeros(2),
+	))
 	fmt.Printf("%.4f\n", p)
 
 	// Output:
@@ -113,7 +115,7 @@ func ExampleDensityMatrix_Measure() {
 		qubit.From("10"),
 		qubit.From("11"),
 	} {
-		p, post := rho.Measure(basis)
+		p, post := rho.Measure(observable.Projector(basis))
 
 		fmt.Printf("%v: %.2f\n", basis.BinaryString(), p)
 		for _, r := range post.Seq2() {
@@ -203,12 +205,15 @@ func ExampleDensityMatrix_TraceOut_x8() {
 
 func ExampleDensityMatrix_Depolarizing() {
 	rho := density.New(qubit.Zero())
-	s0 := rho.Depolarizing(0.3)
+	s := rho.Depolarizing(0.3)
 
-	p0, _ := s0.Measure(qubit.Zero())
-	p1, _ := s0.Measure(qubit.One())
-	fmt.Printf("%.2f\n", p0)
-	fmt.Printf("%.2f\n", p1)
+	for _, basis := range []*qubit.Qubit{
+		qubit.Zero(),
+		qubit.One(),
+	} {
+		p, _ := s.Measure(observable.Projector(basis))
+		fmt.Printf("%.2f\n", p)
+	}
 
 	// Output:
 	// 0.80
@@ -217,12 +222,15 @@ func ExampleDensityMatrix_Depolarizing() {
 
 func ExampleDensityMatrix_BitFlip() {
 	rho := density.New(qubit.Zero())
-	x := rho.BitFlip(0.3)
+	s := rho.BitFlip(0.3)
 
-	p0, _ := x.Measure(qubit.Zero())
-	p1, _ := x.Measure(qubit.One())
-	fmt.Printf("%.2f\n", p0)
-	fmt.Printf("%.2f\n", p1)
+	for _, basis := range []*qubit.Qubit{
+		qubit.Zero(),
+		qubit.One(),
+	} {
+		p, _ := s.Measure(observable.Projector(basis))
+		fmt.Printf("%.2f\n", p)
+	}
 
 	// Output:
 	// 0.70
@@ -231,12 +239,15 @@ func ExampleDensityMatrix_BitFlip() {
 
 func ExampleDensityMatrix_BitPhaseFlip() {
 	rho := density.New(qubit.Plus())
-	y := rho.BitPhaseFlip(0.3)
+	s := rho.BitPhaseFlip(0.3)
 
-	p0, _ := y.Measure(qubit.Plus())
-	p1, _ := y.Measure(qubit.Minus())
-	fmt.Printf("%.2f\n", p0)
-	fmt.Printf("%.2f\n", p1)
+	for _, basis := range []*qubit.Qubit{
+		qubit.Plus(),
+		qubit.Minus(),
+	} {
+		p, _ := s.Measure(observable.Projector(basis))
+		fmt.Printf("%.2f\n", p)
+	}
 
 	// Output:
 	// 0.70
@@ -245,12 +256,15 @@ func ExampleDensityMatrix_BitPhaseFlip() {
 
 func ExampleDensityMatrix_PhaseFlip() {
 	rho := density.New(qubit.Plus())
-	z := rho.PhaseFlip(0.3)
+	s := rho.PhaseFlip(0.3)
 
-	p0, _ := z.Measure(qubit.Plus())
-	p1, _ := z.Measure(qubit.Minus())
-	fmt.Printf("%.2f\n", p0)
-	fmt.Printf("%.2f\n", p1)
+	for _, basis := range []*qubit.Qubit{
+		qubit.Plus(),
+		qubit.Minus(),
+	} {
+		p, _ := s.Measure(observable.Projector(basis))
+		fmt.Printf("%.2f\n", p)
+	}
 
 	// Output:
 	// 0.70
@@ -294,10 +308,12 @@ func TestNewMixed(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho := density.NewMixed(c.s)
-		prop, _ := rho.Measure(qubit.Zero())
-		if !epsilon.IsCloseF64(prop, c.want) {
-			t.Errorf("got=%v, want=%v", prop, c.want)
+		p, _ := density.NewMixed(c.s).Measure(observable.Projector(
+			qubit.Zero(),
+		))
+
+		if !epsilon.IsCloseF64(p, c.want) {
+			t.Errorf("got=%v, want=%v", p, c.want)
 		}
 	}
 
@@ -325,9 +341,9 @@ func TestDensityMatrix_IsHermitian(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho := density.NewMixed(c.s)
-		if rho.IsHermitian() != c.want {
-			t.Errorf("got=%v, want=%v", rho.IsHermitian(), c.want)
+		got := density.NewMixed(c.s).IsHermitian()
+		if got != c.want {
+			t.Errorf("got=%v, want=%v", got, c.want)
 		}
 	}
 }
@@ -354,9 +370,9 @@ func TestDensityMatrix_Trace(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho := density.NewMixed(c.s)
-		if !epsilon.IsCloseF64(rho.Trace(), c.want) {
-			t.Errorf("got=%v, want=%v", rho.Trace(), c.want)
+		got := density.NewMixed(c.s).Trace()
+		if !epsilon.IsCloseF64(got, c.want) {
+			t.Errorf("got=%v, want=%v", got, c.want)
 		}
 	}
 }
@@ -474,7 +490,10 @@ func TestDensityMatrix_Apply(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got, _ := density.NewMixed(c.s).Apply(c.u).Measure(c.m)
+		got, _ := density.NewMixed(c.s).
+			Apply(c.u).
+			Measure(observable.Projector(c.m))
+
 		if !epsilon.IsCloseF64(got, c.want) {
 			t.Fail()
 		}
@@ -708,9 +727,8 @@ func TestDensityMatrix_TraceOut(t *testing.T) {
 
 	for _, c := range cases {
 		for _, s := range c.cs {
-			rho := density.NewMixed(c.s)
+			got := density.NewMixed(c.s).TraceOut(s.qb...)
 
-			got := rho.TraceOut(s.qb...)
 			p, q := got.Dim()
 			if p != len(s.want) || q != len(s.want) {
 				t.Errorf("got=%v, %v want=%v", p, q, s.want)
@@ -756,10 +774,12 @@ func TestDensityMatrix_ApplyChannelFunc(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho := density.New(qubit.Zero())
-		s0 := rho.ApplyChannelFunc(c.channelFunc...)
+		got, _ := density.New(qubit.Zero()).
+			ApplyChannelFunc(c.channelFunc...).
+			Measure(observable.Projector(
+				qubit.Zero(),
+			))
 
-		got, _ := s0.Measure(qubit.Zero())
 		if !epsilon.IsCloseF64(got, c.want) {
 			t.Errorf("got=%v, want=%v", got, c.want)
 		}
@@ -782,10 +802,12 @@ func TestDensityMatrix_ApplyKraus(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho := density.New(qubit.Zero())
-		s0 := rho.ApplyKraus(c.kraus...)
+		got, _ := density.New(qubit.Zero()).
+			ApplyKraus(c.kraus...).
+			Measure(observable.Projector(
+				qubit.Zero(),
+			))
 
-		got, _ := s0.Measure(qubit.Zero())
 		if !epsilon.IsCloseF64(got, c.want) {
 			t.Errorf("got=%v, want=%v", got, c.want)
 		}
@@ -844,11 +866,13 @@ func TestDensityMatrix_Flip(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho := density.New(c.s)
-		s := rho.Flip(c.p, c.g, c.qb)
+		s := density.New(c.s).Flip(c.p, c.g, c.qb)
 
 		for _, m := range c.m {
-			p, _ := s.Measure(m.q)
+			p, _ := s.Measure(observable.Projector(
+				m.q,
+			))
+
 			if !epsilon.IsCloseF64(p, m.p) {
 				t.Errorf("got=%v, want=%v", p, m.p)
 			}
@@ -895,8 +919,10 @@ func TestDensityMatrix_AmplitudeDamping(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho := density.New(c.q).AmplitudeDamping(c.gamma, c.qb)
-		p, _ := rho.Measure(c.m)
+		p, _ := density.New(c.q).
+			AmplitudeDamping(c.gamma, c.qb).
+			Measure(observable.Projector(c.m))
+
 		if !epsilon.IsCloseF64(p, c.p) {
 			t.Errorf("got=%v, want=%v", p, c.p)
 		}
@@ -961,14 +987,12 @@ func TestDensityMatrix_PhaseDamping(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho := density.NewMixed([]density.WeightedState{
-			{
-				Probability: 1,
-				Qubit:       c.qubit,
-			},
-		})
+		got, _ := density.New(c.qubit).
+			PhaseDamping(c.g, 0).
+			Measure(observable.Projector(
+				c.m,
+			))
 
-		got, _ := rho.PhaseDamping(c.g, 0).Measure(c.m)
 		if !epsilon.IsCloseF64(got, c.want) {
 			t.Errorf("got %v, want %v", got, c.want)
 		}
@@ -978,92 +1002,93 @@ func TestDensityMatrix_PhaseDamping(t *testing.T) {
 func TestDensityMatrix_Pauli(t *testing.T) {
 	cases := []struct {
 		qubit *qubit.Qubit
-		px    float64
-		py    float64
-		pz    float64
+		pX    float64
+		pY    float64
+		pZ    float64
 		m     *qubit.Qubit
 		want  float64
 	}{
 		{
 			qubit: qubit.Zero(),
-			px:    0,
-			py:    0,
-			pz:    0,
+			pX:    0,
+			pY:    0,
+			pZ:    0,
 			m:     qubit.Zero(),
 			want:  1.0,
 		},
 		{
 			qubit: qubit.Zero(),
-			px:    1.0,
-			py:    0,
-			pz:    0,
+			pX:    1.0,
+			pY:    0,
+			pZ:    0,
 			m:     qubit.One(),
 			want:  1.0,
 		},
 		{
 			qubit: qubit.Zero(),
-			px:    0.5,
-			py:    0,
-			pz:    0,
+			pX:    0.5,
+			pY:    0,
+			pZ:    0,
 			m:     qubit.Zero(),
 			want:  0.5,
 		},
 		{
 			qubit: qubit.Zero(),
-			px:    0.5,
-			py:    0,
-			pz:    0,
+			pX:    0.5,
+			pY:    0,
+			pZ:    0,
 			m:     qubit.One(),
 			want:  0.5,
 		},
 		{
 			qubit: qubit.Zero(),
-			px:    0,
-			py:    0,
-			pz:    1.0,
+			pX:    0,
+			pY:    0,
+			pZ:    1.0,
 			m:     qubit.Zero(),
 			want:  1.0,
 		},
 		{
 			qubit: qubit.Plus(),
-			px:    0,
-			py:    0,
-			pz:    1.0,
+			pX:    0,
+			pY:    0,
+			pZ:    1.0,
 			m:     qubit.Minus(),
 			want:  1.0,
 		},
 		{
 			qubit: qubit.Zero(),
-			px:    0,
-			py:    1.0,
-			pz:    0,
+			pX:    0,
+			pY:    1.0,
+			pZ:    0,
 			m:     qubit.One(),
 			want:  1.0,
 		},
 		{
 			qubit: qubit.Zero(),
-			px:    1.0 / 3,
-			py:    1.0 / 3,
-			pz:    1.0 / 3,
+			pX:    1.0 / 3,
+			pY:    1.0 / 3,
+			pZ:    1.0 / 3,
 			m:     qubit.Zero(),
 			want:  1.0 / 3,
 		},
 		{
 			qubit: qubit.Zero(),
-			px:    1.0 / 3,
-			py:    1.0 / 3,
-			pz:    1.0 / 3,
+			pX:    1.0 / 3,
+			pY:    1.0 / 3,
+			pZ:    1.0 / 3,
 			m:     qubit.One(),
 			want:  1.0/3 + 1.0/3,
 		},
 	}
 
 	for _, c := range cases {
-		rho := density.NewMixed([]density.WeightedState{
-			{Probability: 1, Qubit: c.qubit},
-		})
+		got, _ := density.New(c.qubit).
+			Pauli(c.pX, c.pY, c.pZ, 0).
+			Measure(observable.Projector(
+				c.m,
+			))
 
-		got, _ := rho.Pauli(c.px, c.py, c.pz, 0).Measure(c.m)
 		if !epsilon.IsCloseF64(got, c.want) {
 			t.Errorf("got %v, want %v", got, c.want)
 		}

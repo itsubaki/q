@@ -3,6 +3,7 @@ package observable
 import (
 	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/quantum/gate"
+	"github.com/itsubaki/q/quantum/qubit"
 )
 
 // Pauli returns a Pauli observable from the string representation.
@@ -42,4 +43,9 @@ func Y(n ...int) *matrix.Matrix {
 // Z returns a Pauli-Z observable.
 func Z(n ...int) *matrix.Matrix {
 	return gate.Z(n...)
+}
+
+// Projector returns a projector observable for the given qubit.
+func Projector(q *qubit.Qubit) *matrix.Matrix {
+	return q.OuterProduct(q)
 }

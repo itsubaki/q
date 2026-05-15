@@ -10,6 +10,7 @@ import (
 	"github.com/itsubaki/q/math/rand"
 	"github.com/itsubaki/q/quantum/density"
 	"github.com/itsubaki/q/quantum/gate"
+	"github.com/itsubaki/q/quantum/observable"
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
@@ -1139,8 +1140,8 @@ func Example_channel() {
 		AmplitudeDamping(0.9).
 		BitFlip(0.5)
 
-	pz, postZ := rho.Measure(qubit.Zeros(2))
-	px, postX := rho.Measure(qubit.Pluses(2))
+	pz, postZ := rho.Measure(observable.Projector(qubit.Zeros(2)))
+	px, postX := rho.Measure(observable.Projector(qubit.Pluses(2)))
 	fmt.Printf("%.4f\n", pz)
 	fmt.Printf("%.4f\n", px)
 
