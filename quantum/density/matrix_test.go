@@ -73,11 +73,15 @@ func Example_classical() {
 		{Probability: 0.5, Qubit: qubit.Ones(3)},
 	})
 
-	fmt.Println(rho.Expect(observable.Pauli("XXX"))) // 0
-	fmt.Println(rho.Expect(observable.Pauli("ZZZ"))) // 0
-	fmt.Println(rho.Expect(observable.Pauli("ZZI"))) // 1
-	fmt.Println(rho.Expect(observable.Pauli("ZIZ"))) // 1
-	fmt.Println(rho.Expect(observable.Pauli("IZZ"))) // 1
+	for _, ob := range []*matrix.Matrix{
+		observable.Pauli("XXX"), // 0
+		observable.Pauli("ZZZ"), // 0
+		observable.Pauli("ZZI"), // 1
+		observable.Pauli("ZIZ"), // 1
+		observable.Pauli("IZZ"), // 1
+	} {
+		fmt.Println(rho.Expect(ob))
+	}
 
 	// Output:
 	// 0
@@ -109,15 +113,15 @@ func ExampleDensityMatrix_Measure() {
 		gate.CNOT(2, 0, 1),
 	))
 
-	for _, basis := range []*qubit.Qubit{
+	for _, qb := range []*qubit.Qubit{
 		qubit.From("00"),
 		qubit.From("01"),
 		qubit.From("10"),
 		qubit.From("11"),
 	} {
-		p, post := rho.Measure(observable.Projector(basis))
+		p, post := rho.Measure(observable.Projector(qb))
 
-		fmt.Printf("%v: %.2f\n", basis.BinaryString(), p)
+		fmt.Printf("%v: %.2f\n", qb.BinaryString(), p)
 		for _, r := range post.Seq2() {
 			fmt.Println(r)
 		}
@@ -207,11 +211,11 @@ func ExampleDensityMatrix_Depolarizing() {
 	rho := density.New(qubit.Zero())
 	s := rho.Depolarizing(0.3)
 
-	for _, basis := range []*qubit.Qubit{
+	for _, qb := range []*qubit.Qubit{
 		qubit.Zero(),
 		qubit.One(),
 	} {
-		p, _ := s.Measure(observable.Projector(basis))
+		p, _ := s.Measure(observable.Projector(qb))
 		fmt.Printf("%.2f\n", p)
 	}
 
@@ -224,11 +228,11 @@ func ExampleDensityMatrix_BitFlip() {
 	rho := density.New(qubit.Zero())
 	s := rho.BitFlip(0.3)
 
-	for _, basis := range []*qubit.Qubit{
+	for _, qb := range []*qubit.Qubit{
 		qubit.Zero(),
 		qubit.One(),
 	} {
-		p, _ := s.Measure(observable.Projector(basis))
+		p, _ := s.Measure(observable.Projector(qb))
 		fmt.Printf("%.2f\n", p)
 	}
 
@@ -241,11 +245,11 @@ func ExampleDensityMatrix_BitPhaseFlip() {
 	rho := density.New(qubit.Plus())
 	s := rho.BitPhaseFlip(0.3)
 
-	for _, basis := range []*qubit.Qubit{
+	for _, qb := range []*qubit.Qubit{
 		qubit.Plus(),
 		qubit.Minus(),
 	} {
-		p, _ := s.Measure(observable.Projector(basis))
+		p, _ := s.Measure(observable.Projector(qb))
 		fmt.Printf("%.2f\n", p)
 	}
 
@@ -258,11 +262,11 @@ func ExampleDensityMatrix_PhaseFlip() {
 	rho := density.New(qubit.Plus())
 	s := rho.PhaseFlip(0.3)
 
-	for _, basis := range []*qubit.Qubit{
+	for _, qb := range []*qubit.Qubit{
 		qubit.Plus(),
 		qubit.Minus(),
 	} {
-		p, _ := s.Measure(observable.Projector(basis))
+		p, _ := s.Measure(observable.Projector(qb))
 		fmt.Printf("%.2f\n", p)
 	}
 

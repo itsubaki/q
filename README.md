@@ -285,9 +285,13 @@ rho := density.NewMixed([]density.WeightedState{
 	{Probability: 0.5, Qubit: qubit.Ones(3)},
 })
 
-fmt.Println(rho.Expect(observable.Pauli("XXX"))) // 0
-fmt.Println(rho.Expect(observable.Pauli("ZZZ"))) // 0
-fmt.Println(rho.Expect(observable.Pauli("ZZI"))) // 1
-fmt.Println(rho.Expect(observable.Pauli("ZIZ"))) // 1
-fmt.Println(rho.Expect(observable.Pauli("IZZ"))) // 1
+for _, ob := range []*matrix.Matrix{
+	observable.Pauli("XXX"), // 0
+	observable.Pauli("ZZZ"), // 0
+	observable.Pauli("ZZI"), // 1
+	observable.Pauli("ZIZ"), // 1
+	observable.Pauli("IZZ"), // 1
+} {
+	fmt.Println(rho.Expect(ob))
+}
 ```
