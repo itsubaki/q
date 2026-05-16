@@ -260,6 +260,25 @@ fmt.Println(rhoB.RelativeEntropy(rhoA)) // +Inf
 ```
 
 ```go
+rho := density.NewMixed([]density.WeightedState{
+	{Probability: 0.5, Qubit: qubit.Zeros(3)},
+	{Probability: 0.5, Qubit: qubit.Ones(3)},
+})
+
+for _, ob := range []*matrix.Matrix{
+	observable.Pauli("XXX"), // 0
+	observable.Pauli("ZZZ"), // 0
+	observable.Pauli("ZZI"), // 1
+	observable.Pauli("ZIZ"), // 1
+	observable.Pauli("IZZ"), // 1
+} {
+	fmt.Println(rho.Expect(ob))
+}
+```
+
+### Noise Channels
+
+```go
 rho := density.New(qubit.Plus()).
 	PhaseDamping(0.18).
 	AmplitudeDamping(0.07).
@@ -280,22 +299,5 @@ for _, r := range sigmaX.Seq2() {
 	// [0.5, 0.5]
 	// [0.5, 0.5]
 	fmt.Println(r)
-}
-```
-
-```go
-rho := density.NewMixed([]density.WeightedState{
-	{Probability: 0.5, Qubit: qubit.Zeros(3)},
-	{Probability: 0.5, Qubit: qubit.Ones(3)},
-})
-
-for _, ob := range []*matrix.Matrix{
-	observable.Pauli("XXX"), // 0
-	observable.Pauli("ZZZ"), // 0
-	observable.Pauli("ZZI"), // 1
-	observable.Pauli("ZIZ"), // 1
-	observable.Pauli("IZZ"), // 1
-} {
-	fmt.Println(rho.Expect(ob))
 }
 ```
