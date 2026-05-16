@@ -46,6 +46,7 @@ func Z(n ...int) *matrix.Matrix {
 }
 
 // Projector returns a projector observable for the given qubit.
-func Projector(q *qubit.Qubit) *matrix.Matrix {
+func Projector(qb ...*qubit.Qubit) *matrix.Matrix {
+	q := qubit.TensorProduct(qb...)
 	return q.OuterProduct(q)
 }

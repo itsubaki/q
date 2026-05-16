@@ -1140,26 +1140,29 @@ func Example_channel() {
 		AmplitudeDamping(0.9).
 		BitFlip(0.5)
 
-	pz, postZ := rho.Measure(observable.Projector(qubit.Zeros(2)))
-	px, postX := rho.Measure(observable.Projector(qubit.Pluses(2)))
+	pz, postZ := rho.Measure(observable.Projector(
+		qubit.Zeros(2)),
+	)
 	fmt.Printf("%.4f\n", pz)
-	fmt.Printf("%.4f\n", px)
-
 	for _, s := range postZ.Seq2() {
 		fmt.Printf("%.2f\n", s)
 	}
 
+	px, postX := rho.Measure(observable.Projector(
+		qubit.Pluses(2)),
+	)
+	fmt.Printf("%.4f\n", px)
 	for _, s := range postX.Seq2() {
 		fmt.Printf("%.2f\n", s)
 	}
 
 	// Output:
 	// 0.2500
-	// 0.2750
 	// [(1.00+0.00i) (0.00+0.00i) (0.00+0.00i) (0.00+0.00i)]
 	// [(0.00+0.00i) (0.00+0.00i) (0.00+0.00i) (0.00+0.00i)]
 	// [(0.00+0.00i) (0.00+0.00i) (0.00+0.00i) (0.00+0.00i)]
 	// [(0.00+0.00i) (0.00+0.00i) (0.00+0.00i) (0.00+0.00i)]
+	// 0.2750
 	// [(0.25+0.00i) (0.25+0.00i) (0.25+0.00i) (0.25+0.00i)]
 	// [(0.25+0.00i) (0.25+0.00i) (0.25+0.00i) (0.25+0.00i)]
 	// [(0.25+0.00i) (0.25+0.00i) (0.25+0.00i) (0.25+0.00i)]
