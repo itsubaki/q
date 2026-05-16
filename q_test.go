@@ -1129,44 +1129,30 @@ func Example_traceout() {
 }
 
 func Example_channel() {
-	qsim := q.New()
-	{
-		qb := qsim.Zeros(2)
-		qsim.H(qb[0])
-		qsim.CNOT(qb[0], qb[1])
+	rho := density.New(qubit.Plus()).
+		PhaseDamping(0.18).
+		AmplitudeDamping(0.07).
+		Depolarizing(0.01)
+
+	for _, r := range rho.Seq2() {
+		fmt.Printf("%.2f\n", r)
 	}
 
-	rho := density.New(qsim.Qubit()).
-		AmplitudeDamping(0.9).
-		BitFlip(0.5)
+	pX, sigmaX := rho.Measure(observable.Projector(
+		qubit.Plus(),
+	))
 
-	pz, postZ := rho.Measure(observable.Projector(
-		qubit.Zeros(2)),
-	)
-	fmt.Printf("%.4f\n", pz)
-	for _, s := range postZ.Seq2() {
-		fmt.Printf("%.2f\n", s)
-	}
-
-	px, postX := rho.Measure(observable.Projector(
-		qubit.Pluses(2)),
-	)
-	fmt.Printf("%.4f\n", px)
-	for _, s := range postX.Seq2() {
-		fmt.Printf("%.2f\n", s)
+	fmt.Println(pX)
+	for _, r := range sigmaX.Seq2() {
+		fmt.Printf("%.2f\n", r)
 	}
 
 	// Output:
-	// 0.2500
-	// [(1.00+0.00i) (0.00+0.00i) (0.00+0.00i) (0.00+0.00i)]
-	// [(0.00+0.00i) (0.00+0.00i) (0.00+0.00i) (0.00+0.00i)]
-	// [(0.00+0.00i) (0.00+0.00i) (0.00+0.00i) (0.00+0.00i)]
-	// [(0.00+0.00i) (0.00+0.00i) (0.00+0.00i) (0.00+0.00i)]
-	// 0.2750
-	// [(0.25+0.00i) (0.25+0.00i) (0.25+0.00i) (0.25+0.00i)]
-	// [(0.25+0.00i) (0.25+0.00i) (0.25+0.00i) (0.25+0.00i)]
-	// [(0.25+0.00i) (0.25+0.00i) (0.25+0.00i) (0.25+0.00i)]
-	// [(0.25+0.00i) (0.25+0.00i) (0.25+0.00i) (0.25+0.00i)]
+	// [(0.53+0.00i) (0.43+0.00i)]
+	// [(0.43+0.00i) (0.47+0.00i)]
+	// 0.9308130607738511
+	// [(0.50+0.00i) (0.50+0.00i)]
+	// [(0.50+0.00i) (0.50+0.00i)]
 }
 
 func Example_distance() {

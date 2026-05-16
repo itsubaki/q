@@ -257,24 +257,25 @@ fmt.Println(rho2.RelativeEntropy(rho1)) // +Inf
 ```
 
 ```go
-qsim := q.New()
-qb := qsim.Zeros(2)
-qsim.H(qb[0])
-qsim.CNOT(qb[0], qb[1])
+rho := density.New(qubit.Plus()).
+	PhaseDamping(0.18).
+	AmplitudeDamping(0.07).
+	Depolarizing(0.01)
 
-pX, sigmaX := density.New(qsim.Qubit()).
-	AmplitudeDamping(0.9).
-	BitFlip(0.5).
-	Measure(observable.Projector(
-		qubit.Pluses(2),
-	))
+for _, r := range rho.Seq2() {
+	// [0.53, 0.43]
+	// [0.43, 0.47]
+	fmt.Printf("%.2f\n", r)
+}
 
-fmt.Println(pX) // 0.2750
+pX, sigmaX := rho.Measure(observable.Projector(
+	qubit.Plus(),
+))
+
+fmt.Println(pX) // 0.9308
 for _, r := range sigmaX.Seq2() {
-	// [0.25, 0.25, 0.25, 0.25]
-	// [0.25, 0.25, 0.25, 0.25]
-	// [0.25, 0.25, 0.25, 0.25]
-	// [0.25, 0.25, 0.25, 0.25]
+	// [0.5, 0.5]
+	// [0.5, 0.5]
 	fmt.Println(r)
 }
 ```
