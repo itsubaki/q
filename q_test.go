@@ -1106,7 +1106,7 @@ func Example_any() {
 	// [11] ( 0.7071 0.0000i): 0.5000
 }
 
-func Example_traceout() {
+func Example_traceOut() {
 	qsim := q.New()
 	{
 		qb := qsim.Zeros(2)
@@ -1114,18 +1114,25 @@ func Example_traceout() {
 		qsim.CNOT(qb[0], qb[1])
 	}
 
-	rho := density.New(qsim.Qubit())
-	s0 := rho.TraceOut(1)
-	s1 := rho.TraceOut(0)
+	rhoAB := density.New(qsim.Qubit())
+	fmt.Printf("%.2f\n", rhoAB.Purity())
+	fmt.Printf("%.2f\n", rhoAB.VonNeumannEntropy())
 
-	fmt.Printf("trace: %.2v, purity: %.2v\n", rho.Trace(), rho.Purity())
-	fmt.Printf("trace: %.2v, purity: %.2v\n", s0.Trace(), s0.Purity())
-	fmt.Printf("trace: %.2v, purity: %.2v\n", s1.Trace(), s1.Purity())
+	rhoA := rhoAB.TraceOut(1)
+	fmt.Printf("%.2f\n", rhoA.Purity())
+	fmt.Printf("%.2f\n", rhoA.VonNeumannEntropy())
+
+	rhoB := rhoAB.TraceOut(0)
+	fmt.Printf("%.2f\n", rhoB.Purity())
+	fmt.Printf("%.2f\n", rhoB.VonNeumannEntropy())
 
 	// Output:
-	// trace: 1, purity: 1
-	// trace: 1, purity: 0.5
-	// trace: 1, purity: 0.5
+	// 1.00
+	// 0.00
+	// 0.50
+	// 1.00
+	// 0.50
+	// 1.00
 }
 
 func Example_channel() {
@@ -1156,33 +1163,33 @@ func Example_channel() {
 }
 
 func Example_distance() {
-	rho0 := density.New(qubit.Zero())
-	rho1 := density.New(qubit.Plus())
+	rhoA := density.New(qubit.Plus())
+	rhoB := density.New(qubit.Zero()).BitFlip(0.5)
 
-	fmt.Printf("%.4f\n", rho0.Fidelity(rho0))
-	fmt.Printf("%.4f\n", rho0.Fidelity(rho1))
-	fmt.Printf("%.4f\n", rho0.TraceDistance(rho0))
-	fmt.Printf("%.4f\n", rho0.TraceDistance(rho1))
+	fmt.Printf("%.4f\n", rhoA.Fidelity(rhoA))
+	fmt.Printf("%.4f\n", rhoA.Fidelity(rhoB))
+	fmt.Printf("%.4f\n", rhoA.TraceDistance(rhoA))
+	fmt.Printf("%.4f\n", rhoA.TraceDistance(rhoB))
 
 	// Output:
 	// 1.0000
 	// 0.7071
 	// 0.0000
-	// 0.7071
+	// 0.5000
 }
 
 func Example_entropy() {
-	rho0 := density.New(qubit.Zero()).BitFlip(0.5)
-	rho1 := density.New(qubit.Plus())
+	rhoA := density.New(qubit.Plus())
+	rhoB := density.New(qubit.Zero()).BitFlip(0.5)
 
-	fmt.Printf("%.4f\n", rho0.VonNeumannEntropy())
-	fmt.Printf("%.4f\n", rho1.VonNeumannEntropy())
-	fmt.Printf("%.4f\n", rho0.RelativeEntropy(rho0))
-	fmt.Printf("%.4f\n", rho0.RelativeEntropy(rho1))
+	fmt.Printf("%.4f\n", rhoA.VonNeumannEntropy())
+	fmt.Printf("%.4f\n", rhoB.VonNeumannEntropy())
+	fmt.Printf("%.4f\n", rhoA.RelativeEntropy(rhoB))
+	fmt.Printf("%.4f\n", rhoB.RelativeEntropy(rhoA))
 
 	// Output:
+	// 0.0000
 	// 1.0000
-	// 0.0000
-	// 0.0000
+	// 1.0000
 	// +Inf
 }

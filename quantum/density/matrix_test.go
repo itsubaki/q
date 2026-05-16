@@ -53,15 +53,15 @@ func Example_nonCommutative() {
 	ch1 := channel.AmplitudeDamping(0.9, 0)
 	ch2 := channel.BitFlip(0.5, 0)
 
-	rho1 := density.New(qubit.One()).
+	rhoA := density.New(qubit.One()).
 		ApplyChannelFunc(ch1).
 		ApplyChannelFunc(ch2)
 
-	rho2 := density.New(qubit.One()).
+	rhoB := density.New(qubit.One()).
 		ApplyChannelFunc(ch2).
 		ApplyChannelFunc(ch1)
 
-	fmt.Println(rho1.Equal(rho2))
+	fmt.Println(rhoA.Equal(rhoB))
 
 	// Output:
 	// false
@@ -1155,27 +1155,30 @@ func TestDensityMatrix_TraceDistance(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho1 := density.NewMixed(c.s1)
-		rho2 := density.NewMixed(c.s2)
-
-		self := rho1.TraceDistance(rho1)
-		got12 := rho1.TraceDistance(rho2)
-		got21 := rho2.TraceDistance(rho1)
-
-		if !epsilon.IsZeroF64(self) {
-			t.Errorf("got=%v, want=%v", self, 0)
+		rhoA := density.NewMixed(c.s1)
+		selfA := rhoA.TraceDistance(rhoA)
+		if !epsilon.IsZeroF64(selfA) {
+			t.Errorf("got=%v, want=%v", selfA, 0)
 		}
 
-		if !epsilon.IsCloseF64(got12, c.want) {
-			t.Errorf("got=%v, want=%v", got12, c.want)
+		rhoB := density.NewMixed(c.s2)
+		selfB := rhoB.TraceDistance(rhoB)
+		if !epsilon.IsZeroF64(selfB) {
+			t.Errorf("got=%v, want=%v", selfB, 0)
 		}
 
-		if !epsilon.IsCloseF64(got21, c.want) {
-			t.Errorf("got=%v, want=%v", got21, c.want)
+		gotAB := rhoA.TraceDistance(rhoB)
+		if !epsilon.IsCloseF64(gotAB, c.want) {
+			t.Errorf("got=%v, want=%v", gotAB, c.want)
 		}
 
-		if !epsilon.IsCloseF64(got12, got21) {
-			t.Errorf("got12=%v, got21=%v", got12, got21)
+		gotBA := rhoB.TraceDistance(rhoA)
+		if !epsilon.IsCloseF64(gotBA, c.want) {
+			t.Errorf("got=%v, want=%v", gotBA, c.want)
+		}
+
+		if !epsilon.IsCloseF64(gotAB, gotBA) {
+			t.Errorf("gotAB=%v, gotBA=%v", gotAB, gotBA)
 		}
 	}
 }
@@ -1236,23 +1239,26 @@ func TestDensityMatrix_Fidelity(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		rho1 := density.NewMixed(c.s1)
-		rho2 := density.NewMixed(c.s2)
-
-		self := rho1.Fidelity(rho1)
-		got12 := rho1.Fidelity(rho2)
-		got21 := rho2.Fidelity(rho1)
-
-		if !epsilon.IsOneF64(self) {
-			t.Errorf("got=%v, want=%v", self, 1)
+		rhoA := density.NewMixed(c.s1)
+		selfA := rhoA.Fidelity(rhoA)
+		if !epsilon.IsOneF64(selfA) {
+			t.Errorf("got=%v, want=%v", selfA, 1)
 		}
 
-		if !epsilon.IsCloseF64(got12, c.want) {
-			t.Errorf("got=%v, want=%v", got12, c.want)
+		rhoB := density.NewMixed(c.s2)
+		selfB := rhoB.Fidelity(rhoB)
+		if !epsilon.IsOneF64(selfB) {
+			t.Errorf("got=%v, want=%v", selfB, 1)
 		}
 
-		if !epsilon.IsCloseF64(got21, c.want) {
-			t.Errorf("got=%v, want=%v", got21, c.want)
+		gotAB := rhoA.Fidelity(rhoB)
+		if !epsilon.IsCloseF64(gotAB, c.want) {
+			t.Errorf("got=%v, want=%v", gotAB, c.want)
+		}
+
+		gotBA := rhoB.Fidelity(rhoA)
+		if !epsilon.IsCloseF64(gotBA, c.want) {
+			t.Errorf("got=%v, want=%v", gotBA, c.want)
 		}
 	}
 }

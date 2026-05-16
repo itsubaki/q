@@ -234,26 +234,29 @@ for _, s := range qsim.State() {
 
 ```go
 qsim := q.New()
-qb := qsim.Zeros(2)
-qsim.H(qb[0])
-qsim.CNOT(qb[0], qb[1])
+{
+	qb := qsim.Zeros(2)
+	qsim.H(qb[0])
+	qsim.CNOT(qb[0], qb[1])
+}
 
-rho := density.New(qsim.Qubit())
-s0 := rho.TraceOut(1)
+rhoAB := density.New(qsim.Qubit())
+fmt.Println(rhoAB.Purity())            // 1.0
+fmt.Println(rhoAB.VonNeumannEntropy()) // 0.0
 
-fmt.Println(s0.Trace())             // 1.0
-fmt.Println(s0.Purity())            // 0.5
-fmt.Println(s0.VonNeumannEntropy()) // 1.0
+rhoA:= rhoAB.TraceOut(1)
+fmt.Println(rhoA.Purity())            // 0.5
+fmt.Println(rhoA.VonNeumannEntropy()) // 1.0
 ```
 
 ```go
-rho0 := density.New(qubit.Zero())
-rho1 := density.New(qubit.Plus())
-rho2 := density.New(qubit.Zero()).BitFlip(0.5)
+rhoA := density.New(qubit.Plus())
+rhoB := density.New(qubit.Zero()).BitFlip(0.5)
 
-fmt.Println(rho0.Fidelity(rho1))        // 0.7071
-fmt.Println(rho0.TraceDistance(rho1))   // 0.7071
-fmt.Println(rho2.RelativeEntropy(rho1)) // +Inf
+fmt.Println(rhoA.Fidelity(rhoB))        // 0.7071
+fmt.Println(rhoA.TraceDistance(rhoB))   // 0.5000
+fmt.Println(rhoA.RelativeEntropy(rhoB)) // 1.0000
+fmt.Println(rhoB.RelativeEntropy(rhoA)) // +Inf
 ```
 
 ```go
