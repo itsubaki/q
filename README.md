@@ -256,8 +256,14 @@ for _, m := range []*density.DensityMatrix {
 
 ```go
 rho := density.NewMixed([]density.WeightedState{
-	{Probability: 0.5, Qubit: qubit.Zeros(3)},
-	{Probability: 0.5, Qubit: qubit.Ones(3)},
+	{
+		Probability: 0.5,
+		Qubit: qubit.Zeros(3),
+	},
+	{
+		Probability: 0.5,
+		Qubit: qubit.Ones(3),
+	},
 })
 
 for _, ob := range []*matrix.Matrix{
