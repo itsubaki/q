@@ -1115,16 +1115,17 @@ func Example_traceOut() {
 	}
 
 	rhoAB := density.New(qsim.Qubit())
-	fmt.Printf("%.2f\n", rhoAB.Purity())
-	fmt.Printf("%.2f\n", rhoAB.VonNeumannEntropy())
-
 	rhoA := rhoAB.TraceOut(1)
-	fmt.Printf("%.2f\n", rhoA.Purity())
-	fmt.Printf("%.2f\n", rhoA.VonNeumannEntropy())
-
 	rhoB := rhoAB.TraceOut(0)
-	fmt.Printf("%.2f\n", rhoB.Purity())
-	fmt.Printf("%.2f\n", rhoB.VonNeumannEntropy())
+
+	for _, m := range []*density.DensityMatrix{
+		rhoAB,
+		rhoA,
+		rhoB,
+	} {
+		fmt.Printf("%.2f\n", m.Purity())
+		fmt.Printf("%.2f\n", m.VonNeumannEntropy())
+	}
 
 	// Output:
 	// 1.00
@@ -1163,8 +1164,10 @@ func Example_channel() {
 }
 
 func Example_distance() {
-	rhoA := density.New(qubit.Plus())
-	rhoB := density.New(qubit.Zero()).BitFlip(0.5)
+	rhoA := density.New(qubit.Pluses(2))
+	rhoB := density.New(qubit.Zeros(2)).
+		BitFlip(0.5, 0).
+		BitFlip(0.5, 1)
 
 	fmt.Printf("%.4f\n", rhoA.Fidelity(rhoA))
 	fmt.Printf("%.4f\n", rhoA.Fidelity(rhoB))
@@ -1173,14 +1176,15 @@ func Example_distance() {
 
 	// Output:
 	// 1.0000
-	// 0.7071
-	// 0.0000
 	// 0.5000
+	// 0.0000
+	// 0.7500
 }
 
 func Example_entropy() {
 	rhoA := density.New(qubit.Plus())
-	rhoB := density.New(qubit.Zero()).BitFlip(0.5)
+	rhoB := density.New(qubit.Zero()).
+		BitFlip(0.5)
 
 	fmt.Printf("%.4f\n", rhoA.VonNeumannEntropy())
 	fmt.Printf("%.4f\n", rhoB.VonNeumannEntropy())

@@ -241,22 +241,17 @@ qsim := q.New()
 }
 
 rhoAB := density.New(qsim.Qubit())
-fmt.Println(rhoAB.Purity())            // 1.0
-fmt.Println(rhoAB.VonNeumannEntropy()) // 0.0
+rhoA := rhoAB.TraceOut(1)
+rhoB := rhoAB.TraceOut(0)
 
-rhoA:= rhoAB.TraceOut(1)
-fmt.Println(rhoA.Purity())            // 0.5
-fmt.Println(rhoA.VonNeumannEntropy()) // 1.0
-```
-
-```go
-rhoA := density.New(qubit.Plus())
-rhoB := density.New(qubit.Zero()).BitFlip(0.5)
-
-fmt.Println(rhoA.Fidelity(rhoB))        // 0.7071
-fmt.Println(rhoA.TraceDistance(rhoB))   // 0.5000
-fmt.Println(rhoA.RelativeEntropy(rhoB)) // 1.0000
-fmt.Println(rhoB.RelativeEntropy(rhoA)) // +Inf
+for _, m := range []*density.DensityMatrix {
+	rhoAB, // 1.0, 0
+	rhoA,  // 0.5, 1
+	rhoB,  // 0.5, 1
+} {
+	fmt.Println(m.Purity())
+	fmt.Println(m.VonNeumannEntropy())
+}
 ```
 
 ```go
@@ -300,4 +295,15 @@ for _, r := range sigmaX.Seq2() {
 	// [0.5, 0.5]
 	fmt.Println(r)
 }
+```
+
+```go
+rhoA := density.New(qubit.Plus())
+rhoB := density.New(qubit.Zero()).
+	BitFlip(0.5)
+
+fmt.Println(rhoA.Fidelity(rhoB))        // 0.7071
+fmt.Println(rhoA.TraceDistance(rhoB))   // 0.5000
+fmt.Println(rhoA.RelativeEntropy(rhoB)) // 1.0000
+fmt.Println(rhoB.RelativeEntropy(rhoA)) // +Inf
 ```
