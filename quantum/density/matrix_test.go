@@ -294,6 +294,18 @@ func ExampleDensityMatrix_VonNeumannEntropy() {
 	// true
 }
 
+func ExampleDensityMatrix_FidelitySquared() {
+	rho := density.New(qubit.Zero())
+	sigma := density.New(qubit.Plus())
+
+	fmt.Printf("%.4f\n", rho.Fidelity(sigma))
+	fmt.Printf("%.4f\n", rho.FidelitySquared(sigma))
+
+	// Output:
+	// 0.7071
+	// 0.5000
+}
+
 func TestNewMixed(t *testing.T) {
 	cases := []struct {
 		s    []density.WeightedState

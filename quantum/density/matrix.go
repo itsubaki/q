@@ -124,6 +124,12 @@ func (m *DensityMatrix) Fidelity(sigma *DensityMatrix, tol ...float64) float64 {
 	return fidelity
 }
 
+// FidelitySquared returns the squared fidelity between two density matrices.
+func (m *DensityMatrix) FidelitySquared(sigma *DensityMatrix, tol ...float64) float64 {
+	fidelity := m.Fidelity(sigma, tol...)
+	return fidelity * fidelity
+}
+
 // VonNeumannEntropy returns the von Neumann entropy of the density matrix.
 func (m *DensityMatrix) VonNeumannEntropy(tol ...float64) float64 {
 	_, d := eigen.Jacobi(m.rho, 100, tol...)
