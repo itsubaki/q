@@ -70,7 +70,7 @@ func main() {
 
 	// initialize
 	r0 := qsim.Zeros(t)
-	r1 := qsim.Zeros(bits.Len64(uint64(N)))
+	r1 := qsim.Zeros(bits.Len(uint(N)))
 
 	qsim.X(r1[len(r1)-1])
 	print("initial state", qsim, r0, r1)
