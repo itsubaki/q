@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"math/bits"
 	"slices"
 	"strings"
 
@@ -69,7 +70,7 @@ func main() {
 
 	// initialize
 	r0 := qsim.Zeros(t)
-	r1 := qsim.Zeros(number.Log2(N) + 1)
+	r1 := qsim.Zeros(bits.Len64(uint64(N)))
 
 	qsim.X(r1[len(r1)-1])
 	print("initial state", qsim, r0, r1)

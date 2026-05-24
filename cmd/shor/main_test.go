@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/bits"
 	"testing"
 
 	"github.com/itsubaki/q"
@@ -31,7 +32,7 @@ func ExampleCModExp2_mod15() {
 
 	qsim := q.New()
 	c := qsim.Zero()
-	t := qsim.Zeros(number.Log2(15) + 1)
+	t := qsim.Zeros(bits.Len64(uint64(15)))
 
 	qsim.X(c)
 	qsim.X(t[len(t)-1])
@@ -73,7 +74,7 @@ func ExampleCModExp2_mod21() {
 
 	qsim := q.New()
 	c := qsim.Zero()
-	t := qsim.Zeros(number.Log2(21) + 1)
+	t := qsim.Zeros(bits.Len64(uint64(21)))
 
 	qsim.X(c)
 	qsim.X(t[len(t)-1])
@@ -114,7 +115,7 @@ func TestEigenVector(t *testing.T) {
 	for _, c := range cases {
 		qsim := q.New()
 		r0 := qsim.Zeros(c.t)
-		r1 := qsim.Zeros(number.Log2(c.N) + 1)
+		r1 := qsim.Zeros(bits.Len64(uint64(c.N)))
 
 		qsim.X(r1[len(r1)-1])
 		qsim.H(r0...)
