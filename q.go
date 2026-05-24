@@ -4,7 +4,6 @@ import (
 	"sort"
 
 	"github.com/itsubaki/q/math/matrix"
-	"github.com/itsubaki/q/math/number"
 	"github.com/itsubaki/q/math/vector"
 	"github.com/itsubaki/q/quantum/gate"
 	"github.com/itsubaki/q/quantum/qubit"
@@ -91,11 +90,6 @@ func (q *Q) Ones(n int) []Qubit {
 	}
 
 	return qb
-}
-
-// ZeroLog2 returns log2(N)+1 qubits in the zero state.
-func (q *Q) ZeroLog2(N int) []Qubit {
-	return q.Zeros(number.Log2(N) + 1)
 }
 
 // NumQubits returns the number of qubits.

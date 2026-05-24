@@ -31,7 +31,7 @@ func ExampleCModExp2_mod15() {
 
 	qsim := q.New()
 	c := qsim.Zero()
-	t := qsim.ZeroLog2(15)
+	t := qsim.Zeros(number.Log2(15) + 1)
 
 	qsim.X(c)
 	qsim.X(t[len(t)-1])
@@ -73,7 +73,7 @@ func ExampleCModExp2_mod21() {
 
 	qsim := q.New()
 	c := qsim.Zero()
-	t := qsim.ZeroLog2(21)
+	t := qsim.Zeros(number.Log2(21) + 1)
 
 	qsim.X(c)
 	qsim.X(t[len(t)-1])
@@ -114,7 +114,7 @@ func TestEigenVector(t *testing.T) {
 	for _, c := range cases {
 		qsim := q.New()
 		r0 := qsim.Zeros(c.t)
-		r1 := qsim.ZeroLog2(c.N)
+		r1 := qsim.Zeros(number.Log2(c.N) + 1)
 
 		qsim.X(r1[len(r1)-1])
 		qsim.H(r0...)

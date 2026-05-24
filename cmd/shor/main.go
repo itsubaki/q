@@ -69,7 +69,7 @@ func main() {
 
 	// initialize
 	r0 := qsim.Zeros(t)
-	r1 := qsim.ZeroLog2(N)
+	r1 := qsim.Zeros(number.Log2(N) + 1)
 
 	qsim.X(r1[len(r1)-1])
 	print("initial state", qsim, r0, r1)
