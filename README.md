@@ -288,7 +288,7 @@ rho := density.New(qubit.Plus()).
 for _, r := range rho.Seq2() {
 	// [0.53, 0.43]
 	// [0.43, 0.47]
-	fmt.Printf("%.2f\n", r)
+	fmt.Println(r)
 }
 
 pX, sigmaX := rho.Measure(observable.Projector(
