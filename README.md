@@ -313,3 +313,7 @@ fmt.Println(rhoA.TraceDistance(rhoB))   // 0.5000
 fmt.Println(rhoA.RelativeEntropy(rhoB)) // 1.0000
 fmt.Println(rhoB.RelativeEntropy(rhoA)) // +Inf
 ```
+
+## References
+
+- Nielsen, M. A., & Chuang, I. L. *Quantum Computation and Quantum Information*. 10th Anniversary ed., Cambridge University Press, 2010.
