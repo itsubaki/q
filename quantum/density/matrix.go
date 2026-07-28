@@ -39,8 +39,7 @@ func NewMixed(states []WeightedState) *DensityMatrix {
 	n := states[0].Qubit.Dim()
 	rho := matrix.Zero(n, n)
 	for _, s := range Normalize(states) {
-		op := s.Qubit.OuterProduct(s.Qubit)
-		rho = rho.Add(op.Mul(complex(s.Probability, 0)))
+		rho = rho.Add(s.DensityOperator())
 	}
 
 	return &DensityMatrix{
@@ -101,9 +100,11 @@ func (m *DensityMatrix) Purity() float64 {
 
 // TraceDistance returns the trace distance between two density matrices.
 func (m *DensityMatrix) TraceDistance(sigma *DensityMatrix, tol ...float64) float64 {
-	a := m.rho.Sub(sigma.rho)                                   // a = rho - sigma
-	b := matrix.MatMul(a.Dagger(), a)                           // b = a^dagger * a
-	dist := 0.5 * (&DensityMatrix{rho: b}).Sqrt(tol...).Trace() // 1/2 * tr(sqrt(b))
+	a := m.rho.Sub(sigma.rho)                  // a = rho - sigma
+	b := matrix.MatMul(a.Dagger(), a)          // b = a^dagger * a
+	c := (&DensityMatrix{rho: b}).Sqrt(tol...) // c = sqrt(b)
+
+	dist := 0.5 * c.Trace()
 	if epsilon.IsZeroF64(dist, tol...) {
 		return 0
 	}
@@ -114,9 +115,11 @@ func (m *DensityMatrix) TraceDistance(sigma *DensityMatrix, tol ...float64) floa
 // Fidelity returns the fidelity between two density matrices.
 // The fidelity is defined as F(rho, sigma) = tr(sqrt(sqrt(rho) * sigma * sqrt(rho))).
 func (m *DensityMatrix) Fidelity(sigma *DensityMatrix, tol ...float64) float64 {
-	a := m.Sqrt(tol...)                                       // a = sqrt(rho)
-	b := matrix.MatMul(a.rho, sigma.rho, a.rho)               // b = a * sigma * a
-	fidelity := (&DensityMatrix{rho: b}).Sqrt(tol...).Trace() // tr(sqrt(b))
+	a := m.Sqrt(tol...)                         // a = sqrt(rho)
+	b := matrix.MatMul(a.rho, sigma.rho, a.rho) // b = a * sigma * a
+	c := (&DensityMatrix{rho: b}).Sqrt(tol...)  // c = sqrt(b)
+
+	fidelity := c.Trace()
 	if epsilon.IsZeroF64(fidelity, tol...) {
 		return 0
 	}
@@ -133,6 +136,7 @@ func (m *DensityMatrix) FidelitySquared(sigma *DensityMatrix, tol ...float64) fl
 // VonNeumannEntropy returns the von Neumann entropy of the density matrix.
 func (m *DensityMatrix) VonNeumannEntropy(tol ...float64) float64 {
 	_, d := eigen.Jacobi(m.rho, 100, tol...)
+
 	var sum float64
 	for i := range d.Rows {
 		lambda := real(d.At(i, i))
@@ -189,6 +193,7 @@ func (m *DensityMatrix) RelativeEntropy(sigma *DensityMatrix, tol ...float64) fl
 	// compute entropy.
 	a := -1 * m.VonNeumannEntropy(tol...)
 	b := matrix.MatMul(m.rho, logsig)
+
 	entropy := a - real(b.Trace())
 	if epsilon.IsZeroF64(entropy, tol...) {
 		return 0
