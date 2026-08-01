@@ -112,7 +112,7 @@ func main() {
 	qsim.InvQFT(c...)
 
 	// estimate
-	N := number.Ldexp(1, len(r)) // N = 2^len(r)
+	N := math.Pow(2, float64(len(r)))
 	for _, state := range q.Top(qsim.State(c, r, s, a), top) {
 		k := number.MustParseInt(state.BinaryString()[0]) // k is the integer representation of the binary string c
 		phi := number.Ldexp(k, -t)                        // phi = k/(2^t)
