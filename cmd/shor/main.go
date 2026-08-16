@@ -153,8 +153,8 @@ func ControlledModExp2(qb *qubit.Qubit, a, j, N, control int, target []int) {
 
 		// binary to integer
 		var k int
-		for j, t := range target {
-			k |= ((i >> (n - 1 - t)) & 1) << (len(target) - 1 - j)
+		for idx, t := range target {
+			k |= ((i >> (n - 1 - t)) & 1) << (len(target) - 1 - idx)
 		}
 
 		// (a^(2^j) * k) mod N
@@ -162,8 +162,8 @@ func ControlledModExp2(qb *qubit.Qubit, a, j, N, control int, target []int) {
 
 		// integer to binary
 		newIdx := i
-		for j, t := range target {
-			bit := (a2jkModN >> (len(target) - 1 - j)) & 1
+		for idx, t := range target {
+			bit := (a2jkModN >> (len(target) - 1 - idx)) & 1
 			pos := n - 1 - t
 			newIdx = (newIdx & ^(1 << pos)) | (bit << pos)
 		}
