@@ -180,8 +180,8 @@ for i := range 10 {
 	qsim.CNOT(q6, q4)
 
 	// inverse QFT
-	qsim.Swap(q0, q2)
-	qsim.InvQFT(q0, q1, q2)
+	F.Swap(qsim, q0, q2)
+	F.InvQFT(qsim, q0, q1, q2)
 
 	// measure q0, q1, q2
 	m := qsim.Measure(q0, q1, q2)
