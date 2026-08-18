@@ -8,28 +8,24 @@ import (
 	"runtime/pprof"
 
 	"github.com/itsubaki/q"
+	F "github.com/itsubaki/q/function"
 	"github.com/itsubaki/q/math/number"
 )
 
 func oracle(qsim *q.Q, r, s []q.Qubit, c, a q.Qubit) {
-	xor := func(x, y, z q.Qubit) {
-		qsim.CNOT(x, z)
-		qsim.CNOT(y, z)
-	}
-
-	xor(r[0], r[1], s[0]) // a != b
-	xor(r[2], r[3], s[1]) // c != d
-	xor(r[0], r[2], s[2]) // a != c
-	xor(r[1], r[3], s[3]) // b != d
+	F.XOR(qsim, r[0], r[1], s[0]) // a != b
+	F.XOR(qsim, r[2], r[3], s[1]) // c != d
+	F.XOR(qsim, r[0], r[2], s[2]) // a != c
+	F.XOR(qsim, r[1], r[3], s[3]) // b != d
 
 	// apply X if s and c are all 1
 	qsim.ControlledX([]q.Qubit{s[0], s[1], s[2], s[3], c}, []q.Qubit{a})
 
 	// uncompute
-	xor(r[1], r[3], s[3])
-	xor(r[0], r[2], s[2])
-	xor(r[2], r[3], s[1])
-	xor(r[0], r[1], s[0])
+	F.XOR(qsim, r[1], r[3], s[3])
+	F.XOR(qsim, r[0], r[2], s[2])
+	F.XOR(qsim, r[2], r[3], s[1])
+	F.XOR(qsim, r[0], r[1], s[0])
 }
 
 // This diffuser implements I - 2|s><s| instead of 2|s><s| - I, i.e. it is -D.
@@ -109,7 +105,7 @@ func main() {
 	}
 
 	// inverse quantum Fourier transform
-	qsim.InvQFT(c...)
+	F.InvQFT(qsim, c...)
 
 	// estimate
 	N := float64(number.Pow(2, len(r)))

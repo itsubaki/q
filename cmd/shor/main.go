@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/itsubaki/q"
+	F "github.com/itsubaki/q/function"
 	"github.com/itsubaki/q/math/number"
 	"github.com/itsubaki/q/math/rand"
 	"github.com/itsubaki/q/math/vector"
@@ -85,7 +86,7 @@ func main() {
 	}
 
 	// inverse QFT
-	qsim.InvQFT(r0...)
+	F.InvQFT(qsim, r0...)
 	print("apply inverse QFT", qsim, r0, r1)
 
 	// measurement

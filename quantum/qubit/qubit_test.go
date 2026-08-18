@@ -338,6 +338,21 @@ func ExampleQubit_CZ() {
 	// [11] (-0.5000 0.0000i): 0.2500
 }
 
+func ExampleQubit_CR() {
+	qb := qubit.Pluses(2)
+	qb.CR(math.Pi/2, 0, 1)
+
+	for _, s := range qb.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00] ( 0.5000 0.0000i): 0.2500
+	// [01] ( 0.5000 0.0000i): 0.2500
+	// [10] ( 0.5000 0.0000i): 0.2500
+	// [11] ( 0.0000 0.5000i): 0.2500
+}
+
 func ExampleQubit_ControlledH() {
 	qb := qubit.Zeros(2)
 	qb.H(0)
@@ -408,41 +423,6 @@ func ExampleQubit_Swap_eq() {
 
 	// Output:
 	// [10] ( 1.0000 0.0000i): 1.0000
-}
-
-func ExampleQubit_QFT() {
-	qb := qubit.Zeros(3)
-	qb.X(2)
-	qb.QFT()
-	qb.Swap(0, 2)
-
-	for _, s := range qb.State() {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [000] ( 0.3536 0.0000i): 0.1250
-	// [001] ( 0.2500 0.2500i): 0.1250
-	// [010] ( 0.0000 0.3536i): 0.1250
-	// [011] (-0.2500 0.2500i): 0.1250
-	// [100] (-0.3536 0.0000i): 0.1250
-	// [101] (-0.2500-0.2500i): 0.1250
-	// [110] ( 0.0000-0.3536i): 0.1250
-	// [111] ( 0.2500-0.2500i): 0.1250
-}
-
-func ExampleQubit_InvQFT() {
-	qb := qubit.Zeros(3)
-	qb.X(2)
-	qb.QFT()
-	qb.InvQFT()
-
-	for _, s := range qb.State() {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [001] ( 1.0000 0.0000i): 1.0000
 }
 
 func ExampleQubit_Set() {

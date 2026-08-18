@@ -370,29 +370,6 @@ func (q *Q) Cond(condition bool, g *matrix.Matrix, qb ...Qubit) *Q {
 	return q
 }
 
-// Swap applies the swap gate.
-func (q *Q) Swap(qb ...Qubit) *Q {
-	l := len(qb)
-	for i := range l / 2 {
-		q0, q1 := qb[i], qb[(l-1)-i]
-		q.qb.Swap(q0.Index(), q1.Index())
-	}
-
-	return q
-}
-
-// QFT applies the quantum Fourier transform.
-func (q *Q) QFT(qb ...Qubit) *Q {
-	q.qb.QFT(Index(qb...)...)
-	return q
-}
-
-// InvQFT applies the inverse quantum Fourier transform.
-func (q *Q) InvQFT(qb ...Qubit) *Q {
-	q.qb.InvQFT(Index(qb...)...)
-	return q
-}
-
 // M returns the measured state of the given qubits.
 func (q *Q) M(qb ...Qubit) *qubit.Qubit {
 	return q.Measure(qb...)
