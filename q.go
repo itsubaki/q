@@ -370,6 +370,12 @@ func (q *Q) Cond(condition bool, g *matrix.Matrix, qb ...Qubit) *Q {
 	return q
 }
 
+// Swap applies the swap gate.
+func (q *Q) Swap(qb0, qb1 Qubit) *Q {
+	q.qb.Swap(qb0.Index(), qb1.Index())
+	return q
+}
+
 // M returns the measured state of the given qubits.
 func (q *Q) M(qb ...Qubit) *qubit.Qubit {
 	return q.Measure(qb...)

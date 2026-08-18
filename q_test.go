@@ -546,6 +546,20 @@ func ExampleQ_Cond() {
 	// [1] ( 1.0000 0.0000i): 1.0000
 }
 
+func ExampleQ_Swap() {
+	qsim := q.New()
+	q0 := qsim.Zero()
+	q1 := qsim.One()
+
+	qsim.Swap(q0, q1)
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [10] ( 1.0000 0.0000i): 1.0000
+}
+
 func ExampleQ_Qubit() {
 	qsim := q.New()
 	qsim.Zero()
