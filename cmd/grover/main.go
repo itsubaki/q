@@ -6,6 +6,7 @@ import (
 	"math"
 
 	"github.com/itsubaki/q"
+	F "github.com/itsubaki/q/function"
 	"github.com/itsubaki/q/math/number"
 )
 
@@ -42,24 +43,19 @@ import (
 // This aligns with Grover's algorithm, which assumes only a condition-checking black box (oracle),
 // not prior knowledge of the answer itself.
 func oracle(qsim *q.Q, r, s []q.Qubit, a q.Qubit) {
-	xor := func(x, y, z q.Qubit) {
-		qsim.CNOT(x, z)
-		qsim.CNOT(y, z)
-	}
-
-	xor(r[0], r[1], s[0]) // a != b
-	xor(r[2], r[3], s[1]) // c != d
-	xor(r[0], r[2], s[2]) // a != c
-	xor(r[1], r[3], s[3]) // b != d
+	F.XOR(qsim, r[0], r[1], s[0]) // a != b
+	F.XOR(qsim, r[2], r[3], s[1]) // c != d
+	F.XOR(qsim, r[0], r[2], s[2]) // a != c
+	F.XOR(qsim, r[1], r[3], s[3]) // b != d
 
 	// apply X if all s are 1
 	qsim.ControlledX(s, []q.Qubit{a})
 
 	// uncompute
-	xor(r[1], r[3], s[3])
-	xor(r[0], r[2], s[2])
-	xor(r[2], r[3], s[1])
-	xor(r[0], r[1], s[0])
+	F.XOR(qsim, r[1], r[3], s[3])
+	F.XOR(qsim, r[0], r[2], s[2])
+	F.XOR(qsim, r[2], r[3], s[1])
+	F.XOR(qsim, r[0], r[1], s[0])
 }
 
 func diffuser(qsim *q.Q, r []q.Qubit) {

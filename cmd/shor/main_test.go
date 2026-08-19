@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/itsubaki/q"
+	F "github.com/itsubaki/q/function"
 	"github.com/itsubaki/q/math/epsilon"
 	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/math/number"
@@ -122,7 +123,7 @@ func TestEigenVector(t *testing.T) {
 		for j := range r0 {
 			CModExp2(qsim, c.a, j, c.N, r0[j], r1)
 		}
-		qsim.InvQFT(r0...)
+		F.InvQFT(qsim, r0...)
 
 		us := make(map[string]complex128)
 		for _, s := range qsim.State(r1) {

@@ -10,7 +10,6 @@ import (
 	"github.com/itsubaki/q/math/number"
 	"github.com/itsubaki/q/math/rand"
 	"github.com/itsubaki/q/math/vector"
-	"github.com/itsubaki/q/quantum/gate"
 )
 
 // Qubit is a qubit.
@@ -585,53 +584,6 @@ func (q *Qubit) Swap(i, j int) *Qubit {
 		}
 
 		q.state.Data[k], q.state.Data[l] = q.state.Data[l], q.state.Data[k]
-	}
-
-	return q
-}
-
-// QFT applies the quantum Fourier transform.
-func (q *Qubit) QFT(idx ...int) *Qubit {
-	if len(idx) == 0 {
-		n := q.NumQubits()
-		idx = make([]int, n)
-		for i := range n {
-			idx[i] = i
-		}
-	}
-
-	for i := range idx {
-		q.H(idx[i])
-
-		k := 2
-		for j := i + 1; j < len(idx); j++ {
-			q.CR(gate.Theta(k), idx[i], idx[j])
-			k++
-		}
-	}
-
-	return q
-}
-
-// InvQFT applies the inverse quantum Fourier transform.
-func (q *Qubit) InvQFT(idx ...int) *Qubit {
-	if len(idx) == 0 {
-		n := q.NumQubits()
-		idx = make([]int, n)
-		for i := range n {
-			idx[i] = i
-		}
-	}
-
-	len := len(idx)
-	for i := len - 1; i > -1; i-- {
-		k := len - i
-		for j := len - 1; j > i; j-- {
-			q.CR(-1*gate.Theta(k), idx[j], idx[i])
-			k--
-		}
-
-		q.H(idx[i])
 	}
 
 	return q
