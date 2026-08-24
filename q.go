@@ -313,16 +313,16 @@ func (q *Q) ControlledH(control, target []Qubit) *Q {
 
 // ControlledX applies the CNOT gate.
 func (q *Q) ControlledX(control, target []Qubit) *Q {
-	return q.ControlledNot(control, target)
-}
-
-// ControlledNot applies the CNOT gate.
-func (q *Q) ControlledNot(control, target []Qubit) *Q {
 	for i := range target {
 		q.qb.ControlledX(Index(control...), target[i].Index())
 	}
 
 	return q
+}
+
+// ControlledNot applies the CNOT gate.
+func (q *Q) ControlledNot(control, target []Qubit) *Q {
+	return q.ControlledX(control, target)
 }
 
 // ControlledZ applies the controlled-Z gate.
@@ -340,6 +340,12 @@ func (q *Q) ControlledR(theta float64, control, target []Qubit) *Q {
 		q.qb.ControlledR(theta, Index(control...), target[i].Index())
 	}
 
+	return q
+}
+
+// Swap applies the swap gate.
+func (q *Q) Swap(qb0, qb1 Qubit) *Q {
+	q.qb.Swap(qb0.Index(), qb1.Index())
 	return q
 }
 
@@ -367,12 +373,6 @@ func (q *Q) Cond(condition bool, g *matrix.Matrix, qb ...Qubit) *Q {
 		return q.G(g, qb...)
 	}
 
-	return q
-}
-
-// Swap applies the swap gate.
-func (q *Q) Swap(qb0, qb1 Qubit) *Q {
-	q.qb.Swap(qb0.Index(), qb1.Index())
 	return q
 }
 
