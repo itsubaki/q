@@ -74,13 +74,8 @@ func Example_shor15() {
 	qsim.CNOT(q2, q5)
 
 	// Controlled-U^(2^1)
-	qsim.CNOT(q3, q5)
-	qsim.CCNOT(q1, q5, q3)
-	qsim.CNOT(q3, q5)
-
-	qsim.CNOT(q6, q4)
-	qsim.CCNOT(q1, q4, q6)
-	qsim.CNOT(q6, q4)
+	F.Fredkin(qsim, q1, q3, q5)
+	F.Fredkin(qsim, q1, q4, q6)
 
 	// inverse QFT
 	F.Swap(qsim, q0, q2)
