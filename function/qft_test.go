@@ -69,11 +69,9 @@ func Example_shor15() {
 
 	qsim.H(q0, q1, q2)
 
-	// Controlled-U^(2^0)
+	// Controlled-U
 	qsim.CNOT(q2, q4)
 	qsim.CNOT(q2, q5)
-
-	// Controlled-U^(2^1)
 	F.Fredkin(qsim, q1, q3, q5)
 	F.Fredkin(qsim, q1, q4, q6)
 
