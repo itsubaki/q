@@ -1023,7 +1023,7 @@ func TestFromPanic(t *testing.T) {
 		func() {
 			defer func() {
 				rec, ok := recover().(string)
-				if !ok || !strings.Contains(rec, "qubit: invalid binary string") {
+				if !ok || !strings.Contains(rec, "is not a binary string") {
 					t.Fail()
 				}
 			}()

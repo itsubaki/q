@@ -21,11 +21,13 @@ func Pauli(s string) *matrix.Matrix {
 			list = append(list, Y())
 		case 'Z':
 			list = append(list, Z())
+		default:
+			panic(fmt.Sprintf("%q is not a Pauli string", s))
 		}
 	}
 
 	if len(list) == 0 {
-		panic(fmt.Sprintf("observable: invalid string %q", s))
+		panic(fmt.Sprintf("%q is not a Pauli string", s))
 	}
 
 	return matrix.TensorProduct(list...)

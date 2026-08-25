@@ -112,11 +112,13 @@ func From(binary string) *Qubit {
 			list = append(list, Plus())
 		case '-':
 			list = append(list, Minus())
+		default:
+			panic(fmt.Sprintf("%q is not a binary string", binary))
 		}
 	}
 
 	if len(list) == 0 {
-		panic(fmt.Sprintf("qubit: invalid binary string %q", binary))
+		panic(fmt.Sprintf("%q is not a binary string", binary))
 	}
 
 	return TensorProduct(list...)

@@ -186,13 +186,14 @@ func TestPauliPanic(t *testing.T) {
 	cases := []string{
 		"",
 		"hello",
+		"Xhello",
 	}
 
 	for _, c := range cases {
 		func() {
 			defer func() {
 				rec, ok := recover().(string)
-				if !ok || !strings.Contains(rec, "observable: invalid string") {
+				if !ok || !strings.Contains(rec, "is not a Pauli string") {
 					t.Fail()
 				}
 			}()
