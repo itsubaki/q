@@ -3,6 +3,7 @@ package qubit_test
 import (
 	"fmt"
 	"math"
+	"strings"
 	"testing"
 
 	"github.com/itsubaki/q/math/epsilon"
@@ -1009,5 +1010,25 @@ func TestString(t *testing.T) {
 		if c.in.String() != c.want {
 			t.Fail()
 		}
+	}
+}
+
+func TestFromPanic(t *testing.T) {
+	cases := []string{
+		"",
+		"abc",
+	}
+
+	for _, c := range cases {
+		func() {
+			defer func() {
+				rec, ok := recover().(string)
+				if !ok || !strings.Contains(rec, "qubit: invalid binary string") {
+					t.Fail()
+				}
+			}()
+
+			qubit.From(c)
+		}()
 	}
 }
