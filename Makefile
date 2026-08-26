@@ -30,3 +30,6 @@ htcover:
 
 counting:
 	go run cmd/counting/main.go -t 7 -top 8
+
+chsh:
+	go run cmd/chsh/main.go
