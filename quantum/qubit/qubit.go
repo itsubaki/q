@@ -100,7 +100,7 @@ func Minuses(n int) *Qubit {
 
 // From returns a new qubit from a binary string.
 func From(binary string) *Qubit {
-	list := make([]*Qubit, 0)
+	var list []*Qubit
 	for _, c := range binary {
 		switch c {
 		case '0':

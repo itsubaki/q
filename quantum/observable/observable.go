@@ -8,7 +8,7 @@ import (
 
 // Pauli returns a Pauli observable from the string representation.
 func Pauli(s string) *matrix.Matrix {
-	list := make([]*matrix.Matrix, 0)
+	var list []*matrix.Matrix
 	for _, c := range s {
 		switch c {
 		case 'I':
