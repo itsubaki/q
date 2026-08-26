@@ -11,9 +11,9 @@ type WeightedState struct {
 	Qubit       *qubit.Qubit
 }
 
-func (s WeightedState) DensityOperator() *matrix.Matrix {
-	op := s.Qubit.OuterProduct(s.Qubit)
-	return op.Mul(complex(s.Probability, 0))
+// OuterProduct returns the outer product of the weighted state as a matrix.
+func (s WeightedState) OuterProduct() *matrix.Matrix {
+	return s.Qubit.OuterProduct(s.Qubit)
 }
 
 // Normalize normalizes the probabilities of a set of states.
