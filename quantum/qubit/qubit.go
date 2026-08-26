@@ -1,6 +1,7 @@
 package qubit
 
 import (
+	"fmt"
 	"math"
 	"math/cmplx"
 	"strings"
@@ -111,7 +112,13 @@ func From(binary string) *Qubit {
 			list = append(list, Plus())
 		case '-':
 			list = append(list, Minus())
+		default:
+			panic(fmt.Sprintf("%q is not a binary string", binary))
 		}
+	}
+
+	if len(list) == 0 {
+		panic(fmt.Sprintf("%q is not a binary string", binary))
 	}
 
 	return TensorProduct(list...)

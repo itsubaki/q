@@ -1,6 +1,7 @@
 package observable_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/itsubaki/q/math/matrix"
@@ -178,5 +179,26 @@ func TestProjector(t *testing.T) {
 		if !got.Equal(c.want) {
 			t.Errorf("got=%v, want=%v", got, c.want)
 		}
+	}
+}
+
+func TestPauliPanic(t *testing.T) {
+	cases := []string{
+		"",
+		"hello",
+		"Xhello",
+	}
+
+	for _, c := range cases {
+		func() {
+			defer func() {
+				rec, ok := recover().(string)
+				if !ok || !strings.Contains(rec, "is not a Pauli string") {
+					t.Fail()
+				}
+			}()
+
+			observable.Pauli(c)
+		}()
 	}
 }

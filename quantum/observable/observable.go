@@ -1,6 +1,8 @@
 package observable
 
 import (
+	"fmt"
+
 	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/quantum/gate"
 	"github.com/itsubaki/q/quantum/qubit"
@@ -19,7 +21,13 @@ func Pauli(s string) *matrix.Matrix {
 			list = append(list, Y())
 		case 'Z':
 			list = append(list, Z())
+		default:
+			panic(fmt.Sprintf("%q is not a Pauli string", s))
 		}
+	}
+
+	if len(list) == 0 {
+		panic(fmt.Sprintf("%q is not a Pauli string", s))
 	}
 
 	return matrix.TensorProduct(list...)
