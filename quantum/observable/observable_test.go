@@ -1,6 +1,7 @@
 package observable_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/itsubaki/q/math/matrix"
@@ -30,6 +31,19 @@ func TestPauli(t *testing.T) {
 			t.Errorf("observable.Pauli(%s) is not Hermitian", c.s)
 		}
 	}
+}
+
+func TestPauliPanic(t *testing.T) {
+	defer func() {
+		rec := recover()
+		msg, ok := rec.(string)
+		if !ok || !strings.Contains(msg, "no recognized characters") {
+			t.Fatalf("Pauli(%q): got panic %v, want a message naming the input", "hello", rec)
+		}
+	}()
+
+	observable.Pauli("hello")
+	t.Fail()
 }
 
 func TestI(t *testing.T) {

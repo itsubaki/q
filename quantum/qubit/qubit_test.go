@@ -3,6 +3,7 @@ package qubit_test
 import (
 	"fmt"
 	"math"
+	"strings"
 	"testing"
 
 	"github.com/itsubaki/q/math/epsilon"
@@ -51,6 +52,19 @@ func ExampleFrom_plus() {
 	// [01] (-0.5000 0.0000i): 0.2500
 	// [10] ( 0.5000 0.0000i): 0.2500
 	// [11] (-0.5000 0.0000i): 0.2500
+}
+
+func TestFromPanic(t *testing.T) {
+	defer func() {
+		rec := recover()
+		msg, ok := rec.(string)
+		if !ok || !strings.Contains(msg, "no recognized characters") {
+			t.Fatalf("From(%q): got panic %v, want a message naming the input", "abc", rec)
+		}
+	}()
+
+	qubit.From("abc")
+	t.Fail()
 }
 
 func ExampleMinuses() {
