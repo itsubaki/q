@@ -1,6 +1,7 @@
 package observable_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/itsubaki/q/math/matrix"
@@ -30,6 +31,23 @@ func TestPauli(t *testing.T) {
 			t.Errorf("observable.Pauli(%s) is not Hermitian", c.s)
 		}
 	}
+}
+
+func TestPauliEmpty(t *testing.T) {
+	defer func() {
+		rec := recover()
+		err, ok := rec.(error)
+		if !ok {
+			t.Fatalf("Pauli(\"\") should panic with an error, got %v", rec)
+		}
+
+		if strings.Contains(err.Error(), "index out of range") {
+			t.Errorf("Pauli(\"\") panicked with an internal index error instead of a clear one: %v", err)
+		}
+	}()
+
+	observable.Pauli("")
+	t.Fail()
 }
 
 func TestI(t *testing.T) {

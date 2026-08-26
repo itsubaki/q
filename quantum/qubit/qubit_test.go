@@ -3,6 +3,7 @@ package qubit_test
 import (
 	"fmt"
 	"math"
+	"strings"
 	"testing"
 
 	"github.com/itsubaki/q/math/epsilon"
@@ -51,6 +52,23 @@ func ExampleFrom_plus() {
 	// [01] (-0.5000 0.0000i): 0.2500
 	// [10] ( 0.5000 0.0000i): 0.2500
 	// [11] (-0.5000 0.0000i): 0.2500
+}
+
+func TestFromEmpty(t *testing.T) {
+	defer func() {
+		rec := recover()
+		err, ok := rec.(error)
+		if !ok {
+			t.Fatalf("From(\"\") should panic with an error, got %v", rec)
+		}
+
+		if strings.Contains(err.Error(), "index out of range") {
+			t.Errorf("From(\"\") panicked with an internal index error instead of a clear one: %v", err)
+		}
+	}()
+
+	qubit.From("")
+	t.Fail()
 }
 
 func ExampleMinuses() {
