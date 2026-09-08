@@ -2,7 +2,6 @@
 
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/itsubaki/q)](https://pkg.go.dev/github.com/itsubaki/q)
 [![tests](https://github.com/itsubaki/q/workflows/tests/badge.svg)](https://github.com/itsubaki/q/actions)
-[![codecov](https://codecov.io/gh/itsubaki/q/branch/main/graph/badge.svg?token=iNccCs1Tez)](https://codecov.io/gh/itsubaki/q)
 
 A quantum computing simulator in Go using only the standard library.
 
