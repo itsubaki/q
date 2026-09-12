@@ -7,6 +7,11 @@ test:
 lint:
 	golangci-lint run
 
+cov:
+	go install github.com/itsubaki/gocov@latest
+	gocov
+	open coverage.html
+
 vet:
 	go vet ./...
 
