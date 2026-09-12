@@ -54,8 +54,6 @@ func main() {
 	EApB := E(Ap, B, shots)
 	EApBp := E(Ap, Bp, shots)
 
-
-
 	// CHSH parameter:
 	//  S = E(A,B) + E(A,B') + E(A',B) - E(A',B')
 	//
