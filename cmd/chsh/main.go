@@ -7,6 +7,15 @@ import (
 	"github.com/itsubaki/q"
 )
 
+
+// E estimates the correlation E(A, B) between two measurement settings.
+//
+// The correlation is defined as:
+//   +1 when Alice's and Bob's measurement results are equal
+//   -1 when they are different
+//
+// By repeating the experiment over many shots, we estimate the
+// expectation value of the correlation.
 func E(thetaA, thetaB float64, shots int) float64 {
 	var sum int
 	for range shots {
@@ -44,6 +53,14 @@ func main() {
 	EABp := E(A, Bp, shots)
 	EApB := E(Ap, B, shots)
 	EApBp := E(Ap, Bp, shots)
+
+
+
+	// CHSH parameter:
+	//  S = E(A,B) + E(A,B') + E(A',B) - E(A',B')
+	//
+	// Local hidden-variable theories satisfy |S| <= 2.
+	// Quantum mechanics allows |S| <= 2*sqrt(2) (Tsirelson bound).
 	S := EAB + EABp + EApB - EApBp
 
 	fmt.Printf("shots     = %d\n", shots)
