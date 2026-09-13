@@ -94,7 +94,7 @@ func main() {
 	print("measure reg1", qsim, r0, r1)
 
 	// classical post-processing
-	var prop float64
+	var prob float64
 	for _, state := range qsim.State(r0) {
 		m := state.BinaryString()[0] // m is the binary string representation of r0
 		k := number.MustParseInt(m)  // k is the integer representation of m
@@ -114,10 +114,10 @@ func main() {
 		}
 
 		fmt.Printf("* k=%4d: N=%d, a=%d, t=%d; s/r=%4d/%4d ([0.%v]~%.4f); p=%v, q=%v.\n", k, N, a, t, s, r, m, d, p0, p1)
-		prop += state.Probability()
+		prob += state.Probability()
 	}
 
-	fmt.Printf("total probability: %.8f\n", prop)
+	fmt.Printf("prob: %.8f\n", prob)
 }
 
 func print(desc string, qsim *q.Q, reg ...any) {
@@ -140,9 +140,10 @@ func CModExp2(qsim *q.Q, a, j, N int, control q.Qubit, target []q.Qubit) {
 // ControlledModExp2 applies a controlled modular exponentiation operation.
 // |j>|k> -> |j>|a^(2^j) * k mod N>.
 func ControlledModExp2(qb *qubit.Qubit, a, j, N, control int, target []int) {
+	a2jModN := number.ModExp2(a, j, N)
+
 	n := qb.NumQubits()
 	state := qb.Amplitude()
-	a2jModN := number.ModExp2(a, j, N)
 	cmask := 1 << (n - 1 - control)
 
 	newState := make([]complex128, qb.Dim())
