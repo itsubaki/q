@@ -69,6 +69,7 @@ func ExampleQ_Ones() {
 func ExampleQ_Pluses() {
 	qsim := q.New()
 	qb := qsim.Pluses(2)
+
 	for _, s := range qsim.State(qb) {
 		fmt.Println(s)
 	}
@@ -83,6 +84,7 @@ func ExampleQ_Pluses() {
 func ExampleQ_Minuses() {
 	qsim := q.New()
 	qb := qsim.Minuses(2)
+
 	for _, s := range qsim.State(qb) {
 		fmt.Println(s)
 	}
