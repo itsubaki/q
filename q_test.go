@@ -66,6 +66,49 @@ func ExampleQ_Ones() {
 	// [11] ( 0.5000 0.0000i): 0.2500
 }
 
+func ExampleQ_Pluses() {
+	qsim := q.New()
+	qb := qsim.Pluses(2)
+	for _, s := range qsim.State(qb) {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00] ( 0.5000 0.0000i): 0.2500
+	// [01] ( 0.5000 0.0000i): 0.2500
+	// [10] ( 0.5000 0.0000i): 0.2500
+	// [11] ( 0.5000 0.0000i): 0.2500
+}
+
+func ExampleQ_Minuses() {
+	qsim := q.New()
+	qb := qsim.Minuses(2)
+	for _, s := range qsim.State(qb) {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [00] ( 0.5000 0.0000i): 0.2500
+	// [01] (-0.5000 0.0000i): 0.2500
+	// [10] (-0.5000 0.0000i): 0.2500
+	// [11] ( 0.5000 0.0000i): 0.2500
+}
+
+func ExampleQ_From() {
+	qsim := q.New()
+	qb := qsim.From("01+-")
+
+	for _, s := range qsim.State(qb) {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [0100] ( 0.5000 0.0000i): 0.2500
+	// [0101] (-0.5000 0.0000i): 0.2500
+	// [0110] ( 0.5000 0.0000i): 0.2500
+	// [0111] (-0.5000 0.0000i): 0.2500
+}
+
 func ExampleQ_Reset() {
 	qsim := q.New()
 

@@ -93,7 +93,7 @@ func main() {
 	qsim.H(c...)
 	qsim.H(r...)
 
-	// prepare ancilla to minus state
+	// prepare minus state for phase kickback
 	qsim.X(a)
 	qsim.H(a)
 
