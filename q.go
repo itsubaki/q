@@ -197,10 +197,6 @@ func (q *Q) U(theta, phi, lambda float64, qb ...Qubit) *Q {
 
 // I applies the I gate.
 func (q *Q) I(qb ...Qubit) *Q {
-	for i := range qb {
-		q.qb.I(qb[i].Index())
-	}
-
 	return q
 }
 

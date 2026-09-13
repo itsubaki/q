@@ -8,19 +8,16 @@ import (
 	"github.com/itsubaki/q/math/matrix"
 	"github.com/itsubaki/q/math/number"
 	"github.com/itsubaki/q/math/rand"
-	"github.com/itsubaki/q/quantum/density"
 	"github.com/itsubaki/q/quantum/gate"
-	"github.com/itsubaki/q/quantum/observable"
 	"github.com/itsubaki/q/quantum/qubit"
 )
 
 func ExampleQ_Zero() {
 	qsim := q.New()
-
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
-	qsim.H(q0, q1)
 
+	qsim.H(q0, q1)
 	for _, s := range qsim.State() {
 		fmt.Println(s)
 	}
@@ -34,10 +31,9 @@ func ExampleQ_Zero() {
 
 func ExampleQ_Zeros() {
 	qsim := q.New()
+	qb := qsim.Zeros(2)
 
-	r := qsim.Zeros(2)
-	qsim.H(r...)
-
+	qsim.H(qb...)
 	for _, s := range qsim.State() {
 		fmt.Println(s)
 	}
@@ -51,10 +47,9 @@ func ExampleQ_Zeros() {
 
 func ExampleQ_Ones() {
 	qsim := q.New()
+	qb := qsim.Ones(2)
 
-	r := qsim.Ones(2)
-	qsim.H(r...)
-
+	qsim.H(qb...)
 	for _, s := range qsim.State() {
 		fmt.Println(s)
 	}
@@ -113,10 +108,10 @@ func ExampleQ_From() {
 
 func ExampleQ_Reset() {
 	qsim := q.New()
+	qb := qsim.Zeros(2)
 
-	r := qsim.Zeros(2)
-	qsim.X(r[0])
-	qsim.Reset(r...)
+	qsim.X(qb[0])
+	qsim.Reset(qb...)
 
 	for _, s := range qsim.State() {
 		fmt.Println(s)
@@ -144,7 +139,6 @@ func ExampleQ_NumQubits() {
 
 func ExampleQ_Amplitude() {
 	qsim := q.New()
-
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 
@@ -164,7 +158,6 @@ func ExampleQ_Amplitude() {
 
 func ExampleQ_Probability() {
 	qsim := q.New()
-
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 
@@ -189,6 +182,7 @@ func ExampleQ_Measure() {
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 	q2 := qsim.Zero()
+
 	qsim.X(q0)
 
 	fmt.Println(qsim.Measure(q0))
@@ -208,6 +202,7 @@ func ExampleQ_M() {
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 	q2 := qsim.Zero()
+
 	qsim.X(q0)
 
 	fmt.Println(qsim.M(q0))
@@ -222,7 +217,6 @@ func ExampleQ_M() {
 
 func ExampleQ_Apply() {
 	qsim := q.New()
-
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 
@@ -244,10 +238,9 @@ func ExampleQ_Apply() {
 
 func ExampleQ_U() {
 	qsim := q.New()
+	qb := qsim.Zero()
 
-	q0 := qsim.Zero()
-	qsim.U(math.Pi, 0, math.Pi, q0)
-
+	qsim.U(math.Pi, 0, math.Pi, qb)
 	for _, s := range qsim.State() {
 		fmt.Println(s)
 	}
@@ -258,10 +251,9 @@ func ExampleQ_U() {
 
 func ExampleQ_I() {
 	qsim := q.New()
+	qb := qsim.Zero()
 
-	q0 := qsim.Zero()
-	qsim.I(q0)
-
+	qsim.I(qb)
 	for _, s := range qsim.State() {
 		fmt.Println(s)
 	}
@@ -272,10 +264,9 @@ func ExampleQ_I() {
 
 func ExampleQ_X() {
 	qsim := q.New()
+	qb := qsim.Zero()
 
-	q0 := qsim.Zero()
-	qsim.X(q0)
-
+	qsim.X(qb)
 	for _, s := range qsim.State() {
 		fmt.Println(s)
 	}
@@ -286,10 +277,10 @@ func ExampleQ_X() {
 
 func ExampleQ_Y() {
 	qsim := q.New()
+	qb := qsim.Zero()
 
-	q0 := qsim.Zero()
-	qsim.H(q0)
-	qsim.Y(q0)
+	qsim.H(qb)
+	qsim.Y(qb)
 
 	for _, s := range qsim.State() {
 		fmt.Println(s)
@@ -302,10 +293,10 @@ func ExampleQ_Y() {
 
 func ExampleQ_Z() {
 	qsim := q.New()
+	qb := qsim.Zero()
 
-	q0 := qsim.Zero()
-	qsim.H(q0)
-	qsim.Z(q0)
+	qsim.H(qb)
+	qsim.Z(qb)
 
 	for _, s := range qsim.State() {
 		fmt.Println(s)
@@ -318,10 +309,10 @@ func ExampleQ_Z() {
 
 func ExampleQ_S() {
 	qsim := q.New()
+	qb := qsim.Zero()
 
-	q0 := qsim.Zero()
-	qsim.H(q0)
-	qsim.S(q0)
+	qsim.H(qb)
+	qsim.S(qb)
 
 	for _, s := range qsim.State() {
 		fmt.Println(s)
@@ -334,10 +325,10 @@ func ExampleQ_S() {
 
 func ExampleQ_T() {
 	qsim := q.New()
+	qb := qsim.Zero()
 
-	q0 := qsim.Zero()
-	qsim.H(q0)
-	qsim.T(q0)
+	qsim.H(qb)
+	qsim.T(qb)
 
 	for _, s := range qsim.State() {
 		fmt.Println(s)
@@ -350,10 +341,10 @@ func ExampleQ_T() {
 
 func ExampleQ_R() {
 	qsim := q.New()
+	qb := qsim.Zero()
 
-	q0 := qsim.Zero()
-	qsim.H(q0)
-	qsim.R(2*math.Pi/4, q0)
+	qsim.H(qb)
+	qsim.R(2*math.Pi/4, qb)
 
 	for _, s := range qsim.State() {
 		fmt.Println(s)
@@ -366,10 +357,10 @@ func ExampleQ_R() {
 
 func ExampleQ_RX() {
 	qsim := q.New()
+	qb := qsim.Zero()
 
-	q0 := qsim.Zero()
-	qsim.H(q0)
-	qsim.RX(math.Pi, q0)
+	qsim.H(qb)
+	qsim.RX(math.Pi, qb)
 
 	for _, s := range qsim.State() {
 		fmt.Println(s)
@@ -382,10 +373,10 @@ func ExampleQ_RX() {
 
 func ExampleQ_RY() {
 	qsim := q.New()
+	qb := qsim.Zero()
 
-	q0 := qsim.Zero()
-	qsim.H(q0)
-	qsim.RY(math.Pi, q0)
+	qsim.H(qb)
+	qsim.RY(math.Pi, qb)
 
 	for _, s := range qsim.State() {
 		fmt.Println(s)
@@ -398,10 +389,10 @@ func ExampleQ_RY() {
 
 func ExampleQ_RZ() {
 	qsim := q.New()
+	qb := qsim.Zero()
 
-	q0 := qsim.Zero()
-	qsim.H(q0)
-	qsim.RZ(math.Pi, q0)
+	qsim.H(qb)
+	qsim.RZ(math.Pi, qb)
 
 	for _, s := range qsim.State() {
 		fmt.Println(s)
@@ -414,7 +405,6 @@ func ExampleQ_RZ() {
 
 func ExampleQ_C() {
 	qsim := q.New()
-
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 
@@ -432,11 +422,11 @@ func ExampleQ_C() {
 
 func ExampleQ_CU() {
 	qsim := q.New()
-	qb0 := qsim.Zero()
-	qb1 := qsim.Zero()
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
 
-	qsim.H(qb0)
-	qsim.CU(math.Pi, 0, math.Pi, qb0, qb1)
+	qsim.H(q0)
+	qsim.CU(math.Pi, 0, math.Pi, q0, q1)
 
 	for _, s := range qsim.State() {
 		fmt.Println(s)
@@ -449,11 +439,11 @@ func ExampleQ_CU() {
 
 func ExampleQ_CX() {
 	qsim := q.New()
-	qb0 := qsim.Zero()
-	qb1 := qsim.Zero()
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
 
-	qsim.H(qb0)
-	qsim.CX(qb0, qb1)
+	qsim.H(q0)
+	qsim.CX(q0, q1)
 
 	for _, s := range qsim.State() {
 		fmt.Println(s)
@@ -466,12 +456,12 @@ func ExampleQ_CX() {
 
 func ExampleQ_CZ() {
 	qsim := q.New()
-	qb0 := qsim.Zero()
-	qb1 := qsim.Zero()
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
 
-	qsim.H(qb0)
-	qsim.H(qb1)
-	qsim.CZ(qb0, qb1)
+	qsim.H(q0)
+	qsim.H(q1)
+	qsim.CZ(q0, q1)
 
 	for _, s := range qsim.State() {
 		fmt.Println(s)
@@ -486,11 +476,11 @@ func ExampleQ_CZ() {
 
 func ExampleQ_ControlledH() {
 	qsim := q.New()
-	qb0 := qsim.Zero()
-	qb1 := qsim.Zero()
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
 
-	qsim.H(qb0)
-	qsim.ControlledH([]q.Qubit{qb0}, []q.Qubit{qb1})
+	qsim.H(q0)
+	qsim.ControlledH([]q.Qubit{q0}, []q.Qubit{q1})
 
 	for _, s := range qsim.State() {
 		fmt.Println(s)
@@ -504,11 +494,11 @@ func ExampleQ_ControlledH() {
 
 func ExampleQ_ControlledX() {
 	qsim := q.New()
-	qb0 := qsim.Zero()
-	qb1 := qsim.Zero()
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
 
-	qsim.H(qb0)
-	qsim.ControlledX([]q.Qubit{qb0}, []q.Qubit{qb1})
+	qsim.H(q0)
+	qsim.ControlledX([]q.Qubit{q0}, []q.Qubit{q1})
 
 	for _, s := range qsim.State() {
 		fmt.Println(s)
@@ -519,15 +509,36 @@ func ExampleQ_ControlledX() {
 	// [11] ( 0.7071 0.0000i): 0.5000
 }
 
+func ExampleQ_CCZ() {
+	qsim := q.New()
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.One()
+
+	qsim.H(q0)
+	qsim.H(q1)
+	qsim.CCZ(q0, q1, q2)
+
+	for _, s := range qsim.State() {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// [001] ( 0.5000 0.0000i): 0.2500
+	// [011] ( 0.5000 0.0000i): 0.2500
+	// [101] ( 0.5000 0.0000i): 0.2500
+	// [111] (-0.5000 0.0000i): 0.2500
+}
+
 func ExampleQ_CCNOT() {
 	qsim := q.New()
-	qb0 := qsim.Zero()
-	qb1 := qsim.Zero()
-	qb2 := qsim.Zero()
+	q0 := qsim.Zero()
+	q1 := qsim.Zero()
+	q2 := qsim.Zero()
 
-	qsim.H(qb0)
-	qsim.H(qb1)
-	qsim.CCNOT(qb0, qb1, qb2)
+	qsim.H(q0)
+	qsim.H(q1)
+	qsim.CCNOT(q0, q1, q2)
 
 	for _, s := range qsim.State() {
 		fmt.Println(s)
@@ -542,10 +553,10 @@ func ExampleQ_CCNOT() {
 
 func ExampleQ_CondX() {
 	qsim := q.New()
-	q0 := qsim.Zero()
+	qb := qsim.Zero()
 
 	for _, b := range []bool{false, true} {
-		qsim.CondX(b, q0)
+		qsim.CondX(b, qb)
 
 		for _, s := range qsim.State() {
 			fmt.Println(s)
@@ -559,10 +570,10 @@ func ExampleQ_CondX() {
 
 func ExampleQ_CondZ() {
 	qsim := q.New()
-	q0 := qsim.One()
+	qb := qsim.One()
 
 	for _, b := range []bool{false, true} {
-		qsim.CondZ(b, q0)
+		qsim.CondZ(b, qb)
 
 		for _, s := range qsim.State() {
 			fmt.Println(s)
@@ -576,10 +587,10 @@ func ExampleQ_CondZ() {
 
 func ExampleQ_Cond() {
 	qsim := q.New()
-	q0 := qsim.Zero()
+	qb := qsim.Zero()
 
 	for _, b := range []bool{false, true} {
-		qsim.Cond(b, gate.X(), q0)
+		qsim.Cond(b, gate.X(), qb)
 
 		for _, s := range qsim.State() {
 			fmt.Println(s)
@@ -640,11 +651,10 @@ func ExampleQ_Clone() {
 
 func ExampleQ_String() {
 	qsim := q.New()
-
 	q0 := qsim.Zero()
 	q1 := qsim.One()
-	qsim.X(q0, q1)
 
+	qsim.X(q0, q1)
 	fmt.Println(qsim)
 
 	// Output:
@@ -653,9 +663,9 @@ func ExampleQ_String() {
 
 func ExampleTop() {
 	qsim := q.New()
-	q0 := qsim.Zeros(3)
-	qsim.H(q0...)
+	qb := qsim.Zeros(3)
 
+	qsim.H(qb...)
 	for _, s := range q.Top(qsim.State(), 2) {
 		fmt.Println(s)
 	}
@@ -667,9 +677,9 @@ func ExampleTop() {
 
 func ExampleTop_all() {
 	qsim := q.New()
-	q0 := qsim.Zeros(3)
-	qsim.H(q0...)
+	qb := qsim.Zeros(3)
 
+	qsim.H(qb...)
 	for _, s := range q.Top(qsim.State(), -1) {
 		fmt.Println(s)
 	}
@@ -687,9 +697,9 @@ func ExampleTop_all() {
 
 func Example_bell() {
 	qsim := q.New()
-
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
+
 	qsim.H(q0)
 	qsim.CNOT(q0, q1)
 
@@ -709,7 +719,6 @@ func Example_bell() {
 
 func Example_quantumTeleportation() {
 	qsim := q.New()
-
 	psi := qsim.New(1, 2)
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
@@ -774,58 +783,19 @@ func Example_deutschJozsa() {
 	// Balanced 1
 }
 
-func Example_grover3() {
-	// Reference: C. Figgatt, D. Maslov, K. A. Landsman, N. M. Linke, S. Debnath, and C. Monroe. Complete 3-Qubit Grover Search on a Programmable Quantum Computer.
+func Example_grover() {
 	qsim := q.New()
-
-	r := qsim.Zeros(3)
-	a := qsim.One()
-
-	qsim.H(r...)
-	qsim.H(a)
-
-	// oracle
-	qsim.X(r[0])
-	qsim.CCCNOT(r[0], r[1], r[2], a)
-	qsim.X(r[0])
-
-	// diffuser
-	qsim.H(r...).H(a)
-	qsim.X(r...)
-	qsim.CCZ(r[0], r[1], r[2])
-	qsim.X(r...)
-	qsim.H(r...)
-
-	for _, s := range qsim.State(r, a) {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [000 1] (-0.1768 0.0000i): 0.0313
-	// [001 1] (-0.1768 0.0000i): 0.0313
-	// [010 1] (-0.1768 0.0000i): 0.0313
-	// [011 1] (-0.8839 0.0000i): 0.7813
-	// [100 1] (-0.1768 0.0000i): 0.0313
-	// [101 1] (-0.1768 0.0000i): 0.0313
-	// [110 1] (-0.1768 0.0000i): 0.0313
-	// [111 1] (-0.1768 0.0000i): 0.0313
-}
-
-func Example_grover4() {
-	// Reference: Eric R. Johnson, Nic Harrigan, and Merecedes Gimeno-Segovia. Programming Quantum Computers. O'Reilly.
-	qsim := q.New()
-
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 	q2 := qsim.Zero()
-	q3 := qsim.Zero()
+	q3 := qsim.One()
 
 	qsim.H(q0, q1, q2, q3)
 
 	N := number.Pow(2, qsim.NumQubits())
 	R := int(math.Pi / 4 * math.Sqrt(float64(N)))
 	for range R {
-		// oracle
+		// oracle for |110>|x>
 		qsim.X(q2, q3)
 		qsim.H(q3)
 		qsim.CCCNOT(q0, q1, q2, q3)
@@ -833,13 +803,11 @@ func Example_grover4() {
 		qsim.X(q2, q3)
 
 		// diffuser
-		qsim.H(q0, q1, q2, q3)
-		qsim.X(q0, q1, q2, q3)
-		qsim.H(q3)
+		qsim.H(q0, q1, q2)
+		qsim.X(q0, q1, q2)
 		qsim.CCCNOT(q0, q1, q2, q3)
-		qsim.H(q3)
-		qsim.X(q0, q1, q2, q3)
-		qsim.H(q0, q1, q2, q3)
+		qsim.X(q0, q1, q2)
+		qsim.H(q0, q1, q2)
 	}
 
 	for _, s := range qsim.State([]q.Qubit{q0, q1, q2}, q3) {
@@ -848,26 +816,25 @@ func Example_grover4() {
 
 	// Output:
 	// [000 0] ( 0.0508 0.0000i): 0.0026
-	// [000 1] ( 0.0508 0.0000i): 0.0026
+	// [000 1] (-0.0508 0.0000i): 0.0026
 	// [001 0] ( 0.0508 0.0000i): 0.0026
-	// [001 1] ( 0.0508 0.0000i): 0.0026
+	// [001 1] (-0.0508 0.0000i): 0.0026
 	// [010 0] ( 0.0508 0.0000i): 0.0026
-	// [010 1] ( 0.0508 0.0000i): 0.0026
+	// [010 1] (-0.0508 0.0000i): 0.0026
 	// [011 0] ( 0.0508 0.0000i): 0.0026
-	// [011 1] ( 0.0508 0.0000i): 0.0026
+	// [011 1] (-0.0508 0.0000i): 0.0026
 	// [100 0] ( 0.0508 0.0000i): 0.0026
-	// [100 1] ( 0.0508 0.0000i): 0.0026
+	// [100 1] (-0.0508 0.0000i): 0.0026
 	// [101 0] ( 0.0508 0.0000i): 0.0026
-	// [101 1] ( 0.0508 0.0000i): 0.0026
+	// [101 1] (-0.0508 0.0000i): 0.0026
 	// [110 0] (-0.9805 0.0000i): 0.9613
-	// [110 1] ( 0.0508 0.0000i): 0.0026
+	// [110 1] (-0.0508 0.0000i): 0.0026
 	// [111 0] ( 0.0508 0.0000i): 0.0026
-	// [111 1] ( 0.0508 0.0000i): 0.0026
+	// [111 1] (-0.0508 0.0000i): 0.0026
 }
 
 func Example_qft() {
 	qsim := q.New()
-
 	q0 := qsim.Zero()
 	q1 := qsim.Zero()
 	q2 := qsim.One()
@@ -881,6 +848,7 @@ func Example_qft() {
 
 	qsim.H(q2)
 
+	// swap
 	qsim.CNOT(q0, q2)
 	qsim.CNOT(q2, q0)
 	qsim.CNOT(q0, q2)
@@ -903,7 +871,6 @@ func Example_qft() {
 func Example_superDenseCoding() {
 	sdc := func(g *matrix.Matrix) string {
 		qsim := q.New()
-
 		q0 := qsim.Zero()
 		q1 := qsim.Zero()
 
@@ -933,9 +900,8 @@ func Example_superDenseCoding() {
 	// ZX: 11
 }
 
-func Example_errorCorrection() {
+func Example_ecc() {
 	qsim := q.New()
-
 	q0 := qsim.New(1, 2)
 
 	fmt.Println("q0:")
@@ -1003,9 +969,9 @@ func Example_errorCorrection() {
 
 func Example_gateTeleportation() {
 	qsim := q.New()
-
 	psi := qsim.New(1, 2)
 	a := qsim.Zero()
+
 	qsim.H(a)
 	qsim.T(a) // magic state
 
@@ -1044,100 +1010,4 @@ func Example_any() {
 	// Output:
 	// [00] ( 0.7071 0.0000i): 0.5000
 	// [11] ( 0.7071 0.0000i): 0.5000
-}
-
-func Example_traceOut() {
-	qsim := q.New()
-	{
-		qb := qsim.Zeros(2)
-		qsim.H(qb[0])
-		qsim.CNOT(qb[0], qb[1])
-	}
-
-	rhoAB := density.New(qsim.Qubit())
-	rhoA := rhoAB.TraceOut(1)
-	rhoB := rhoAB.TraceOut(0)
-
-	for _, m := range []*density.DensityMatrix{
-		rhoAB, // 1.0, 0.0
-		rhoA,  // 0.5, 1.0
-		rhoB,  // 0.5, 1.0
-	} {
-		fmt.Printf("%.2f\n", m.Purity())
-		fmt.Printf("%.2f\n", m.VonNeumannEntropy())
-	}
-
-	// Output:
-	// 1.00
-	// 0.00
-	// 0.50
-	// 1.00
-	// 0.50
-	// 1.00
-}
-
-func Example_channel() {
-	rho := density.New(qubit.Plus()).
-		PhaseDamping(0.18).
-		AmplitudeDamping(0.07).
-		Depolarizing(0.01)
-
-	for _, r := range rho.Seq2() {
-		// [0.53, 0.43]
-		// [0.43, 0.47]
-		fmt.Printf("%.2f\n", r)
-	}
-
-	pX, sigmaX := rho.Measure(observable.Projector(
-		qubit.Plus(),
-	))
-
-	fmt.Println(pX) // 0.9308
-	for _, r := range sigmaX.Seq2() {
-		// [0.5, 0.5]
-		// [0.5, 0.5]
-		fmt.Printf("%.2f\n", r)
-	}
-
-	// Output:
-	// [(0.53+0.00i) (0.43+0.00i)]
-	// [(0.43+0.00i) (0.47+0.00i)]
-	// 0.9308130607738511
-	// [(0.50+0.00i) (0.50+0.00i)]
-	// [(0.50+0.00i) (0.50+0.00i)]
-}
-
-func Example_distance() {
-	rhoA := density.New(qubit.Pluses(2))
-	rhoB := density.New(qubit.Zeros(2)).
-		BitFlip(0.5, 0).
-		BitFlip(0.5, 1)
-
-	fmt.Printf("%.4f\n", rhoA.Fidelity(rhoA))      // 1.00
-	fmt.Printf("%.4f\n", rhoA.Fidelity(rhoB))      // 0.50
-	fmt.Printf("%.4f\n", rhoA.TraceDistance(rhoA)) // 0.00
-	fmt.Printf("%.4f\n", rhoA.TraceDistance(rhoB)) // 0.75
-
-	// Output:
-	// 1.0000
-	// 0.5000
-	// 0.0000
-	// 0.7500
-}
-
-func Example_entropy() {
-	rhoA := density.New(qubit.Plus())
-	rhoB := density.New(qubit.Zero()).
-		BitFlip(0.5)
-
-	fmt.Printf("%.4f\n", rhoA.VonNeumannEntropy())   // 0.0000
-	fmt.Printf("%.4f\n", rhoB.VonNeumannEntropy())   // 1.0000
-	fmt.Printf("%.4f\n", rhoA.RelativeEntropy(rhoB)) // 1.0000
-	fmt.Printf("%.4f\n", rhoB.RelativeEntropy(rhoA)) // +Inf
-
-	// Output:
-	// 0.0000
-	// 1.0000
-	// 1.0000
-	// +Inf
 }
