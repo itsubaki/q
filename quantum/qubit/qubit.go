@@ -100,21 +100,21 @@ func Minuses(n int) *Qubit {
 
 // From returns a new qubit from a binary string.
 func From(binary string) *Qubit {
-	var list []*Qubit
+	var qb []*Qubit
 	for _, c := range binary {
 		switch c {
 		case '0':
-			list = append(list, Zero())
+			qb = append(qb, Zero())
 		case '1':
-			list = append(list, One())
+			qb = append(qb, One())
 		case '+':
-			list = append(list, Plus())
+			qb = append(qb, Plus())
 		case '-':
-			list = append(list, Minus())
+			qb = append(qb, Minus())
 		}
 	}
 
-	return TensorProduct(list...)
+	return TensorProduct(qb...)
 }
 
 // Rand returns the random number generator.

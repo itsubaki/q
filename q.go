@@ -72,6 +72,22 @@ func (q *Q) One() Qubit {
 	return q.New(0, 1)
 }
 
+// Plus returns a qubit in the plus state.
+// The plus state is defined as (|0> + |1>) / sqrt(2).
+func (q *Q) Plus() Qubit {
+	qb := q.Zero()
+	q.H(qb)
+	return qb
+}
+
+// Minus returns a qubit in the minus state.
+// The minus state is defined as (|0> - |1>) / sqrt(2).
+func (q *Q) Minus() Qubit {
+	qb := q.One()
+	q.H(qb)
+	return qb
+}
+
 // Zeros returns n qubits in the zero state.
 func (q *Q) Zeros(n int) []Qubit {
 	qb := make([]Qubit, n)
@@ -87,6 +103,45 @@ func (q *Q) Ones(n int) []Qubit {
 	qb := make([]Qubit, n)
 	for i := range n {
 		qb[i] = q.One()
+	}
+
+	return qb
+}
+
+// Pluses returns n qubits in the plus state.
+func (q *Q) Pluses(n int) []Qubit {
+	qb := make([]Qubit, n)
+	for i := range n {
+		qb[i] = q.Plus()
+	}
+
+	return qb
+}
+
+// Minuses returns n qubits in the minus state.
+func (q *Q) Minuses(n int) []Qubit {
+	qb := make([]Qubit, n)
+	for i := range n {
+		qb[i] = q.Minus()
+	}
+
+	return qb
+}
+
+// From returns a new qubit from a binary string.
+func (q *Q) From(binary string) []Qubit {
+	var qb []Qubit
+	for _, b := range binary {
+		switch b {
+		case '0':
+			qb = append(qb, q.Zero())
+		case '1':
+			qb = append(qb, q.One())
+		case '+':
+			qb = append(qb, q.Plus())
+		case '-':
+			qb = append(qb, q.Minus())
+		}
 	}
 
 	return qb
