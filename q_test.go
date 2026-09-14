@@ -792,20 +792,18 @@ func Example_grover() {
 
 	qsim.H(q0, q1, q2, q3)
 
-	N := number.Pow(2, qsim.NumQubits())
+	N := number.Pow(2, qsim.NumQubits()-1)
 	R := int(math.Pi / 4 * math.Sqrt(float64(N)))
 	for range R {
 		// oracle for |110>|x>
-		qsim.X(q2, q3)
-		qsim.H(q3)
+		qsim.X(q2)
 		qsim.CCCNOT(q0, q1, q2, q3)
-		qsim.H(q3)
-		qsim.X(q2, q3)
+		qsim.X(q2)
 
 		// diffuser
 		qsim.H(q0, q1, q2)
 		qsim.X(q0, q1, q2)
-		qsim.CCCNOT(q0, q1, q2, q3)
+		qsim.CCZ(q0, q1, q2)
 		qsim.X(q0, q1, q2)
 		qsim.H(q0, q1, q2)
 	}
@@ -815,22 +813,22 @@ func Example_grover() {
 	}
 
 	// Output:
-	// [000 0] ( 0.0508 0.0000i): 0.0026
-	// [000 1] (-0.0508 0.0000i): 0.0026
-	// [001 0] ( 0.0508 0.0000i): 0.0026
-	// [001 1] (-0.0508 0.0000i): 0.0026
-	// [010 0] ( 0.0508 0.0000i): 0.0026
-	// [010 1] (-0.0508 0.0000i): 0.0026
-	// [011 0] ( 0.0508 0.0000i): 0.0026
-	// [011 1] (-0.0508 0.0000i): 0.0026
-	// [100 0] ( 0.0508 0.0000i): 0.0026
-	// [100 1] (-0.0508 0.0000i): 0.0026
-	// [101 0] ( 0.0508 0.0000i): 0.0026
-	// [101 1] (-0.0508 0.0000i): 0.0026
-	// [110 0] (-0.9805 0.0000i): 0.9613
-	// [110 1] (-0.0508 0.0000i): 0.0026
-	// [111 0] ( 0.0508 0.0000i): 0.0026
-	// [111 1] (-0.0508 0.0000i): 0.0026
+	// [000 0] (-0.0625 0.0000i): 0.0039
+	// [000 1] ( 0.0625 0.0000i): 0.0039
+	// [001 0] (-0.0625 0.0000i): 0.0039
+	// [001 1] ( 0.0625 0.0000i): 0.0039
+	// [010 0] (-0.0625 0.0000i): 0.0039
+	// [010 1] ( 0.0625 0.0000i): 0.0039
+	// [011 0] (-0.0625 0.0000i): 0.0039
+	// [011 1] ( 0.0625 0.0000i): 0.0039
+	// [100 0] (-0.0625 0.0000i): 0.0039
+	// [100 1] ( 0.0625 0.0000i): 0.0039
+	// [101 0] (-0.0625 0.0000i): 0.0039
+	// [101 1] ( 0.0625 0.0000i): 0.0039
+	// [110 0] ( 0.6875 0.0000i): 0.4727
+	// [110 1] (-0.6875 0.0000i): 0.4727
+	// [111 0] (-0.0625 0.0000i): 0.0039
+	// [111 1] ( 0.0625 0.0000i): 0.0039
 }
 
 func Example_qft() {
@@ -903,18 +901,13 @@ func Example_superDenseCoding() {
 func Example_ecc() {
 	qsim := q.New()
 	q0 := qsim.New(1, 2)
-
-	fmt.Println("q0:")
-	for _, s := range qsim.State(q0) {
-		fmt.Println(s)
-	}
-
 	q1 := qsim.Zero()
 	q2 := qsim.Zero()
+
 	qsim.CNOT(q0, q1)
 	qsim.CNOT(q0, q2)
 
-	fmt.Println("q0(encoded):")
+	fmt.Println("encoded:")
 	for _, s := range qsim.State(q0, []q.Qubit{q1, q2}) {
 		fmt.Println(s)
 	}
@@ -922,7 +915,7 @@ func Example_ecc() {
 	// error: the first qubit is flipped
 	qsim.X(q0)
 
-	fmt.Println("q0(flipped):")
+	fmt.Println("flipped:")
 	for _, s := range qsim.State(q0, []q.Qubit{q1, q2}) {
 		fmt.Println(s)
 	}
@@ -947,22 +940,19 @@ func Example_ecc() {
 	qsim.CNOT(q0, q2)
 	qsim.CNOT(q0, q1)
 
-	fmt.Println("q0(corrected):")
+	fmt.Println("corrected:")
 	for _, s := range qsim.State(q0, []q.Qubit{q1, q2}, []q.Qubit{q3, q4}) {
 		fmt.Println(s)
 	}
 
 	// Output:
-	// q0:
-	// [0] ( 0.4472 0.0000i): 0.2000
-	// [1] ( 0.8944 0.0000i): 0.8000
-	// q0(encoded):
+	// encoded:
 	// [0 00] ( 0.4472 0.0000i): 0.2000
 	// [1 11] ( 0.8944 0.0000i): 0.8000
-	// q0(flipped):
+	// flipped:
 	// [0 11] ( 0.8944 0.0000i): 0.8000
 	// [1 00] ( 0.4472 0.0000i): 0.2000
-	// q0(corrected):
+	// corrected:
 	// [0 00 10] ( 0.4472 0.0000i): 0.2000
 	// [1 00 10] ( 0.8944 0.0000i): 0.8000
 }
@@ -979,13 +969,15 @@ func Example_gateTeleportation() {
 	m0 := qsim.Measure(psi)
 	qsim.Cond(m0.IsOne(), gate.X(), a)
 	qsim.Cond(m0.IsOne(), gate.S(), a)
+	s0 := qsim.State(a)
 
 	{
 		qs := q.New()
 		qb := qs.New(1, 2)
 		qs.T(qb)
+		s1 := qs.State(qb)
 
-		fmt.Println(qubit.EqualUpToGlobalPhase(qsim.State(a), qs.State(qb)))
+		fmt.Println(qubit.EqualUpToGlobalPhase(s0, s1))
 	}
 
 	// Output:
