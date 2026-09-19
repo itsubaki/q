@@ -217,6 +217,6 @@ for _, s := range qsim.State() {
 // [11] ( 0.7071 0.0000i): 0.5000
 ```
 
-## References
+## Reference
 
 - Nielsen, M. A., & Chuang, I. L. *Quantum Computation and Quantum Information*. 10th Anniversary ed., Cambridge University Press, 2010.
