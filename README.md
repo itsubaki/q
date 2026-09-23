@@ -98,7 +98,10 @@ q2 := qsim.Zero()
 q3 := qsim.One()
 
 // superposition
-qsim.H(q0, q1, q2, q3)
+qsim.H(q0, q1, q2)
+
+// prepare minus state for phase kickback
+qsim.H(q3)
 
 // iterations
 N := number.Pow(2, qsim.NumQubits()-1)

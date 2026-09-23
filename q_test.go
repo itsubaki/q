@@ -790,7 +790,11 @@ func Example_grover() {
 	q2 := qsim.Zero()
 	q3 := qsim.One()
 
-	qsim.H(q0, q1, q2, q3)
+	// superposition
+	qsim.H(q0, q1, q2)
+
+	// prepare minus state for phase kickback
+	qsim.H(q3)
 
 	N := number.Pow(2, qsim.NumQubits()-1)
 	R := int(math.Pi / 4 * math.Sqrt(float64(N)))
