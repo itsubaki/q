@@ -18,7 +18,9 @@ func Example_channel() {
 	p, post := density.New(qubit.One()).
 		AmplitudeDamping(0.9).
 		BitFlip(0.5).
-		Measure(observable.Projector(qubit.Zero()))
+		Measure(observable.Projector(
+			qubit.Zero(),
+		))
 
 	fmt.Printf("%.4f\n", p)
 	for _, r := range post.Seq2() {
@@ -324,15 +326,15 @@ func TestNewMixed(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		p, _ := density.NewMixed(c.s).Measure(observable.Projector(
-			qubit.Zero(),
-		))
+		p, _ := density.NewMixed(c.s).
+			Measure(observable.Projector(
+				qubit.Zero(),
+			))
 
 		if !epsilon.IsCloseF64(p, c.want) {
 			t.Errorf("got=%v, want=%v", p, c.want)
 		}
 	}
-
 }
 
 func TestDensityMatrix_IsHermitian(t *testing.T) {
@@ -741,21 +743,28 @@ func TestDensityMatrix_TraceOut(t *testing.T) {
 		},
 	}
 
+	equal := func(a *density.DensityMatrix, b [][]complex128) bool {
+		p, q := a.Dim()
+		if p != len(b) || q != len(b[0]) {
+			return false
+		}
+
+		for i := range b {
+			for j := range b[i] {
+				if !epsilon.IsClose(a.At(i, j), b[i][j]) {
+					return false
+				}
+			}
+		}
+
+		return true
+	}
+
 	for _, c := range cases {
 		for _, s := range c.cs {
 			got := density.NewMixed(c.s).TraceOut(s.qb...)
-
-			p, q := got.Dim()
-			if p != len(s.want) || q != len(s.want) {
-				t.Errorf("got=%v, %v want=%v", p, q, s.want)
-			}
-
-			for i := range s.want {
-				for j := range s.want[0] {
-					if !epsilon.IsClose(got.At(i, j), s.want[i][j]) {
-						t.Errorf("%v:%v, got=%v, want=%v", i, j, got.At(i, j), s.want[i][j])
-					}
-				}
+			if !equal(got, s.want) {
+				t.Errorf("got=%v, want%v", got, s.want)
 			}
 
 			if !epsilon.IsCloseF64(got.Trace(), 1) {
