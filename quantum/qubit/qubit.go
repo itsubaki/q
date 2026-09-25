@@ -101,27 +101,27 @@ func Minuses(n int) *Qubit {
 
 // From returns a new qubit from a binary string.
 func From(binary string) *Qubit {
-	list := make([]*Qubit, 0)
+	var qb []*Qubit
 	for _, c := range binary {
 		switch c {
 		case '0':
-			list = append(list, Zero())
+			qb = append(qb, Zero())
 		case '1':
-			list = append(list, One())
+			qb = append(qb, One())
 		case '+':
-			list = append(list, Plus())
+			qb = append(qb, Plus())
 		case '-':
-			list = append(list, Minus())
+			qb = append(qb, Minus())
 		default:
 			panic(fmt.Sprintf("%q is not a binary string", binary))
 		}
 	}
 
-	if len(list) == 0 {
+	if len(qb) == 0 {
 		panic(fmt.Sprintf("%q is not a binary string", binary))
 	}
 
-	return TensorProduct(list...)
+	return TensorProduct(qb...)
 }
 
 // Rand returns the random number generator.

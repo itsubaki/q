@@ -2,7 +2,6 @@
 
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/itsubaki/q)](https://pkg.go.dev/github.com/itsubaki/q)
 [![tests](https://github.com/itsubaki/q/workflows/tests/badge.svg)](https://github.com/itsubaki/q/actions)
-[![codecov](https://codecov.io/gh/itsubaki/q/branch/main/graph/badge.svg?token=iNccCs1Tez)](https://codecov.io/gh/itsubaki/q)
 
 A quantum computing simulator in Go using only the standard library.
 
@@ -96,52 +95,51 @@ qsim := q.New()
 q0 := qsim.Zero()
 q1 := qsim.Zero()
 q2 := qsim.Zero()
-q3 := qsim.Zero()
+q3 := qsim.One()
 
 // superposition
-qsim.H(q0, q1, q2, q3)
+qsim.H(q0, q1, q2)
+
+// prepare minus state for phase kickback
+qsim.H(q3)
 
 // iterations
-N := number.Pow(2, qsim.NumQubits())
+N := number.Pow(2, qsim.NumQubits()-1)
 R := int(math.Pi / 4 * math.Sqrt(float64(N)))
 for range R {
 	// oracle for |110>|x>
-	qsim.X(q2, q3)
-	qsim.H(q3)
+	qsim.X(q2)
 	qsim.CCCNOT(q0, q1, q2, q3)
-	qsim.H(q3)
-	qsim.X(q2, q3)
+	qsim.X(q2)
 
 	// diffuser
-	qsim.H(q0, q1, q2, q3)
-	qsim.X(q0, q1, q2, q3)
-	qsim.H(q3)
-	qsim.CCCNOT(q0, q1, q2, q3)
-	qsim.H(q3)
-	qsim.X(q0, q1, q2, q3)
-	qsim.H(q0, q1, q2, q3)
+	qsim.H(q0, q1, q2)
+	qsim.X(q0, q1, q2)
+	qsim.CCZ(q0, q1, q2)
+	qsim.X(q0, q1, q2)
+	qsim.H(q0, q1, q2)
 }
 
 for _, s := range qsim.State([]q.Qubit{q0, q1, q2}, q3) {
 	fmt.Println(s)
 }
 
-// [000 0] ( 0.0508 0.0000i): 0.0026
-// [000 1] ( 0.0508 0.0000i): 0.0026
-// [001 0] ( 0.0508 0.0000i): 0.0026
-// [001 1] ( 0.0508 0.0000i): 0.0026
-// [010 0] ( 0.0508 0.0000i): 0.0026
-// [010 1] ( 0.0508 0.0000i): 0.0026
-// [011 0] ( 0.0508 0.0000i): 0.0026
-// [011 1] ( 0.0508 0.0000i): 0.0026
-// [100 0] ( 0.0508 0.0000i): 0.0026
-// [100 1] ( 0.0508 0.0000i): 0.0026
-// [101 0] ( 0.0508 0.0000i): 0.0026
-// [101 1] ( 0.0508 0.0000i): 0.0026
-// [110 0] (-0.9805 0.0000i): 0.9613 --> answer!
-// [110 1] ( 0.0508 0.0000i): 0.0026
-// [111 0] ( 0.0508 0.0000i): 0.0026
-// [111 1] ( 0.0508 0.0000i): 0.0026
+// [000 0] (-0.0625 0.0000i): 0.0039
+// [000 1] ( 0.0625 0.0000i): 0.0039
+// [001 0] (-0.0625 0.0000i): 0.0039
+// [001 1] ( 0.0625 0.0000i): 0.0039
+// [010 0] (-0.0625 0.0000i): 0.0039
+// [010 1] ( 0.0625 0.0000i): 0.0039
+// [011 0] (-0.0625 0.0000i): 0.0039
+// [011 1] ( 0.0625 0.0000i): 0.0039
+// [100 0] (-0.0625 0.0000i): 0.0039
+// [100 1] ( 0.0625 0.0000i): 0.0039
+// [101 0] (-0.0625 0.0000i): 0.0039
+// [101 1] ( 0.0625 0.0000i): 0.0039
+// [110 0] ( 0.6875 0.0000i): 0.4727 (answer)
+// [110 1] (-0.6875 0.0000i): 0.4727 (answer)
+// [111 0] (-0.0625 0.0000i): 0.0039
+// [111 1] ( 0.0625 0.0000i): 0.0039
 ```
 
 ### Shor's Factoring Algorithm
@@ -222,6 +220,6 @@ for _, s := range qsim.State() {
 // [11] ( 0.7071 0.0000i): 0.5000
 ```
 
-## References
+## Reference
 
 - Nielsen, M. A., & Chuang, I. L. *Quantum Computation and Quantum Information*. 10th Anniversary ed., Cambridge University Press, 2010.

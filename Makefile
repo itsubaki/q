@@ -7,6 +7,11 @@ test:
 lint:
 	golangci-lint run
 
+cov:
+	go install github.com/itsubaki/gocov@latest
+	gocov
+	open coverage.html
+
 vet:
 	go vet ./...
 
@@ -20,7 +25,7 @@ pprof:
 	go tool pprof -http=:8080 cpu.prof
 
 shor:
-	go run cmd/shor/main.go --N 21 -t 5
+	go run cmd/shor/main.go --N 35 -t 7
 
 grover:
 	go run cmd/grover/main.go -top 8

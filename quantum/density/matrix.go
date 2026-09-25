@@ -39,7 +39,8 @@ func NewMixed(states []WeightedState) *DensityMatrix {
 	n := states[0].Qubit.Dim()
 	rho := matrix.Zero(n, n)
 	for _, s := range Normalize(states) {
-		rho = rho.Add(s.DensityOperator())
+		op := s.OuterProduct().Mul(complex(s.Probability, 0))
+		rho = rho.Add(op)
 	}
 
 	return &DensityMatrix{
