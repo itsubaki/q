@@ -902,7 +902,7 @@ func Example_superDenseCoding() {
 	// ZX: 11
 }
 
-func Example_ecc() {
+func Example_eCC() {
 	qsim := q.New()
 	q0 := qsim.New(1, 2)
 	q1 := qsim.Zero()
@@ -940,12 +940,8 @@ func Example_ecc() {
 	qsim.CondX(m3.IsOne() && m4.IsOne(), q1)
 	qsim.CondX(m3.IsZero() && m4.IsOne(), q2)
 
-	// decode
-	qsim.CNOT(q0, q2)
-	qsim.CNOT(q0, q1)
-
 	fmt.Println("corrected:")
-	for _, s := range qsim.State(q0, []q.Qubit{q1, q2}, []q.Qubit{q3, q4}) {
+	for _, s := range qsim.State(q0, []q.Qubit{q1, q2}) {
 		fmt.Println(s)
 	}
 
@@ -957,8 +953,8 @@ func Example_ecc() {
 	// [0 11] ( 0.8944 0.0000i): 0.8000
 	// [1 00] ( 0.4472 0.0000i): 0.2000
 	// corrected:
-	// [0 00 10] ( 0.4472 0.0000i): 0.2000
-	// [1 00 10] ( 0.8944 0.0000i): 0.8000
+	// [0 00] ( 0.4472 0.0000i): 0.2000
+	// [1 11] ( 0.8944 0.0000i): 0.8000
 }
 
 func Example_gateTeleportation() {
