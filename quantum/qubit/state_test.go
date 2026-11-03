@@ -126,6 +126,29 @@ func TestEqualUpToGlobalPhase(t *testing.T) {
 			v:    []qubit.State{qubit.NewState(complex(0, 1))},
 			want: true,
 		},
+		{
+			s:    qubit.Zero().State(),
+			v:    qubit.One().State(),
+			want: false,
+		},
+		{
+			s:    []qubit.State{qubit.NewState(1, "0", "0")},
+			v:    []qubit.State{qubit.NewState(1, "00")},
+			want: false,
+		},
+		{
+			s: qubit.Plus().State(),
+			v: []qubit.State{
+				qubit.NewState(complex(0, 1/math.Sqrt2), "0"),
+				qubit.NewState(complex(0, 1/math.Sqrt2), "1"),
+			},
+			want: true,
+		},
+		{
+			s:    qubit.Plus().State(),
+			v:    qubit.Minus().State(),
+			want: false,
+		},
 	}
 
 	for _, c := range cases {

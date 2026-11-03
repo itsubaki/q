@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/cmplx"
+	"slices"
 
 	"github.com/itsubaki/q/math/epsilon"
 )
@@ -87,6 +88,10 @@ func EqualUpToGlobalPhase(s, v []State, tol ...float64) bool {
 
 	var dot complex128
 	for i := range s {
+		if !slices.Equal(s[i].binaryString, v[i].binaryString) {
+			return false
+		}
+
 		dot += s[i].amp * cmplx.Conj(v[i].amp)
 	}
 
