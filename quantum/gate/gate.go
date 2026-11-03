@@ -192,9 +192,9 @@ func Controlled(u *matrix.Matrix, n int, c []int, t int) *matrix.Matrix {
 				continue
 			}
 
-			r := (i >> (n - 1 - t)) & 1
-			c := (j >> (n - 1 - t)) & 1
-			g.Set(i, j, u.At(r, c))
+			a := (i >> (n - 1 - t)) & 1
+			b := (j >> (n - 1 - t)) & 1
+			g.Set(i, j, u.At(a, b))
 		}
 	}
 
