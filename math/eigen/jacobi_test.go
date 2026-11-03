@@ -16,7 +16,7 @@ func Example_sqrt() {
 		[]complex128{1, 0},
 	)
 
-	v, d := eigen.Jacobi(x, 10)
+	v, d := eigen.MustJacobi(x, 10)
 	d.Fdiag(func(v complex128) complex128 { return cmplx.Pow(v, 0.5) })
 
 	sqrtx := matrix.MatMul(v, d, v.Dagger())
@@ -103,7 +103,11 @@ func TestJacobi(t *testing.T) {
 			t.Errorf("input is not Hermitian")
 		}
 
-		v, d := eigen.Jacobi(c.in, 10)
+		v, d, err := eigen.Jacobi(c.in, 10)
+		if err != nil {
+			t.Fatal(err)
+		}
+
 		if !v.IsUnitary() {
 			t.Errorf("v * v^dagger does not equal I")
 		}
@@ -116,4 +120,18 @@ func TestJacobi(t *testing.T) {
 			t.Errorf("v * d * v^dagger does not equal a")
 		}
 	}
+}
+
+func ExampleJacobi_notConverged() {
+	a := matrix.New(
+		[]complex128{2, 1 + 2i, -1i},
+		[]complex128{1 - 2i, 3, 4 + 1i},
+		[]complex128{1i, 4 - 1i, -1},
+	)
+
+	_, _, err := eigen.Jacobi(a, 1)
+	fmt.Println(err)
+
+	// Output:
+	// Jacobi method did not converge
 }

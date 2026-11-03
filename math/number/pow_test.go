@@ -2,6 +2,7 @@ package number_test
 
 import (
 	"fmt"
+	"strconv"
 	"testing"
 
 	"github.com/itsubaki/q/math/number"
@@ -39,6 +40,10 @@ func TestBaseExp(t *testing.T) {
 		{27, 3, 3, true},
 		{49, 7, 2, true},
 		{125, 5, 3, true},
+		{177147, 3, 11, true},
+		{362797056, 6, 11, true},
+		{1 << (strconv.IntSize - 2), 2, strconv.IntSize - 2, true},
+		{int(^uint(0) >> 1), 0, 0, false},
 		{10000, 10, 4, true},
 		{10, 0, 0, false},
 	}

@@ -1,6 +1,9 @@
 package number
 
-import "math"
+import (
+	"cmp"
+	"math"
+)
 
 // Ldexp returns a*2^b.
 func Ldexp(a, b int) float64 {
@@ -40,22 +43,33 @@ func BaseExp(N int) (int, int, bool) {
 
 	for b := Log2(N); b >= 2; b-- {
 		lo, hi := 2, N
-		for lo < hi+1 {
-			mid := (lo + hi) / 2
-			p := Pow(mid, b)
-
-			if p == N {
+		for lo <= hi {
+			mid := lo + (hi-lo)/2
+			switch comparePow(mid, b, N) {
+			case 0:
 				return mid, b, true
-			}
-
-			if p < 0 || p > N {
+			case 1:
 				hi = mid - 1
-				continue
+			case -1:
+				lo = mid + 1
 			}
-
-			lo = mid + 1
 		}
 	}
 
 	return 0, 0, false
+}
+
+// comparePow compares a^b with n without overflowing.
+// a and n must be positive, and b must be nonnegative.
+func comparePow(a, b, n int) int {
+	p := 1
+	for range b {
+		if p > n/a {
+			return 1
+		}
+
+		p *= a
+	}
+
+	return cmp.Compare(p, n)
 }

@@ -136,7 +136,7 @@ func (m *DensityMatrix) FidelitySquared(sigma *DensityMatrix, tol ...float64) fl
 
 // VonNeumannEntropy returns the von Neumann entropy of the density matrix.
 func (m *DensityMatrix) VonNeumannEntropy(tol ...float64) float64 {
-	_, d := eigen.Jacobi(m.rho, 100, tol...)
+	_, d := eigen.MustJacobi(m.rho, 100, tol...)
 
 	var sum float64
 	for i := range d.Rows {
@@ -174,7 +174,7 @@ func (m *DensityMatrix) RelativeEntropy(sigma *DensityMatrix, tol ...float64) fl
 	}
 
 	// compute log(sigma) using the eigen decomposition of sigma.
-	v, d := eigen.Jacobi(sigma.rho, 100, tol...)
+	v, d := eigen.MustJacobi(sigma.rho, 100, tol...)
 	for i := range d.Rows {
 		lambda := real(d.At(i, i))
 		if !epsilon.IsZeroF64(lambda, tol...) {
@@ -205,7 +205,7 @@ func (m *DensityMatrix) RelativeEntropy(sigma *DensityMatrix, tol ...float64) fl
 
 // Sqrt returns the square root of the density matrix.
 func (m *DensityMatrix) Sqrt(tol ...float64) *DensityMatrix {
-	v, d := eigen.Jacobi(m.rho, 100, tol...)
+	v, d := eigen.MustJacobi(m.rho, 100, tol...)
 	d.Fdiag(func(lambda complex128) complex128 {
 		return cmplx.Pow(lambda, 0.5)
 	})

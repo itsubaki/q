@@ -1,6 +1,7 @@
 package eigen
 
 import (
+	"errors"
 	"math"
 	"math/cmplx"
 
@@ -8,13 +9,16 @@ import (
 	"github.com/itsubaki/q/math/matrix"
 )
 
+var ErrNotConverged = errors.New("Jacobi method did not converge")
+
 // Jacobi returns the eigenvectors and eigenvalues of a matrix using the Jacobi method.
 // The input matrix a must be hermitian.
-func Jacobi(a *matrix.Matrix, iter int, tol ...float64) (vectors *matrix.Matrix, lambdas *matrix.Matrix) {
+// sweeps limits the number of sweeps, each allowing n*(n-1)/2 rotations.
+func Jacobi(a *matrix.Matrix, sweeps int, tol ...float64) (vectors *matrix.Matrix, lambdas *matrix.Matrix, err error) {
 	n := a.Rows
 	v, ak := matrix.Identity(n), a.Clone()
 
-	for range iter {
+	for range sweeps * (n * (n - 1) / 2) {
 		var max float64
 		var p, q int
 
@@ -71,6 +75,10 @@ func Jacobi(a *matrix.Matrix, iter int, tol ...float64) (vectors *matrix.Matrix,
 		}
 	}
 
+	if !ak.IsDiagonal(tol...) {
+		return nil, nil, ErrNotConverged
+	}
+
 	// construct the diagonal matrix of eigenvalues.
 	d := matrix.ZeroLike(ak)
 	for i := range n {
@@ -82,5 +90,14 @@ func Jacobi(a *matrix.Matrix, iter int, tol ...float64) (vectors *matrix.Matrix,
 		d.Set(i, i, val)
 	}
 
-	return v, d
+	return v, d, nil
+}
+
+func MustJacobi(a *matrix.Matrix, sweeps int, tol ...float64) (vectors *matrix.Matrix, lambdas *matrix.Matrix) {
+	vectors, lambdas, err := Jacobi(a, sweeps, tol...)
+	if err != nil {
+		panic(err)
+	}
+
+	return vectors, lambdas
 }
