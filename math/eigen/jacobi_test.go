@@ -33,6 +33,20 @@ func Example_sqrt() {
 	// true
 }
 
+func ExampleJacobi_notConverged() {
+	a := matrix.New(
+		[]complex128{2, 1 + 2i, -1i},
+		[]complex128{1 - 2i, 3, 4 + 1i},
+		[]complex128{1i, 4 - 1i, -1},
+	)
+
+	_, _, err := eigen.Jacobi(a, 1)
+	fmt.Println(err)
+
+	// Output:
+	// Jacobi method did not converge
+}
+
 func TestJacobi(t *testing.T) {
 	cases := []struct {
 		in *matrix.Matrix
@@ -120,18 +134,4 @@ func TestJacobi(t *testing.T) {
 			t.Errorf("v * d * v^dagger does not equal a")
 		}
 	}
-}
-
-func ExampleJacobi_notConverged() {
-	a := matrix.New(
-		[]complex128{2, 1 + 2i, -1i},
-		[]complex128{1 - 2i, 3, 4 + 1i},
-		[]complex128{1i, 4 - 1i, -1},
-	)
-
-	_, _, err := eigen.Jacobi(a, 1)
-	fmt.Println(err)
-
-	// Output:
-	// Jacobi method did not converge
 }
