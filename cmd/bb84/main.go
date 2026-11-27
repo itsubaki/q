@@ -23,11 +23,11 @@ type Party struct {
 	Bit   int
 }
 
-func NewParty(name string) *Party {
+func NewParty(name string, bit int) *Party {
 	return &Party{
 		Name:  name,
 		Basis: Basis(rand.Intn(2)),
-		Bit:   Unknown,
+		Bit:   bit,
 	}
 }
 
@@ -72,18 +72,17 @@ func bb84(n int, attack bool) (int, float64) {
 	var sifted, errors int
 	for range n {
 		// Alice: encode and send.
-		alice := NewParty("Alice")
-		alice.Bit = rand.Intn(2)
+		alice := NewParty("Alice", rand.Intn(2))
 		qsim, qb := alice.Encode()
 
 		if attack {
 			// Eve: intercept, measure, and resend.
-			eve := NewParty("Eve")
+			eve := NewParty("Eve", Unknown)
 			qsim, qb = eve.Intercept(qsim, qb)
 		}
 
 		// Bob: receive and measure.
-		bob := NewParty("Bob")
+		bob := NewParty("Bob", Unknown)
 		bob.Measure(qsim, qb)
 
 		// Sifting: publicly compare bases.
