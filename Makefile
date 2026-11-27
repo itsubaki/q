@@ -38,3 +38,8 @@ counting:
 
 chsh:
 	go run cmd/chsh/main.go
+
+bb84:
+	go run cmd/bb84/main.go --n 10000 --attack=false
+	go run cmd/bb84/main.go --n 10000 --attack=true
+

@@ -8,56 +8,91 @@ import (
 	"github.com/itsubaki/q"
 )
 
-func bb84(n int, eve bool) (int, float64) {
+type Basis int
+
+const (
+	Z Basis = iota
+	X
+)
+
+const Unknown = -1
+
+type Party struct {
+	Name  string
+	Basis Basis
+	Bit   int
+}
+
+func NewParty(name string) *Party {
+	return &Party{
+		Name:  name,
+		Basis: Basis(rand.Intn(2)),
+		Bit:   Unknown,
+	}
+}
+
+// Encode prepares a qubit in the party's bit and basis.
+func (p *Party) Encode() (*q.Q, q.Qubit) {
+	qsim := q.New()
+	qb := qsim.Zero()
+
+	if p.Bit == 1 {
+		qsim.X(qb)
+	}
+
+	if p.Basis == X {
+		qsim.H(qb)
+	}
+
+	return qsim, qb
+}
+
+// Measure obtains a bit by measuring in the party's basis.
+func (p *Party) Measure(qsim *q.Q, qb q.Qubit) {
+	if p.Basis == X {
+		qsim.H(qb)
+	}
+
+	p.Bit = 0
+	if qsim.Measure(qb).IsOne() {
+		p.Bit = 1
+	}
+}
+
+// Intercept measures and resends a qubit.
+func (p *Party) Intercept(qsim *q.Q, qb q.Qubit) (*q.Q, q.Qubit) {
+	p.Measure(qsim, qb)
+	return p.Encode()
+}
+
+// bb84 simulates the BB84 quantum key distribution protocol
+// with an optional intercept-resend attack.
+// It returns the sifted key length and quantum bit error rate (QBER).
+func bb84(n int, attack bool) (int, float64) {
 	var sifted, errors int
 	for range n {
-		qsim := q.New()
-		qb := qsim.Zero()
+		// Alice: encode and send.
+		alice := NewParty("Alice")
+		alice.Bit = rand.Intn(2)
+		qsim, qb := alice.Encode()
 
-		// Alice: randomly choose a bit and a basis.
-		aBit := rand.Intn(2)
-		aBasis := rand.Intn(2)
-
-		// Encode: 0 = Z basis, 1 = X basis.
-		if aBit == 1 {
-			qsim.X(qb)
+		if attack {
+			// Eve: intercept, measure, and resend.
+			eve := NewParty("Eve")
+			qsim, qb = eve.Intercept(qsim, qb)
 		}
 
-		if aBasis == 1 {
-			qsim.H(qb)
-		}
+		// Bob: receive and measure.
+		bob := NewParty("Bob")
+		bob.Measure(qsim, qb)
 
-		// Eve: intercept-resend attack.
-		if eve {
-			eBasis := rand.Intn(2)
-			if eBasis == 1 {
-				qsim.H(qb)
-			}
-
-			qsim.Measure(qb)
-			if eBasis == 1 {
-				qsim.H(qb)
-			}
-		}
-
-		// Bob: randomly choose a measurement basis.
-		bBasis := rand.Intn(2)
-		if bBasis == 1 {
-			qsim.H(qb)
-		}
-
-		var bBit int
-		if qsim.Measure(qb).IsOne() {
-			bBit = 1
-		}
-
-		// Sifting: discard mismatched bases.
-		if aBasis != bBasis {
+		// Sifting: publicly compare bases.
+		if alice.Basis != bob.Basis {
 			continue
 		}
 
 		sifted++
-		if aBit != bBit {
+		if alice.Bit != bob.Bit {
 			errors++
 		}
 	}
@@ -71,12 +106,12 @@ func bb84(n int, eve bool) (int, float64) {
 
 func main() {
 	var n int
-	var eve bool
-	flag.IntVar(&n, "n", 10000, "number of qubits")
-	flag.BoolVar(&eve, "eve", false, "enable Eve")
+	var attack bool
+	flag.IntVar(&n, "n", 10000, "number of transmitted qubits")
+	flag.BoolVar(&attack, "attack", false, "enable intercept-resend attack")
 	flag.Parse()
 
-	sifted, qber := bb84(n, eve)
+	sifted, qber := bb84(n, attack)
 	fmt.Println("sifted:", sifted)
 	fmt.Printf("qber  : %.2f%%\n", qber*100)
 }
