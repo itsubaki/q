@@ -12,52 +12,52 @@ func bb84(n int, eve bool) (int, float64) {
 	var sifted, errors int
 	for range n {
 		qsim := q.New()
-		q0 := qsim.Zero()
+		qb := qsim.Zero()
 
 		// Alice: randomly choose a bit and a basis.
-		a := rand.Intn(2)
-		abasis := rand.Intn(2)
+		aBit := rand.Intn(2)
+		aBasis := rand.Intn(2)
 
 		// Encode: 0 = Z basis, 1 = X basis.
-		if a == 1 {
-			qsim.X(q0)
+		if aBit == 1 {
+			qsim.X(qb)
 		}
 
-		if abasis == 1 {
-			qsim.H(q0)
+		if aBasis == 1 {
+			qsim.H(qb)
 		}
 
 		// Eve: intercept-resend attack.
 		if eve {
-			ebasis := rand.Intn(2)
-			if ebasis == 1 {
-				qsim.H(q0)
+			eBasis := rand.Intn(2)
+			if eBasis == 1 {
+				qsim.H(qb)
 			}
 
-			qsim.Measure(q0)
-			if ebasis == 1 {
-				qsim.H(q0)
+			qsim.Measure(qb)
+			if eBasis == 1 {
+				qsim.H(qb)
 			}
 		}
 
 		// Bob: randomly choose a measurement basis.
-		bbasis := rand.Intn(2)
-		if bbasis == 1 {
-			qsim.H(q0)
+		bBasis := rand.Intn(2)
+		if bBasis == 1 {
+			qsim.H(qb)
 		}
 
-		var b int
-		if qsim.Measure(q0).IsOne() {
-			b = 1
+		var bBit int
+		if qsim.Measure(qb).IsOne() {
+			bBit = 1
 		}
 
 		// Sifting: discard mismatched bases.
-		if abasis != bbasis {
+		if aBasis != bBasis {
 			continue
 		}
 
 		sifted++
-		if a != b {
+		if aBit != bBit {
 			errors++
 		}
 	}
@@ -78,5 +78,5 @@ func main() {
 
 	sifted, qber := bb84(n, eve)
 	fmt.Println("sifted:", sifted)
-	fmt.Println("qber  :", qber)
+	fmt.Printf("qber  : %.2f%%\n", qber*100)
 }
