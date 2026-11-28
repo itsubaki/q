@@ -99,25 +99,26 @@ func main() {
 		m := state.BinaryString()[0] // m is the binary string representation of r0
 		k := number.MustParseInt(m)  // k is the integer representation of m
 		phi := number.Ldexp(k, -t)   // phi is the estimated phase, which is k / 2^t
+		p := state.Probability() * 100
 
 		s, r, d, ok := number.FindOrder(a, N, phi)
 		if !ok || number.IsOdd(r) {
-			fmt.Printf("  k=%4d: N=%d, a=%d, t=%d; s/r=%4d/%4d ([0.%v]~%.4f);\n", k, N, a, t, s, r, m, d)
+			fmt.Printf("  k=%4d: N=%d, a=%d, t=%d; s/r=%4d/%4d ([0.%v]~%.4f); prob=%5.2f%%;\n", k, N, a, t, s, r, m, d, p)
 			continue
 		}
 
 		p0 := number.GCD(number.Pow(a, r/2)-1, N)
 		p1 := number.GCD(number.Pow(a, r/2)+1, N)
 		if number.IsTrivial(N, p0, p1) {
-			fmt.Printf("  k=%4d: N=%d, a=%d, t=%d; s/r=%4d/%4d ([0.%v]~%.4f); p=%v, q=%v.\n", k, N, a, t, s, r, m, d, p0, p1)
+			fmt.Printf("  k=%4d: N=%d, a=%d, t=%d; s/r=%4d/%4d ([0.%v]~%.4f); prob=%5.2f%%; p=%v, q=%v.\n", k, N, a, t, s, r, m, d, p, p0, p1)
 			continue
 		}
 
-		fmt.Printf("* k=%4d: N=%d, a=%d, t=%d; s/r=%4d/%4d ([0.%v]~%.4f); p=%v, q=%v.\n", k, N, a, t, s, r, m, d, p0, p1)
-		prob += state.Probability()
+		fmt.Printf("* k=%4d: N=%d, a=%d, t=%d; s/r=%4d/%4d ([0.%v]~%.4f); prob=%5.2f%%; p=%v, q=%v.\n", k, N, a, t, s, r, m, d, p, p0, p1)
+		prob += p
 	}
 
-	fmt.Printf("prob: %.8f\n", prob)
+	fmt.Printf("prob: %.2f%%\n", prob)
 }
 
 func print(desc string, qsim *q.Q, reg ...any) {
